@@ -1,0 +1,99 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
+@import url(https://fonts.googleapis.com/icon?family=Material+Icons);
+
+@import "assets/css/all";
+
+html, body {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+}
+
+body, input {
+  font-family: 'Roboto', sans-serif, Verdana, Geneva;
+
+}
+
+app-root {
+    box-sizing: border-box;
+    display: block;
+    padding: 115px 16px 0;
+    //background-color: #009688;
+    background-color: md-color($md-primary);
+    height: 256px;
+    min-height: 256px;
+    max-height: 256px;
+}
+app-root > h1 {
+    margin: 0 auto;
+    width: 80%;
+    color: white;
+    font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
+    font-size: 24px;
+    line-height: 1.5;
+    font-weight: 400;
+}
+@media (min-width: 600px) {
+    app-root > h1 {
+        font-size: 56px;
+    }
+}
+
+body md-nav-list a[md-list-item].active .md-list-item, body md-nav-list md-list-item.active .md-list-item {
+  color: md-color($md-primary);
+}
+body md-nav-list md-list-item[md-ink] .md-list-item:hover {
+  background: none;
+
+}
+
+
+.md-sidenav-content {
+    width: 100%
+}
+
+.material-icons {
+  font-family: 'Material Icons', serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+// Rules for sizing the icon.
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+// Rules for using icons as black on a light background.
+.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+
+// Rules for using icons as white on a dark background.
+.material-icons.md-light { color: rgba(255, 255, 255, 1); }
+.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }

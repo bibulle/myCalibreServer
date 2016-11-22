@@ -1,0 +1,64 @@
+<md-toolbar color="primary" class="fixed-toolbar"
+            md-peekaboo [scroller]="content.parentElement"
+            [break]="190"
+            breakAction="show"
+            [ngClass]="{hide:over}"
+            [style.left]="sidenavWidth + 'px'"
+            [style.right]="scrollWidth + 'px'">
+</md-toolbar>
+<md-toolbar color="primary" class="fixed-toolbar"
+            [ngClass]="{hide:over}"
+            [style.left]="sidenavWidth + 'px'"
+            [style.right]="scrollWidth + 'px'">
+  <button md-button
+          class="md-hamburger md-icon-button"
+          hide-gt-lg
+          (click)="menu.open($event)"
+          aria-label="Home">
+    <md-icon class="md-dark">menu</md-icon>
+  </button>
+  <span md-peekaboo [scroller]="content.parentElement"
+        [breakMd]="72"
+        [breakXs]="20"
+        breakAction="show">
+    <span class="verbose-title">{{getPrimatyLabel()}}</span>
+  </span>
+  <span flex></span>
+  <a md-peekaboo [scroller]="content.parentElement"
+     href="https://github.com/bibulle/myCalibreServer/releases/tag/v{{version}}"
+     target="_blank"
+     [breakMd]="72"
+     breakAction="show"
+     *ngIf="version" class="md-caption">v{{version}}</a>
+</md-toolbar>
+
+<md-sidenav-layout layout="row" fullscreen>
+  <md-sidenav #menu class="app-menu" mode="side">
+    <md-toolbar routerLink="/">
+      <h3>{{getSecondaryLabel()}}</h3>
+    </md-toolbar>
+    <md-nav-list>
+      <md-list-item md-ink routerLinkActive="active" routerLink="/home">News</md-list-item>
+      <md-list-item md-ink routerLinkActive="active" routerLink="/books">Books</md-list-item>
+      <md-list-item md-ink routerLinkActive="active" routerLink="/series">Series</md-list-item>
+      <md-list-item md-ink routerLinkActive="active" routerLink="/authors">Authors</md-list-item>
+    </md-nav-list>
+  </md-sidenav>
+
+  <md-content #content>
+    <md-toolbar color="primary" class="hero">
+      <h1 md-peekaboo [scroller]="content.parentElement"
+          [breakMd]="72"
+          [breakXs]="20"
+          breakAction="hide">{{getPrimatyLabel()}}</h1>
+    </md-toolbar>
+    <main layout="row" layout-align="center center">
+      <md-content class="examples" md-scroll-y layout-padding>
+        <router-outlet></router-outlet>
+      </md-content>
+    </main>
+
+    <docs-footer></docs-footer>
+
+  </md-content>
+</md-sidenav-layout>
