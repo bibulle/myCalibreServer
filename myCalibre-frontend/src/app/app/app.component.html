@@ -38,10 +38,7 @@
       <h3>{{getSecondaryLabel()}}</h3>
     </md-toolbar>
     <md-nav-list>
-      <md-list-item md-ink routerLinkActive="active" routerLink="/home">News</md-list-item>
-      <md-list-item md-ink routerLinkActive="active" routerLink="/books">Books</md-list-item>
-      <md-list-item md-ink routerLinkActive="active" routerLink="/series">Series</md-list-item>
-      <md-list-item md-ink routerLinkActive="active" routerLink="/authors">Authors</md-list-item>
+      <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}">{{l.label}}</md-list-item>
     </md-nav-list>
   </md-sidenav>
 
@@ -53,7 +50,7 @@
           breakAction="hide">{{getPrimatyLabel()}}</h1>
     </md-toolbar>
     <main layout="row" layout-align="center center">
-      <md-content class="examples" md-scroll-y layout-padding>
+      <md-content class="contents" md-scroll-y layout-padding>
         <router-outlet></router-outlet>
       </md-content>
     </main>

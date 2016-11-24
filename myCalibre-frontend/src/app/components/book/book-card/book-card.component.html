@@ -1,0 +1,16 @@
+<md-card class="book-card" flex="100" *ngIf="book.book_title">
+  <!--<md-card-header>-->
+  <!--<img md-card-avatar *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.png">-->
+  <!--<md-card-title>{{book.book_title}} (<span class="date">{{book.book_date | date: 'yyyy'}}</span>)</md-card-title>-->
+  <!--<md-card-subtitle>{{book.author_name}} <span class="other">({{book.data_format}})</span></md-card-subtitle>-->
+  <!--</md-card-header>-->
+  <!--<md-card-title-group>-->
+  <div class="cover">
+    <img md-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
+  </div>
+  <div class="text">
+    <md-card-title>{{book.book_title}} <span class="date">{{book.book_date | date: 'yyyy'}}</span></md-card-title>
+    <md-card-subtitle>{{book.author_name}} <span class="other">{{book.data_format}}</span></md-card-subtitle>
+  </div>
+  <!--</md-card-title-group>-->
+</md-card>

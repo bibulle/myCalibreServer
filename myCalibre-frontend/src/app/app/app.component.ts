@@ -22,6 +22,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   public navigationLabel = "";
 
   version: string;
+  links: {path: string, label: string}[] = [];
 
   private _subscription = null;
 
@@ -100,6 +101,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
+    this.router.config.forEach(obj => {
+      if (!obj.redirectTo && obj.data && !obj.path.startsWith('*')) {
+        this.links.push({ path: obj.path, label: obj.data['label'] });
+      }
+    });
   }
 
 

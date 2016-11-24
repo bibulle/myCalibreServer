@@ -18,14 +18,14 @@ class DbCalibre {
     }
     DbCalibre._instance = this;
 
-    fs.stat(DB_FILE, function (err, stats) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('stats: ' + JSON.stringify(stats));
-        debug(stats);
-      }
-    });
+    //fs.stat(DB_FILE, function (err, stats) {
+    //  if (err) {
+    //    console.log(err);
+    //  } else {
+    //    console.log('stats: ' + JSON.stringify(stats));
+    //    debug(stats);
+    //  }
+    //});
   }
 
   public static getInstance(): DbCalibre {
@@ -102,7 +102,7 @@ class DbCalibre {
           .offset(offset)
         ;
 
-      debug(query.toString());
+      //debug(query.toString());
 
       this._db.all(query.toString(), (err, row) => {
         if (err) {
@@ -113,6 +113,47 @@ class DbCalibre {
       })
     })
 
+  }
+
+
+  public getBookPaths(id: number): Promise<any> {
+
+    return new Promise<any[]>((resolve, reject) => {
+
+      const whereValue = DbCalibre._makeWhere('book', ""+id, 'title', '_');
+      //debug(whereValue);
+      const where = whereValue[0];
+      const value = whereValue[1];
+
+      var query = squel
+          .select({separator: "\n"})
+
+          // bookFields
+          .field('books.id', 'book_id')
+          .field('books.has_cover', 'book_has_cover')
+          .field('books.path', 'book_path')
+
+          // sumData
+          .field(DbCalibre._concat_simple('data', 'books', 'book', 'id'), 'data_id')
+          .field(DbCalibre._concat_simple('data', 'books', 'book', 'format'), 'data_format')
+          .field(DbCalibre._concat_simple('data', 'books', 'book', 'uncompressed_size'), 'data_size')
+          .field(DbCalibre._concat_simple('data', 'books', 'book', 'name', false), 'data_name')
+
+          .from('books')
+          //.group('book_title')
+          .where(where, value)
+        ;
+
+      //debug(query.toString());
+
+      this._db.get(query.toString(), (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(row);
+        }
+      })
+    })
   }
 
 

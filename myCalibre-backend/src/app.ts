@@ -1,8 +1,10 @@
 import * as express from "express";
 var compression = require('compression');
 import bodyParser = require("body-parser");
+var cors = require('cors');
 import { join } from "path";
 import { bookRouter } from "./routes/book";
+var serveStatic = require('serve-static')
 
 var debug = require('debug')('server:server');
 var warn = require('debug')('server:warn');
@@ -19,10 +21,24 @@ app.use(compression());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
+// cors stuff
+var originsWhiteList = ['http://localhost:4200'];
+if (process.env['frontend']) {
+  originsWhiteList = JSON.parse(process.env['frontend']);
+}
+var corsOptions = {
+  origin: function(origin, callback){
+    var isWhitelisted = originsWhiteList.indexOf(origin) !== -1;
+    callback(null, isWhitelisted);
+  },
+  credentials:true
+};
+//noinspection TypeScriptValidateTypes
+app.use(cors(corsOptions));
+
 
 // api routes
 app.use("/api/book", bookRouter);
-
 
 // define the 404 error
 app.use(function (req: express.Request, res: express.Response, next) {
