@@ -37,9 +37,7 @@ bookRouter.route('/')
                          return row;
                        })
 
-                       debug("GET /... respond");
                        response.json({data: rows})
-                       debug("GET /... respond");
                      })
                      .catch(err => {
                        response.status(500).json({status: 500, message: err});
