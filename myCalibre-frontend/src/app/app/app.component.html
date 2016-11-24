@@ -24,21 +24,25 @@
     <span class="verbose-title">{{getPrimatyLabel()}}</span>
   </span>
   <span flex></span>
-  <a md-peekaboo [scroller]="content.parentElement"
-     href="https://github.com/bibulle/myCalibreServer/releases/tag/v{{version}}"
-     target="_blank"
-     [breakMd]="72"
-     breakAction="show"
-     *ngIf="version" class="md-caption">v{{version}}</a>
+  <div flex="50" class="filter" md-peekaboo [scroller]="content.parentElement"
+       [breakMd]="185"
+       [breakXs]="100"
+       breakAction="show">
+    <filter-bar></filter-bar>
+  </div>
 </md-toolbar>
 
 <md-sidenav-layout layout="row" fullscreen>
   <md-sidenav #menu class="app-menu" mode="side">
     <md-toolbar routerLink="/">
       <h3>{{getSecondaryLabel()}}</h3>
+      <a href="https://github.com/bibulle/myCalibreServer/releases/tag/v{{version}}"
+         target="_blank"
+         *ngIf="version" class="md-caption version">v{{version}}</a>
     </md-toolbar>
     <md-nav-list>
-      <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}">{{l.label}}</md-list-item>
+      <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}">{{l.label}}
+      </md-list-item>
     </md-nav-list>
   </md-sidenav>
 
@@ -48,6 +52,15 @@
           [breakMd]="72"
           [breakXs]="20"
           breakAction="hide">{{getPrimatyLabel()}}</h1>
+    </md-toolbar>
+    <md-toolbar class="filter" md-peekaboo [scroller]="content.parentElement"
+                [breakMd]="185"
+                [breakXs]="100"
+                breakAction="hide">
+      <span flex></span>
+      <div flex="50">
+        <filter-bar></filter-bar>
+      </div>
     </md-toolbar>
     <main layout="row" layout-align="center center">
       <md-content class="contents" md-scroll-y layout-padding>

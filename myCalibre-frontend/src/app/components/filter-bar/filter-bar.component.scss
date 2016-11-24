@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex: 100%;
+  align-items: center;
+
+  .md-icon-button {
+    margin: 0 6px;
+    height: 40px;
+    min-width: 0;
+    line-height: 24px;
+    padding: 8px;
+    width: 40px;
+    border-radius: 50%;
+  }
+
+}
+

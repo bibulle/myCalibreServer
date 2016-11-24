@@ -50,10 +50,18 @@
     md-toolbar {
       color: md-color($md-foreground, secondary-text);
       border-bottom: 1px solid md-color($md-foreground, divider);
+      position: relative;
       h3 {
         font-weight: 500;
         cursor: pointer;
       }
+    }
+    .version {
+      text-decoration: none;
+      color: md-color($md-foreground, hint-text);
+      position: absolute;
+      bottom: 0px;
+      right: 0;
     }
   }
 
@@ -85,10 +93,6 @@
       opacity: 0;
       pointer-events: none;
     }
-    .md-caption {
-      text-decoration: none;
-      color: md-color($md-primary, 50);
-    }
     .verbose-title {
       @media screen and (max-width: $layout-breakpoint-sm) {
         display: none;
@@ -98,7 +102,7 @@
 
   md-toolbar.hero {
     @include md-hero-toolbar();
-    padding: 115px 16px 0;
+    padding: 135px 16px 0;
     h1 {
       color: #fff;
       font-size: 56px;
@@ -134,6 +138,7 @@
   }
 
   md-content {
+    display: block;
     font-size: rem(1.4);
     @media screen and (max-width: $layout-breakpoint-md) {
       font-size: rem(1.2);

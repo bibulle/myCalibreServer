@@ -20,6 +20,7 @@ export class Book {
   data_name: string;
   data_size: string;
   comment: string;
+  book_date: string;
 
 
 }
