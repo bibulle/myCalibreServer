@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BookService } from "../book.service";
 import { Book } from "../book";
 import { FilterService, Filter, SortType, SortingDirection } from "../../filter-bar/filter.service";
+const leftPad = require('left-pad');
 
 @Component({
   selector: 'app-book-list',
@@ -26,6 +27,7 @@ export class BookListComponent implements OnInit {
 
   }
 
+  //noinspection JSUnusedGlobalSymbols
   ngOnInit () {
 
     this._filterService.update(this.filter);
@@ -70,7 +72,7 @@ export class BookListComponent implements OnInit {
             Math.ceil(this.books.length / STEP),
             Math.floor(tmpBooks.length / STEP)) + 1;
       }
-      var initCpt = cpt;
+      const initCpt = cpt;
 
       while (cpt * STEP <= tmpBooks.length + STEP) {
         const _cpt = cpt + 1;
@@ -103,33 +105,33 @@ export class BookListComponent implements OnInit {
 
     // first filter
     var filteredBooks = this.fullBooks
-                            .filter((b, i) => {
+                            .filter((b) => {
 
                               var strToSearch = b.book_title
                                                  .concat(b.series_name)
                                                  .concat(b.comment)
                                                  .concat("" + b.author_name);
 
-                              var ret = (this._cleanAccent(strToSearch).includes(this._cleanAccent(this.filter.search)));
+                              var ret = (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
 
                               return ret;
                             })
-                            .sort((b1, b2) => {
+                            .sort((b1: Book, b2: Book) => {
                               var v1: string;
                               var v2: string;
+                              v1 = (b1.series_name == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
+                              v2 = (b2.series_name == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
                               switch (this.filter.sort) {
                                 case SortType.Name:
-                                  v1 = b1.book_sort;
-                                  v2 = b2.book_sort;
                                   break;
                                 case SortType.Author:
-                                  v1 = b1.author_sort.toString();
-                                  v2 = b2.author_sort.toString();
+                                  v1 = b1.author_sort.toString() + " " + v1;
+                                  v2 = b2.author_sort.toString() + " " + v2;
                                   break;
                                 case SortType.PublishDate:
                                 default:
-                                  v1 = b1.book_date;
-                                  v2 = b2.book_date;
+                                  v1 = b1.book_date + " " + v1;
+                                  v2 = b2.book_date + " " + v2;
                                   break;
                               }
 
@@ -154,7 +156,7 @@ export class BookListComponent implements OnInit {
       });
   }
 
-  _cleanAccent (str: string): string {
+  static _cleanAccent (str: string): string {
     return str.toLowerCase()
               .replace(/[àâªáäãåā]/g, "a")
               .replace(/[èéêëęėē]/g, "e")
