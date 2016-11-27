@@ -1,6 +1,6 @@
 import { Book, BookPath } from "./book";
 import { Series } from "./series";
-var debug = require('debug')('server:test');
+var debug = require('debug')('server:dbCalibre');
 
 var fs = require('fs');
 var sqlite3 = require("sqlite3").verbose();
@@ -12,9 +12,17 @@ class DbCalibre {
 
   private static _instance: DbCalibre = new DbCalibre();
 
-  private _db = new sqlite3.Database(DB_FILE);
+  private _db;
 
   constructor() {
+
+    debug("Opening '"+DB_FILE+"'");
+    try {
+      this._db = new sqlite3.Database(DB_FILE)
+    } catch (error) {
+      throw(error);
+    };
+
     if (DbCalibre._instance) {
       throw new Error("Error: Instantiation failed: Use DbCalibre.getInstance() instead of new.");
     }
