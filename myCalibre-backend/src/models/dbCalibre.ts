@@ -17,6 +17,8 @@ class DbCalibre {
   constructor() {
 
     debug("Opening '"+DB_FILE+"'");
+    debug("Home path '"+process.cwd()+"'");
+
     try {
       this._db = new sqlite3.Database(DB_FILE)
     } catch (error) {
