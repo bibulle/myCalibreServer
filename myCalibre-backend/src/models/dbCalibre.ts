@@ -6,7 +6,7 @@ var fs = require('fs');
 var sqlite3 = require("sqlite3").verbose();
 const squel = require("squel");
 
-const DB_FILE = './data/metadata.db';
+const DB_FILE = `${__dirname}/../../data/metadata.db`;
 
 class DbCalibre {
 
