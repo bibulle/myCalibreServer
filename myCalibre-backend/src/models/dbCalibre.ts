@@ -1,3 +1,5 @@
+import { Book, BookPath } from "./book";
+import { Series } from "./series";
 var debug = require('debug')('server:test');
 
 var fs = require('fs');
@@ -32,24 +34,9 @@ class DbCalibre {
     return DbCalibre._instance;
   }
 
-  test() {
-    debug(DbCalibre._makeWhere('book'));
-    debug(DbCalibre._makeWhere('book', "sdfsf", 'title', '_'));
-    debug(DbCalibre._makeWhere('book', "2"));
+  public getBooks(limit: number, offset: number): Promise<Book[]> {
 
-
-    this._db.all("select * from books order by sort limit 10", (err, row) => {
-      debug({err, row});
-    })
-
-    debug(this._db);
-    debug('======');
-
-  }
-
-  public getBooks(limit: number, offset: number): Promise<any[]> {
-
-    return new Promise<any[]>((resolve, reject) => {
+    return new Promise<Book[]>((resolve, reject) => {
 
       const whereValue = DbCalibre._makeWhere('book', "", 'title', '_');
       const where = whereValue[0];
@@ -108,7 +95,10 @@ class DbCalibre {
         if (err) {
           reject(err);
         } else {
-          resolve(row);
+          var books = row.map(b => {
+            return new Book(b)
+          });
+          resolve(books);
         }
       })
     })
@@ -116,9 +106,9 @@ class DbCalibre {
   }
 
 
-  public getBookPaths(id: number): Promise<any> {
+  public getBookPaths(id: number): Promise<BookPath> {
 
-    return new Promise<any[]>((resolve, reject) => {
+    return new Promise<BookPath>((resolve, reject) => {
 
       const whereValue = DbCalibre._makeWhere('book', ""+id, 'title', '_');
       //debug(whereValue);
@@ -150,12 +140,11 @@ class DbCalibre {
         if (err) {
           reject(err);
         } else {
-          resolve(row);
+          resolve(new BookPath(row));
         }
       })
     })
   }
-
 
   private static _makeWhere(tableName: string, locator?: string, columnName?: string, sep?: string): any {
 
@@ -205,6 +194,19 @@ class DbCalibre {
   }
 
 
+  /**
+   * Split an attribut separate by pipe to an array
+   * @param row
+   * @param name
+   */
+  public static splitAttribute(row, name) {
+  if (row[name]) {
+    //console.log(row[name]+" -> "+row[name].split('|'))
+    row[name] = row[name].split('|');
+  } else {
+    row[name] = [];
+  }
+}
 }
 
 export default DbCalibre

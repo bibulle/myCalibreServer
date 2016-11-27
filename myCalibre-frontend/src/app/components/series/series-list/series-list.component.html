@@ -1,0 +1,9 @@
+<md-content *ngIf="series">
+  <app-series-card *ngFor="let serie of series" [series]="serie">
+  </app-series-card>
+  <div class="max-reached" *ngIf="series.length == MAX_SERIES">
+    <span>Limited to {{MAX_SERIES}}/{{totalSereisCount}}.
+      Try to use search...</span>
+  </div>
+</md-content>
+<md-spinner *ngIf="!series"></md-spinner>

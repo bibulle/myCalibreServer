@@ -10,7 +10,7 @@ const bookRouter: Router = Router();
 
 
 // -----------------------------------
-// --     /api/job routes     --
+// --     /api/route routes     --
 // -----------------------------------
 
 bookRouter.route('/')
@@ -18,7 +18,7 @@ bookRouter.route('/')
           // route for getting books list
           // ====================================
           .get((request: Request, response: Response) => {
-            debug("GET /");
+            //debug("GET /");
 
             //debug(request.query);
 
@@ -31,9 +31,7 @@ bookRouter.route('/')
                      .then(rows => {
 
                        rows.map(row => {
-                         [ 'data_id', 'data_format', 'data_size', 'data_name', 'tag_id', 'tag_name', 'author_sort', 'author_id', 'author_name'].forEach( name => {
-                           _splitAttribute(row, name)
-                         })
+
                          return row;
                        })
 
@@ -89,16 +87,3 @@ bookRouter.route('/thumbnail/:id.jpg')
 
 export { bookRouter }
 
-/**
- * Split an attribut separate by pipe to an array
- * @param row
- * @param name
- */
-function _splitAttribute(row, name) {
-  if (row[name]) {
-    //console.log(row[name]+" -> "+row[name].split('|'))
-    row[name] = row[name].split('|');
-  } else {
-    row[name] = [];
-  }
-}

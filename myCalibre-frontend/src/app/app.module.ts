@@ -26,6 +26,8 @@ import { BookListComponent } from './components/book/book-list/book-list.compone
 import { BookModule } from "./components/book/book.module";
 import { MdInputModule } from "@angular2-material/input";
 import { FilterBarComponent, FilterBarModule } from './components/filter-bar/filter-bar.component';
+import { SeriesListComponent } from './components/series/series-list/series-list.component';
+import { SeriesModule } from "./components/series/series.module";
 
 @NgModule({
   declarations: [
@@ -55,6 +57,7 @@ import { FilterBarComponent, FilterBarModule } from './components/filter-bar/fil
     HomeModule,
     NotFoundModule,
     BookModule,
+    SeriesModule,
     FilterBarModule
   ],
   providers: [

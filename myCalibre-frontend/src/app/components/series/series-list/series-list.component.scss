@@ -1,0 +1,13 @@
+@import "../../../shared/styles";
+
+md-spinner {
+  width: 50px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.max-reached {
+  padding: 1.5em;
+  color: md-color($md-foreground, secondary-text);
+
+}

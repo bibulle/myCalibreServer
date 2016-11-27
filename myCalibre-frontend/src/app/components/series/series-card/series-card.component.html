@@ -1,0 +1,7 @@
+<md-card class="series-card" flex="100" *ngIf="series.series_name">
+  <md-card-title class="serie-name">
+    {{series.series_name}}
+  </md-card-title>
+  <app-book-card *ngFor="let book of series.books" [book]="book">
+  </app-book-card>
+</md-card>

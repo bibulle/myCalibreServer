@@ -1,8 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgModule } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { CommonModule } from "@angular/common";
+
+const leftPad = require('left-pad');
+import { MdCoreModule } from "@angular2-material/core";
+import { MdCardModule } from "@angular2-material/card";
+import { MdButtonModule } from "@angular2-material/button";
+import { MdIconModule } from "@angular2-material/icon";
+import { MdInputModule } from "@angular2-material/input";
+import { MdProgressCircleModule } from "@angular2-material/progress-circle";
+import { MdToolbarModule } from "@angular2-material/toolbar";
+
+import { FilterService, Filter, SortType, SortingDirection } from "../../filter-bar/filter.service";
+import { MdContentModule } from "../../content/content.component";
+import { BookCardModule } from "../book-card/book-card.component";
 import { BookService } from "../book.service";
 import { Book } from "../book";
-import { FilterService, Filter, SortType, SortingDirection } from "../../filter-bar/filter.service";
-const leftPad = require('left-pad');
 
 @Component({
   selector: 'app-book-list',
@@ -168,3 +181,29 @@ export class BookListComponent implements OnInit {
   }
 
 }
+
+@NgModule({
+  imports: [
+    FormsModule,
+    MdCoreModule,
+    CommonModule,
+    MdCardModule,
+    MdButtonModule,
+    MdIconModule.forRoot(),
+    MdInputModule,
+    MdProgressCircleModule,
+    MdContentModule,
+    MdToolbarModule,
+    BookCardModule,
+    // MdInputModule,
+    // FlexModule,
+    // ScrollDetectorModule,
+  ],
+  declarations: [
+    BookListComponent,
+  ],
+  exports: [
+    BookListComponent
+  ]
+})
+export class BookListModule { }

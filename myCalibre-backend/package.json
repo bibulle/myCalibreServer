@@ -14,7 +14,9 @@
     "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "cors": "^2.8.1",
+    "debug": "^2.3.3",
     "express": "^4.14.0",
+    "lodash": "^4.17.2",
     "sqlite3": "^3.1.8",
     "squel": "^5.5.0"
   },
@@ -22,6 +24,7 @@
     "@types/body-parser": "0.0.33",
     "@types/debug": "0.0.29",
     "@types/express": "^4.0.34",
+    "@types/lodash": "^4.14.40",
     "@types/node": "^6.0.48",
     "@types/sqlite3": "^2.2.31",
     "concurrently": "^3.1.0",

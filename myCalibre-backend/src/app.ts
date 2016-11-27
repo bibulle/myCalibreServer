@@ -4,6 +4,8 @@ import bodyParser = require("body-parser");
 var cors = require('cors');
 import { join } from "path";
 import { bookRouter } from "./routes/book";
+import { seriesRouter } from "./routes/series";
+
 var serveStatic = require('serve-static')
 
 var debug = require('debug')('server:server');
@@ -39,6 +41,7 @@ app.use(cors(corsOptions));
 
 // api routes
 app.use("/api/book", bookRouter);
+app.use("/api/series", seriesRouter);
 
 // define the 404 error
 app.use(function (req: express.Request, res: express.Response, next) {

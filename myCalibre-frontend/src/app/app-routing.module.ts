@@ -5,6 +5,7 @@ import { RouterModule, Routes }   from '@angular/router';
 import { HomeComponent } from "./components/home/home.component";
 import { NotFoundComponent } from "./components/not-found/not-found.component";
 import { BookListComponent } from "./components/book/book-list/book-list.component";
+import { SeriesListComponent } from "./components/series/series-list/series-list.component";
 // import { LoginComponent } from "./login/login.component";
 // import { SignupComponent } from "./signup/signup.component";
 // import { AwardsComponent } from "./awards/awards.component";
@@ -16,7 +17,7 @@ const routes: Routes = [
   { path: '',             redirectTo: '/home', pathMatch: 'full'},
   { path: 'home',         component: HomeComponent                 , data: {label: 'News'}},
   { path: 'books',        component: BookListComponent             , data: {label: 'Books'}},
-  { path: 'series',       component: NotFoundComponent             , data: {label: 'Series'}},
+  { path: 'series',       component: SeriesListComponent           , data: {label: 'Series'}},
   { path: 'authors',      component: NotFoundComponent             , data: {label: 'Authors'}},
   // { path: 'login',        component: LoginComponent },
   // { path: 'signup',       component: SignupComponent },
