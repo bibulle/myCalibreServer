@@ -30,10 +30,10 @@ bookRouter.route('/')
                      .getBooks(limit, offset)
                      .then(rows => {
 
-                       rows.map(row => {
-
-                         return row;
-                       })
+//                       rows.map(row => {
+//
+//                         return row;
+//                       })
 
                        response.json({data: rows})
                      })
@@ -55,7 +55,7 @@ bookRouter.route('/thumbnail/:id.jpg')
 
             //debug(request);
 
-            var err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`)
+            var err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
 
             DbCalibre.getInstance()
                      .getBookPaths(book_id)
@@ -66,7 +66,7 @@ bookRouter.route('/thumbnail/:id.jpg')
                        var fullPath = null;
                        if (book && book.book_has_cover && book.book_path) {
                          fullPath = path.resolve(`./data/${book.book_path}/cover.jpg`);
-                         fs.stat(fullPath,(err, stats) => {
+                         fs.stat(fullPath,(err) => {
                            if (err) {
                              response.sendFile(err_cover_path);
                            } else {
