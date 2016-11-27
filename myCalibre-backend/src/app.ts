@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 // cors stuff
-var originsWhiteList = ['http://localhost:4200', 'http://r2d2'];
+var originsWhiteList = ['http://localhost:4200', 'http://r2d2', 'http://192.168.0.127'];
 if (process.env['frontend']) {
   originsWhiteList = JSON.parse(process.env['frontend']);
 }

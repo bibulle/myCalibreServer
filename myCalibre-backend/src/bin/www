@@ -10,6 +10,7 @@ var http = require('http');
 
 
 debug('Starting.....');
+process.chdir(`${__dirname}/../..`);
 
 /**
  * Get port from environment and store in Express.
