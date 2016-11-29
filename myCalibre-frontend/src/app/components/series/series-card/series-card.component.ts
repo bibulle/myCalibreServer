@@ -15,9 +15,16 @@ export class SeriesCardComponent implements OnInit {
   @Input()
   series: Series;
 
-  constructor() { }
+  booksClosed = true;
 
-  ngOnInit() {
+  constructor () { }
+
+  //noinspection JSUnusedGlobalSymbols
+  ngOnInit () {
+  }
+
+  toggleBooksClosed () {
+    this.booksClosed = !this.booksClosed;
   }
 
 }

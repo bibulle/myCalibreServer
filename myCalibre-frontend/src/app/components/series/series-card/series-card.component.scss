@@ -1,0 +1,40 @@
+md-card-title .date {
+  font-size: 0.6em;
+}
+
+md-card-title button {
+  float: right;
+}
+
+md-card-title md-icon {
+  margin-top: 10px;
+}
+
+md-card-subtitle .author:not(:last-child):after {
+  content: ", ";
+}
+
+.series-card {
+  margin: 6px 0;
+  padding-bottom: 12px;
+}
+
+.series-card md-card-subtitle, .series-card .date {
+  display: none;
+}
+
+.series-card.books-closed {
+  margin: 0;
+}
+
+.series-card.books-closed md-card-subtitle {
+  display: block;
+}
+
+.series-card.books-closed .date {
+  display: inline;
+}
+
+.series-card.books-closed app-book-card {
+  display: none;
+}

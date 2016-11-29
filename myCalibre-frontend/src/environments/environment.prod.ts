@@ -1,4 +1,5 @@
+//noinspection JSUnusedGlobalSymbols
 export const environment = {
   production: true,
-  serverUrl: 'http://localhost:4000/',
+  serverUrl: 'http://themartins.dynamic-dns.net/bib/',
 };

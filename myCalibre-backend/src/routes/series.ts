@@ -30,37 +30,68 @@ seriesRouter.route('/')
 
               DbCalibre.getInstance()
                        .getBooks(1000000, 0)
-                         .then((books: Book[]) => {
+                       .then((books: Book[]) => {
 
-                           var series: Series[] = [];
-                           var seriesHash: { [id: string]: Series } = {};
+                         var series: Series[] = [];
+                         var seriesHash: { [id: string]: Series } = {};
 
-                           books.forEach(book => {
-                             if (book.series_id) {
-                               if (!seriesHash[book.series_id]) {
-                                 seriesHash[book.series_id] = new Series({
-                                   series_id: book.series_id,
-                                   series_name: book.series_name,
-                                   series_sort: book.series_sort,
-                                   books: []
-                                 });
-                                 series.push(seriesHash[book.series_id]);
-                               }
-
-                               seriesHash[book.series_id].books.push(book);
-                               seriesHash[book.series_id].books.sort((b1, b2) => {
-                                 return b1.book_series_index - b2.book_series_index;
-                               })
-
+                         books.forEach(book => {
+                           if (book.series_id) {
+                             if (!seriesHash[book.series_id]) {
+                               seriesHash[book.series_id] = new Series({
+                                 series_id: book.series_id,
+                                 series_name: book.series_name,
+                                 series_sort: book.series_sort,
+                                 books: []
+                               });
+                               series.push(seriesHash[book.series_id]);
                              }
+
+                             seriesHash[book.series_id].books.push(book);
+                             seriesHash[book.series_id].books.sort((b1, b2) => {
+                               return b1.book_series_index - b2.book_series_index;
+                             })
+
+                           }
+                         });
+
+                         // fill series with books info
+                         series.forEach((s: Series) => {
+                           s.author_name = [];
+                           s.book_date = [];
+
+                           s.books.forEach((b: Book) => {
+                             if (b.book_date > '011') {
+                               s.book_date.push(b.book_date);
+                             }
+                             s.author_name = s.author_name.concat(b.author_name);
                            });
 
+                           s.book_date = s.book_date
+                                          .reduce((accu, current, index, array) => {
+                                            if (accu.filter(d => {return d.substring(0, 4) == current.substring(0, 4)}).length == 0) {
+                                              accu.push(current);
+                                            }
+                                            return accu;
+                                          }, [])
+                                          .sort();
+                           s.author_name = s.author_name
+                                          .reduce((accu, current, index, array) => {
+                                            if (accu.filter(d => {return d == current}).length == 0) {
+                                              accu.push(current);
+                                            }
+                                            return accu;
+                                          }, [])
+                                          .sort();
 
-                           response.json({data: series})
-                         })
-                         .catch(err => {
-                           response.status(500).json({status: 500, message: err});
                          });
+
+
+                         response.json({ data: series })
+                       })
+                       .catch(err => {
+                         response.status(500).json({ status: 500, message: err });
+                       });
 
             });
 

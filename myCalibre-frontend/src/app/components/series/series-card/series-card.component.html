@@ -1,7 +1,16 @@
-<md-card class="series-card" flex="100" *ngIf="series.series_name">
-  <md-card-title class="serie-name">
+<md-card class="series-card" flex="100" *ngIf="series.series_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
+  <md-card-title class="series-name">
     {{series.series_name}}
+    <span class="date" *ngIf="series.book_date[1]">{{series.book_date[0] | date: 'yyyy'}}-</span><span class="date" *ngIf="series.book_date[series.book_date.length-1]">{{series.book_date[series.book_date.length-1] | date: 'yyyy'}}</span>
+    <button md-icon-button>
+      <md-icon *ngIf="booksClosed">keyboard_arrow_down</md-icon>
+      <md-icon *ngIf="!booksClosed">keyboard_arrow_up</md-icon>
+    </button>
   </md-card-title>
+  <md-card-subtitle>
+    <span class="author" *ngFor="let name of series.author_name">{{name}}</span>
+  </md-card-subtitle>
+
   <app-book-card *ngFor="let book of series.books" [book]="book">
   </app-book-card>
 </md-card>

@@ -8,6 +8,10 @@ export class Series {
   series_name: string;
   series_sort: string;
 
+  author_name: string[];
+  book_date: string[];
+
+
   books: Book[];
 
   constructor(options: {}) {
