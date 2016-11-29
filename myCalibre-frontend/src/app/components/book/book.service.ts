@@ -10,6 +10,7 @@ export class BookService {
 
   constructor (private http: Http) { }
 
+  private static booksList: Book[];
 
   /**
    * get the books list
@@ -21,12 +22,44 @@ export class BookService {
           .map((res: Response) => res.json().data as Book[])
           .subscribe(
             data => {
+              BookService.booksList = data;
               resolve(data);
             },
             err => {
               reject(err);
             },
           );
+    });
+  }
+
+  /**
+   * get a book
+   */
+  getBook (book_id: number): Promise<Book> {
+
+    return new Promise<Book>((resolve, reject) => {
+      var book: Book;
+      if (BookService.booksList) {
+        book = BookService.booksList.find(b => { return b.book_id == book_id});
+      }
+
+      if (book) {
+        resolve(book);
+      } else {
+        this.getBooks()
+            .then((books: Book[]) => {
+              book = books.find(b => { return b.book_id == book_id});
+              if (book) {
+                resolve(book);
+              } else {
+                reject("Not found");
+              }
+
+            })
+            .catch(err => {
+              reject(err);
+            });
+      }
     });
   }
 }

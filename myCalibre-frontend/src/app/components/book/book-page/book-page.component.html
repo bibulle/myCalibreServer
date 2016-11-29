@@ -1,0 +1,10 @@
+<md-content *ngIf="book" flex layout="row">
+  <div class="cover" flex="40">
+    <img src="{{coverUrlBase}}/{{book.book_id}}.jpg">
+  </div>
+  <div class="book" flex="60">
+    {{book.book_date | date: yyyy}}
+  </div>
+
+</md-content>
+<md-spinner *ngIf="!book"></md-spinner>

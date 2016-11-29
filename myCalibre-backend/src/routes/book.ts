@@ -43,6 +43,46 @@ bookRouter.route('/')
 
           });
 
+bookRouter.route('/cover/:id.jpg')
+          // ====================================
+          // route for getting books cover
+          // ====================================
+          .get((request: Request, response: Response) => {
+
+            var book_id = request.params['id'] || 0;
+
+            //debug(`GET /cover/${book_id}.png`);
+
+            //debug(request);
+
+            var err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
+
+            DbCalibre.getInstance()
+                     .getBookPaths(book_id)
+                     .then( book => {
+                       //debug(book);
+
+                       response.header("Cache-Control", "public, max-age=31536000");
+                       var fullPath = null;
+                       if (book && book.book_has_cover && book.book_path) {
+                         fullPath = path.resolve(`./data/${book.book_path}/cover.jpg`);
+                         fs.stat(fullPath,(err) => {
+                           if (err) {
+                             response.sendFile(err_cover_path);
+                           } else {
+                             response.sendFile(fullPath);
+                           }
+                         })
+                       } else {
+                         response.sendFile(err_cover_path);
+                       }
+                     })
+                     .catch(err => {
+                       debug(err);
+                       response.sendFile(err_cover_path);
+                     })
+
+          });
 bookRouter.route('/thumbnail/:id.jpg')
           // ====================================
           // route for getting books thumbnail

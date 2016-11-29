@@ -21,7 +21,7 @@
         [breakMd]="72"
         [breakXs]="20"
         breakAction="show">
-    <span class="verbose-title">{{getPrimatyLabel()}}</span>
+    <span class="verbose-title">{{getPrimaryLabel()}}</span>
   </span>
   <span flex></span>
   <div flex="50" class="filter" md-peekaboo [scroller]="content.parentElement"
@@ -51,12 +51,12 @@
       <h1 md-peekaboo [scroller]="content.parentElement"
           [breakMd]="72"
           [breakXs]="20"
-          breakAction="hide">{{getPrimatyLabel()}}</h1>
+          breakAction="hide">{{getPrimaryLabel()}}</h1>
     </md-toolbar>
     <md-toolbar class="filter" md-peekaboo [scroller]="content.parentElement"
                 [breakMd]="185"
                 [breakXs]="100"
-                breakAction="hide">
+                breakAction="hide" *ngIf="!filter.not_displayed">
       <span flex></span>
       <div flex="50">
         <filter-bar></filter-bar>

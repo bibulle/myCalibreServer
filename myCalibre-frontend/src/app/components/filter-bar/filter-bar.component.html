@@ -1,33 +1,35 @@
-<div flex="100" layout="row" layout-align="end center">
-  <md-icon>search</md-icon>
-  &nbsp;
-  <md-input placeholder="Search" #cataloguesearch flex="75" [(ngModel)]="filter.search"
-            (ngModelChange)="filterList()"></md-input>
-</div>
-<!--<button md-button class="md-icon-button" aria-label="Favorite">-->
-<!--<md-icon md-icon>favorite</md-icon>-->
-<!--</button>-->
-<button md-button class="md-icon-button" aria-label="Sort" [md-menu-trigger-for]="sortmenu">
-  <md-icon md-icon>sort</md-icon>
-</button>
+<div  *ngIf="!filter.not_displayed">
+  <div flex="100" layout="row" layout-align="end center">
+    <md-icon>search</md-icon>
+    &nbsp;
+    <md-input placeholder="Search" #cataloguesearch flex="75" [(ngModel)]="filter.search"
+              (ngModelChange)="filterList()"></md-input>
+  </div>
+  <!--<button md-button class="md-icon-button" aria-label="Favorite">-->
+  <!--<md-icon md-icon>favorite</md-icon>-->
+  <!--</button>-->
+  <button md-button class="md-icon-button" aria-label="Sort" [md-menu-trigger-for]="sortmenu">
+    <md-icon md-icon>sort</md-icon>
+  </button>
 
-<md-menu x-position="before" y-position="below" #sortmenu="mdMenu" class="sort-menu">
-  <button md-menu-item (click)="toggleSort(0)">
-    <md-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
-    <md-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
-    <md-icon *ngIf="(filter.sort != 0)"></md-icon>
-    <span>Name</span>
-  </button>
-  <button md-menu-item (click)="toggleSort(1)">
-    <md-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
-    <md-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
-    <md-icon *ngIf="(filter.sort != 1)"></md-icon>
-    <span>Publish date</span>
-  </button>
-  <button md-menu-item (click)="toggleSort(2)">
-    <md-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
-    <md-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
-    <md-icon *ngIf="(filter.sort != 2)"></md-icon>
-    <span>Author</span>
-  </button>
-</md-menu>
+  <md-menu x-position="before" y-position="below" #sortmenu="mdMenu" class="sort-menu">
+    <button md-menu-item (click)="toggleSort(0)">
+      <md-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
+      <md-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
+      <md-icon *ngIf="(filter.sort != 0)"></md-icon>
+      <span>Name</span>
+    </button>
+    <button md-menu-item (click)="toggleSort(1)">
+      <md-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
+      <md-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
+      <md-icon *ngIf="(filter.sort != 1)"></md-icon>
+      <span>Publish date</span>
+    </button>
+    <button md-menu-item (click)="toggleSort(2)">
+      <md-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
+      <md-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
+      <md-icon *ngIf="(filter.sort != 2)"></md-icon>
+      <span>Author</span>
+    </button>
+  </md-menu>
+</div>

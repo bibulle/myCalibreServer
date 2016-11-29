@@ -32,8 +32,12 @@ export class Filter {
   sort = SortType.Name;
   sorting_direction = SortingDirection.Asc;
   search = "";
+  not_displayed = false;
 
-  constructor () {
+  constructor (options = {}) {
+    if (options['not_displayed']) {
+      this.not_displayed = true;
+    }
   };
 
 }

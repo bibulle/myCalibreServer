@@ -22,12 +22,11 @@ import { MdButtonModule } from "@angular2-material/button";
 import { MdCardModule } from "@angular2-material/card";
 import { NotFoundModule } from "./components/not-found/not-found.module";
 import { MdInk } from './directives/link.directive';
-import { BookListComponent } from './components/book/book-list/book-list.component';
 import { BookModule } from "./components/book/book.module";
 import { MdInputModule } from "@angular2-material/input";
-import { FilterBarComponent, FilterBarModule } from './components/filter-bar/filter-bar.component';
-import { SeriesListComponent } from './components/series/series-list/series-list.component';
+import { FilterBarModule } from './components/filter-bar/filter-bar.component';
 import { SeriesModule } from "./components/series/series.module";
+import { TitleService } from "./app/title.service";
 
 @NgModule({
   declarations: [
@@ -62,6 +61,7 @@ import { SeriesModule } from "./components/series/series.module";
   ],
   providers: [
     Media,
+    TitleService,
     {provide: ViewportHelper, useClass: BrowserViewportHelper}
   ],
   bootstrap: [AppComponent]
