@@ -9,6 +9,7 @@ export class Series {
   series_sort: string;
 
   author_name: string[];
+  author_sort: string[];
   book_date: string[];
 
   books: Book[];

@@ -58,6 +58,7 @@ seriesRouter.route('/')
                          // fill series with books info
                          series.forEach((s: Series) => {
                            s.author_name = [];
+                           s.author_sort = [];
                            s.book_date = [];
 
                            s.books.forEach((b: Book) => {
@@ -65,6 +66,7 @@ seriesRouter.route('/')
                                s.book_date.push(b.book_date);
                              }
                              s.author_name = s.author_name.concat(b.author_name);
+                             s.author_sort = s.author_sort.concat(b.author_sort);
                            });
 
                            s.book_date = s.book_date
@@ -76,13 +78,21 @@ seriesRouter.route('/')
                                           }, [])
                                           .sort();
                            s.author_name = s.author_name
-                                          .reduce((accu, current, index, array) => {
-                                            if (accu.filter(d => {return d == current}).length == 0) {
-                                              accu.push(current);
-                                            }
-                                            return accu;
-                                          }, [])
-                                          .sort();
+                                            .reduce((accu, current, index, array) => {
+                                              if (accu.filter(d => {return d == current}).length == 0) {
+                                                accu.push(current);
+                                              }
+                                              return accu;
+                                            }, [])
+                                            .sort();
+                           s.author_sort = s.author_sort
+                                            .reduce((accu, current, index, array) => {
+                                              if (accu.filter(d => {return d == current}).length == 0) {
+                                                accu.push(current);
+                                              }
+                                              return accu;
+                                            }, [])
+                                            .sort();
 
                          });
 

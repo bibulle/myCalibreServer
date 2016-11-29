@@ -1,11 +1,11 @@
 import { Component, OnInit, NgModule } from '@angular/core';
 import { Series } from "../series";
-import { Filter, FilterService } from "../../filter-bar/filter.service";
+import { Filter, FilterService, SortType, SortingDirection } from "../../filter-bar/filter.service";
 import { SeriesService } from "../series.service";
 import { CommonModule } from "@angular/common";
 import { MdContentModule } from "../../content/content.component";
 import { MdProgressCircleModule } from "@angular2-material/progress-circle";
-import { SeriesCardComponent, SeriesCardModule } from "../series-card/series-card.component";
+import { SeriesCardModule } from "../series-card/series-card.component";
 
 @Component({
   selector: 'app-series-list',
@@ -31,7 +31,7 @@ export class SeriesListComponent implements OnInit {
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnInit() {
+  ngOnInit () {
     this._filterService.update(this.filter);
     this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
@@ -107,47 +107,57 @@ export class SeriesListComponent implements OnInit {
 
     // first filter
     var filteredSeries = this.fullSeries
-                            .filter((b) => {
+                             .filter((s: Series) => {
 
-//                              var strToSearch = b.book_title
-//                                                 .concat(b.series_name)
-//                                                 .concat(b.comment)
-//                                                 .concat("" + b.author_name);
-//
-//                              var ret = (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
-//
-//                              return ret;
-                              return true;
-                            })
-                            .sort((b1: Series, b2: Series) => {
-//                              var v1: string;
-//                              var v2: string;
-//                              v1 = (b1.series_name == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
-//                              v2 = (b2.series_name == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
-//                              switch (this.filter.sort) {
-//                                case SortType.Name:
-//                                  break;
-//                                case SortType.Author:
-//                                  v1 = b1.author_sort.toString() + " " + v1;
-//                                  v2 = b2.author_sort.toString() + " " + v2;
-//                                  break;
-//                                case SortType.PublishDate:
-//                                default:
-//                                  v1 = b1.book_date + " " + v1;
-//                                  v2 = b2.book_date + " " + v2;
-//                                  break;
-//                              }
-//
-//                              switch (this.filter.sorting_direction) {
-//                                case SortingDirection.Asc:
-//                                  return v1.localeCompare(v2);
-//                                case SortingDirection.Desc:
-//                                default:
-//                                  return v2.localeCompare(v1);
-//                              }
-                              return 0;
+                               var strToSearch = s.series_name
+                                                  .concat(s.author_name.toString())
+                                                  .concat(s.books.reduce((p, c) => {
+                                                    return p + c;
+                                                  }, ""));
 
-                            });
+                               var ret = (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search)));
+
+                               return ret;
+                             })
+                             .sort((b1: Series, b2: Series) => {
+                               var v1: string;
+                               var v2: string;
+                               v1 = b1.series_sort;
+                               v2 = b2.series_sort;
+                               switch (this.filter.sort) {
+                                 case SortType.Name:
+                                   break;
+                                 case SortType.Author:
+                                   var v1Lst = b1.author_sort.concat();
+                                   var v2Lst = b2.author_sort.concat();
+                                   if (this.filter.sorting_direction == SortingDirection.Desc) {
+                                     v1Lst.reverse();
+                                     v2Lst.reverse();
+                                   }
+                                   v1 = v1Lst.toString() + " " + v1;
+                                   v2 = v2Lst.toString() + " " + v2;
+                                   break;
+                                 case SortType.PublishDate:
+                                 default:
+                                   var v1Lst = b1.book_date.concat();
+                                   var v2Lst = b2.book_date.concat();
+                                   if (this.filter.sorting_direction == SortingDirection.Desc) {
+                                     v1Lst.reverse();
+                                     v2Lst.reverse();
+                                   }
+                                   v1 = v1Lst.toString() + " " + v1;
+                                   v2 = v2Lst.toString() + " " + v2;
+                                   break;
+                               }
+
+                               switch (this.filter.sorting_direction) {
+                                 case SortingDirection.Asc:
+                                   return v1.localeCompare(v2);
+                                 case SortingDirection.Desc:
+                                 default:
+                                   return v2.localeCompare(v1);
+                               }
+                             });
 
     this.totalSereisCount = filteredSeries.length;
 
@@ -187,4 +197,5 @@ export class SeriesListComponent implements OnInit {
     SeriesListComponent
   ]
 })
-export class SeriesListModule { }
+export class SeriesListModule {
+}
