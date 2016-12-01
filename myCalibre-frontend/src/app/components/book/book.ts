@@ -15,12 +15,16 @@ export class Book {
   series_id: string;
   series_name: string;
   series_sort: string;
-  data_id: string;
-  data_format: string;
-  data_name: string;
-  data_size: string;
   comment: string;
   book_date: string;
 
+  data: BookData[];
 
+}
+
+export class BookData {
+  data_id: number;
+  data_format: string;
+  data_size: number;
+  data_name: string;
 }

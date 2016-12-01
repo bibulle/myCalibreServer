@@ -2,8 +2,49 @@
   <div class="cover" flex="40">
     <img src="{{coverUrlBase}}/{{book.book_id}}.jpg">
   </div>
-  <div class="book" flex="60">
-    {{book.book_date | date: yyyy}}
+  <div class="book" flex="60" flex layout="column">
+    <md-card class="authors" layout="column">
+      <div class="date">{{book.book_date | date: 'MMMM yyyy'}}</div>
+      <md-card-title>Authors</md-card-title>
+      <button md-button="" class="author" *ngFor="let name of book.author_name; let i = index" (click)="openAuthor(book.author_id[i])">
+        {{name}}
+      </button>
+      <md-card-title class="description">Description</md-card-title>
+      <div class="description-content" [innerHTML]="book.comment ? book.comment : 'None'">
+      </div>
+      <md-card-title class="tags">Tags</md-card-title>
+      <div class="tags-content">
+        <button md-button="" *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i])">
+          {{name}}
+        </button>
+      </div>
+
+      <button md-mini-fab aria-label="Sort" [md-menu-trigger-for]="downloadmenu" *ngIf="bookHasMobi || bookHasEpub">
+        <md-icon md-icon>file_download</md-icon>
+      </button>
+      <md-menu x-position="before" y-position="below" #downloadmenu="mdMenu" class="download-menu">
+        <button md-menu-item *ngIf="bookHasEpub">
+          <a href="{{bookUrlBase}}/{{book.book_id}}.epub">
+            <md-icon>file_download</md-icon>
+            <span>ePub format</span>
+          </a>
+        </button>
+        <button md-menu-item *ngIf="bookHasMobi">
+          <a href="{{bookUrlBase}}/{{book.book_id}}.mobi">
+          <md-icon>file_download</md-icon>
+          <span>Mobi format</span>
+          </a>
+        </button>
+        <button md-menu-item [md-menu-trigger-for]="kindledmenu" *ngIf="bookHasMobi">
+          <md-icon>send</md-icon>
+          <span>Send to Kindle</span>
+        </button>
+      </md-menu>
+      <md-menu x-position="before" y-position="below" #kindledmenu="mdMenu" class="download-menu">
+        <md-input placeholder="Search" flex="75" ></md-input>
+      </md-menu>
+    </md-card>
+
   </div>
 
 </md-content>

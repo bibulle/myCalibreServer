@@ -1,3 +1,5 @@
+@import "../../../shared/styles";
+
 md-spinner {
   width: 50px;
   margin-left: auto;
@@ -7,3 +9,38 @@ md-spinner {
 .cover img {
   width: 100%;
 }
+
+.book {
+  padding: 1.5em;
+}
+
+.book h3 {
+  font-size: 18px;
+}
+.book md-card-title {
+  //font-size: 2em;
+  margin-bottom: 10px;
+  color: md-color($md-primary, 500);
+  font-size: 2em;
+
+}
+.book .authors [md-button].author {
+  font-size: 2em;
+}
+.book .date {
+  font-size: 1.5em;
+  text-align: right;
+  margin-top: -10px;
+}
+.book .description {
+  padding-top: 20px;
+}
+.book .tags {
+  padding-top: 25px;
+}
+.book [md-mini-fab] {
+ position: absolute;
+  right: 20px;
+  top: 3em;
+}
+

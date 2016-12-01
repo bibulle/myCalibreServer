@@ -18,7 +18,7 @@ export class NavigationService {
   public nextLink: INavigationLink = null;
   public prevLink: INavigationLink = null;
 
-  componentLink(comp: IComponentMeta): INavigationLink {
-    return {brief: comp.name, routeLink: '/components/' + comp.id};
-  }
+  // componentLink(comp: IComponentMeta): INavigationLink {
+  //   return {brief: comp.name, routeLink: '/components/' + comp.id};
+  // }
 }

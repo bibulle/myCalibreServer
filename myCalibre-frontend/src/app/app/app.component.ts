@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input } from '@angular/core';
 import { MdSidenav } from "@angular2-material/sidenav";
 import { Http, Response } from "@angular/http";
-import { Router } from "@angular/router";
+import { Router, NavigationStart } from "@angular/router";
 import { Media } from "../core/util/media";
 import { FilterService, Filter } from "../components/filter-bar/filter.service";
 import { TitleService, Title } from "./title.service";
+import { Location } from "@angular/common";
 
 @Component({
   selector: 'app-root',
@@ -27,12 +28,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   filter = new Filter();
   title = new Title();
 
+  previousUrls = [];
+
 
   constructor (private http: Http,
                private router: Router,
                private media: Media,
                private _filterService: FilterService,
-               private _titleService: TitleService) {}
+               private _titleService: TitleService,
+               private _location: Location,
+               private _router: Router) {}
 
   //noinspection JSUnusedGlobalSymbols
   ngAfterViewInit (): any {
@@ -45,8 +50,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  /**
+   * Is the sidenav menu pushed
+   * @returns {MdSidenav|boolean}
+   */
   get pushed (): boolean { return this.menu && this.menu.mode === 'side'; }
 
+  /**
+   * Is the sidenav menu opened
+   * @returns {MdSidenav|boolean}
+   */
   get over (): boolean { return this.menu && this.menu.mode === 'over' && this.menu.opened; }
 
   // TODO(jd): these two property hacks are to work around issues with the peekaboo fixed nav
@@ -115,6 +128,14 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
         this.links.push({ path: obj.path, label: obj.data['label'] });
       }
     });
+
+    this.router.events.subscribe((event: any) => {
+      if (event instanceof NavigationStart) {
+        this.previousUrls.unshift(event['url']);
+        // limit to 10 (2 should be enough ;-) )
+        this.previousUrls = this.previousUrls.slice(0, 10);
+      }
+    })
   }
 
 
@@ -135,4 +156,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   getSecondaryLabel () {
     return this.title.main_title;
   }
+
+  goBack () {
+    if (this.previousUrls[1]) {
+      this._router.navigate([this.previousUrls[1]]);
+    } else {
+      this._router.navigate([this.title.backUrl])
+    }
+  }
+
 }

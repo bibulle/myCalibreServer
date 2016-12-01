@@ -97,3 +97,11 @@ body md-nav-list md-list-item[md-ink] .md-list-item:hover {
 // Rules for using icons as white on a dark background.
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+
+// Menu do not ahve the right host...
+.download-menu a {
+  color: inherit;
+  text-decoration: inherit;
+  cursor: inherit;
+  display: flex;
+}

@@ -23,8 +23,8 @@ export class TitleService {
 
   }
 
-  update (label?: string) {
-    this.currentTitleSubject.next(new Title(label));
+  update (label?: string, backUrl?: string) {
+    this.currentTitleSubject.next(new Title(label, backUrl));
   }
 
   /**
@@ -42,10 +42,13 @@ export class Title {
   full_title: string;
   title: string;
   main_title = TitleService.TITLE;
+  backUrl: string;
 
-  constructor (label = 'Home') {
+  constructor (label = 'Home', backUrl:string = null) {
     this.title = (label != 'Home') ? label : TitleService.TITLE;
     this.full_title = (label != 'Home') ? TitleService.TITLE + ' - ' + label : TitleService.TITLE;
+
+    this.backUrl = backUrl;
   }
 
 }

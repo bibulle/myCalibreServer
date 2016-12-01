@@ -2,12 +2,15 @@ import { Book, BookPath } from "./book";
 var debug = require('debug')('server:dbCalibre');
 
 var fs = require('fs');
+var path = require('path');
+
 var sqlite3 = require("sqlite3").verbose();
 const squel = require("squel");
 
-const DB_FILE = `${__dirname}/../../data/metadata.db`;
-
 class DbCalibre {
+
+  public static CALIBRE_DIR = path.resolve(`${__dirname}/../../data/calibre`);
+  private static DB_FILE = `${DbCalibre.CALIBRE_DIR}/metadata.db`;
 
   private static _instance: DbCalibre = new DbCalibre();
 
@@ -15,10 +18,10 @@ class DbCalibre {
 
   constructor() {
 
-    debug("Opening '"+DB_FILE+"'");
+    debug("Opening '"+DbCalibre.DB_FILE+"'");
 
     try {
-      this._db = new sqlite3.Database(DB_FILE)
+      this._db = new sqlite3.Database(DbCalibre.DB_FILE)
     } catch (error) {
       throw(error);
     }
