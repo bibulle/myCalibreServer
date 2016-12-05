@@ -8,7 +8,10 @@ import { MdContentModule } from "../../content/content.component";
 import { CommonModule } from "@angular/common";
 import { TitleService } from "../../../app/title.service";
 import { FormsModule } from "@angular/forms";
-import { MdIconModule, MdInputModule, MdProgressCircleModule, MdCardModule, MdMenuModule, MdDialogRef, MdDialog } from "@angular/material";
+import {
+  MdIconModule, MdInputModule, MdProgressCircleModule, MdCardModule, MdMenuModule, MdDialogRef, MdDialog,
+  MdSnackBar
+} from "@angular/material";
 import { KindleDialogComponent } from "./kindle-dialog/kindle-dialog.component";
 
 @Component({
@@ -35,7 +38,8 @@ export class BookPageComponent implements OnInit {
                private _bookService: BookService,
                private _route: ActivatedRoute,
                private _router: Router,
-               private _dialog: MdDialog) { }
+               private _dialog: MdDialog,
+               private _snackBar: MdSnackBar) { }
 
   ngOnInit () {
 
@@ -46,7 +50,7 @@ export class BookPageComponent implements OnInit {
     this._bookService
         .getBook(id)
         .then(book => {
-          console.log(book);
+          //console.log(book);
           this.book = book;
 
           this.book.data.forEach(bd => {
@@ -86,14 +90,18 @@ export class BookPageComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(email => {
 
-      console.log("Book page '"+email+"'");
+      //console.log("Book page '"+email+"'");
       // if there is an email
       if (email) {
 
         this._bookService
             .sendKindle(this.book.book_id, email)
+            .then(() => {
+              this._snackBar.open('Book sent');
+            })
             .catch(err => {
               console.log(err);
+              this._snackBar.open(err.statusText);
             });
       }
     });
