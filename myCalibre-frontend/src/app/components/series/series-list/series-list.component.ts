@@ -4,8 +4,8 @@ import { Filter, FilterService, SortType, SortingDirection } from "../../filter-
 import { SeriesService } from "../series.service";
 import { CommonModule } from "@angular/common";
 import { MdContentModule } from "../../content/content.component";
-import { MdProgressCircleModule } from "@angular2-material/progress-circle";
 import { SeriesCardModule } from "../series-card/series-card.component";
+import { MdProgressCircleModule } from "@angular/material";
 
 @Component({
   selector: 'app-series-list',

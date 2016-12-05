@@ -2,13 +2,10 @@ import { Component, OnInit, NgModule } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
-import { MdIconModule } from "@angular2-material/icon";
-import { MdInputModule } from "@angular2-material/input";
-import { MdMenuModule } from "@angular2-material/menu";
-
 import { Subject } from "rxjs";
 
 import { FilterService, Filter, SortType, SortingDirection } from "./filter.service";
+import { MdIconModule, MdInputModule, MdMenuModule } from "@angular/material";
 
 @Component({
   selector: 'filter-bar',

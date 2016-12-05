@@ -1,10 +1,9 @@
 import { Component, OnInit, NgModule, Input } from '@angular/core';
 import { Book } from "../book";
 import { CommonModule } from "@angular/common";
-import { MdCardModule } from "@angular2-material/card";
-import { MdIconModule } from "@angular2-material/icon";
 import { environment } from "../../../../environments/environment";
 import { Router } from "@angular/router";
+import { MdCardModule, MdIconModule } from "@angular/material";
 
 @Component({
   selector: 'app-book-card',

@@ -7,6 +7,7 @@ import { Http, Response } from "@angular/http";
 export class BookService {
 
   private booksUrl = environment.serverUrl + 'api/book';
+  private sendKindleUrl = '/send/kindle';
 
   constructor (private http: Http) { }
 
@@ -60,6 +61,24 @@ export class BookService {
               reject(err);
             });
       }
+    });
+  }
+
+  /**
+   * send mail with kindle
+   */
+  sendKindle (book_id: number, email: string): Promise<void> {
+
+    return new Promise<void>((resolve, reject) => {
+      this.http.get(this.booksUrl+"/"+book_id+this.sendKindleUrl+"?mail="+email)
+          .subscribe(
+            data => {
+              resolve();
+            },
+            err => {
+              reject(err);
+            },
+          );
     });
   }
 }

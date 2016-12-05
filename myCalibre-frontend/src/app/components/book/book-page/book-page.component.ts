@@ -1,19 +1,15 @@
-import { Component, OnInit, NgModule } from '@angular/core';
+import { Component, OnInit, NgModule, Optional } from '@angular/core';
 import { FilterService, Filter } from "../../filter-bar/filter.service";
 import { Book } from "../book";
 import { environment } from "../../../../environments/environment";
 import { ActivatedRoute, Router } from "@angular/router";
 import { BookService } from "../book.service";
-import { MdProgressCircleModule } from "@angular2-material/progress-circle";
 import { MdContentModule } from "../../content/content.component";
 import { CommonModule } from "@angular/common";
 import { TitleService } from "../../../app/title.service";
-import { MdCardModule } from "@angular2-material/card";
-import { MdIconModule } from "@angular2-material/icon";
-import { MdMenuModule } from "@angular2-material/menu";
-import { MdDialogRef } from "@angular/material";
-import { MdInputModule } from "@angular2-material/input";
 import { FormsModule } from "@angular/forms";
+import { MdIconModule, MdInputModule, MdProgressCircleModule, MdCardModule, MdMenuModule, MdDialogRef, MdDialog } from "@angular/material";
+import { KindleDialogComponent } from "./kindle-dialog/kindle-dialog.component";
 
 @Component({
   selector: 'app-book-page',
@@ -32,12 +28,14 @@ export class BookPageComponent implements OnInit {
 
   coverUrlBase = `${environment.serverUrl}api/book/cover`;
   bookUrlBase = `${environment.serverUrl}api/book/`;
+  private lastDialogResult;
 
   constructor (private _filterService: FilterService,
                private _titleService: TitleService,
                private _bookService: BookService,
                private _route: ActivatedRoute,
-               private _router: Router) { }
+               private _router: Router,
+               private _dialog: MdDialog) { }
 
   ngOnInit () {
 
@@ -78,6 +76,29 @@ export class BookPageComponent implements OnInit {
     this._router.navigate(['/author', author_id]);
   }
 
+  /** Open send to kindle dialog
+   *
+   */
+  openDialog () {
+    let dialogRef = this._dialog.open(KindleDialogComponent, {});
+
+    const _booS = this._bookService;
+
+    dialogRef.afterClosed().subscribe(email => {
+
+      console.log("Book page '"+email+"'");
+      // if there is an email
+      if (email) {
+
+        this._bookService
+            .sendKindle(this.book.book_id, email)
+            .catch(err => {
+              console.log(err);
+            });
+      }
+    });
+  }
+
 
 }
 
@@ -90,13 +111,18 @@ export class BookPageComponent implements OnInit {
     MdProgressCircleModule,
     MdContentModule,
     MdCardModule,
-    MdMenuModule.forRoot()
+    MdMenuModule.forRoot(),
   ],
   declarations: [
     BookPageComponent,
+    KindleDialogComponent
+  ],
+  entryComponents: [
+    KindleDialogComponent
   ],
   exports: [
-    BookPageComponent
+    BookPageComponent,
+
   ]
 })
 export class BookPageModule {
