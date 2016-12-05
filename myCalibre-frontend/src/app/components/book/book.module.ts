@@ -2,9 +2,8 @@ import { BookListComponent, BookListModule } from "./book-list/book-list.compone
 import { BookService } from "./book.service";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { MdCardModule } from "@angular2-material/card";
-import { MdIconModule } from "@angular2-material/icon";
 import { BookPageModule } from './book-page/book-page.component';
+import { MdCardModule, MdIconModule } from "@angular/material";
 
 @NgModule({
   imports: [

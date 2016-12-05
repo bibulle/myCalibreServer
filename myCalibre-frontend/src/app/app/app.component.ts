@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input } from '@angular/core';
-import { MdSidenav } from "@angular2-material/sidenav";
 import { Http, Response } from "@angular/http";
 import { Router, NavigationStart } from "@angular/router";
 import { Media } from "../core/util/media";
 import { FilterService, Filter } from "../components/filter-bar/filter.service";
 import { TitleService, Title } from "./title.service";
 import { Location } from "@angular/common";
+import { MdSidenav } from "@angular/material";
 
 @Component({
   selector: 'app-root',

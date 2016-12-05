@@ -35,7 +35,7 @@
           <span>Mobi format</span>
           </a>
         </button>
-        <button md-menu-item [md-menu-trigger-for]="kindledmenu" *ngIf="bookHasMobi">
+        <button md-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
           <md-icon>send</md-icon>
           <span>Send to Kindle</span>
         </button>

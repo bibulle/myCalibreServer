@@ -1,9 +1,8 @@
 import { Component, OnInit, NgModule, Input } from '@angular/core';
 import { CommonModule } from "@angular/common";
-import { MdCardModule } from "@angular2-material/card";
-import { MdIconModule } from "@angular2-material/icon";
 import { Series } from "../series";
 import { BookCardModule } from "../../book/book-card/book-card.component";
+import { MdCardModule, MdIconModule } from "@angular/material";
 
 @Component({
   selector: 'app-series-card',

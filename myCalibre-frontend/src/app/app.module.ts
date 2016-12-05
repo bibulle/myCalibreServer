@@ -6,9 +6,6 @@ import { HttpModule } from '@angular/http';
 import { AppComponent } from './app/app.component';
 import { MdPeekabooModule } from './directives/peekaboo.directive';
 
-import { MdToolbarModule } from "@angular2-material/toolbar";
-import { MdListModule } from "@angular2-material/list";
-import { MdSidenavModule } from "@angular2-material/sidenav";
 import { HomeModule } from "./components/home/home.module";
 import { AppRoutingModule } from "./app-routing.module";
 import { MdContentModule } from "./components/content/content.component";
@@ -16,17 +13,13 @@ import { FooterComponent } from './components/footer/footer.component';
 import { Media } from "./core/util/media";
 import { ViewportHelper, BrowserViewportHelper } from "./core/util/viewport";
 import { SubheaderComponent } from './components/subheader/subheader.component';
-import { MdIconModule } from "@angular2-material/icon";
-import { MdCoreModule, MdRippleModule } from "@angular2-material/core";
-import { MdButtonModule } from "@angular2-material/button";
-import { MdCardModule } from "@angular2-material/card";
 import { NotFoundModule } from "./components/not-found/not-found.module";
 import { MdInk } from './directives/link.directive';
 import { BookModule } from "./components/book/book.module";
-import { MdInputModule } from "@angular2-material/input";
 import { FilterBarModule } from './components/filter-bar/filter-bar.component';
 import { SeriesModule } from "./components/series/series.module";
 import { TitleService } from "./app/title.service";
+import { MaterialModule } from "@angular/material";
 
 @NgModule({
   declarations: [
@@ -40,18 +33,10 @@ import { TitleService } from "./app/title.service";
     FormsModule,
     HttpModule,
 
-    MdCoreModule,
-    MdButtonModule,
-    MdIconModule.forRoot(),
-    MdCardModule,
-    MdInputModule,
-    MdPeekabooModule,
-    MdToolbarModule,
-    MdListModule,
-    MdSidenavModule,
-    MdContentModule,
-    MdRippleModule,
+    MaterialModule.forRoot(),
 
+    MdContentModule,
+    MdPeekabooModule,
     AppRoutingModule,
     HomeModule,
     NotFoundModule,
@@ -62,7 +47,7 @@ import { TitleService } from "./app/title.service";
   providers: [
     Media,
     TitleService,
-    {provide: ViewportHelper, useClass: BrowserViewportHelper}
+    { provide: ViewportHelper, useClass: BrowserViewportHelper }
   ],
   bootstrap: [AppComponent]
 })
