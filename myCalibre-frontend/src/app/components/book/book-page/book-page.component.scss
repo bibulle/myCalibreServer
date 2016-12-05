@@ -17,6 +17,11 @@ md-spinner {
 .book h3 {
   font-size: 18px;
 }
+
+.book md-card {
+  height: 100%;
+}
+
 .book md-card-title {
   //font-size: 2em;
   margin-bottom: 10px;
@@ -24,23 +29,46 @@ md-spinner {
   font-size: 2em;
 
 }
+
 .book .authors [md-button].author {
   font-size: 2em;
 }
+
 .book .date {
   font-size: 1.5em;
   text-align: right;
   margin-top: -10px;
 }
+
 .book .description {
   padding-top: 20px;
 }
+
 .book .tags {
   padding-top: 25px;
 }
+
 .book [md-mini-fab] {
- position: absolute;
+  position: absolute;
   right: 20px;
   top: 3em;
 }
 
+.title {
+  display: none;
+}
+
+:host {
+  md-content[layout="row"] {
+    @media screen and (max-width: $layout-breakpoint-sm) {
+      flex-direction: column;
+      .title {
+        display: block;
+      }
+      .cover {
+        max-width: 100%
+      }
+    }
+
+  }
+}
