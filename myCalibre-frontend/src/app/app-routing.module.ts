@@ -8,6 +8,7 @@ import { BookListComponent } from "./components/book/book-list/book-list.compone
 import { SeriesListComponent } from "./components/series/series-list/series-list.component";
 import { BookPageComponent } from "./components/book/book-page/book-page.component";
 import { AuthorListComponent } from "./components/author/author-list/author-list.component";
+import { TagListComponent } from "./components/tag/tag-list/tag-list.component";
 // import { LoginComponent } from "./login/login.component";
 // import { SignupComponent } from "./signup/signup.component";
 // import { AwardsComponent } from "./awards/awards.component";
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: 'books',        component: BookListComponent             , data: {label: 'Books'  , menu: true}},
   { path: 'series',       component: SeriesListComponent           , data: {label: 'Series' , menu: true}},
   { path: 'authors',      component: AuthorListComponent           , data: {label: 'Authors', menu: true}},
+  { path: 'tags',         component: TagListComponent              , data: {label: 'Tags'   , menu: true}},
   { path: 'book/:id',     component: BookPageComponent             , data: {label: 'Book'   , menu: false}},
   // { path: 'login',        component: LoginComponent },
   // { path: 'signup',       component: SignupComponent },

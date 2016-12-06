@@ -6,6 +6,7 @@ import { join } from "path";
 import { bookRouter } from "./routes/book";
 import { seriesRouter } from "./routes/series";
 import { authorRouter } from "./routes/author";
+import { tagRouter } from "./routes/tag";
 
 var serveStatic = require('serve-static')
 
@@ -44,6 +45,7 @@ app.use(cors(corsOptions));
 app.use("/api/book", bookRouter);
 app.use("/api/series", seriesRouter);
 app.use("/api/author", authorRouter);
+app.use("/api/tag", tagRouter);
 
 // define the 404 error
 app.use(function (req: express.Request, res: express.Response, next) {

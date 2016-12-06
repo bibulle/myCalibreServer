@@ -3,22 +3,23 @@ import DbCalibre from "../models/dbCalibre";
 import { Author } from "../models/series";
 import { Book } from "../models/book";
 import leftPad = require("left-pad");
+import { Tag } from "../models/tag";
 const fs = require('fs');
 const path = require('path');
 
-const debug = require('debug')('server:routes:author');
+const debug = require('debug')('server:routes:tag');
 
 
-const authorRouter: Router = Router();
+const tagRouter: Router = Router();
 
 
 // -----------------------------------
-// --     /api/author routes     --
+// --     /api/tag routes     --
 // -----------------------------------
 
-authorRouter.route('/')
+tagRouter.route('/')
             // ====================================
-            // route for getting author list
+            // route for getting tag list
             // ====================================
             .get((request: Request, response: Response) => {
               debug("GET /");
@@ -33,24 +34,23 @@ authorRouter.route('/')
                        .getBooks(1000000, 0)
                        .then((books: Book[]) => {
 
-                         const authors: Author[] = [];
-                         const authorsHash: { [id: string]: Author } = {};
+                         const tags: Tag[] = [];
+                         const tagsHash: { [id: string]: Tag } = {};
 
                          books.forEach(book => {
-                           if (book.author_id) {
-                             book.author_id.forEach((author_id, author_index) => {
-                               if (!authorsHash[author_id]) {
-                                 authorsHash[author_id] = new Author({
-                                   author_id: author_id,
-                                   author_name: book.author_name[author_index],
-                                   author_sort: book.author_sort[author_index],
+                           if (book.tag_id) {
+                             book.tag_id.forEach((tag_id, tag_index) => {
+                               if (!tagsHash[tag_id]) {
+                                 tagsHash[tag_id] = new Tag({
+                                   tag_id: tag_id,
+                                   tag_name: book.tag_name[tag_index],
                                    books: []
                                  });
-                                 authors.push(authorsHash[author_id]);
+                                 tags.push(tagsHash[tag_id]);
                                }
 
-                               authorsHash[author_id].books.push(book);
-                               authorsHash[author_id].books.sort((b1, b2) => {
+                               tagsHash[tag_id].books.push(book);
+                               tagsHash[tag_id].books.sort((b1, b2) => {
                                  let v1 = (b1.series_sort == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
                                  let v2 = (b2.series_sort == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
 
@@ -61,29 +61,7 @@ authorRouter.route('/')
                            }
                          });
 
-                         // fill authors with books info
-                         authors.forEach((a: Author) => {
-                           a.book_date = [];
-
-                           a.books.forEach((b: Book) => {
-                             if (b.book_date > '011') {
-                               a.book_date.push(b.book_date);
-                             }
-                           });
-
-                           a.book_date = a.book_date
-                                          .reduce((result, current) => {
-                                            if (result.filter(d => {return d.substring(0, 4) == current.substring(0, 4)}).length == 0) {
-                                              result.push(current);
-                                            }
-                                            return result;
-                                          }, [])
-                                          .sort();
-
-                         });
-
-
-                         response.json({ data: authors })
+                         response.json({ data: tags })
                        })
                        .catch(err => {
                          response.status(500).json({ status: 500, message: err });
@@ -92,7 +70,7 @@ authorRouter.route('/')
             });
 
 
-export { authorRouter }
+export { tagRouter }
 
 // /**
 //  * Split an attribute separate by pipe to an array

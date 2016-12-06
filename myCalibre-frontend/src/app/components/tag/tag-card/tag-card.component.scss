@@ -1,0 +1,36 @@
+md-card-title .count {
+  font-size: 0.6em;
+}
+
+md-card-title button {
+  float: right;
+}
+
+md-card-title md-icon {
+  margin-top: 10px;
+}
+
+.tag-card {
+  margin: 6px 0;
+  padding-bottom: 12px;
+}
+
+.tag-card md-card-subtitle, .tag-card .count {
+  display: none;
+}
+
+.tag-card.books-closed {
+  margin: 0;
+}
+
+.tag-card.books-closed md-card-subtitle {
+  display: block;
+}
+
+.tag-card.books-closed .count {
+  display: inline;
+}
+
+.tag-card.books-closed app-book-card {
+  display: none;
+}

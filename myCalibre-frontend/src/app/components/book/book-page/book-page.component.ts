@@ -80,6 +80,16 @@ export class BookPageComponent implements OnInit {
     this._router.navigate(['/authors', { id: author_id, name: author_name} ]);
   }
 
+  /**
+   * A tag has been clicked
+   * @param tag_id
+   * @param tag_name
+   */
+  openTag (tag_id, tag_name) {
+    event.stopPropagation();
+    this._router.navigate(['/tags', { id: tag_id, name: tag_name} ]);
+  }
+
   /** Open send to kindle dialog
    *
    */

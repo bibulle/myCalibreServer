@@ -1,0 +1,13 @@
+<md-card class="tag-card" flex="100" *ngIf="tag.tag_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
+  <md-card-title class="tag-name">
+    {{tag.tag_name}}
+    <span class="count" >{{tag.books.length}} book<span *ngIf="tag.books.length > 1">s</span></span>
+    <button md-icon-button>
+      <md-icon *ngIf="booksClosed">keyboard_arrow_down</md-icon>
+      <md-icon *ngIf="!booksClosed">keyboard_arrow_up</md-icon>
+    </button>
+  </md-card-title>
+
+  <app-book-card *ngFor="let book of tag.books" [book]="book">
+  </app-book-card>
+</md-card>

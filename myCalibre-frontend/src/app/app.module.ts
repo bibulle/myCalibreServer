@@ -22,6 +22,7 @@ import { FilterBarModule } from './components/filter-bar/filter-bar.component';
 import { SeriesModule } from "./components/series/series.module";
 import { AuthorModule } from "./components/author/author.module";
 import { HomeModule } from "./components/home/home.component";
+import { TagModule } from "./components/tag/tag.module";
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { HomeModule } from "./components/home/home.component";
     BookModule,
     SeriesModule,
     AuthorModule,
+    TagModule,
     FilterBarModule
   ],
   providers: [

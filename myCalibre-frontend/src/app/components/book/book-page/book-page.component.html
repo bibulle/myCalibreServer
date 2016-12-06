@@ -15,7 +15,7 @@
       </div>
       <md-card-title class="tags">Tags</md-card-title>
       <div class="tags-content">
-        <button md-button="" *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i])">
+        <button md-button="" *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i], name)">
           {{name}}
         </button>
       </div>
