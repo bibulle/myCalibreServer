@@ -6,7 +6,7 @@ export class Book {
   book_id: number;
   book_title: string;
   book_sort: string;
-  author_sort: string;
+  author_sort: string[];
   book_has_cover: string;
   book_path: string;
   book_series_index: number;

@@ -6,7 +6,8 @@
     <md-card class="authors" layout="column">
       <div class="date">{{book.book_date | date: 'MMMM yyyy'}}</div>
       <md-card-title>Authors</md-card-title>
-      <button md-button="" class="author" *ngFor="let name of book.author_name; let i = index" (click)="openAuthor(book.author_id[i])">
+      <button md-button="" class="author" *ngFor="let name of book.author_name; let i = index"
+              (click)="openAuthor(book.author_id[i], name)">
         {{name}}
       </button>
       <md-card-title class="description">Description</md-card-title>
@@ -23,25 +24,25 @@
         <md-icon md-icon>file_download</md-icon>
       </button>
       <md-menu x-position="before" y-position="below" #downloadmenu="mdMenu" class="download-menu">
-        <button md-menu-item *ngIf="bookHasEpub">
-          <a href="{{bookUrlBase}}/{{book.book_id}}.epub">
+        <a href="{{bookUrlBase}}/{{book.book_id}}.epub">
+          <button md-menu-item *ngIf="bookHasEpub">
             <md-icon>file_download</md-icon>
             <span>ePub format</span>
-          </a>
-        </button>
-        <button md-menu-item *ngIf="bookHasMobi">
-          <a href="{{bookUrlBase}}/{{book.book_id}}.mobi">
-          <md-icon>file_download</md-icon>
-          <span>Mobi format</span>
-          </a>
-        </button>
+          </button>
+        </a>
+        <a href="{{bookUrlBase}}/{{book.book_id}}.mobi">
+          <button md-menu-item *ngIf="bookHasMobi">
+            <md-icon>file_download</md-icon>
+            <span>Mobi format</span>
+          </button>
+        </a>
         <button md-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
           <md-icon>send</md-icon>
           <span>Send to Kindle</span>
         </button>
       </md-menu>
       <md-menu x-position="before" y-position="below" #kindledmenu="mdMenu" class="download-menu">
-        <md-input placeholder="Search" flex="75" ></md-input>
+        <md-input placeholder="Search" flex="75"></md-input>
       </md-menu>
     </md-card>
 

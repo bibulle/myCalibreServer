@@ -5,6 +5,7 @@ var cors = require('cors');
 import { join } from "path";
 import { bookRouter } from "./routes/book";
 import { seriesRouter } from "./routes/series";
+import { authorRouter } from "./routes/author";
 
 var serveStatic = require('serve-static')
 
@@ -42,6 +43,7 @@ app.use(cors(corsOptions));
 // api routes
 app.use("/api/book", bookRouter);
 app.use("/api/series", seriesRouter);
+app.use("/api/author", authorRouter);
 
 // define the 404 error
 app.use(function (req: express.Request, res: express.Response, next) {

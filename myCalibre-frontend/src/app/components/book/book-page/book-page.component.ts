@@ -1,4 +1,4 @@
-import { Component, OnInit, NgModule, Optional } from '@angular/core';
+import { Component, OnInit, NgModule } from '@angular/core';
 import { FilterService, Filter } from "../../filter-bar/filter.service";
 import { Book } from "../book";
 import { environment } from "../../../../environments/environment";
@@ -9,7 +9,7 @@ import { CommonModule } from "@angular/common";
 import { TitleService } from "../../../app/title.service";
 import { FormsModule } from "@angular/forms";
 import {
-  MdIconModule, MdInputModule, MdProgressCircleModule, MdCardModule, MdMenuModule, MdDialogRef, MdDialog,
+  MdIconModule, MdInputModule, MdProgressCircleModule, MdCardModule, MdMenuModule, MdDialog,
   MdSnackBar
 } from "@angular/material";
 import { KindleDialogComponent } from "./kindle-dialog/kindle-dialog.component";
@@ -31,7 +31,6 @@ export class BookPageComponent implements OnInit {
 
   coverUrlBase = `${environment.serverUrl}api/book/cover`;
   bookUrlBase = `${environment.serverUrl}api/book/`;
-  private lastDialogResult;
 
   constructor (private _filterService: FilterService,
                private _titleService: TitleService,
@@ -74,10 +73,11 @@ export class BookPageComponent implements OnInit {
   /**
    * An author has been clicked
    * @param author_id
+   * @param author_name
    */
-  openAuthor (author_id) {
+  openAuthor (author_id, author_name) {
     event.stopPropagation();
-    this._router.navigate(['/author', author_id]);
+    this._router.navigate(['/authors', { id: author_id, name: author_name} ]);
   }
 
   /** Open send to kindle dialog
@@ -85,8 +85,6 @@ export class BookPageComponent implements OnInit {
    */
   openDialog () {
     let dialogRef = this._dialog.open(KindleDialogComponent, {});
-
-    const _booS = this._bookService;
 
     dialogRef.afterClosed().subscribe(email => {
 

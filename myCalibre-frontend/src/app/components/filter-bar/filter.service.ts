@@ -33,12 +33,20 @@ export class Filter {
   sorting_direction = SortingDirection.Asc;
   search = "";
   not_displayed = false;
+  limit_to:SortType[];
 
   constructor (options = {}) {
     if (options['not_displayed']) {
       this.not_displayed = true;
     }
+    if (options['limit_to']) {
+      this.limit_to = options['limit_to'];
+    }
   };
+
+  isAvailable(sortType: SortType): boolean {
+    return (this.limit_to == null) || (this.limit_to.some(s => s == sortType));
+  }
 
 }
 
@@ -48,3 +56,5 @@ export enum SortType {
 export enum SortingDirection {
   Asc, Desc
 }
+
+

@@ -1,6 +1,6 @@
 import { Router, Response, Request } from "express";
 import DbCalibre from "../models/dbCalibre";
-import { Series } from "../models/series";
+import { Author } from "../models/series";
 import { Book } from "../models/book";
 var fs = require('fs');
 var path = require('path');
@@ -32,13 +32,13 @@ seriesRouter.route('/')
                        .getBooks(1000000, 0)
                        .then((books: Book[]) => {
 
-                         var series: Series[] = [];
-                         var seriesHash: { [id: string]: Series } = {};
+                         var series: Author[] = [];
+                         var seriesHash: { [id: string]: Author } = {};
 
                          books.forEach(book => {
                            if (book.series_id) {
                              if (!seriesHash[book.series_id]) {
-                               seriesHash[book.series_id] = new Series({
+                               seriesHash[book.series_id] = new Author({
                                  series_id: book.series_id,
                                  series_name: book.series_name,
                                  series_sort: book.series_sort,
@@ -56,7 +56,7 @@ seriesRouter.route('/')
                          });
 
                          // fill series with books info
-                         series.forEach((s: Series) => {
+                         series.forEach((s: Author) => {
                            s.author_name = [];
                            s.author_sort = [];
                            s.book_date = [];
