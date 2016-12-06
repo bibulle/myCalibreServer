@@ -39,8 +39,12 @@ export class AuthorListComponent implements OnInit {
 
     // Search for params (search)
     this.route.params.forEach((params: Params) => {
-      this.selectedId = +params['id'];
-      this.filter.search = params['name'];
+      if (params['id']) {
+        this.selectedId = params['id'];
+      }
+      if (params['name']) {
+        this.filter.search = params['name'];
+      }
     });
 
 
