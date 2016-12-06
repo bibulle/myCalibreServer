@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import DbCalibre from "./dbCalibre";
+const debug = require('debug')('server:models:book');
 
 export class Book {
 
@@ -27,6 +28,9 @@ export class Book {
 
     ['data_id', 'data_format', 'data_size', 'data_name', 'tag_id', 'tag_name', 'author_sort', 'author_id', 'author_name'].forEach(name => {
       DbCalibre.splitAttribute(this, name);
+    });
+    ['book_date', 'timestamp', 'last_modified'].forEach(name => {
+      this[name] = new Date(this[name]);
     });
 
     BookPath.createBookData(this);
