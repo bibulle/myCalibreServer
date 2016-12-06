@@ -1,10 +1,10 @@
 import { Book, BookPath } from "./book";
-var debug = require('debug')('server:dbCalibre');
+const debug = require('debug')('server:dbCalibre');
 
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var sqlite3 = require("sqlite3").verbose();
+const sqlite3 = require("sqlite3").verbose();
 const squel = require("squel");
 
 class DbCalibre {
@@ -52,52 +52,54 @@ class DbCalibre {
       const where = whereValue[0];
       const value = whereValue[1];
 
-      var query = squel
-          .select({separator: "\n"})
+      const query = squel
+        .select({ separator: "\n" })
 
-          // bookFields
-          .field('books.id', 'book_id')
-          .field('books.title', 'book_title')
-          .field('books.sort', 'book_sort')
-          .field('books.author_sort', 'author_sort')
-          .field('books.has_cover', 'book_has_cover')
-          .field('books.pubdate', 'book_date')
-          .field('books.path', 'book_path')
-          .field('books.isbn', 'book_isbn')
-          .field('books.series_index', 'book_series_index')
+        // bookFields
+        .field('books.id', 'book_id')
+        .field('books.title', 'book_title')
+        .field('books.sort', 'book_sort')
+        .field('books.author_sort', 'author_sort')
+        .field('books.has_cover', 'book_has_cover')
+        .field('books.pubdate', 'book_date')
+        .field('books.path', 'book_path')
+        .field('books.isbn', 'book_isbn')
+        .field('books.series_index', 'book_series_index')
+        .field('books.timestamp', 'timestamp')
+        .field('books.last_modified', 'last_modified')
 
-          // sumAuthor
-          .field(DbCalibre._concat('author', 'book', 'id'), 'author_id')
-          .field(DbCalibre._concat('author', 'book', 'name'), 'author_name')
-          .field(DbCalibre._concat('author', 'book', 'sort'), 'author_sort')
+        // sumAuthor
+        .field(DbCalibre._concat('author', 'book', 'id'), 'author_id')
+        .field(DbCalibre._concat('author', 'book', 'name'), 'author_name')
+        .field(DbCalibre._concat('author', 'book', 'sort'), 'author_sort')
 
-          // sumTags
-          .field(DbCalibre._concat('tag', 'book', 'id'), 'tag_id')
-          .field(DbCalibre._concat('tag', 'book', 'name'), 'tag_name')
+        // sumTags
+        .field(DbCalibre._concat('tag', 'book', 'id'), 'tag_id')
+        .field(DbCalibre._concat('tag', 'book', 'name'), 'tag_name')
 
-          // sunSeries
-          .field(DbCalibre._concat('series', 'book', 'id'), 'series_id')
-          .field(DbCalibre._concat('series', 'book', 'name'), 'series_name')
-          .field(DbCalibre._concat('series', 'book', 'sort'), 'series_sort')
+        // sunSeries
+        .field(DbCalibre._concat('series', 'book', 'id'), 'series_id')
+        .field(DbCalibre._concat('series', 'book', 'name'), 'series_name')
+        .field(DbCalibre._concat('series', 'book', 'sort'), 'series_sort')
 
-          // sumData
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'id'), 'data_id')
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'format'), 'data_format')
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'uncompressed_size'), 'data_size')
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'name', false), 'data_name')
+        // sumData
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'id'), 'data_id')
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'format'), 'data_format')
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'uncompressed_size'), 'data_size')
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'name', false), 'data_name')
 
-          // appendComments
-          .left_join('comments', null, 'comments.book = books.id')
+        // appendComments
+        .left_join('comments', null, 'comments.book = books.id')
 
-          // commentTags
-          .field('comments.text', 'comment')
+        // commentTags
+        .field('comments.text', 'comment')
 
-          .from('books')
-          .group('book_title')
-          .where(where, value)
-          .limit(limit)
-          .offset(offset)
-        ;
+        .from('books')
+        .group('book_title')
+        .where(where, value)
+        .order("timestamp", false)
+        .limit(limit)
+        .offset(offset);
 
       //debug(query.toString());
 
@@ -105,7 +107,7 @@ class DbCalibre {
         if (err) {
           reject(err);
         } else {
-          var books = row.map(b => {
+          const books = row.map(b => {
             return new Book(b)
           });
           resolve(books);
@@ -125,24 +127,23 @@ class DbCalibre {
       const where = whereValue[0];
       const value = whereValue[1];
 
-      var query = squel
-          .select({separator: "\n"})
+      const query = squel
+        .select({ separator: "\n" })
 
-          // bookFields
-          .field('books.id', 'book_id')
-          .field('books.has_cover', 'book_has_cover')
-          .field('books.path', 'book_path')
+        // bookFields
+        .field('books.id', 'book_id')
+        .field('books.has_cover', 'book_has_cover')
+        .field('books.path', 'book_path')
 
-          // sumData
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'id'), 'data_id')
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'format'), 'data_format')
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'uncompressed_size'), 'data_size')
-          .field(DbCalibre._concat_simple('data', 'books', 'book', 'name', false), 'data_name')
+        // sumData
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'id'), 'data_id')
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'format'), 'data_format')
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'uncompressed_size'), 'data_size')
+        .field(DbCalibre._concat_simple('data', 'books', 'book', 'name', false), 'data_name')
 
-          .from('books')
-          //.group('book_title')
-          .where(where, value)
-        ;
+        .from('books')
+        //.group('book_title')
+        .where(where, value);
 
       //debug(query.toString());
 
@@ -205,7 +206,7 @@ class DbCalibre {
 
 
   /**
-   * Split an attribut separate by pipe to an array
+   * Split an attribute separate by pipe to an array
    * @param row
    * @param name
    */

@@ -2,11 +2,11 @@ import { Router, Response, Request } from "express";
 import DbCalibre from "../models/dbCalibre";
 import { BookPath, BookData } from "../models/book";
 import DbMyCalibre from "../models/dbMyCalibre";
-var nodemailer = require('nodemailer');
-var fs = require('fs');
-var path = require('path');
+const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
-var debug = require('debug')('server:routes:book');
+const debug = require('debug')('server:routes:book');
 
 
 const bookRouter: Router = Router();
@@ -46,19 +46,49 @@ bookRouter.route('/')
 
           });
 
+bookRouter.route('/new')
+          // ====================================
+          // route for getting books list
+          // ====================================
+          .get((request: Request, response: Response) => {
+            debug("GET /new");
+
+            //debug(request.query);
+
+            let limit = request.query['limit'] || 20;
+            let offset = request.query['offset'] || 0;
+
+
+            DbCalibre.getInstance()
+                     .getBooks(limit, offset)
+                     .then(rows => {
+
+//                       rows.map(row => {
+//
+//                         return row;
+//                       })
+
+                       response.json({ data: rows })
+                     })
+                     .catch(err => {
+                       response.status(500).json({ status: 500, message: err });
+                     });
+
+          });
+
 bookRouter.route('/cover/:id.jpg')
           // ====================================
           // route for getting books cover
           // ====================================
           .get((request: Request, response: Response) => {
 
-            var book_id = request.params['id'] || 0;
+            const book_id = request.params['id'] || 0;
 
             //debug(`GET /cover/${book_id}.png`);
 
             //debug(request);
 
-            var err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
+            const err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
 
             DbCalibre.getInstance()
                      .getBookPaths(book_id)
@@ -66,7 +96,7 @@ bookRouter.route('/cover/:id.jpg')
                        //debug(book);
 
                        response.header("Cache-Control", "public, max-age=31536000");
-                       var fullPath = null;
+                       let fullPath = null;
                        if (book && book.book_has_cover && book.book_path) {
                          fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/cover.jpg`);
                          fs.stat(fullPath, (err) => {
@@ -92,13 +122,13 @@ bookRouter.route('/thumbnail/:id.jpg')
           // ====================================
           .get((request: Request, response: Response) => {
 
-            var book_id = request.params['id'] || 0;
+            const book_id = request.params['id'] || 0;
 
             //debug(`GET /thumbnail/${book_id}.png`);
 
             //debug(request);
 
-            var err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
+            const err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
 
             DbCalibre.getInstance()
                      .getBookPaths(book_id)
@@ -106,7 +136,7 @@ bookRouter.route('/thumbnail/:id.jpg')
                        //debug(book);
 
                        response.header("Cache-Control", "public, max-age=31536000");
-                       var fullPath = null;
+                       let fullPath = null;
                        if (book && book.book_has_cover && book.book_path) {
                          fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/cover.jpg`);
                          fs.stat(fullPath, (err) => {
@@ -132,7 +162,7 @@ bookRouter.route('/:id.epub')
           // ====================================
           .get((request: Request, response: Response) => {
 
-            var book_id = request.params['id'] || 0;
+            const book_id = request.params['id'] || 0;
 
             //debug(`GET /${book_id}.epub`);
 
@@ -143,14 +173,14 @@ bookRouter.route('/:id.epub')
                      .then((book: BookPath) => {
                        //debug(book);
 
-                       var fullPath = null;
+                       let fullPath = null;
 
                        if (book && book.book_path && book.data) {
-                         var data = book.data.filter((bd: BookData) => {
+                         const data = book.data.filter((bd: BookData) => {
                            return bd.data_format == 'EPUB';
                          });
                          if (data && (data.length != 0)) {
-                           var fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.epub`);
+                           fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.epub`);
                            fs.stat(fullPath, (err) => {
                              if (err) {
                                console.log(err);
@@ -181,7 +211,7 @@ bookRouter.route('/:id.mobi')
           // ====================================
           .get((request: Request, response: Response) => {
 
-            var book_id = request.params['id'] || 0;
+            const book_id = request.params['id'] || 0;
 
             //debug(`GET /${book_id}.mobi`);
 
@@ -192,14 +222,14 @@ bookRouter.route('/:id.mobi')
                      .then((book: BookPath) => {
                        //debug(book);
 
-                       var fullPath = null;
+                       let fullPath = null;
 
                        if (book && book.book_path && book.data) {
-                         var data = book.data.filter((bd: BookData) => {
+                         const data = book.data.filter((bd: BookData) => {
                            return bd.data_format == 'MOBI';
                          });
                          if (data && (data.length != 0)) {
-                           var fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.mobi`);
+                           fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.mobi`);
                            fs.stat(fullPath, (err) => {
                              if (err) {
                                console.log(err);
@@ -230,7 +260,7 @@ bookRouter.route('/:id/send/kindle')
           // ====================================
           .get((request: Request, response: Response) => {
 
-            var book_id = request.params['id'] || 0;
+            const book_id = request.params['id'] || 0;
 
             //debug(`GET /${book_id}.mobi`);
 
@@ -249,14 +279,14 @@ bookRouter.route('/:id/send/kindle')
                                   .then((book: BookPath) => {
                                     //debug(book);
 
-                                    var fullPath = null;
+                                    let fullPath = null;
 
                                     if (book && book.book_path && book.data) {
-                                      var data = book.data.filter((bd: BookData) => {
+                                      const data = book.data.filter((bd: BookData) => {
                                         return bd.data_format == 'MOBI';
                                       });
                                       if (data && (data.length != 0)) {
-                                        var fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.mobi`);
+                                        fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.mobi`);
                                         fs.stat(fullPath, (err) => {
                                           if (err) {
                                             console.log(err);
@@ -265,8 +295,8 @@ bookRouter.route('/:id/send/kindle')
 
                                             // Send mail
                                             //var urlSmtp = `smtp${config.smtp_encryption == "SSL" ? 's' : ''}://${config.smtp_user_name}:${config.smtp_password}@${config.smtp_server_name}:${config.smtp_port}`;
-                                            var urlSmtp = `smtp${config.smtp_encryption == "SSL" ? 's' : ''}://${config.smtp_user_name.replace('@','%40')}:${config.smtp_password}@${config.smtp_server_name}`;
-                                            var transporter = nodemailer.createTransport(urlSmtp);
+                                            const urlSmtp = `smtp${config.smtp_encryption == "SSL" ? 's' : ''}://${config.smtp_user_name.replace('@', '%40')}:${config.smtp_password}@${config.smtp_server_name}`;
+                                            const transporter = nodemailer.createTransport(urlSmtp);
 
                                             transporter.sendMail({
                                               from: `<${config.smtp_user_name}>`,

@@ -13,7 +13,6 @@ import { MdInk } from './directives/link.directive';
 import { Media } from "./core/util/media";
 import { ViewportHelper, BrowserViewportHelper } from "./core/util/viewport";
 
-import { HomeModule } from "./components/home/home.module";
 import { MdContentModule } from "./components/content/content.component";
 import { FooterComponent } from './components/footer/footer.component';
 import { SubheaderComponent } from './components/subheader/subheader.component';
@@ -22,6 +21,7 @@ import { BookModule } from "./components/book/book.module";
 import { FilterBarModule } from './components/filter-bar/filter-bar.component';
 import { SeriesModule } from "./components/series/series.module";
 import { AuthorModule } from "./components/author/author.module";
+import { HomeModule } from "./components/home/home.component";
 
 @NgModule({
   declarations: [

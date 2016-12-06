@@ -34,6 +34,25 @@ export class BookService {
   }
 
   /**
+   * get the new books list
+   */
+  getNewBooks (limit: number): Promise<Book[]> {
+
+    return new Promise<Book[]>((resolve, reject) => {
+      this.http.get(this.booksUrl+"/new?limit="+limit)
+          .map((res: Response) => res.json().data as Book[])
+          .subscribe(
+            data => {
+              resolve(data);
+            },
+            err => {
+              reject(err);
+            },
+          );
+    });
+  }
+
+  /**
    * get a book
    */
   getBook (book_id: number): Promise<Book> {
