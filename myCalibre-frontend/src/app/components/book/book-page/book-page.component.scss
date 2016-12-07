@@ -67,9 +67,17 @@ md-spinner {
       .title {
         display: block;
       }
-      .cover {
-        max-width: 100%
+      .book {
+        flex-direction: row;
       }
+      .cover {
+        min-width: 100%;
+        max-width: 100%;
+        width: 100%;
+      }
+    }
+    .cover {
+      max-width: 40%;
     }
 
   }
