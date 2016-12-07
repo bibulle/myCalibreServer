@@ -49,17 +49,21 @@ tagRouter.route('/')
                                }
 
                                tagsHash[tag_id].books.push(book);
-                               tagsHash[tag_id].books.sort((b1, b2) => {
-                                 let v1 = (b1.series_sort == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
-                                 let v2 = (b2.series_sort == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
-
-                                 return v1.localeCompare(v2);
-                               })
                              })
 
                            }
                          });
 
+                         // sort books in tag
+                         tags.forEach(t => {
+                            t.books.sort((b1, b2) => {
+                                let v1 = (b1.series_sort == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
+                                let v2 = (b2.series_sort == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
+
+                                return v1.localeCompare(v2);
+                              })
+                         });
+                         debug("done");
                          response.json({ data: tags })
                        })
                        .catch(err => {

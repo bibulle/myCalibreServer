@@ -23,7 +23,7 @@ authorRouter.route('/')
             .get((request: Request, response: Response) => {
               debug("GET /");
 
-              debug(request.query);
+              //debug(request.query);
 
               let limit = request.query['limit'] || 1000000;
               let offset = request.query['offset'] || 0;
@@ -32,7 +32,6 @@ authorRouter.route('/')
               DbCalibre.getInstance()
                        .getBooks(1000000, 0)
                        .then((books: Book[]) => {
-                debug("then");
 
                          const authors: Author[] = [];
                          const authorsHash: { [id: string]: Author } = {};
@@ -51,18 +50,12 @@ authorRouter.route('/')
                                }
 
                                authorsHash[author_id].books.push(book);
-                               authorsHash[author_id].books.sort((b1, b2) => {
-                                 let v1 = (b1.series_sort == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
-                                 let v2 = (b2.series_sort == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
-
-                                 return v1.localeCompare(v2);
-                               })
                              })
 
                            }
                          });
 
-                         // fill authors with books info
+                         // fill authors with books info and sort books
                          authors.forEach((a: Author) => {
                            a.book_date = [];
 
@@ -81,13 +74,18 @@ authorRouter.route('/')
                                           }, [])
                                           .sort();
 
+                           a.books.sort((b1, b2) => {
+                             let v1 = (b1.series_sort == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
+                             let v2 = (b2.series_sort == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
+
+                             return v1.localeCompare(v2);
+                           })
                          });
 
-
+                         debug("done");
                          response.json({ data: authors })
                        })
                        .catch(err => {
-                         debug("catch");
                          console.log(err);
                          response.status(500).json({ status: 500, message: err });
                        });

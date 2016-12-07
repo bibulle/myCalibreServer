@@ -21,7 +21,7 @@ bookRouter.route('/')
           // route for getting books list
           // ====================================
           .get((request: Request, response: Response) => {
-            //debug("GET /");
+            debug("GET /");
 
             //debug(request.query);
 
@@ -38,6 +38,7 @@ bookRouter.route('/')
 //                         return row;
 //                       })
 
+                       debug("done");
                        response.json({ data: rows })
                      })
                      .catch(err => {

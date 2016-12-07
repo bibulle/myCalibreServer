@@ -96,7 +96,7 @@ seriesRouter.route('/')
 
                          });
 
-
+                         debug("done");
                          response.json({ data: series })
                        })
                        .catch(err => {
