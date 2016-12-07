@@ -159,7 +159,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   goBack () {
     if (this.previousUrls[1]) {
-      this._router.navigate([this.previousUrls[1]]);
+      this._location.back();
     } else {
       this._router.navigate([this.title.backUrl])
     }

@@ -38,7 +38,7 @@ export class TagListComponent implements OnInit {
   ngOnInit () {
 
     // Search for params (search)
-    this.route.params.forEach((params: Params) => {
+    this.route.queryParams.forEach((params: Params) => {
       if (params['id']) {
         this.selectedId = params['id'];
       }

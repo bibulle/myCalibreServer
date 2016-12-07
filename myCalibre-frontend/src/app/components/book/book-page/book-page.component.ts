@@ -77,7 +77,7 @@ export class BookPageComponent implements OnInit {
    */
   openAuthor (author_id, author_name) {
     event.stopPropagation();
-    this._router.navigate(['/authors', { id: author_id, name: author_name} ]);
+    this._router.navigate(['/authors'], { queryParams: { id: author_id, name: author_name } });
   }
 
   /**
@@ -87,7 +87,7 @@ export class BookPageComponent implements OnInit {
    */
   openTag (tag_id, tag_name) {
     event.stopPropagation();
-    this._router.navigate(['/tags', { id: tag_id, name: tag_name} ]);
+    this._router.navigate(['/tags'], { queryParams: { id: tag_id, name: tag_name } });
   }
 
   /** Open send to kindle dialog
