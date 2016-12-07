@@ -70,6 +70,16 @@ export class TagListComponent implements OnInit {
         })
   }
 
+  //noinspection JSUnusedGlobalSymbols
+  ngAfterViewInit() {
+    // if it's only a tag, scroll to top
+    if (this.selectedId) {
+      setTimeout(() => {
+        document.querySelector('#scrollView').parentElement.scrollTop = 0;
+      })
+    }
+  }
+
   /**
    * fill the this.tags list (slowly) with the filtered this.fullTags list
    * @private

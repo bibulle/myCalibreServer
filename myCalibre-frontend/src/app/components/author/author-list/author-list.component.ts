@@ -70,6 +70,17 @@ export class AuthorListComponent implements OnInit {
         })
   }
 
+
+  //noinspection JSUnusedGlobalSymbols
+  ngAfterViewInit() {
+    // if it's only an author, scroll to top
+    if (this.selectedId) {
+      setTimeout(() => {
+        document.querySelector('#scrollView').parentElement.scrollTop = 0;
+      })
+    }
+  }
+
   /**
    * fill the this.authors list (slowly) with the filtered this.fullAuthors list
    * @private
