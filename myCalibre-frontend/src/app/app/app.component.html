@@ -47,7 +47,7 @@
          *ngIf="version" class="md-caption version">v{{version}}</a>
     </md-toolbar>
     <md-nav-list>
-      <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}">{{l.label}}
+      <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="menu.opened=(menu.mode === 'side')">{{l.label}}
       </md-list-item>
     </md-nav-list>
   </md-sidenav>
