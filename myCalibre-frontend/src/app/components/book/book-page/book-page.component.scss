@@ -36,18 +36,26 @@ md-spinner {
   font-size: 2em;
 }
 
+.book .authors [md-button].series {
+  font-size: 1.5em;
+}
+
 .book .date {
   font-size: 1.5em;
   text-align: right;
   margin-top: -10px;
 }
 
-.book .description {
-  padding-top: 20px;
+.book md-card-title.series {
+  padding-top: 1em;
 }
 
-.book .tags {
-  padding-top: 25px;
+.book md-card-title.description {
+  padding-top: 1em;
+}
+
+.book md-card-title.tags {
+  padding-top: 1em;
 }
 
 .book [md-mini-fab] {

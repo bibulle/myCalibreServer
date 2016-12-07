@@ -90,6 +90,16 @@ export class BookPageComponent implements OnInit {
     this._router.navigate(['/tags'], { queryParams: { id: tag_id, name: tag_name } });
   }
 
+  /**
+   * A series has been clicked
+   * @param series_id
+   * @param series_name
+   */
+  openSeries (series_id, series_name) {
+    event.stopPropagation();
+    this._router.navigate(['/series'], { queryParams: { id: series_id, name: series_name } });
+  }
+
   /** Open send to kindle dialog
    *
    */

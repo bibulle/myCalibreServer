@@ -10,6 +10,10 @@
               (click)="openAuthor(book.author_id[i], name)">
         {{name}}
       </button>
+      <md-card-title class="series" *ngIf="book.series_id">Series</md-card-title>
+      <button md-button="" class="series" *ngIf="book.series_id" (click)="openSeries(book.series_id, book.series_name)">
+        {{book.series_name}}
+      </button>
       <md-card-title class="description">Description</md-card-title>
       <div class="description-content" [innerHTML]="book.comment ? book.comment : 'None'">
       </div>

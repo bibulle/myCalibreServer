@@ -14,6 +14,7 @@ export class SeriesCardComponent implements OnInit {
   @Input()
   series: Series;
 
+  @Input()
   booksClosed = true;
 
   constructor () { }
