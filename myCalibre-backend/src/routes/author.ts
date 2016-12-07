@@ -1,6 +1,6 @@
 import { Router, Response, Request } from "express";
 import DbCalibre from "../models/dbCalibre";
-import { Author } from "../models/series";
+import { Author } from "../models/author";
 import { Book } from "../models/book";
 import leftPad = require("left-pad");
 const fs = require('fs');
@@ -23,7 +23,7 @@ authorRouter.route('/')
             .get((request: Request, response: Response) => {
               debug("GET /");
 
-              //debug(request.query);
+              debug(request.query);
 
               let limit = request.query['limit'] || 1000000;
               let offset = request.query['offset'] || 0;
@@ -32,6 +32,7 @@ authorRouter.route('/')
               DbCalibre.getInstance()
                        .getBooks(1000000, 0)
                        .then((books: Book[]) => {
+                debug("then");
 
                          const authors: Author[] = [];
                          const authorsHash: { [id: string]: Author } = {};
@@ -66,14 +67,14 @@ authorRouter.route('/')
                            a.book_date = [];
 
                            a.books.forEach((b: Book) => {
-                             if (b.book_date > '011') {
+                             if (b.book_date.getFullYear() > 1000) {
                                a.book_date.push(b.book_date);
                              }
                            });
 
                            a.book_date = a.book_date
-                                          .reduce((result, current) => {
-                                            if (result.filter(d => {return d.substring(0, 4) == current.substring(0, 4)}).length == 0) {
+                                          .reduce((result:Date[], current:Date) => {
+                                            if (result.filter(d => {return d.getFullYear() == current.getFullYear()}).length == 0) {
                                               result.push(current);
                                             }
                                             return result;
@@ -86,6 +87,8 @@ authorRouter.route('/')
                          response.json({ data: authors })
                        })
                        .catch(err => {
+                         debug("catch");
+                         console.log(err);
                          response.status(500).json({ status: 500, message: err });
                        });
 

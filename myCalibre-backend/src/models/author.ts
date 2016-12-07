@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import DbCalibre from "./dbCalibre";
 import { Book } from "./book";
 
 export class Author {
@@ -8,7 +7,7 @@ export class Author {
   author_name: string;
   author_sort: string;
 
-  book_date: string[];
+  book_date: Date[];
 
   books: Book[];
 

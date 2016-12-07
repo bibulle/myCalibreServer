@@ -1,6 +1,5 @@
 import { Router, Response, Request } from "express";
 import DbCalibre from "../models/dbCalibre";
-import { Author } from "../models/series";
 import { Book } from "../models/book";
 import leftPad = require("left-pad");
 import { Tag } from "../models/tag";

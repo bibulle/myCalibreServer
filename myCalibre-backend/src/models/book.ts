@@ -19,7 +19,7 @@ export class Book {
   series_name: string;
   series_sort: string;
   comment: string;
-  book_date: string;
+  book_date: Date;
 
   data: BookData[];
 

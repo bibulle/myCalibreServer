@@ -1,11 +1,11 @@
 import { Router, Response, Request } from "express";
 import DbCalibre from "../models/dbCalibre";
-import { Author } from "../models/series";
+import { Series } from "../models/series";
 import { Book } from "../models/book";
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var debug = require('debug')('server:routes:series');
+const debug = require('debug')('server:routes:series');
 
 
 const seriesRouter: Router = Router();
@@ -32,13 +32,13 @@ seriesRouter.route('/')
                        .getBooks(1000000, 0)
                        .then((books: Book[]) => {
 
-                         var series: Author[] = [];
-                         var seriesHash: { [id: string]: Author } = {};
+                         const series: Series[] = [];
+                         const seriesHash: { [id: string]: Series } = {};
 
                          books.forEach(book => {
                            if (book.series_id) {
                              if (!seriesHash[book.series_id]) {
-                               seriesHash[book.series_id] = new Author({
+                               seriesHash[book.series_id] = new Series({
                                  series_id: book.series_id,
                                  series_name: book.series_name,
                                  series_sort: book.series_sort,
@@ -56,13 +56,13 @@ seriesRouter.route('/')
                          });
 
                          // fill series with books info
-                         series.forEach((s: Author) => {
+                         series.forEach((s: Series) => {
                            s.author_name = [];
                            s.author_sort = [];
                            s.book_date = [];
 
                            s.books.forEach((b: Book) => {
-                             if (b.book_date > '011') {
+                             if (b.book_date.getFullYear() > 1000) {
                                s.book_date.push(b.book_date);
                              }
                              s.author_name = s.author_name.concat(b.author_name);
@@ -70,27 +70,27 @@ seriesRouter.route('/')
                            });
 
                            s.book_date = s.book_date
-                                          .reduce((accu, current, index, array) => {
-                                            if (accu.filter(d => {return d.substring(0, 4) == current.substring(0, 4)}).length == 0) {
-                                              accu.push(current);
+                                          .reduce((result:Date[], current:Date) => {
+                                            if (result.filter(d => {return d.getFullYear() == current.getFullYear()}).length == 0) {
+                                              result.push(current);
                                             }
-                                            return accu;
+                                            return result;
                                           }, [])
                                           .sort();
                            s.author_name = s.author_name
-                                            .reduce((accu, current, index, array) => {
-                                              if (accu.filter(d => {return d == current}).length == 0) {
-                                                accu.push(current);
+                                            .reduce((result, current) => {
+                                              if (result.filter(d => {return d == current}).length == 0) {
+                                                result.push(current);
                                               }
-                                              return accu;
+                                              return result;
                                             }, [])
                                             .sort();
                            s.author_sort = s.author_sort
-                                            .reduce((accu, current, index, array) => {
-                                              if (accu.filter(d => {return d == current}).length == 0) {
-                                                accu.push(current);
+                                            .reduce((result, current) => {
+                                              if (result.filter(d => {return d == current}).length == 0) {
+                                                result.push(current);
                                               }
-                                              return accu;
+                                              return result;
                                             }, [])
                                             .sort();
 
@@ -108,16 +108,16 @@ seriesRouter.route('/')
 
 export { seriesRouter }
 
-/**
- * Split an attribut separate by pipe to an array
- * @param row
- * @param name
- */
-function _splitAttribute (row, name) {
-  if (row[name]) {
-    //console.log(row[name]+" -> "+row[name].split('|'))
-    row[name] = row[name].split('|');
-  } else {
-    row[name] = [];
-  }
-}
+// /**
+//  * Split an attribute separate by pipe to an array
+//  * @param row
+//  * @param name
+//  */
+// function _splitAttribute (row, name) {
+//   if (row[name]) {
+//     //console.log(row[name]+" -> "+row[name].split('|'))
+//     row[name] = row[name].split('|');
+//   } else {
+//     row[name] = [];
+//   }
+// }
