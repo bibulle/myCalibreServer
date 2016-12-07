@@ -71,7 +71,7 @@ export class SeriesListComponent implements OnInit {
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngAfterViewInit() {
+  ngAfterViewInit () {
     // if it's only a tag, scroll to top
     if (this.selectedId) {
       setTimeout(() => {
@@ -153,7 +153,7 @@ export class SeriesListComponent implements OnInit {
                                  switch (this.filter.sort) {
                                    case SortType.Name:
                                      break;
-                                   case SortType.Author:
+                                   case SortType.Author: {
                                      let v1Lst = b1.author_sort.concat();
                                      let v2Lst = b2.author_sort.concat();
                                      if (this.filter.sorting_direction == SortingDirection.Desc) {
@@ -162,17 +162,19 @@ export class SeriesListComponent implements OnInit {
                                      }
                                      v1 = v1Lst.toString() + " " + v1;
                                      v2 = v2Lst.toString() + " " + v2;
+                                   }
                                      break;
                                    case SortType.PublishDate:
-                                   default:
-                                     v1Lst = b1.book_date.concat();
-                                     v2Lst = b2.book_date.concat();
+                                   default: {
+                                     let v1Lst = b1.book_date.concat();
+                                     let v2Lst = b2.book_date.concat();
                                      if (this.filter.sorting_direction == SortingDirection.Desc) {
                                        v1Lst.reverse();
                                        v2Lst.reverse();
                                      }
                                      v1 = v1Lst.toString() + " " + v1;
                                      v2 = v2Lst.toString() + " " + v2;
+                                   }
                                      break;
                                  }
 
