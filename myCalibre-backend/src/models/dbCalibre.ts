@@ -30,21 +30,30 @@ class DbCalibre {
     }
     DbCalibre._instance = this;
 
-    //fs.stat(DB_FILE, function (err, stats) {
-    //  if (err) {
-    //    console.log(err);
-    //  } else {
-    //    console.log('stats: ' + JSON.stringify(stats));
-    //    debug(stats);
-    //  }
-    //});
   }
 
   public static getInstance(): DbCalibre {
     return DbCalibre._instance;
   }
 
-  public getBooks(limit: number, offset: number): Promise<Book[]> {
+  public getDbDate(): Promise<Date> {
+    return new Promise<Date>((resolve, reject) => {
+      fs.stat(DbCalibre.DB_FILE, function (err, stats) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          //console.log('stats: ' + JSON.stringify(stats));
+          resolve(stats.mtime);
+        }
+      });
+
+    });
+  }
+
+  public getBooks(limit?: number, offset?: number): Promise<Book[]> {
+    limit = limit || 1000000;
+    offset = offset || 0;
 
     return new Promise<Book[]>((resolve, reject) => {
 
@@ -116,7 +125,6 @@ class DbCalibre {
     })
 
   }
-
 
   public getBookPaths(id: number): Promise<BookPath> {
 

@@ -2,6 +2,7 @@ import { Router, Response, Request } from "express";
 import DbCalibre from "../models/dbCalibre";
 import { BookPath, BookData } from "../models/book";
 import DbMyCalibre from "../models/dbMyCalibre";
+import { CacheDate, CacheDateKey } from "../models/cacheDate";
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
@@ -25,25 +26,13 @@ bookRouter.route('/')
 
             //debug(request.query);
 
-            let limit = request.query['limit'] || 1000000;
-            let offset = request.query['offset'] || 0;
-
-
-            DbCalibre.getInstance()
-                     .getBooks(limit, offset)
-                     .then(rows => {
-
-//                       rows.map(row => {
-//
-//                         return row;
-//                       })
-
-                       debug("done");
-                       response.json({ data: rows })
+            CacheDate.getCachePath(CacheDateKey.BOOKS)
+                     .then(path => {
+                       response.sendFile(path);
                      })
                      .catch(err => {
-                       response.status(500).json({ status: 500, message: err });
-                     });
+                       response.status(500).json({status: 500, message: err});
+                     })
 
           });
 
@@ -56,24 +45,13 @@ bookRouter.route('/new')
 
             //debug(request.query);
 
-            let limit = request.query['limit'] || 20;
-            let offset = request.query['offset'] || 0;
-
-
-            DbCalibre.getInstance()
-                     .getBooks(limit, offset)
-                     .then(rows => {
-
-//                       rows.map(row => {
-//
-//                         return row;
-//                       })
-
-                       response.json({ data: rows })
+            CacheDate.getCachePath(CacheDateKey.NEW_BOOKS)
+                     .then(path => {
+                       response.sendFile(path);
                      })
                      .catch(err => {
-                       response.status(500).json({ status: 500, message: err });
-                     });
+                       response.status(500).json({status: 500, message: err});
+                     })
 
           });
 
@@ -185,7 +163,7 @@ bookRouter.route('/:id.epub')
                            fs.stat(fullPath, (err) => {
                              if (err) {
                                console.log(err);
-                               response.status(404).send({ error: 'Not found : ' + request.url });
+                               response.status(404).send({error: 'Not found : ' + request.url});
                              } else {
                                response.header("Cache-Control", "public, max-age=31536000");
                                response.header("Content-Type", "application/epub+zip");
@@ -193,16 +171,16 @@ bookRouter.route('/:id.epub')
                              }
                            })
                          } else {
-                           response.status(404).send({ error: 'Not found : ' + request.url });
+                           response.status(404).send({error: 'Not found : ' + request.url});
                          }
 
                        } else {
-                         response.status(404).send({ error: 'Not found : ' + request.url });
+                         response.status(404).send({error: 'Not found : ' + request.url});
                        }
                      })
                      .catch(err => {
                        debug(err);
-                       response.status(404).send({ error: 'Not found : ' + request.url });
+                       response.status(404).send({error: 'Not found : ' + request.url});
                      })
 
           });
@@ -234,7 +212,7 @@ bookRouter.route('/:id.mobi')
                            fs.stat(fullPath, (err) => {
                              if (err) {
                                console.log(err);
-                               response.status(404).send({ error: 'Not found : ' + request.url });
+                               response.status(404).send({error: 'Not found : ' + request.url});
                              } else {
                                response.header("Cache-Control", "public, max-age=31536000");
                                response.header("Content-Type", "application/x-mobipocket-ebook");
@@ -242,16 +220,16 @@ bookRouter.route('/:id.mobi')
                              }
                            })
                          } else {
-                           response.status(404).send({ error: 'Not found : ' + request.url });
+                           response.status(404).send({error: 'Not found : ' + request.url});
                          }
 
                        } else {
-                         response.status(404).send({ error: 'Not found : ' + request.url });
+                         response.status(404).send({error: 'Not found : ' + request.url});
                        }
                      })
                      .catch(err => {
                        debug(err);
-                       response.status(404).send({ error: 'Not found : ' + request.url });
+                       response.status(404).send({error: 'Not found : ' + request.url});
                      })
 
           });
@@ -268,7 +246,7 @@ bookRouter.route('/:id/send/kindle')
             let mail = request.query['mail'];
 
             if (!mail) {
-              return response.status(400).send({ error: 'Bad Request (mail needed)' });
+              return response.status(400).send({error: 'Bad Request (mail needed)'});
             }
 
             DbMyCalibre.getInstance()
@@ -291,7 +269,7 @@ bookRouter.route('/:id/send/kindle')
                                         fs.stat(fullPath, (err) => {
                                           if (err) {
                                             console.log(err);
-                                            response.status(404).send({ error: 'Not found : ' + request.url });
+                                            response.status(404).send({error: 'Not found : ' + request.url});
                                           } else {
 
                                             // Send mail
@@ -311,29 +289,29 @@ bookRouter.route('/:id/send/kindle')
                                             }, (error, info) => {
                                               if (error) {
                                                 debug(error);
-                                                response.status(500).send({ error: error });
+                                                response.status(500).send({error: error});
                                               } else {
-                                                response.status(200).send({ OK: info });
+                                                response.status(200).send({OK: info});
                                               }
                                             });
                                           }
                                         })
                                       } else {
-                                        response.status(404).send({ error: 'Not found : ' + request.url });
+                                        response.status(404).send({error: 'Not found : ' + request.url});
                                       }
 
                                     } else {
-                                      response.status(404).send({ error: 'Not found : ' + request.url });
+                                      response.status(404).send({error: 'Not found : ' + request.url});
                                     }
                                   })
                                   .catch(err => {
                                     debug(err);
-                                    response.status(404).send({ error: 'Not found : ' + request.url });
+                                    response.status(404).send({error: 'Not found : ' + request.url});
                                   })
                        })
                        .catch(err => {
                          debug(err);
-                         response.status(500).send({ error: 'System error' });
+                         response.status(500).send({error: 'System error'});
                        })
 
           });
