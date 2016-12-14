@@ -36,10 +36,10 @@ export class BookService {
   /**
    * get the new books list
    */
-  getNewBooks (limit: number): Promise<Book[]> {
+  getNewBooks (): Promise<Book[]> {
 
     return new Promise<Book[]>((resolve, reject) => {
-      this.http.get(this.booksUrl+"/new?limit="+limit)
+      this.http.get(this.booksUrl+"/new")
           .map((res: Response) => res.json().data as Book[])
           .subscribe(
             data => {

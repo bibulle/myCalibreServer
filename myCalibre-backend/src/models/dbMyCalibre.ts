@@ -1,12 +1,10 @@
-import { Book, BookPath } from "./book";
 import { Configuration } from "./configuration";
-import DbCalibre from "./dbCalibre";
-var debug = require('debug')('server:dbCalibre');
+const debug = require('debug')('server:dbCalibre');
 
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 
-var sqlite3 = require("sqlite3").verbose();
+const sqlite3 = require("sqlite3").verbose();
 const squel = require("squel");
 
 class DbMyCalibre {
@@ -46,22 +44,25 @@ class DbMyCalibre {
     return DbMyCalibre._instance;
   }
 
+  /**
+   * get configuration from Db
+   * @returns {Promise<Configuration>}
+   */
   public getConf(): Promise<Configuration> {
 
     return new Promise<Configuration>((resolve, reject) => {
 
-      var query = squel
-          .select({separator: "\n"})
+      const query = squel
+        .select({separator: "\n"})
 
-          // bookFields
-          .field('config.smtp_user_name', 'smtp_user_name')
-          .field('config.smtp_password', 'smtp_password')
-          .field('config.smtp_server_name', 'smtp_server_name')
-          .field('config.smtp_port', 'smtp_port')
-          .field('config.smtp_encryption', 'smtp_encryption')
+        // bookFields
+        .field('config.smtp_user_name', 'smtp_user_name')
+        .field('config.smtp_password', 'smtp_password')
+        .field('config.smtp_server_name', 'smtp_server_name')
+        .field('config.smtp_port', 'smtp_port')
+        .field('config.smtp_encryption', 'smtp_encryption')
 
-          .from('config')
-        ;
+        .from('config');
 
       this._db.get(query.toString(), (err, row) => {
         if (err) {
@@ -74,6 +75,58 @@ class DbMyCalibre {
 
   }
 
+//  /**
+//   * get cache dates from Db
+//   * @returns {Promise<CacheDate[]>}
+//   */
+//  public getCaches(): Promise<CacheDate[]> {
+//
+//    return new Promise<CacheDate[]>((resolve, reject) => {
+//
+//      const query = squel
+//        .select({separator: "\n"})
+//
+//        // Fields
+//        .field('cache_date.key', 'key')
+//        .field('cache_date.date', 'date')
+//
+//        .from('cache_date');
+//
+//      this._db.all(query.toString(), (err, row) => {
+//        if (err) {
+//          console.log(err);
+//          reject(err);
+//        } else {
+//          const cacheDates = row.map(b => {
+//            return new CacheDate(b)
+//          });
+//          resolve(cacheDates);
+//        }
+//      })
+//    })
+//
+//  }
+//
+//  public setCache(cacheDate: CacheDate): Promise<void> {
+//    return new Promise<void>((resolve, reject) => {
+//      const query = squel
+//        .update({separator: "\n"})
+//        .table("cache-date")
+//        .set("cache-date.key", cacheDate.key)
+//        .set("cache-date.date", cacheDate.date);
+//
+//      this._db.run(query.toString(), function(err) {
+//        if (err) {
+//          console.log(err);
+//          reject(err);
+//        } else {
+//          console.log(this.changes);
+//          resolve();
+//        }
+//      })
+//    });
+//
+//}
 
 }
 

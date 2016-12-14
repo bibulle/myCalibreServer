@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
     this._filterService.update(new Filter({not_displayed: true}));
 
     this._bookService
-        .getNewBooks(this.BOOKS_LIMIT)
+        .getNewBooks()
         .then(books => {
           this.books = books;
         })
