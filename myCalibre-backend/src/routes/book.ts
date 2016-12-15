@@ -74,7 +74,7 @@ bookRouter.route('/cover/:id.jpg')
                      .then(book => {
                        //debug(book);
 
-                       response.header("Cache-Control", "public, max-age=31536000");
+                       //response.header("Cache-Control", "public, max-age=31536000");
                        let fullPath = null;
                        if (book && book.book_has_cover && book.book_path) {
                          fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/cover.jpg`);
@@ -114,15 +114,21 @@ bookRouter.route('/thumbnail/:id.jpg')
                      .then(book => {
                        //debug(book);
 
-                       response.header("Cache-Control", "public, max-age=31536000");
-                       let fullPath = null;
+                       //response.header("Cache-Control", "public, max-age=31536000");
                        if (book && book.book_has_cover && book.book_path) {
-                         fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/cover.jpg`);
-                         fs.stat(fullPath, (err) => {
+                         const thumbnailPath = book.getThumbnailPath();
+                         const coverPath = book.getCoverPath();
+                         fs.stat(thumbnailPath, (err) => {
                            if (err) {
-                             response.sendFile(err_cover_path);
+                             fs.stat(coverPath, (err) => {
+                               if (err) {
+                                 response.sendFile(err_cover_path);
+                               } else {
+                                 response.sendFile(coverPath);
+                               }
+                             })
                            } else {
-                             response.sendFile(fullPath);
+                             response.sendFile(thumbnailPath);
                            }
                          })
                        } else {

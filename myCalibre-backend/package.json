@@ -4,7 +4,7 @@
   "description": "A new calibre server",
   "scripts": {
     "start": "node ./src/bin/www",
-    "devel": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/prepareCache.js\" ",
+    "devel": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" \"VIPS_WARNING=0 DEBUG=server:* nodemon --ignore ./data/ ./src/bin/prepareCache.js\" ",
     "tsc": "tsc"
   },
   "private": true,
@@ -22,6 +22,7 @@
     "lodash": "^4.17.2",
     "nodemailer": "^2.6.4",
     "serve-static": "^1.11.1",
+    "sharp": "^0.17.0",
     "sqlite3": "^3.1.8",
     "squel": "^5.5.0"
   },

@@ -1,5 +1,7 @@
 import * as _ from "lodash";
 import DbCalibre from "./dbCalibre";
+import DbMyCalibre from "./dbMyCalibre";
+const path = require('path');
 const debug = require('debug')('server:models:book');
 
 export class Book {
@@ -36,6 +38,15 @@ export class Book {
     BookPath.createBookData(this);
 
   }
+
+  getCoverPath() {
+    return path.resolve(`${DbCalibre.CALIBRE_DIR}/${this.book_path}/cover.jpg`);
+  }
+  getThumbnailPath() {
+    return path.resolve(`${DbMyCalibre.MYCALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
+  }
+
+
 }
 
 export class BookPath {
@@ -57,8 +68,15 @@ export class BookPath {
 
   }
 
+  getCoverPath() {
+    return path.resolve(`${DbCalibre.CALIBRE_DIR}/${this.book_path}/cover.jpg`);
+  }
+  getThumbnailPath() {
+    return path.resolve(`${DbMyCalibre.MYCALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
+  }
+
   /**
-   * Create noew abject and delete unused attribut
+   * Create new abject and delete unused attribut
    * @param book
    */
   static createBookData (book: BookPath | Book) {

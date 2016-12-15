@@ -4,6 +4,9 @@ import DbCalibre from "../models/dbCalibre";
 const debug = require('debug')('server:prepare-cache');
 const CronJob = require('cron').CronJob;
 const async = require('async');
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
 
 
 debug('Starting.....');
@@ -28,12 +31,12 @@ function checkCache () {
         2,
         (item, callback) => {
           CacheDate.getCachePath(item.key, dbDate)
-            .then(() => {
-              callback(null);
-            })
-            .catch((err) => {
-              callback(err);
-            });
+                   .then(() => {
+                     callback(null);
+                   })
+                   .catch((err) => {
+                     callback(err);
+                   });
 
         },
         (err) => {
@@ -43,42 +46,52 @@ function checkCache () {
 //            debug("done");
           }
         });
-//      for (var key in CacheDate.cacheTables) {
-//        if (CacheDate.cacheTables.hasOwnProperty(key)) {
-//          CacheDate.getCachePath(key, dbDate);
-//        }
-//      }
+    })
+    .catch(err => {
+      debug("ERROR checkCache !!");
+      debug(err);
+    });
 
-//      DbMyCalibre
-//        .getInstance()
-//        .getCaches()
-//        .then(caches => {
-//          var cacheTable: { [key: string]: CacheDate; } = {};
-//          caches.forEach(cache => {
-//            cacheTable[cache.key] = cache;
-//          })
-//          for (var key in CacheDate.cacheTables) {
-//            if (CacheDate.cacheTables.hasOwnProperty(key)) {
-//              cacheTable[key] = new CacheDate(key);
-//            }
-//          }
-//
-//          // check date
-//          for (var key in cacheTable) {
-//            if (cacheTable.hasOwnProperty(key)) {
-//              var cache = cacheTable[key];
-//
-//              if (!cache.date || cache.date < dbDate) {
-//                debug(cache);
-//              }
-//            }
-//          }
-//
-//        })
-//        .catch(err => {
-//          debug("ERROR checkCache !!")
-//          debug(err);
-//        })
+  DbCalibre
+    .getInstance()
+    .getBooks()
+    .then(books => {
+      books.forEach(book => {
+        if (book.book_has_cover) {
+          const coverPath = book.getCoverPath();
+          let coverStats;
+          try {
+            coverStats = fs.statSync(coverPath);
+          } catch (e) {
+          }
+          const coverDate = (coverStats ? coverStats.mtime : null);
+
+          const thumbnailPath = book.getThumbnailPath();
+          let thumbnailStats;
+          try {
+            thumbnailStats = fs.statSync(thumbnailPath);
+          } catch (e) {
+          }
+          const thumbnailDate = (thumbnailStats ? thumbnailStats.mtime : new Date(0));
+
+          if(coverDate && coverDate.getTime() > thumbnailDate.getTime()) {
+            debug("calculate thumbnail : "+book.book_title);
+
+            mkdir_p(path.dirname(thumbnailPath));
+
+            sharp(coverPath)
+              .resize(null, 160)
+              .toFile(thumbnailPath, function(err:string) {
+                if (err && !err.startsWith('vips warning')) {
+                  debug(err);
+                } else {
+                  //debug(info);
+                }
+              });
+
+          }
+        }
+      });
     })
     .catch(err => {
       debug("ERROR checkCache !!");
@@ -86,6 +99,13 @@ function checkCache () {
     })
 }
 
+function mkdir_p(dirPath: string) {
+  if (fs.existsSync(dirPath)) {
+    return
+  }
+  mkdir_p(path.dirname(dirPath));
+  fs.mkdirSync(dirPath);
+}
 
 checkCache();
 //========================================================================
