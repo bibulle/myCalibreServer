@@ -15,6 +15,7 @@ class DbCalibre {
   private static _instance: DbCalibre = new DbCalibre();
 
   private _db;
+  private _dbDate: Date;
 
   constructor() {
 
@@ -22,6 +23,10 @@ class DbCalibre {
 
     try {
       this._db = new sqlite3.Database(DbCalibre.DB_FILE)
+      this.getDbDate().then(date => {
+        this._dbDate = date;
+        debug("New Db : "+date);
+      })
     } catch (error) {
       throw(error);
     }
@@ -29,7 +34,6 @@ class DbCalibre {
       throw new Error("Error: Instantiation failed: Use DbCalibre.getInstance() instead of new.");
     }
     DbCalibre._instance = this;
-
   }
 
   public static getInstance(): DbCalibre {
@@ -37,14 +41,22 @@ class DbCalibre {
   }
 
   public getDbDate(): Promise<Date> {
+    const _that = this;
     return new Promise<Date>((resolve, reject) => {
       fs.stat(DbCalibre.DB_FILE, function (err, stats) {
         if (err) {
           console.log(err);
           reject(err);
         } else {
-          //console.log('stats: ' + JSON.stringify(stats));
-          resolve(stats.mtime);
+          // if date change, change Db instance
+          if (_that._dbDate && (stats.mtime.getTime() != _that._dbDate.getTime())) {
+            DbCalibre._instance = null;
+            DbCalibre._instance = new DbCalibre();
+
+            resolve(stats.mtime);
+          } else {
+            resolve(stats.mtime);
+          }
         }
       });
 
