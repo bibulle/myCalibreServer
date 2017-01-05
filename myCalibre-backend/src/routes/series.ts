@@ -1,5 +1,6 @@
 import { Router, Response, Request } from "express";
 import { CacheDate, CacheDateKey } from "../models/cacheDate";
+import { Series } from "../models/series";
 const fs = require('fs');
 const path = require('path');
 
@@ -32,8 +33,33 @@ seriesRouter.route('/')
 
             });
 
+seriesRouter.route('/thumbnail/:id.png')
+            // ====================================
+            // route for getting series thumbnail
+            // ====================================
+            .get((request: Request, response: Response) => {
 
-export { seriesRouter }
+              const series_id = request.params['id'] || 0;
+
+              debug(`GET /thumbnail/${series_id}.png`);
+
+              //debug(request);
+
+              const err_cover_path = path.resolve(`${__dirname}/../img//err_cover.svg`);
+
+              // create a fake series
+              const thumbnailPath = new Series({series_id: series_id}).getThumbnailPath();
+              fs.stat(thumbnailPath, (err) => {
+                if (err) {
+                  response.sendFile(err_cover_path);
+                } else {
+                  response.sendFile(thumbnailPath);
+                }
+              });
+            });
+
+
+              export { seriesRouter }
 
 // /**
 //  * Split an attribute separate by pipe to an array

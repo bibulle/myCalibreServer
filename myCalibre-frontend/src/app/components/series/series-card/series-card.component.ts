@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { Series } from "../series";
 import { BookCardModule } from "../../book/book-card/book-card.component";
 import { MdCardModule, MdIconModule } from "@angular/material";
+import { environment } from "../../../../environments/environment";
 
 @Component({
   selector: 'app-series-card',
@@ -13,6 +14,8 @@ export class SeriesCardComponent implements OnInit {
 
   @Input()
   series: Series;
+
+  thumbnailUrlBase= `${environment.serverUrl}api/series/thumbnail`;
 
   @Input()
   booksClosed = true;

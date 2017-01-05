@@ -1,8 +1,10 @@
 import * as _ from "lodash";
+const path = require('path');
 const debug = require('debug')('server:model:series');
 
 import { Book } from "./book";
 import DbCalibre from "./dbCalibre";
+import DbMyCalibre from "./dbMyCalibre";
 
 export class Series {
 
@@ -22,6 +24,11 @@ export class Series {
 
     //console.log(this);
   }
+
+  getThumbnailPath() {
+    return path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/thumbnail_series/${this.series_id}/thumbnail.png`);
+  }
+
 
   static getAllSeries (): Promise<Series[]> {
     return new Promise((resolve, reject) => {
@@ -93,7 +100,7 @@ export class Series {
 
                  });
 
-                 debug("done");
+                 //debug("done");
                  resolve(series)
                })
                .catch(err => {
