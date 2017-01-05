@@ -55,7 +55,7 @@ function checkCache () {
                   console.log(err);
                   callback1(err);
                 } else {
-            debug("requests done");
+            //debug("requests done");
                   callback1();
                 }
               });
@@ -123,7 +123,7 @@ function checkCache () {
                   debug("ERROR : " + err);
                   callback1(err);
                 } else {
-                  debug("books done");
+                  //debug("books done");
                   callback1();
                 }
               }
@@ -300,7 +300,7 @@ function checkCache () {
                       debug("ERROR : " + err);
                       callback(err);
                     } else {
-                      debug("series done");
+                      //debug("series done");
                       callback();
                     }
                   });
