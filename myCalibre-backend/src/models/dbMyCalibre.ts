@@ -9,8 +9,8 @@ const squel = require("squel");
 
 class DbMyCalibre {
 
-  public static MYCALIBRE_DIR = path.resolve(`${__dirname}/../../data/my-calibre`);
-  private static DB_FILE = `${DbMyCalibre.MYCALIBRE_DIR}/my-calibre.db`;
+  public static MY_CALIBRE_DIR = path.resolve(`${__dirname}/../../data/my-calibre`);
+  private static DB_FILE = `${DbMyCalibre.MY_CALIBRE_DIR}/my-calibre.db`;
 
   private static _instance: DbMyCalibre = new DbMyCalibre();
 

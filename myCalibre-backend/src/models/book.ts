@@ -43,7 +43,7 @@ export class Book {
     return path.resolve(`${DbCalibre.CALIBRE_DIR}/${this.book_path}/cover.jpg`);
   }
   getThumbnailPath() {
-    return path.resolve(`${DbMyCalibre.MYCALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
+    return path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
   }
 
 
@@ -72,7 +72,7 @@ export class BookPath {
     return path.resolve(`${DbCalibre.CALIBRE_DIR}/${this.book_path}/cover.jpg`);
   }
   getThumbnailPath() {
-    return path.resolve(`${DbMyCalibre.MYCALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
+    return path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
   }
 
   /**
