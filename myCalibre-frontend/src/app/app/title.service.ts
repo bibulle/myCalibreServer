@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from "rxjs";
 import { Router, RoutesRecognized } from "@angular/router";
+import { Response, Http } from "@angular/http";
 
 @Injectable()
 export class TitleService {
@@ -9,13 +10,14 @@ export class TitleService {
 
   private currentTitleSubject: BehaviorSubject<Title>;
 
-  constructor (private router: Router) {
+  constructor (private http: Http,
+               private router: Router) {
 
     this.currentTitleSubject = new BehaviorSubject<Title>(new Title());
 
     this.router.events.subscribe((data) => {
       if (data instanceof RoutesRecognized) {
-        var navigationLabel = data.state.root.firstChild.data['label'];
+        const navigationLabel = data.state.root.firstChild.data['label'];
         this.update(navigationLabel);
       }
     });
@@ -34,6 +36,27 @@ export class TitleService {
     return this.currentTitleSubject;
   }
 
+  /**
+   * get the version values
+   */
+  private _version: Version;
+
+  getVersion (): Promise<Version> {
+    return new Promise<Version>((resolve) => {
+      if (this._version) {
+        resolve(this._version);
+      } else {
+        this.http
+            .get('version.json')
+            .subscribe((res: Response) => {
+              const json = res.json();
+              this._version = new Version(json);
+              resolve(this._version);
+            });
+      }
+
+    });
+  }
 
 
 }
@@ -44,7 +67,7 @@ export class Title {
   main_title = TitleService.TITLE;
   backUrl: string;
 
-  constructor (label = 'Home', backUrl:string = null) {
+  constructor (label = 'Home', backUrl: string = null) {
     this.title = (label != 'Home') ? label : TitleService.TITLE;
     this.full_title = (label != 'Home') ? TitleService.TITLE + ' - ' + label : TitleService.TITLE;
 
@@ -53,3 +76,21 @@ export class Title {
 
 }
 
+export class Version {
+  version: string;
+  github_url: string;
+  github_name: string;
+  copyright: string;
+
+  constructor (options: any) {
+    this.version = options.version;
+    this.github_url = options.github_url;
+    this.github_name = options.github_name;
+    this.copyright = options.copyright;
+  }
+
+  isBeta() {
+    return (""+this.version).startsWith("0.");
+  }
+
+}

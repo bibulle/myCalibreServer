@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TitleService, Version } from "../../app/title.service";
 
 @Component({
   selector: 'docs-footer',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FooterComponent implements OnInit {
 
-  constructor() { }
+  version: Version = new Version({});
 
-  ngOnInit() {
+  constructor(private _titleService: TitleService) { }
+
+  ngOnInit () {
+    this._titleService.getVersion()
+        .then(v => {
+          this.version = v;
+        });
+
   }
 
 }

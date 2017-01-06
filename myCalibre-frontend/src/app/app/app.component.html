@@ -40,11 +40,11 @@
 
 <md-sidenav-layout layout="row" fullscreen>
   <md-sidenav #menu class="app-menu" mode="side" >
-    <md-toolbar routerLink="/">
+    <md-toolbar routerLink="/" [class.beta]="version.isBeta()">
       <h3>{{getSecondaryLabel()}}</h3>
-      <a href="https://github.com/bibulle/myCalibreServer/releases/tag/v{{version}}"
+      <a href="{{version.github_url}}"
          target="_blank"
-         *ngIf="version" class="md-caption version">v{{version}}</a>
+         *ngIf="version.version" class="md-caption version">v{{version.version}}</a>
     </md-toolbar>
     <md-nav-list>
       <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="menu.opened=(menu.mode === 'side')">{{l.label}}
