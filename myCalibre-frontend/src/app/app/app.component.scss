@@ -55,12 +55,22 @@
         font-weight: 500;
         cursor: pointer;
       }
+      .beta {
+        -webkit-transform: rotate(45deg);
+        background-color: md-color($md-warn, 100);
+        position: absolute;
+        right: -34px;
+        top: 10px;
+        width: 100px;
+        text-align: center;
+        font-size: 13px;
+      }
     }
     .version {
       text-decoration: none;
       color: md-color($md-foreground, hint-text);
       position: absolute;
-      bottom: 0px;
+      bottom: 0;
       right: 0;
     }
   }

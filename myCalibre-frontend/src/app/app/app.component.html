@@ -41,6 +41,7 @@
 <md-sidenav-layout layout="row" fullscreen>
   <md-sidenav #menu class="app-menu" mode="side" >
     <md-toolbar routerLink="/" [class.beta]="version.isBeta()">
+      <div class="beta"      *ngIf="version.isBeta()">beta</div>
       <h3>{{getSecondaryLabel()}}</h3>
       <a href="{{version.github_url}}"
          target="_blank"
