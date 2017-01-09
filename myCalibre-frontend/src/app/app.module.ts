@@ -3,7 +3,7 @@ import { NgModule, enableProdMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from "@angular/material";
-import { LOG_LOGGER_PROVIDERS, INFO_LOGGER_PROVIDERS } from "angular2-logger/core";
+import { Options, Level, Logger } from "angular2-logger/core";
 
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from "./app-routing.module";
@@ -27,10 +27,10 @@ import { HomeModule } from "./components/home/home.component";
 import { TagModule } from "./components/tag/tag.module";
 import { LoginModule } from './components/login/login.component';
 
-let loggerProvider = LOG_LOGGER_PROVIDERS;
+let loggerProviderOptions = { provide: Options, useValue: { level: Level.LOG } };
 if (environment.production) {
   enableProdMode();
-  loggerProvider = INFO_LOGGER_PROVIDERS;
+  loggerProviderOptions = { provide: Options, useValue: { level: Level.INFO } };
 }
 
 @NgModule({
@@ -60,7 +60,8 @@ if (environment.production) {
     LoginModule,
   ],
   providers: [
-    loggerProvider,
+    Logger,
+    loggerProviderOptions,
     Media,
     TitleService,
     { provide: ViewportHelper, useClass: BrowserViewportHelper }

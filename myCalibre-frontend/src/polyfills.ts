@@ -20,3 +20,5 @@ import 'zone.js/dist/zone';
 
 import 'intl';
 import 'intl/locale-data/jsonp/en';
+
+import 'hammerjs/hammer';

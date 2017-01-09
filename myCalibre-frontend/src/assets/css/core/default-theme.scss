@@ -1,6 +1,6 @@
 @import '~@angular/material/core/theming/all-theme';
-//@import 'theme-functions';
-//@import 'palette';
+
+@include md-core();
 
 // Person creating a theme writes variables like this:
 $md-is-dark-theme: false !default;

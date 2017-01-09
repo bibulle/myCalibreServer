@@ -48,7 +48,7 @@ export class LoginService {
               'Content-Type': 'application/x-www-form-urlencoded',
             })}
           )
-          .timeout(3000, new Error('Connection timeout exceeded'))
+          .timeout(3000)
           .toPromise()
           .then(res => {
             const data = res.json();
@@ -73,7 +73,7 @@ export class LoginService {
               }
             }
             //this._logger.error('Login', msg);
-            this._snackBar.open(msg, null, {politeness: 'polite'});
+            this._snackBar.open(msg, null, {duration: 3000});
             this.checkAuthent();
             reject();
           })

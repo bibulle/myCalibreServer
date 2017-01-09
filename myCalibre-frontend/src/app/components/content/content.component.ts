@@ -18,7 +18,7 @@ import {Directive, NgModule} from "@angular/core";
  *
  */
 @Directive({selector: 'md-content'})
-class MdContent {
+export class MdContent {
 }
 
 @NgModule({

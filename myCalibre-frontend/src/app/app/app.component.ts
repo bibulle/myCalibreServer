@@ -134,7 +134,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       user => {
         this.user = user;
         if (!this.user.username) {
-          this._router.navigate(['login'])
+          setTimeout(() => {this._router.navigate(['login'])});
         }
       }
     );
