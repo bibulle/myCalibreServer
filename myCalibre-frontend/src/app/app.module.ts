@@ -1,8 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, enableProdMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { MaterialModule } from "@angular/material";
+import { LOG_LOGGER_PROVIDERS, INFO_LOGGER_PROVIDERS } from "angular2-logger/core";
 
 import { AppComponent } from './app/app.component';
 import { AppRoutingModule } from "./app-routing.module";
@@ -12,6 +13,7 @@ import { MdPeekabooModule } from './directives/peekaboo.directive';
 import { MdInk } from './directives/link.directive';
 import { Media } from "./core/util/media";
 import { ViewportHelper, BrowserViewportHelper } from "./core/util/viewport";
+import { environment } from "../environments/environment";
 
 import { MdContentModule } from "./components/content/content.component";
 import { FooterComponent } from './components/footer/footer.component';
@@ -23,6 +25,13 @@ import { SeriesModule } from "./components/series/series.module";
 import { AuthorModule } from "./components/author/author.module";
 import { HomeModule } from "./components/home/home.component";
 import { TagModule } from "./components/tag/tag.module";
+import { LoginModule } from './components/login/login.component';
+
+let loggerProvider = LOG_LOGGER_PROVIDERS;
+if (environment.production) {
+  enableProdMode();
+  loggerProvider = INFO_LOGGER_PROVIDERS;
+}
 
 @NgModule({
   declarations: [
@@ -47,9 +56,11 @@ import { TagModule } from "./components/tag/tag.module";
     SeriesModule,
     AuthorModule,
     TagModule,
-    FilterBarModule
+    FilterBarModule,
+    LoginModule,
   ],
   providers: [
+    loggerProvider,
     Media,
     TitleService,
     { provide: ViewportHelper, useClass: BrowserViewportHelper }

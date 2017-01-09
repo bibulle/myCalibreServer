@@ -9,6 +9,7 @@ import { SeriesListComponent } from "./components/series/series-list/series-list
 import { BookPageComponent } from "./components/book/book-page/book-page.component";
 import { AuthorListComponent } from "./components/author/author-list/author-list.component";
 import { TagListComponent } from "./components/tag/tag-list/tag-list.component";
+import { LoginComponent } from "./components/login/login.component";
 // import { LoginComponent } from "./login/login.component";
 // import { SignupComponent } from "./signup/signup.component";
 // import { AwardsComponent } from "./awards/awards.component";
@@ -18,6 +19,7 @@ import { TagListComponent } from "./components/tag/tag-list/tag-list.component";
 
 const routes: Routes = [
   { path: '',             redirectTo: '/home', pathMatch: 'full'},
+  { path: 'login',        component: LoginComponent                , data: {label: 'Login'  , menu: false}},
   { path: 'home',         component: HomeComponent                 , data: {label: 'News'   , menu: true}},
   { path: 'books',        component: BookListComponent             , data: {label: 'Books'  , menu: true}},
   { path: 'series',       component: SeriesListComponent           , data: {label: 'Series' , menu: true}},

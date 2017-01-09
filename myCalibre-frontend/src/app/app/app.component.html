@@ -46,7 +46,21 @@
          target="_blank"
          *ngIf="version" class="md-caption version">v{{version}}</a>
     </md-toolbar>
-    <md-nav-list>
+    <md-nav-list *ngIf="user.username">
+      <md-card-header class="user">
+        <img md-card-avatar src="{{user.avatarUrl}}" *ngIf="user.avatarUrl" [md-menu-trigger-for]="profilemenu">
+        <md-icon md-card-avatar *ngIf="!user.avatarUrl" [md-menu-trigger-for]="profilemenu">face</md-icon>
+        <md-card-title [md-menu-trigger-for]="profilemenu">{{user.firstname}} {{user.lastname}}</md-card-title>
+        <md-card-subtitle [md-menu-trigger-for]="profilemenu">{{user.email}}</md-card-subtitle>
+      </md-card-header>
+      <md-menu x-position="after" y-position="below" #profilemenu="mdMenu" class="profile-menu">
+        <button md-menu-item (click)="showProfile()">
+          <span> Profile </span>
+        </button>
+        <button md-menu-item (click)="disconnect()">
+          <span> Sign Out </span>
+        </button>
+      </md-menu>
       <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="menu.opened=(menu.mode === 'side')">{{l.label}}
       </md-list-item>
     </md-nav-list>

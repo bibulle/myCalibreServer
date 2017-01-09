@@ -175,4 +175,19 @@
     min-height: 640px;
     padding: 0;
   }
+
+  md-card-header.user {
+    color: md-color($md-foreground, secondary-text);
+    padding: 10px 16px 0 16px;
+    margin-bottom: 0;
+    md-card-title {
+      margin: 10px 0;
+    }
+    md-card-subtitle {
+      font-size: 0.5em;
+    }
+    md-icon {
+      font-size: 40px;
+    }
+  }
 }

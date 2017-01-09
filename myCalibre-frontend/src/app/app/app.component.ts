@@ -6,6 +6,8 @@ import { FilterService, Filter } from "../components/filter-bar/filter.service";
 import { TitleService, Title } from "./title.service";
 import { Location } from "@angular/common";
 import { MdSidenav } from "@angular/material";
+import { User } from "../components/login/user";
+import { LoginService } from "../components/login/login.service";
 
 @Component({
   selector: 'app-root',
@@ -21,12 +23,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() fullPage: boolean = this.media.hasMedia(AppComponent.SIDE_MENU_BREAKPOINT);
 
   version: string;
-  links: {path: string, label: string}[] = [];
+  links: { path: string, label: string }[] = [];
 
-  private _subscription = null;
+  private _mediaSubscription = null;
+  private _loginSubscription = null;
 
   filter = new Filter();
   title = new Title();
+
+  user: User;
 
   previousUrls = [];
 
@@ -37,12 +42,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
                private _filterService: FilterService,
                private _titleService: TitleService,
                private _location: Location,
-               private _router: Router) {}
+               private _router: Router,
+               private _loginService: LoginService) {}
 
   //noinspection JSUnusedGlobalSymbols
   ngAfterViewInit (): any {
     let query = Media.getQuery(AppComponent.SIDE_MENU_BREAKPOINT);
-    this._subscription = this.media.listen(query).onMatched.subscribe((mql: MediaQueryList) => {
+    this._mediaSubscription = this.media.listen(query).onMatched.subscribe((mql: MediaQueryList) => {
       setTimeout(() => {
         this.menu.mode = mql.matches ? 'side' : 'over';
         this.menu.toggle(mql.matches).catch(() => undefined);
@@ -123,6 +129,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     );
 
+    this._loginService.checkAuthent();
+    this._loginSubscription = this._loginService.userObservable().subscribe(
+      user => {
+        this.user = user;
+        if (!this.user.username) {
+          this._router.navigate(['login'])
+        }
+      }
+    );
+
     this.router.config.forEach(obj => {
       if (!obj.redirectTo && obj.data && obj.data['menu']) {
         this.links.push({ path: obj.path, label: obj.data['label'] });
@@ -140,7 +156,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnDestroy (): any { this._subscription.unsubscribe(); }
+  ngOnDestroy (): any {
+    this._mediaSubscription.unsubscribe();
+    this._loginSubscription.unsubscribe();
+  }
 
 
   //noinspection JSUnusedGlobalSymbols
@@ -163,6 +182,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this._router.navigate([this.title.backUrl])
     }
+  }
+
+  showProfile() {
+    this._router.navigate(['Profile'])
+  }
+  disconnect() {
+    this._loginService.logout();
   }
 
 }
