@@ -7,6 +7,7 @@ import { MdContentModule } from "../../content/content.component";
 import { SeriesCardModule } from "../series-card/series-card.component";
 import { MdProgressCircleModule } from "@angular/material";
 import { ActivatedRoute, Params } from "@angular/router";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-series-list',
@@ -28,6 +29,8 @@ export class SeriesListComponent implements OnInit {
   private previousFilterJson: string = "";
   filterCount = 0;
 
+  private _currentFilterSubscription: Subscription;
+
   constructor (private _seriesService: SeriesService,
                private _filterService: FilterService,
                private route: ActivatedRoute) {
@@ -44,13 +47,16 @@ export class SeriesListComponent implements OnInit {
       }
       if (params['name']) {
         this.filter.search = params['name'];
+        this._filterService.updateSearch(this.filter.search);
       }
     });
 
 
-    this._filterService.update(this.filter);
-    this._filterService.currentFilterObservable().subscribe(
+    this._filterService.updateNotDisplayed(false);
+    this._filterService.updateLimitTo(null);
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
+        //console.log(filter);
         this.filter = filter;
         if (this.fullSeries) {
           this._fillSeries();
@@ -77,6 +83,14 @@ export class SeriesListComponent implements OnInit {
       setTimeout(() => {
         document.querySelector('#scrollView').parentElement.scrollTop = 0;
       })
+    }
+  }
+
+  //noinspection JSUnusedGlobalSymbols
+  ngOnDestroy () {
+    // console.log("ngOnDestroy");
+    if (this._currentFilterSubscription) {
+      this._currentFilterSubscription.unsubscribe();
     }
   }
 

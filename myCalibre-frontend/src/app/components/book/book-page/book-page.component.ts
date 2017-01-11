@@ -1,5 +1,5 @@
 import { Component, OnInit, NgModule } from '@angular/core';
-import { FilterService, Filter } from "../../filter-bar/filter.service";
+import { FilterService } from "../../filter-bar/filter.service";
 import { Book } from "../book";
 import { environment } from "../../../../environments/environment";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -21,7 +21,7 @@ import { KindleDialogComponent } from "./kindle-dialog/kindle-dialog.component";
 })
 export class BookPageComponent implements OnInit {
 
-  filter: Filter = new Filter({ 'not_displayed': true });
+  //filter: Filter;
 
 
   book: Book;
@@ -38,11 +38,12 @@ export class BookPageComponent implements OnInit {
                private _route: ActivatedRoute,
                private _router: Router,
                private _dialog: MdDialog,
-               private _snackBar: MdSnackBar) { }
+               private _snackBar: MdSnackBar) {
+  }
 
   ngOnInit () {
 
-    this._filterService.update(this.filter);
+    this._filterService.updateNotDisplayed(true);
 
     let id = this._route.snapshot.params['id'];
 
@@ -77,7 +78,7 @@ export class BookPageComponent implements OnInit {
    */
   openAuthor (author_id, author_name) {
     event.stopPropagation();
-    this._router.navigate(['/authors'], { queryParams: { id: author_id, name: author_name } });
+    this._router.navigate(['/authors'], {queryParams: {id: author_id, name: author_name}});
   }
 
   /**
@@ -87,7 +88,7 @@ export class BookPageComponent implements OnInit {
    */
   openTag (tag_id, tag_name) {
     event.stopPropagation();
-    this._router.navigate(['/tags'], { queryParams: { id: tag_id, name: tag_name } });
+    this._router.navigate(['/tags'], {queryParams: {id: tag_id, name: tag_name}});
   }
 
   /**
@@ -97,7 +98,7 @@ export class BookPageComponent implements OnInit {
    */
   openSeries (series_id, series_name) {
     event.stopPropagation();
-    this._router.navigate(['/series'], { queryParams: { id: series_id, name: series_name } });
+    this._router.navigate(['/series'], {queryParams: {id: series_id, name: series_name}});
   }
 
   /** Open send to kindle dialog

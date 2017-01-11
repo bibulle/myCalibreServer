@@ -2,7 +2,7 @@ import { Component, OnInit, NgModule } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 
 import { FilterService, Filter, SortType, SortingDirection } from "./filter.service";
 import { MdIconModule, MdInputModule, MdMenuModule } from "@angular/material";
@@ -20,6 +20,9 @@ export class FilterBarComponent implements OnInit {
   private subjectFilter: Subject<Filter>;
 
 
+  private _currentFilterSubscription: Subscription;
+  private _userChoiceSubscription: Subscription;
+
   constructor(private _filterService: FilterService) {
 
   }
@@ -28,7 +31,7 @@ export class FilterBarComponent implements OnInit {
     // Apply UI changes
     if (!this.subjectFilter) {
       this.subjectFilter = new Subject<Filter>();
-      this.subjectFilter
+      this._userChoiceSubscription = this.subjectFilter
           .debounceTime(500)
           .subscribe(
             filter => {
@@ -40,12 +43,24 @@ export class FilterBarComponent implements OnInit {
           );
     }
 
-    this._filterService.currentFilterObservable().subscribe(
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       filter => {
         this.filter = filter;
       }
     )
   }
+
+  //noinspection JSUnusedGlobalSymbols
+  ngOnDestroy () {
+    // console.log("ngOnDestroy");
+    if (this._userChoiceSubscription) {
+      this._userChoiceSubscription.unsubscribe();
+    }
+    if (this._currentFilterSubscription) {
+      this._currentFilterSubscription.unsubscribe();
+    }
+  }
+
 
   toggleSort(sortType: SortType) {
     if (this.filter.sort == sortType) {

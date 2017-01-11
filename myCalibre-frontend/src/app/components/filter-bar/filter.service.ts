@@ -5,17 +5,39 @@ import { BehaviorSubject, Observable } from "rxjs";
 export class FilterService {
 
   private currentFilterSubject: BehaviorSubject<Filter>;
+  private lastFilter = new Filter();
 
   constructor () {
 
-    this.currentFilterSubject = new BehaviorSubject<Filter>(new Filter());
+    this.currentFilterSubject = new BehaviorSubject<Filter>(this.lastFilter);
 
 
   }
 
   update (filter: Filter) {
-
+    this.lastFilter = filter;
     this.currentFilterSubject.next(filter);
+  }
+
+  updateNotDisplayed (notDisplayed: boolean) {
+    if (this.lastFilter.not_displayed != notDisplayed) {
+      this.lastFilter.not_displayed = notDisplayed;
+      this.currentFilterSubject.next(this.lastFilter)
+    }
+  }
+
+  updateSearch (search: string) {
+    if (this.lastFilter.search != search) {
+      this.lastFilter.search = search;
+      this.currentFilterSubject.next(this.lastFilter)
+    }
+  }
+
+  updateLimitTo (limit_to: SortType[]) {
+    if (this.lastFilter.limit_to != limit_to) {
+      this.lastFilter.limit_to = limit_to;
+      this.currentFilterSubject.next(this.lastFilter)
+    }
   }
 
   /**
@@ -33,7 +55,7 @@ export class Filter {
   sorting_direction = SortingDirection.Asc;
   search = "";
   not_displayed = false;
-  limit_to:SortType[];
+  limit_to: SortType[];
 
   constructor (options = {}) {
     if (options['not_displayed']) {
@@ -44,7 +66,7 @@ export class Filter {
     }
   };
 
-  isAvailable(sortType: SortType): boolean {
+  isAvailable (sortType: SortType): boolean {
     return (this.limit_to == null) || (this.limit_to.some(s => s == sortType));
   }
 
