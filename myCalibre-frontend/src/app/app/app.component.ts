@@ -5,6 +5,7 @@ import { FilterService, Filter } from "../components/filter-bar/filter.service";
 import { TitleService, Title, Version } from "./title.service";
 import { Location } from "@angular/common";
 import { MdSidenav } from "@angular/material";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -22,13 +23,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   version: Version = new Version({});
   links: {path: string, label: string}[] = [];
 
-  private _subscription = null;
 
   filter = new Filter();
   title = new Title();
 
   previousUrls = [];
 
+  private _mediaSubscription: Subscription = null;
+  private _currentFilterSubscription: Subscription;
+  private _currentTitleSubscription: Subscription;
+  private _currentRouterEventSubscription: Subscription;
 
   constructor (private router: Router,
                private media: Media,
@@ -41,7 +45,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   //noinspection JSUnusedGlobalSymbols
   ngAfterViewInit (): any {
     let query = Media.getQuery(AppComponent.SIDE_MENU_BREAKPOINT);
-    this._subscription = this.media.listen(query).onMatched.subscribe((mql: MediaQueryList) => {
+    this._mediaSubscription = this.media.listen(query).onMatched.subscribe((mql: MediaQueryList) => {
       setTimeout(() => {
         this.menu.mode = mql.matches ? 'side' : 'over';
         this.menu.toggle(mql.matches).catch(() => undefined);
@@ -114,13 +118,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
           this.version = v;
         });
 
-    this._filterService.currentFilterObservable().subscribe(
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       filter => {
         this.filter = filter;
       }
     );
 
-    this._titleService.currentTitleObservable().subscribe(
+    this._currentTitleSubscription = this._titleService.currentTitleObservable().subscribe(
       title => {
         this.title = title;
       }
@@ -132,7 +136,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    this.router.events.subscribe((event: any) => {
+    this._currentRouterEventSubscription = this.router.events.subscribe((event: any) => {
       if (event instanceof NavigationStart) {
         this.previousUrls.unshift(event['url']);
         // limit to 10 (2 should be enough ;-) )
@@ -144,7 +148,20 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //noinspection JSUnusedGlobalSymbols
   ngOnDestroy (): any {
-    this._subscription.unsubscribe();
+    if (this._mediaSubscription) {
+      this._mediaSubscription.unsubscribe();
+    }
+
+    if (this._currentFilterSubscription) {
+      this._currentFilterSubscription.unsubscribe();
+    }
+    if (this._currentTitleSubscription) {
+      this._currentTitleSubscription.unsubscribe();
+    }
+    if (this._currentRouterEventSubscription) {
+      this._currentRouterEventSubscription.unsubscribe();
+    }
+
   }
 
 
@@ -168,6 +185,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this._router.navigate([this.title.backUrl])
     }
+  }
+
+  itemClicked() {
+    this.menu.opened=(this.menu.mode === 'side');
+    this._filterService.update(new Filter());
   }
 
 }

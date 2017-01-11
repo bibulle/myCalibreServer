@@ -7,6 +7,7 @@ import { Tag } from "../tag";
 import { Filter, SortType, FilterService, SortingDirection } from "../../filter-bar/filter.service";
 import { TagService } from "../tag.service";
 import { ActivatedRoute, Params } from "@angular/router";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-tag-list',
@@ -24,9 +25,11 @@ export class TagListComponent implements OnInit {
 
   totalTagsCount = 0;
 
-  filter: Filter = new Filter({ limit_to: [SortType.Name] });
+  filter: Filter;
   private previousFilterJson: string = "";
   filterCount = 0;
+
+  private _currentFilterSubscription: Subscription;
 
   constructor (private _tagService: TagService,
                private _filterService: FilterService,
@@ -44,13 +47,16 @@ export class TagListComponent implements OnInit {
       }
       if (params['name']) {
         this.filter.search = params['name'];
+        this._filterService.updateSearch(this.filter.search);
       }
     });
 
 
-    this._filterService.update(this.filter);
-    this._filterService.currentFilterObservable().subscribe(
+    this._filterService.updateNotDisplayed(false);
+    this._filterService.updateLimitTo([SortType.Name]);
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
+        //console.log(filter);
         this.filter = filter;
         if (this.fullTags) {
           this._fillTags();
@@ -77,6 +83,14 @@ export class TagListComponent implements OnInit {
       setTimeout(() => {
         document.querySelector('#scrollView').parentElement.scrollTop = 0;
       })
+    }
+  }
+
+  //noinspection JSUnusedGlobalSymbols
+  ngOnDestroy () {
+    // console.log("ngOnDestroy");
+    if (this._currentFilterSubscription) {
+      this._currentFilterSubscription.unsubscribe();
     }
   }
 

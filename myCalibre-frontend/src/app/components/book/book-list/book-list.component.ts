@@ -4,6 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
 
 const leftPad = require('left-pad');
+import { Subscription } from "rxjs";
 
 import { FilterService, Filter, SortType, SortingDirection } from "../../filter-bar/filter.service";
 import { MdContentModule } from "../../content/content.component";
@@ -26,9 +27,11 @@ export class BookListComponent implements OnInit {
 
   totalBooksCount = 0;
 
-  filter: Filter = new Filter();
+  filter: Filter;
   private previousFilterJson: string = "";
   filterCount = 0;
+
+  private _currentFilterSubscription: Subscription;
 
   constructor (private _bookService: BookService,
                private _filterService: FilterService) {
@@ -38,9 +41,11 @@ export class BookListComponent implements OnInit {
   //noinspection JSUnusedGlobalSymbols
   ngOnInit () {
 
-    this._filterService.update(this.filter);
-    this._filterService.currentFilterObservable().subscribe(
+    this._filterService.updateNotDisplayed(false);
+    this._filterService.updateLimitTo(null);
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
+        //console.log(filter);
         this.filter = filter;
         if (this.fullBooks) {
           this._fillBooks();
@@ -60,6 +65,14 @@ export class BookListComponent implements OnInit {
         })
   }
 
+  //noinspection JSUnusedGlobalSymbols
+  ngOnDestroy () {
+    // console.log("ngOnDestroy");
+    if (this._currentFilterSubscription) {
+      this._currentFilterSubscription.unsubscribe();
+    }
+  }
+
   /**
    * fill the this.book list (slowly) with the filtered this.fullBooks list
    * @private
@@ -67,12 +80,12 @@ export class BookListComponent implements OnInit {
   private _fillBooks () {
     const _filterCount = (++this.filterCount);
 
-    var tmpBooks = this._filterAndSortBooks();
+    const tmpBooks = this._filterAndSortBooks();
 
     if (tmpBooks) {
 
-      var cpt = 0;
-      var STEP = 50;
+      let cpt = 0;
+      const STEP = 50;
 
       // if books exists already, start from books length
       if (this.books) {
@@ -105,55 +118,55 @@ export class BookListComponent implements OnInit {
    * @private
    */
   _filterAndSortBooks (): Book[] {
-    var filterJson = JSON.stringify(this.filter);
+    const filterJson = JSON.stringify(this.filter);
     if ((this.previousFilterJson === filterJson) && (this.books != null)) {
       return null;
     }
     this.previousFilterJson = filterJson;
 
-    // first filter
-    var filteredBooks = this.fullBooks
-                            .filter((b) => {
+    const filteredBooks = this.fullBooks
+                              // first filter
+                              .filter((b) => {
 
-                              var strToSearch = b.book_title
-                                                 .concat(b.series_name)
-                                                 .concat(b.comment)
-                                                 .concat("" + b.author_name);
+                                const strToSearch = b.book_title
+                                                     .concat(b.series_name)
+                                                     .concat(b.comment)
+                                                     .concat("" + b.author_name);
 
-                              var ret = (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
+                                const ret = (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
 
-                              return ret;
-                            })
-                            .sort((b1: Book, b2: Book) => {
-                              var v1: string;
-                              var v2: string;
-                              v1 = (b1.series_name == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
-                              v2 = (b2.series_name == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
-                              switch (this.filter.sort) {
-                                case SortType.Name:
-                                  break;
-                                case SortType.Author:
-                                  v1 = b1.author_sort.toString() + " " + v1;
-                                  v2 = b2.author_sort.toString() + " " + v2;
-                                  break;
-                                case SortType.PublishDate:
-                                default:
-                                  v1 = b1.book_date + " " + v1;
-                                  v2 = b2.book_date + " " + v2;
-                                  break;
-                              }
+                                return ret;
+                              })
+                              // then sort
+                              .sort((b1: Book, b2: Book) => {
+                                let v1: string;
+                                let v2: string;
+                                v1 = (b1.series_name == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
+                                v2 = (b2.series_name == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
+                                switch (this.filter.sort) {
+                                  case SortType.Name:
+                                    break;
+                                  case SortType.Author:
+                                    v1 = b1.author_sort.toString() + " " + v1;
+                                    v2 = b2.author_sort.toString() + " " + v2;
+                                    break;
+                                  case SortType.PublishDate:
+                                  default:
+                                    v1 = b1.book_date + " " + v1;
+                                    v2 = b2.book_date + " " + v2;
+                                    break;
+                                }
 
-                              switch (this.filter.sorting_direction) {
-                                case SortingDirection.Asc:
-                                  return v1.localeCompare(v2);
-                                case SortingDirection.Desc:
-                                default:
-                                  return v2.localeCompare(v1);
-                              }
+                                switch (this.filter.sorting_direction) {
+                                  case SortingDirection.Asc:
+                                    return v1.localeCompare(v2);
+                                  case SortingDirection.Desc:
+                                  default:
+                                    return v2.localeCompare(v1);
+                                }
 
-                            });
+                              });
 
-    // then sort (TODO)
 
     this.totalBooksCount = filteredBooks.length;
 

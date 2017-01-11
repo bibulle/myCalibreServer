@@ -7,6 +7,7 @@ import { Filter, FilterService, SortType, SortingDirection } from "../../filter-
 import { AuthorService } from "../author.service";
 import { AuthorCardModule } from "../author-card/author-card.component";
 import { ActivatedRoute, Params } from "@angular/router";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-author-list',
@@ -24,9 +25,11 @@ export class AuthorListComponent implements OnInit {
 
   totalAuthorsCount = 0;
 
-  filter: Filter = new Filter({ limit_to: [SortType.Name, SortType.PublishDate] });
+  filter: Filter;
   private previousFilterJson: string = "";
   filterCount = 0;
+
+  private _currentFilterSubscription: Subscription;
 
   constructor (private _authorService: AuthorService,
                private _filterService: FilterService,
@@ -44,13 +47,16 @@ export class AuthorListComponent implements OnInit {
       }
       if (params['name']) {
         this.filter.search = params['name'];
+        this._filterService.updateSearch(this.filter.search);
       }
     });
 
 
-    this._filterService.update(this.filter);
-    this._filterService.currentFilterObservable().subscribe(
+    this._filterService.updateNotDisplayed(false);
+    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate]);
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
+        //console.log(filter);
         this.filter = filter;
         if (this.fullAuthors) {
           this._fillAuthors();
@@ -78,6 +84,14 @@ export class AuthorListComponent implements OnInit {
       setTimeout(() => {
         document.querySelector('#scrollView').parentElement.scrollTop = 0;
       })
+    }
+  }
+
+  //noinspection JSUnusedGlobalSymbols
+  ngOnDestroy () {
+    // console.log("ngOnDestroy");
+    if (this._currentFilterSubscription) {
+      this._currentFilterSubscription.unsubscribe();
     }
   }
 
