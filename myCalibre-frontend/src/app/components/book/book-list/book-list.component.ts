@@ -78,6 +78,9 @@ export class BookListComponent implements OnInit {
    * @private
    */
   private _fillBooks () {
+    if (!this.fullBooks || !this.filter) {
+      return;
+    }
     const _filterCount = (++this.filterCount);
 
     const tmpBooks = this._filterAndSortBooks();

@@ -46,8 +46,7 @@ export class TagListComponent implements OnInit {
         this.selectedId = params['id'];
       }
       if (params['name']) {
-        this.filter.search = params['name'];
-        this._filterService.updateSearch(this.filter.search);
+        this._filterService.updateSearch(params['name']);
       }
     });
 
@@ -99,6 +98,9 @@ export class TagListComponent implements OnInit {
    * @private
    */
   private _fillTags () {
+    if (!this.fullTags || !this.filter) {
+      return;
+    }
     const _filterCount = (++this.filterCount);
 
     const tmpTags = this._filterAndSortTags();

@@ -46,8 +46,7 @@ export class SeriesListComponent implements OnInit {
         this.selectedId = params['id'];
       }
       if (params['name']) {
-        this.filter.search = params['name'];
-        this._filterService.updateSearch(this.filter.search);
+        this._filterService.updateSearch(params['name']);
       }
     });
 
@@ -99,6 +98,9 @@ export class SeriesListComponent implements OnInit {
    * @private
    */
   private _fillSeries () {
+    if (!this.fullSeries || !this.filter) {
+      return;
+    }
     const _filterCount = (++this.filterCount);
 
     const tmpSeries = this._filterAndSortSeries();
