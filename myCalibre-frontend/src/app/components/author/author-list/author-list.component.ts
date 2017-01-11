@@ -46,8 +46,7 @@ export class AuthorListComponent implements OnInit {
         this.selectedId = params['id'];
       }
       if (params['name']) {
-        this.filter.search = params['name'];
-        this._filterService.updateSearch(this.filter.search);
+        this._filterService.updateSearch(params['name']);
       }
     });
 
@@ -100,6 +99,9 @@ export class AuthorListComponent implements OnInit {
    * @private
    */
   private _fillAuthors () {
+    if (!this.fullAuthors || !this.filter) {
+      return;
+    }
     const _filterCount = (++this.filterCount);
 
     const tmpAuthors = this._filterAndSortAuthors();
