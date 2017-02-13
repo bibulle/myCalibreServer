@@ -13,7 +13,7 @@ const sharp = require('sharp');
 debug('Starting.....');
 process.chdir(`${__dirname}/../..`);
 
-const CRON_TAB_CACHE_CHECK = '0 * * * * *';
+const CRON_TAB_CACHE_CHECK = '* */30 * * * *';
 debug("CronTab          : '" + CRON_TAB_CACHE_CHECK + "'");
 
 let _checkCacheStarted = false;
