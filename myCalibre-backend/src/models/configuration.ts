@@ -8,6 +8,10 @@ export class Configuration {
   smtp_port: string;
   smtp_encryption: string;
 
+  authent_secret: string;
+  authent_length: number;
+  authent_digest: string;
+
   constructor (options: {}) {
     _.merge(this, options);
 

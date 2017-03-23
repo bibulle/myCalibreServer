@@ -1,0 +1,17 @@
+<div class="md-content" flex="100" layout-align="center center" layout="row">
+  <md-card flex="30">
+    <md-card-title>
+      Login
+    </md-card-title>
+    <form role="form" (submit)="login($event, email.value, password.value)">
+      <md-card-content>
+        <md-input placeholder="Username" required                 #email></md-input>
+        <md-input placeholder="Password" required type="password" #password></md-input>
+      </md-card-content>
+      <md-card-actions align="end">
+        <a md-raised-button routerLinkActive="active" routerLink="signup" (click)="signup">Signup</a>
+        <button md-raised-button color="primary" type="submit">LOGIN</button>
+      </md-card-actions>
+    </form>
+  </md-card>
+</div>

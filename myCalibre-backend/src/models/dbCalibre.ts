@@ -177,7 +177,7 @@ class DbCalibre {
     })
   }
 
-  private static _makeWhere(tableName: string, locator?: string, columnName?: string, sep?: string): any {
+  public static _makeWhere(tableName: string, locator?: string, columnName?: string, sep?: string): any {
 
     columnName = columnName || 'name';
     sep = sep || '.';

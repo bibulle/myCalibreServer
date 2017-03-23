@@ -51,6 +51,7 @@
       color: md-color($md-foreground, secondary-text);
       border-bottom: 1px solid md-color($md-foreground, divider);
       position: relative;
+      overflow: hidden;
       h3 {
         font-weight: 500;
         cursor: pointer;

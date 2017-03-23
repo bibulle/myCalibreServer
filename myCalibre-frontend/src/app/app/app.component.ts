@@ -34,8 +34,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private _currentTitleSubscription: Subscription;
   private _currentRouterEventSubscription: Subscription;
 
-  constructor (private router: Router,
-               private media: Media,
+  constructor (private media: Media,
                private _filterService: FilterService,
                private _titleService: TitleService,
                private _location: Location,
@@ -130,13 +129,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     );
 
-    this.router.config.forEach(obj => {
+    this._router.config.forEach(obj => {
       if (!obj.redirectTo && obj.data && obj.data['menu']) {
         this.links.push({path: obj.path, label: obj.data['label']});
       }
     });
 
-    this._currentRouterEventSubscription = this.router.events.subscribe((event: any) => {
+    this._currentRouterEventSubscription = this._router.events.subscribe((event: any) => {
       if (event instanceof NavigationStart) {
         this.previousUrls.unshift(event['url']);
         // limit to 10 (2 should be enough ;-) )

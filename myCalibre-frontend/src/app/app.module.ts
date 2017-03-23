@@ -23,6 +23,7 @@ import { SeriesModule } from "./components/series/series.module";
 import { AuthorModule } from "./components/author/author.module";
 import { HomeModule } from "./components/home/home.component";
 import { TagModule } from "./components/tag/tag.module";
+import { AuthentModule } from "./components/authent/authent.module";
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { TagModule } from "./components/tag/tag.module";
     SeriesModule,
     AuthorModule,
     TagModule,
+    AuthentModule,
     FilterBarModule
   ],
   providers: [
