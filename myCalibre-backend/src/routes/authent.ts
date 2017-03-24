@@ -1,4 +1,5 @@
 import { Router, Response, Request, NextFunction } from "express";
+import { User } from "../models/user";
 
 const debug = require('debug')('server:routes:authent');
 
@@ -16,13 +17,16 @@ function authentRouter (passport): Router {
         //
         .post((request: Request, response: Response, next: NextFunction) => {
           debug("POST /login");
-          passport.authenticate('local-login', (err, user, info): any => {
+          passport.authenticate(['jwt-check', 'local-login'], {session: false}, (err, user, info): any => {
             if (err) {
               return next(err);
             }
 
             if (! user) {
-              const msg = info || 'authentication failed';
+              debug(info);
+              //debug(info.name);
+              //debug(info.message);
+              const msg = info.message || info || 'authentication failed';
               return response.status(401).send({error: msg});
             }
 
@@ -30,7 +34,10 @@ function authentRouter (passport): Router {
               if (loginErr) {
                 return next(loginErr);
               }
-              return response.send({message: "authentication succeeded"})
+              debug("201 : token created(" + user + ")");
+              return response.status(201).send({
+                id_token: User.createToken(user)
+              });
             })
           })(request, response, next);
         });
@@ -39,11 +46,32 @@ function authentRouter (passport): Router {
         // ====================================
         // route for processing the signup form
         // ====================================
-        .post(passport.authenticate('local-signup', {
-          successRedirect: '/profile', // redirect to the secure profile section
-          failureRedirect: '/signup', // redirect back to the signup page if there is an error
-          failureFlash: true // allow flash messages
-        }));
+        .post((request: Request, response: Response, next: NextFunction) => {
+          debug("POST /login");
+          passport.authenticate(['jwt-check', 'local-signup'], {session: false}, (err, user, info): any => {
+            if (err) {
+              return next(err);
+            }
+
+            if (! user) {
+              debug(info);
+              //debug(info.name);
+              //debug(info.message);
+              const msg = info.message || info || 'authentication failed';
+              return response.status(401).send({error: msg});
+            }
+
+            request.login(user, loginErr => {
+              if (loginErr) {
+                return next(loginErr);
+              }
+              debug("201 : token created(" + user + ")");
+              return response.status(201).send({
+                id_token: User.createToken(user)
+              });
+            })
+          })(request, response, next);
+        });
 
   router.route('/profile')
         // ====================================

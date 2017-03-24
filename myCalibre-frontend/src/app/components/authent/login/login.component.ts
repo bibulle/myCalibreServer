@@ -22,6 +22,8 @@ export class LoginComponent implements OnInit {
     //console.log(email+" "+password);
     event.preventDefault();
 
+    this._userService.logout();
+
     this._userService.login(email, password)
         .then(() => {
           this._router.navigate(['home']);
@@ -31,9 +33,9 @@ export class LoginComponent implements OnInit {
         });
   }
 
-   signup(event) {
+   signup() {
     console.log("signup");
-     event.preventDefault();
+     //event.preventDefault();
      this._router.navigate(['signup']);
    }
 

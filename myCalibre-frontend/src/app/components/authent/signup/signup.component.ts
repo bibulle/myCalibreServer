@@ -10,15 +10,15 @@ import { Router } from "@angular/router";
 })
 export class SignupComponent implements OnInit {
 
-  constructor(private _filterService: FilterService,
-              private _userService: UserService,
-              private _router: Router) { }
+  constructor (private _filterService: FilterService,
+               private _userService: UserService,
+               private _router: Router) { }
 
-  ngOnInit() {
-    this._filterService.update(new Filter({not_displayed: true}));
+  ngOnInit () {
+    this._filterService.update(new Filter({ not_displayed: true }));
   }
 
-  signup(event, email, password) {
+  signup (event, email, password) {
     //console.log(email+" "+password);
     event.preventDefault();
 
@@ -26,14 +26,13 @@ export class SignupComponent implements OnInit {
         .then(() => {
           this._router.navigate(['home']);
         })
-        .catch( (err) => {
-          console.warn("Error during login process "+err);
+        .catch((err) => {
+          console.warn("Error during login process " + err);
         });
   }
 
-  // login(event) {
-  //   event.preventDefault();
-  //   this._router.navigate(['/login']);
-  // }
+  login () {
+    this._router.navigate(['/login']);
+  }
 
 }

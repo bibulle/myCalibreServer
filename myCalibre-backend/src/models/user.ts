@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { randomBytes, pbkdf2Sync } from "crypto";
+import { sign, verify } from "jsonwebtoken";
 
 import DbMyCalibre from "./dbMyCalibre";
 import { Configuration } from "./configuration";
@@ -87,6 +88,37 @@ export class User {
     return (this.local.hashedPassword === hash);
   }
 
+
+  /**
+   * Create e JWT token
+   * @param user
+   * @returns {string|void}
+   */
+  static createToken(user): string {
+    return sign(_.pick(user, ['local.email', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
+  }
+
+  /**
+   * Check tocken
+   * @param token
+   * @param done callback (err, user)
+   */
+  static checkToken(token, done: (err: Error, user: User) => any): void {
+    return verify(token, User.conf.authent_secret, (err, decoded) => {
+      if (err) {
+        return done(err, null);
+      }
+
+      User.findByEmail(decoded.local.email, (err, user) => {
+        if (err) {
+          done(err, null);
+        } else {
+          done(null, user);
+        }
+
+      })
+    });
+  }
 
   private generateHash(password: string): string {
     return pbkdf2Sync(password, this.local.salt, 10000, User.conf.authent_length, User.conf.authent_digest).toString("hex");

@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpModule, Http, RequestOptions } from '@angular/http';
 import { MaterialModule } from "@angular/material";
 
 import { AppComponent } from './app/app.component';
@@ -24,6 +24,12 @@ import { AuthorModule } from "./components/author/author.module";
 import { HomeModule } from "./components/home/home.component";
 import { TagModule } from "./components/tag/tag.module";
 import { AuthentModule } from "./components/authent/authent.module";
+import { AuthGuard } from "./components/authent/auth.guard";
+import { AuthHttp, AuthConfig } from 'angular2-jwt';
+
+export function authHttpServiceFactory(http: Http, options: RequestOptions) {
+  return new AuthHttp(new AuthConfig(), http, options);
+}
 
 @NgModule({
   declarations: [
@@ -54,7 +60,13 @@ import { AuthentModule } from "./components/authent/authent.module";
   providers: [
     Media,
     TitleService,
-    { provide: ViewportHelper, useClass: BrowserViewportHelper }
+    { provide: ViewportHelper, useClass: BrowserViewportHelper },
+    {
+      provide: AuthHttp,
+      useFactory: authHttpServiceFactory,
+      deps: [Http, RequestOptions]
+    },
+    AuthGuard
   ],
   bootstrap: [AppComponent]
 })

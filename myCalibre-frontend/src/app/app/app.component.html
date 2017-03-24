@@ -11,17 +11,17 @@
             [style.left]="sidenavWidth + 'px'"
             [style.right]="scrollWidth + 'px'">
   <button md-button  *ngIf="!title.backUrl"
-          class="md-hamburger md-icon-button"
+          class="md-hamburger mat-icon-button"
           hide-gt-lg
           (click)="menu.open($event)"
           aria-label="Home">
-    <md-icon class="md-dark">menu</md-icon>
+    <md-icon>menu</md-icon>
   </button>
   <button md-button *ngIf="title.backUrl"
-          class="md-icon-button"
+          class="mat-icon-button"
           (click)="goBack()"
           aria-label="Back">
-    <md-icon class="md-dark">arrow_back</md-icon>
+    <md-icon>arrow_back</md-icon>
   </button>
   <span md-peekaboo [scroller]="content.parentElement"
         [breakMd]="72"
@@ -38,7 +38,7 @@
   </div>
 </md-toolbar>
 
-<md-sidenav-layout layout="row" fullscreen>
+<md-sidenav-container layout="row" fullscreen>
   <md-sidenav #menu class="app-menu" mode="side" >
     <md-toolbar routerLink="/" [class.beta]="version.isBeta()">
       <div class="beta"      *ngIf="version.isBeta()">beta</div>
@@ -48,8 +48,7 @@
          *ngIf="version.version" class="md-caption version">v{{version.version}}</a>
     </md-toolbar>
     <md-nav-list>
-      <md-list-item md-ink *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="itemClicked()">{{l.label}}
-      </md-list-item>
+      <a md-list-item *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="itemClicked()"> {{ l.label }} </a>
     </md-nav-list>
   </md-sidenav>
 
@@ -78,4 +77,4 @@
     <docs-footer></docs-footer>
 
   </md-content>
-</md-sidenav-layout>
+</md-sidenav-container>

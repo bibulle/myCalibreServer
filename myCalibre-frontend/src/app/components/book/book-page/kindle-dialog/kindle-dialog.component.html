@@ -3,7 +3,9 @@
   <form (submit)="send()">
     <md-card-content>
       <h4>Enter your Kindle e-mail address to sync this book to your device.</h4>
-      <md-input placeholder="Mail" type="email" required [(ngModel)]="mail" name="mail"></md-input>
+      <md-input-container>
+        <input mdInput placeholder="Mail" type="email" required [(ngModel)]="mail" name="mail">
+      </md-input-container>
       <div class="message"><em>famille.martin@gmail.com</em> needs to be added as an approved sender to your Amazon account.</div>
     </md-card-content>
     <md-card-actions align="end">

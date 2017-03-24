@@ -2,13 +2,15 @@
   <div flex="100" layout="row" layout-align="end center">
     <md-icon>search</md-icon>
     &nbsp;
-    <md-input placeholder="Search" #cataloguesearch flex="75" [(ngModel)]="filter.search"
-              (ngModelChange)="filterList()"></md-input>
+    <md-input-container flex="75">
+      <input mdInput placeholder="Search" #cataloguesearch [(ngModel)]="filter.search"
+                (ngModelChange)="filterList()">
+    </md-input-container>
   </div>
   <!--<button md-button class="md-icon-button" aria-label="Favorite">-->
   <!--<md-icon md-icon>favorite</md-icon>-->
   <!--</button>-->
-  <button md-button class="md-icon-button" aria-label="Sort" [md-menu-trigger-for]="sortmenu">
+  <button md-button class="mat-icon-button" aria-label="Sort" [md-menu-trigger-for]="sortmenu">
     <md-icon md-icon>sort</md-icon>
   </button>
 

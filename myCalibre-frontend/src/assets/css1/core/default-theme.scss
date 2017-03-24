@@ -1,0 +1,38 @@
+@import '~@angular/material/core/theming/all-theme';
+
+@include mat-core();
+
+// Person creating a theme writes variables like this:
+$mat-is-dark-theme: false !default;
+
+$mat-primary: mat-palette($mat-indigo);
+$mat-accent:  mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$mat-warn:    mat-palette($mat-red);
+
+$mat-background: mat-palette($mat-grey, 500, 0, 600) !default;
+$mat-foreground: if($mat-is-dark-theme, $mat-dark-theme-foreground, $mat-light-theme-foreground) !default;
+
+// Create the theme object (a Sass map containing all of the palettes).
+$candy-app-theme: mat-light-theme($mat-primary, $mat-accent, $mat-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($candy-app-theme);
+
+
+//$md-primary: md-palette($md-deep-purple, 500, 100, 700, $md-contrast-palettes) !default;
+//$md-accent: md-palette($md-amber, A200, A100, A400, $md-contrast-palettes) !default;
+//$md-warn: md-palette($md-red, 500, 300, 900, $md-contrast-palettes) !default;
+
+//$md-primary: mat-palette($md-blue, 500, 100, 700) !default;
+//$md-accent: md-palette($md-amber, 500, 300,800) !default;
+//$md-warn: md-palette($md-red, 500, 300, 900) !default;
+
+//$md-background: md-palette($md-grey, 500, 0, 600) !default;
+//$md-foreground: if($md-is-dark-theme, $md-dark-theme-foreground, $md-light-theme-foreground) !default;
+
+//$theme: md-light-theme($md-primary, $md-accent, $md-warn);
+//@include angular-material-theme($theme);

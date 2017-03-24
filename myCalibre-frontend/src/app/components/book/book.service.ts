@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from "../../../environments/environment";
 import { Book } from "./book";
 import { Http, Response } from "@angular/http";
+import { AuthHttp } from "angular2-jwt";
 
 @Injectable()
 export class BookService {
@@ -9,7 +10,7 @@ export class BookService {
   private booksUrl = environment.serverUrl + 'api/book';
   private sendKindleUrl = '/send/kindle';
 
-  constructor (private http: Http) { }
+  constructor (private authHttp: AuthHttp) { }
 
   private static booksList: Book[];
 
@@ -19,7 +20,7 @@ export class BookService {
   getBooks (): Promise<Book[]> {
 
     return new Promise<Book[]>((resolve, reject) => {
-      this.http.get(this.booksUrl)
+      this.authHttp.get(this.booksUrl)
           .map((res: Response) => res.json().data as Book[])
           .subscribe(
             data => {
@@ -39,7 +40,7 @@ export class BookService {
   getNewBooks (): Promise<Book[]> {
 
     return new Promise<Book[]>((resolve, reject) => {
-      this.http.get(this.booksUrl+"/new")
+      this.authHttp.get(this.booksUrl+"/new")
           .map((res: Response) => res.json().data as Book[])
           .subscribe(
             data => {
@@ -89,7 +90,7 @@ export class BookService {
   sendKindle (book_id: number, email: string): Promise<void> {
 
     return new Promise<void>((resolve, reject) => {
-      this.http.get(this.booksUrl+"/"+book_id+this.sendKindleUrl+"?mail="+email)
+      this.authHttp.get(this.booksUrl+"/"+book_id+this.sendKindleUrl+"?mail="+email)
           .subscribe(
             data => {
               resolve();

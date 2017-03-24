@@ -4,6 +4,7 @@ import { JwtHelper, tokenNotExpired, AuthHttp } from "angular2-jwt";
 
 
 import { environment } from "../../../environments/environment";
+import { User } from "./user";
 
 
 @Injectable()
@@ -13,6 +14,9 @@ export class UserService {
 
   private keyTokenId = 'id_token';
 
+  private user = {} as User;
+  private jwtHelper: JwtHelper = new JwtHelper();
+
   constructor (private _http: Http) { }
 
 
@@ -20,16 +24,16 @@ export class UserService {
    * Check authentication locally (is the jwt not expired)
    */
   checkAuthent () {
-    //console.log("checkAuthent");
+    console.log("checkAuthent");
     let jwt = localStorage.getItem(this.keyTokenId);
 
     if (!jwt || !tokenNotExpired()) {
-      //this.user = new User({});
+      this.user = {} as User;
     } else {
-      //this.user = new User(this.jwtHelper.decodeToken(jwt));
+      this.user = this.jwtHelper.decodeToken(jwt) as User;
     }
 
-    //this._logger.info(this.user);
+    console.log(this.user);
 
     // if only username add to lastname
     //if (!this.user.lastname && !this.user.firstname) {
@@ -65,13 +69,14 @@ export class UserService {
           .toPromise()
           .then(res => {
             const data = res.json();
-            //if (data['id_token']) {
-            //  localStorage.setItem(this.keyTokenId, data['id_token']);
-            //  this.loggedIn = true;
-            //  this.checkAuthent();
+            console.log(res.json());
+            if (data[this.keyTokenId]) {
+              localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+              this.loggedIn = true;
+              this.checkAuthent();
               resolve();
-            //}
-            //reject();
+            }
+            reject();
           })
           .catch(error => {
             const msg = error.statusText || error.message || 'Connection error';
@@ -110,13 +115,13 @@ export class UserService {
           .toPromise()
           .then(res => {
             const data = res.json();
-            //if (data['id_token']) {
-            //  localStorage.setItem(this.keyTokenId, data['id_token']);
-            //  this.loggedIn = true;
-            //  this.checkAuthent();
-            resolve();
-            //}
-            //reject();
+            if (data[this.keyTokenId]) {
+              localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+              this.loggedIn = true;
+              this.checkAuthent();
+              resolve();
+            }
+            reject();
           })
           .catch(error => {
             const msg = error.statusText || error.message || 'Connection error';

@@ -1,7 +1,10 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 
-@import "assets/css/all";
+//@import "assets/css/all";
+//@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
+@import 'app/shared/styles.scss';
+@import 'app/shared/layout.scss';
 
 html, body {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -15,7 +18,7 @@ html, body {
 }
 
 body, input {
-  font-family: 'Roboto', sans-serif, Verdana, Geneva;
+  font-family: Roboto, sans-serif, Verdana, Geneva;
 
 }
 
@@ -24,7 +27,7 @@ app-root {
     display: block;
     padding: 115px 16px 0;
     //background-color: #009688;
-    background-color: md-color($md-primary);
+    background-color: mat-color($primary);
     height: 256px;
     min-height: 256px;
     max-height: 256px;
@@ -45,16 +48,21 @@ app-root > h1 {
 }
 
 body md-nav-list a[md-list-item].active .md-list-item, body md-nav-list md-list-item.active .md-list-item {
-  color: md-color($md-primary);
+  color: mat-color($primary);
 }
 body md-nav-list md-list-item[md-ink] .md-list-item:hover {
   background: none;
 
 }
 
+.md-caption {
+  font-size: $caption-font-size-base;
+  letter-spacing: 0.020em;
+}
 
-.md-sidenav-content {
-    width: 100%
+
+.mat-sidenav-content {
+    //width: 100%
 }
 
 .material-icons {

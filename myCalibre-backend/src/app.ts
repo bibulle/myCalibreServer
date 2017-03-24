@@ -61,7 +61,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 //--------------
 // api routes
 //--------------
-app.use("/api/book", bookRouter);
+app.use("/api/book", bookRouter(passport));
 app.use("/api/series", seriesRouter);
 app.use("/api/author", authorRouter);
 app.use("/api/tag", tagRouter);

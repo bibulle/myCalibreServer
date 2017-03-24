@@ -8,6 +8,6 @@ md-spinner {
 
 .max-reached {
   padding: 1.5em;
-  color: md-color($md-foreground, secondary-text);
+  color: mat-color(map-get($theme,foreground), secondary-text);
 
 }

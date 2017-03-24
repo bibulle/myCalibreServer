@@ -5,7 +5,7 @@ import { FormsModule } from "@angular/forms";
 import { Subject, Subscription } from "rxjs";
 
 import { FilterService, Filter, SortType, SortingDirection } from "./filter.service";
-import { MdIconModule, MdInputModule, MdMenuModule } from "@angular/material";
+import { MdIconModule, MdInputModule, MdMenuModule, MdButtonModule } from "@angular/material";
 
 @Component({
   selector: 'filter-bar',
@@ -88,6 +88,7 @@ export class FilterBarComponent implements OnInit {
     FormsModule,
     MdIconModule,
     MdInputModule,
+    MdButtonModule,
     MdMenuModule.forRoot()
   ],
   declarations: [

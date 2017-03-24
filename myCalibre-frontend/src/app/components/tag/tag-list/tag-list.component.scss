@@ -1,4 +1,5 @@
-@import "../../../shared/styles";
+//@import "../../../shared/styles";
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
 
 md-spinner {
   width: 50px;
@@ -8,6 +9,6 @@ md-spinner {
 
 .max-reached {
   padding: 1.5em;
-  color: md-color($md-foreground, secondary-text);
+  color: mat-color(map-get($theme,foreground), secondary-text);
 
 }

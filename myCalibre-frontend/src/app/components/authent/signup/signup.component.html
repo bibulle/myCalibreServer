@@ -5,11 +5,15 @@
     </md-card-title>
     <form role="form" (submit)="signup($event, email.value, password.value)">
       <md-card-content>
-        <md-input placeholder="Username" required                 #email></md-input>
-        <md-input placeholder="Password" required type="password" #password></md-input>
+        <md-input-container>
+          <input mdInput placeholder="Username" required                 #email>
+        </md-input-container>
+        <md-input-container>
+          <input mdInput placeholder="Password" required type="password" #password>
+        </md-input-container>
       </md-card-content>
       <md-card-actions align="end">
-        <a md-raised-button routerLink="/login">Login</a>
+        <a md-raised-button (click)="login()">Login</a>
         <button md-raised-button color="primary" type="submit">SIGNUP</button>
       </md-card-actions>
     </form>
