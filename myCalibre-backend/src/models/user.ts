@@ -13,7 +13,11 @@ export class User {
   // TODO : see if it's better with an id
 
   local : {
-    email: string,
+    username: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    isAdmin: boolean;
     hashedPassword: string,
     salt: string
   };
@@ -57,9 +61,9 @@ export class User {
   }
 
 
-  static findByEmail(email: string, callback: (err: Error, user: User) => any) {
+  static findByUsername(username: string, callback: (err: Error, user: User) => any) {
     DbMyCalibre.getInstance()
-      .findUserByEmail(email)
+      .findUserByUsername(username)
       .then(user => {
         callback(null, user);
       })
@@ -71,7 +75,7 @@ export class User {
 
   save(callback: (err: Error) => any) {
     DbMyCalibre.getInstance()
-               .saveUser(this)
+               .saveUser(this.local.username, this, true)
                .then(() => {
                  callback(null);
                })
@@ -95,7 +99,7 @@ export class User {
    * @returns {string|void}
    */
   static createToken(user): string {
-    return sign(_.pick(user, ['local.email', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
+    return sign(_.pick(user, ['local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
   }
 
   /**
@@ -109,7 +113,7 @@ export class User {
         return done(err, null);
       }
 
-      User.findByEmail(decoded.local.email, (err, user) => {
+      User.findByUsername(decoded.local.username, (err, user) => {
         if (err) {
           done(err, null);
         } else {

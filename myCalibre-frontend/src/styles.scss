@@ -118,6 +118,9 @@ body md-nav-list md-list-item[md-ink] .md-list-item:hover {
   overflow: hidden;
 }
 
+snack-bar-container.message {
+  background-color: mat-color(map-get($theme, background), status-bar);
+}
 snack-bar-container.warn {
   background-color: mat-color(map-get($theme, warn), 300);
 }

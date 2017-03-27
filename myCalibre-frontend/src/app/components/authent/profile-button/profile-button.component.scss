@@ -1,0 +1,23 @@
+
+:host {
+  display: flex;
+  flex-direction: column;
+
+  a {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    width: 100%;
+    text-align: left;
+    .name {
+      font-size: 0.9em;
+      line-height: 1em;
+    }
+    .email {
+      font-size: 0.8em;
+      font-weight: lighter;
+      line-height: 1em;
+    }
+  }
+
+}
+

@@ -1,26 +1,29 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
 
 @Injectable()
 export class NotificationService {
 
-  constructor(public _snackBar: MdSnackBar) { }
+  constructor(public _snackBar: MdSnackBar) {
+  }
+
+  message(message: string) {
+    //console.log(message);
+    this._display(message, 5000, ['message']);
+  }
 
   info(message: string) {
     console.log(message);
-
     this._display(message, 5000, null);
   }
 
   warn(message: string) {
     console.warn(message);
-
     this._display(message, 5000, ['warn']);
   }
 
   error(message: string) {
     console.error(message);
-
     this._display(message, 5000, ['error']);
   }
 

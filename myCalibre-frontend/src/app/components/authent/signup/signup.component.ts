@@ -20,11 +20,11 @@ export class SignupComponent implements OnInit {
     this._filterService.update(new Filter({not_displayed: true}));
   }
 
-  signup(event, email, password) {
+  signup(event, username, password, firstname, lastname, email) {
     event.preventDefault();
 
 
-    this._userService.signup(email, password)
+    this._userService.signup(username, password, firstname, lastname, email)
       .then(() => {
         this._router.navigate(['home']);
       })

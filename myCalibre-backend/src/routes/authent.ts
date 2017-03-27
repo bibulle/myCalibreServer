@@ -1,5 +1,7 @@
+import * as _ from "lodash";
 import { Router, Response, Request, NextFunction } from "express";
 import { User } from "../models/user";
+import DbMyCalibre from "../models/dbMyCalibre";
 
 const debug = require('debug')('server:routes:authent');
 
@@ -42,38 +44,69 @@ function authentRouter (passport): Router {
           })(request, response, next);
         });
 
-  router.route('/signup')
-        // ====================================
-        // route for processing the signup form
-        // ====================================
+    router.route('/signup')
+    // ====================================
+    // route for processing the signup form
+    // ====================================
         .post((request: Request, response: Response, next: NextFunction) => {
-          debug("POST /login");
-          passport.authenticate(['jwt-check', 'local-signup'], {session: false}, (err, user, info): any => {
-            if (err) {
-              return next(err);
-            }
+            debug("POST /login");
+            passport.authenticate(['jwt-check', 'local-signup'], {session: false}, (err, user, info): any => {
+                if (err) {
+                    return next(err);
+                }
 
-            if (! user) {
-              debug(info);
-              //debug(info.name);
-              //debug(info.message);
-              const msg = info.message || info || 'authentication failed';
-              return response.status(401).send({error: msg});
-            }
+                if (! user) {
+                    debug(info);
+                    //debug(info.name);
+                    //debug(info.message);
+                    const msg = info.message || info || 'authentication failed';
+                    return response.status(401).send({error: msg});
+                }
 
-            request.login(user, loginErr => {
-              if (loginErr) {
-                return next(loginErr);
-              }
-              debug("201 : token created(" + user + ")");
-              return response.status(201).send({
-                id_token: User.createToken(user)
-              });
-            })
-          })(request, response, next);
+                request.login(user, loginErr => {
+                    if (loginErr) {
+                        return next(loginErr);
+                    }
+                    debug("201 : token created(" + user + ")");
+                    return response.status(201).send({
+                        id_token: User.createToken(user)
+                    });
+                })
+            })(request, response, next);
         });
 
-  router.route('/profile')
+    router.route('/save')
+    // ====================================
+    // route for processing the profile form (save a user)
+    // ====================================
+        .post((request: Request, response: Response, next: NextFunction) => {
+            debug("POST /save");
+            passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+
+                if (err) {
+                    return next(err);
+                }
+
+                var oldUsername = user.local.username;
+                var options = _.omit(request.body['user'], ['local.salt', 'local.password', 'local.hashedPassword']);
+                _.merge(user, options);
+
+                DbMyCalibre.getInstance()
+                    .saveUser(oldUsername, user, false)
+                    .then(() => {
+                        debug("201 : token created(" + user + ")");
+                        response.status(201).send({
+                            id_token: User.createToken(user)
+                        });
+                    })
+                    .catch(err => {
+                        return next(err);
+                    });
+
+            })(request, response, next);
+        });
+
+    router.route('/profile')
         // ====================================
         // route for showing the profile form TODO: should be moved to frontend ?
         // ====================================

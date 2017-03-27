@@ -11,11 +11,13 @@ import { TagListComponent } from "./components/tag/tag-list/tag-list.component";
 import { LoginComponent } from "./components/authent/login/login.component";
 import { SignupComponent } from "./components/authent/signup/signup.component";
 import { AuthGuard } from "./components/authent/auth.guard";
+import {ProfileComponent} from "./components/authent/profile/profile.component";
 
 const routes: Routes = [
   { path: '',             redirectTo: '/home', pathMatch: 'full'},
   { path: 'login',        component: LoginComponent                , data: {label: 'Login'  , menu: true}},
   { path: 'signup',       component: SignupComponent               , data: {label: 'Signup' , menu: false}},
+  { path: 'profile',      component: ProfileComponent              , data: {label: 'Profile', menu: false}},
   { path: 'home',         component: HomeComponent                 , canActivate: [AuthGuard], data: {label: 'News'   , menu: true}},
   { path: 'books',        component: BookListComponent             , data: {label: 'Books'  , menu: true}},
   { path: 'series',       component: SeriesListComponent           , data: {label: 'Series' , menu: true}},

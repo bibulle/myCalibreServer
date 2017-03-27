@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers} from "@angular/http";
 import {JwtHelper, tokenNotExpired} from "angular2-jwt";
+import { AuthHttp } from "angular2-jwt";
 
 
 import {environment} from "../../../environments/environment";
 import {User} from "./user";
+import {BehaviorSubject, Observable} from "rxjs";
 
 
 @Injectable()
@@ -12,14 +14,41 @@ export class UserService {
 
   private loggedIn = false;
 
+  private userSubject: BehaviorSubject<User>;
+
   private keyTokenId = 'id_token';
 
   private user = {} as User;
   private jwtHelper: JwtHelper = new JwtHelper();
 
-  constructor(private _http: Http) {
+  constructor(private _http: Http,
+              private _authHttp: AuthHttp) {
+
+    this.loggedIn = !!localStorage.getItem(this.keyTokenId);
+
+    this.userSubject = new BehaviorSubject<User>(this.user);
+
+    let timer = Observable.timer(3 * 1000, 3 * 1000);
+    timer.subscribe(() => {
+      this.checkAuthent();
+    });
+
   }
 
+
+  /**
+   * Get the observable on user changes
+   * @returns {Observable<User>}
+   */
+  userObservable(): Observable<User> {
+    return this.userSubject.distinctUntilChanged(
+      (a, b) => {
+        //console.log(JSON.stringify(a.local));
+        //console.log(JSON.stringify(b.local));
+        return JSON.stringify(a) === JSON.stringify(b)
+      }
+    );
+  }
 
   /**
    * Check authentication locally (is the jwt not expired)
@@ -37,22 +66,22 @@ export class UserService {
     //console.log(this.user);
 
     // if only username add to lastname
-    //if (!this.user.lastname && !this.user.firstname) {
-    //  this.user.lastname = this.user.username;
-    //}
+    if (this.user.local && !this.user.local.lastname && !this.user.local.firstname) {
+      this.user.local.lastname = this.user.local.username;
+    }
 
-    //this.userSubject.next(this.user);
+    this.userSubject.next(this.user);
 
   }
 
   /**
    * Login (and get a JWT token)
-   * @param email
+   * @param username
    * @param password
    * @returns {Promise<void>}
    */
-  login(email, password): Promise<void> {
-    let body = JSON.stringify({email, password});
+  login(username, password): Promise<void> {
+    let body = JSON.stringify({username, password});
 
     return new Promise<void>((resolve, reject) => {
       this._http
@@ -80,20 +109,9 @@ export class UserService {
           reject();
         })
         .catch(error => {
-
-          // Try to get the content
-          const data = error.json();
-          if (data && data.error) {
-            if (data.error instanceof Array) {
-              error = data.error[data.error.length - 1];
-            } else {
-              error = data.error;
-            }
-          }
-
-          const msg = error.statusText || error.message || error || 'Connection error';
-
           this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
           reject(msg);
         })
     });
@@ -101,12 +119,15 @@ export class UserService {
 
   /**
    * Signup
-   * @param email
+   * @param username
    * @param password
+   * @param firstname
+   * @param lastname
+   * @param email
    * @returns {Promise<void>}
    */
-  signup(email, password): Promise<void> {
-    let body = JSON.stringify({email, password});
+  signup(username, password, firstname, lastname, email): Promise<void> {
+    let body = JSON.stringify({username, password, firstname, lastname, email});
 
     return new Promise<void>((resolve, reject) => {
       this._http
@@ -133,20 +154,50 @@ export class UserService {
           reject("System error");
         })
         .catch(error => {
-
-          // Try to get the content
-          const data = error.json();
-          if (data && data.error) {
-            if (data.error instanceof Array) {
-              error = data.error[data.error.length - 1];
-            } else {
-              error = data.error;
-            }
-          }
-
-          const msg = error.statusText || error.message || error || 'Connection error';
-
           this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
+          reject(msg);
+        })
+    });
+  }
+
+  /**
+   * Save a user
+   * @param user
+   * @returns {Promise<void>}
+   */
+  save(user: User): Promise<void> {
+    let body = JSON.stringify({user});
+
+    return new Promise<void>((resolve, reject) => {
+      this._authHttp
+        .post(
+          environment.serverUrl + 'authent/save',
+          body,
+          {
+            headers: new Headers({
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            })
+          }
+        )
+        .timeout(3000)
+        .toPromise()
+        .then(res => {
+          const data = res.json();
+          if (data[this.keyTokenId]) {
+            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+            this.loggedIn = true;
+            this.checkAuthent();
+            resolve();
+          }
+          reject("System error");
+        })
+        .catch(error => {
+          this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
           reject(msg);
         })
     });
@@ -159,6 +210,29 @@ export class UserService {
     localStorage.removeItem(this.keyTokenId);
     this.loggedIn = false;
     this.checkAuthent();
+  }
+
+  /**
+   * get user message from error
+   * @param error
+   * @returns string
+   * @private
+   */
+  private static _getMSgFromError(error): string {
+
+    // Try to get the content
+    const data = error.json();
+    if (data && data.error) {
+      if (data.error instanceof Array) {
+        error = data.error[data.error.length - 1];
+      } else if (data.message) {
+        error = "Systeme error : " + data.message;
+      } else {
+        error = data.error;
+      }
+    }
+
+    return error.statusText || error.message || error || 'Connection error';
   }
 
 }

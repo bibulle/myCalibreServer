@@ -47,6 +47,7 @@
          target="_blank"
          *ngIf="version.version" class="md-caption version">v{{version.version}}</a>
     </md-toolbar>
+    <app-profile-button></app-profile-button>
     <md-nav-list>
       <a md-list-item *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="itemClicked()"> {{ l.label }} </a>
     </md-nav-list>

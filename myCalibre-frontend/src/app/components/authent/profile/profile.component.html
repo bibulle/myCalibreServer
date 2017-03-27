@@ -1,0 +1,21 @@
+<div class="md-content" flex="100" layout-align="center center" layout="row">
+  <md-card flex="60">
+      <md-card-content *ngIf="user?.local">
+        <md-input-container>
+          <input mdInput placeholder="Username"  required maxlength="20" minlength="3" [(ngModel)]="user.local.username"  (change)="userChange()" (keyup)="userChange()">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput placeholder="Firstname"                                       [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput placeholder="Lastname"                                        [(ngModel)]="user.local.lastname"  (change)="userChange()" (keyup)="userChange()">
+        </md-input-container>
+        <md-input-container>
+          <input mdInput placeholder="email"     type="email"                          [(ngModel)]="user.local.email"     (change)="userChange()" (keyup)="userChange()">
+        </md-input-container>
+      </md-card-content>
+      <md-card-actions align="end">
+        <a md-raised-button (click)="logout()">Logout</a>
+      </md-card-actions>
+  </md-card>
+</div>

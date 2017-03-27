@@ -20,11 +20,11 @@ export class LoginComponent implements OnInit {
     this._filterService.update(new Filter({not_displayed: true}));
   }
 
-  login(event, email, password) {
+  login(event, username, password) {
     event.preventDefault();
 
     this._userService.logout();
-    this._userService.login(email, password)
+    this._userService.login(username, password)
         .then(() => {
           this._router.navigate(['home']);
         })

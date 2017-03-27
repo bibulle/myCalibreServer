@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from "../../../environments/environment";
 import { Book } from "./book";
-import { Http, Response } from "@angular/http";
+import { Response } from "@angular/http";
 import { AuthHttp } from "angular2-jwt";
 
 @Injectable()
@@ -59,7 +59,7 @@ export class BookService {
   getBook (book_id: number): Promise<Book> {
 
     return new Promise<Book>((resolve, reject) => {
-      var book: Book;
+      let book: Book;
       if (BookService.booksList) {
         book = BookService.booksList.find(b => { return b.book_id == book_id});
       }
@@ -92,7 +92,7 @@ export class BookService {
     return new Promise<void>((resolve, reject) => {
       this.authHttp.get(this.booksUrl+"/"+book_id+this.sendKindleUrl+"?mail="+email)
           .subscribe(
-            data => {
+            () => {
               resolve();
             },
             err => {
