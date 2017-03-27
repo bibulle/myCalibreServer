@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FilterService, Filter } from "../../filter-bar/filter.service";
 import { Router } from "@angular/router";
 import { UserService } from "../user.service";
+import {NotificationService} from "../../notification/notification.service";
 
 @Component({
   selector: 'app-login',
@@ -12,6 +13,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private _filterService: FilterService,
               private _userService: UserService,
+              private _notificationService: NotificationService,
               private _router: Router) { }
 
   ngOnInit() {
@@ -19,23 +21,19 @@ export class LoginComponent implements OnInit {
   }
 
   login(event, email, password) {
-    //console.log(email+" "+password);
     event.preventDefault();
 
     this._userService.logout();
-
     this._userService.login(email, password)
         .then(() => {
           this._router.navigate(['home']);
         })
-        .catch( () => {
-          console.warn("Error during login process");
+        .catch( (err) => {
+          this._notificationService.error(err);
         });
   }
 
    signup() {
-    console.log("signup");
-     //event.preventDefault();
      this._router.navigate(['signup']);
    }
 

@@ -117,3 +117,12 @@ body md-nav-list md-list-item[md-ink] .md-list-item:hover {
 .md-menu-ripple {
   overflow: hidden;
 }
+
+snack-bar-container.warn {
+  background-color: mat-color(map-get($theme, warn), 300);
+}
+
+snack-bar-container.error {
+  background-color: mat-color(map-get($theme, warn));
+  font-weight: bolder;
+}

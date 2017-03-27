@@ -15,13 +15,13 @@ export class AuthGuard implements CanActivate {
 
 
     if (tokenNotExpired()) {
-      console.log("canActivate true");
+      //console.log("canActivate true");
       return true;
     }
 
     // not logged in so redirect to login page
     this._router.navigate(['/login']);
-    console.log("canActivate false");
+    //console.log("canActivate false");
     return false;
   }
 }

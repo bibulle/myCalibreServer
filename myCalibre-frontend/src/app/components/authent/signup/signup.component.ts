@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { FilterService, Filter } from "../../filter-bar/filter.service";
-import { UserService } from "../user.service";
-import { Router } from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {FilterService, Filter} from "../../filter-bar/filter.service";
+import {UserService} from "../user.service";
+import {Router} from "@angular/router";
+import {NotificationService} from "../../notification/notification.service";
 
 @Component({
   selector: 'app-signup',
@@ -10,28 +11,29 @@ import { Router } from "@angular/router";
 })
 export class SignupComponent implements OnInit {
 
-  constructor (private _filterService: FilterService,
-               private _userService: UserService,
-               private _router: Router) { }
+  constructor(private _filterService: FilterService,
+              private _userService: UserService,
+              private _notificationService: NotificationService,
+              private _router: Router) { }
 
-  ngOnInit () {
-    this._filterService.update(new Filter({ not_displayed: true }));
+  ngOnInit() {
+    this._filterService.update(new Filter({not_displayed: true}));
   }
 
-  signup (event, email, password) {
-    //console.log(email+" "+password);
+  signup(event, email, password) {
     event.preventDefault();
 
+
     this._userService.signup(email, password)
-        .then(() => {
-          this._router.navigate(['home']);
-        })
-        .catch((err) => {
-          console.warn("Error during login process " + err);
-        });
+      .then(() => {
+        this._router.navigate(['home']);
+      })
+      .catch( (err) => {
+        this._notificationService.error(err);
+      });
   }
 
-  login () {
+  login() {
     this._router.navigate(['/login']);
   }
 
