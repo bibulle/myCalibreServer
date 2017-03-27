@@ -3,11 +3,6 @@
  */
 export class Animate {
 
-  /**
-   * Look up the transition event name for the browser type and cache it.
-   */
-  static TRANSITION_EVENT: string = Animate.whichTransitionEvent();
-
   static enter(el: HTMLElement, cssClass: string): Promise<void> {
     el.classList.remove(cssClass);
     return new Promise<void>((resolve)=> {
@@ -153,6 +148,11 @@ export class Animate {
       setTimeout(() => resolve(), milliseconds);
     });
   }
+
+  /**
+   * Look up the transition event name for the browser type and cache it.
+   */
+  static TRANSITION_EVENT: string = Animate.whichTransitionEvent();
 
 
 }
