@@ -25,6 +25,10 @@ export class FilterService {
       this.currentFilterSubject.next(this.lastFilter)
     }
   }
+  updateAllButNotDisplayed (filter: Filter) {
+    filter.not_displayed = this.lastFilter.not_displayed;
+    this.currentFilterSubject.next(filter);
+  }
 
   updateSearch (search: string) {
     if (this.lastFilter.search != search) {
@@ -39,6 +43,7 @@ export class FilterService {
       this.currentFilterSubject.next(this.lastFilter)
     }
   }
+
 
   /**
    * Subscribe to know if current course changes

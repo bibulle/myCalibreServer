@@ -61,8 +61,7 @@ export class BookPageComponent implements OnInit {
             }
           });
 
-
-          this._titleService.update(book.book_title, '/books');
+          this._titleService.forceTitle(this._router.url, book.book_title);
         })
         .catch(err => {
           console.log(err);

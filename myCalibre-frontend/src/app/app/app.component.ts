@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input } from '@angular/core';
-import { Router, NavigationStart } from "@angular/router";
+import {Router} from "@angular/router";
 import { Media } from "../core/util/media";
 import { FilterService, Filter } from "../components/filter-bar/filter.service";
 import { TitleService, Title, Version } from "./title.service";
@@ -23,21 +23,16 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   version: Version = new Version({});
   links: {path: string, label: string}[] = [];
 
-
   filter = new Filter();
   title = new Title();
-
-  previousUrls = [];
 
   private _mediaSubscription: Subscription = null;
   private _currentFilterSubscription: Subscription;
   private _currentTitleSubscription: Subscription;
-  private _currentRouterEventSubscription: Subscription;
 
   constructor (private media: Media,
                private _filterService: FilterService,
                private _titleService: TitleService,
-               private _location: Location,
                private _router: Router) {
   }
 
@@ -135,13 +130,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-    this._currentRouterEventSubscription = this._router.events.subscribe((event: any) => {
-      if (event instanceof NavigationStart) {
-        this.previousUrls.unshift(event['url']);
-        // limit to 10 (2 should be enough ;-) )
-        this.previousUrls = this.previousUrls.slice(0, 10);
-      }
-    })
   }
 
 
@@ -156,9 +144,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this._currentTitleSubscription) {
       this._currentTitleSubscription.unsubscribe();
-    }
-    if (this._currentRouterEventSubscription) {
-      this._currentRouterEventSubscription.unsubscribe();
     }
 
   }
@@ -179,16 +164,12 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   goBack () {
-    if (this.previousUrls[1]) {
-      this._location.back();
-    } else {
-      this._router.navigate([this.title.backUrl])
-    }
+    this._titleService.goBack();
   }
 
   itemClicked() {
     this.menu.opened=(this.menu.mode === 'side');
-    this._filterService.update(new Filter());
+    this._filterService.updateAllButNotDisplayed(new Filter());
   }
 
 }
