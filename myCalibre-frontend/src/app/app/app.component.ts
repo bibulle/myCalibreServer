@@ -6,6 +6,8 @@ import { TitleService, Title, Version } from "./title.service";
 import { Location } from "@angular/common";
 import { MdSidenav } from "@angular/material";
 import { Subscription } from "rxjs";
+import {UserService} from "../components/authent/user.service";
+import {User} from "../components/authent/user";
 
 @Component({
   selector: 'app-root',
@@ -23,14 +25,17 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   version: Version = new Version({});
   links: {path: string, label: string}[] = [];
 
+  user: User;
   filter = new Filter();
   title = new Title();
 
   private _mediaSubscription: Subscription = null;
+  private _currentUserSubscription: Subscription;
   private _currentFilterSubscription: Subscription;
   private _currentTitleSubscription: Subscription;
 
   constructor (private media: Media,
+               private _userService: UserService,
                private _filterService: FilterService,
                private _titleService: TitleService,
                private _router: Router) {
@@ -130,6 +135,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
+    this._userService.checkAuthent();
+    this._currentUserSubscription = this._userService.userObservable().subscribe(
+      user => {
+        this.user = user;
+      });
   }
 
 
@@ -138,14 +148,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this._mediaSubscription) {
       this._mediaSubscription.unsubscribe();
     }
-
     if (this._currentFilterSubscription) {
       this._currentFilterSubscription.unsubscribe();
     }
     if (this._currentTitleSubscription) {
       this._currentTitleSubscription.unsubscribe();
     }
-
+    if (this._currentUserSubscription) {
+      this._currentUserSubscription.unsubscribe();
+    }
   }
 
 
