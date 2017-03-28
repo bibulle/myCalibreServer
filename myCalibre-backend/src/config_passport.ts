@@ -157,6 +157,9 @@ module.exports = function (passport) {
 
             User.init();
 
+        })
+        .catch(err => {
+            debug(err);
         });
 
 
