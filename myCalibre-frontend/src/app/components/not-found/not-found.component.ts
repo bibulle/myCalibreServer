@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Filter, FilterService} from "../filter-bar/filter.service";
 
 @Component({
   selector: 'not-found',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NotFoundComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _filterService: FilterService) { }
 
   ngOnInit() {
+    this._filterService.update(new Filter({not_displayed: true}));
   }
 
 }

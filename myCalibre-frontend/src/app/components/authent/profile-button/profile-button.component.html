@@ -1,0 +1,7 @@
+<a *ngIf="user?.local?.username" (click)="openProfile($event, user)" md-button>
+  <div class="name">{{user?.local?.firstname}} {{user?.local?.lastname}}</div>
+  <div class="email">{{user?.local?.email}}</div>
+</a>
+<!--<a *ngIf="!user?.local?.username" (click)="login()" md-button>-->
+  <!--<div class="unknown">Unknown user</div>-->
+<!--</a>-->

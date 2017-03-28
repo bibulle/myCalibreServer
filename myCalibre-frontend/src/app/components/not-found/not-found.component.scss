@@ -1,4 +1,4 @@
-@import "../../../assets/css/core/default-theme";
+@import "../../shared/styles";
 
 :host {
   display: block;
@@ -9,7 +9,7 @@
 .not-found  {
   height: 100%;
   width: 100%;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70px' height='18px'><text fill='#{md-color($md-primary)}' x='50%' y='50%' font-size='14px' textLength='85%' text-anchor='middle'>Not found</text></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='70px' height='18px'><text fill='#{mat-color($primary)}' x='50%' y='50%' font-size='14px' textLength='85%' text-anchor='middle'>Not found</text></svg>");
 
   mask:         url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50' preserveAspectRatio='none' width='100%' height='100%'><text fill='black' x='50%' y='50%' text-anchor='middle' alignment-baseline='middle' textLength='80%' font-size='45px' style='font-weight: 900;font-family: Roboto, sans-serif, Verdana, Geneva, sans-serif, sans-serif'><animate attributeName='fill' values='#29e; #4e4; #f40; #29e' dur='6s' repeatCount='indefinite'/>404</text></svg>") top left / cover;
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50' preserveAspectRatio='none' width='100%' height='100%'><text fill='black' x='50%' y='50%' text-anchor='middle' alignment-baseline='middle' textLength='80%' font-size='45px' style='font-weight: 900;font-family: Roboto, sans-serif, Verdana, Geneva, sans-serif, sans-serif'><animate attributeName='fill' values='#29e; #4e4; #f40; #29e' dur='6s' repeatCount='indefinite'/>404</text></svg>") top left / cover;

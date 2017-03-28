@@ -10,7 +10,7 @@ import { TitleService } from "../../../app/title.service";
 import { FormsModule } from "@angular/forms";
 import {
   MdIconModule, MdInputModule, MdProgressCircleModule, MdCardModule, MdMenuModule, MdDialog,
-  MdSnackBar
+  MdSnackBar, MdButtonModule
 } from "@angular/material";
 import { KindleDialogComponent } from "./kindle-dialog/kindle-dialog.component";
 
@@ -61,8 +61,7 @@ export class BookPageComponent implements OnInit {
             }
           });
 
-
-          this._titleService.update(book.book_title, '/books');
+          this._titleService.forceTitle(this._router.url, book.book_title);
         })
         .catch(err => {
           console.log(err);
@@ -133,6 +132,7 @@ export class BookPageComponent implements OnInit {
   imports: [
     CommonModule,
     FormsModule,
+    MdButtonModule,
     MdIconModule,
     MdInputModule,
     MdProgressCircleModule,

@@ -1,4 +1,7 @@
-import { Configuration } from "./configuration";
+import * as _ from "lodash";
+import {Configuration} from "./configuration";
+import {User} from "./user";
+import DbCalibre from "./dbCalibre";
 const debug = require('debug')('server:dbCalibre');
 
 const fs = require('fs');
@@ -9,73 +12,181 @@ const squel = require("squel");
 
 class DbMyCalibre {
 
-  public static MY_CALIBRE_DIR = path.resolve(`${__dirname}/../../data/my-calibre`);
-  private static DB_FILE = `${DbMyCalibre.MY_CALIBRE_DIR}/my-calibre.db`;
+    public static MY_CALIBRE_DIR = path.resolve(`${__dirname}/../../data/my-calibre`);
+    private static DB_FILE = `${DbMyCalibre.MY_CALIBRE_DIR}/my-calibre.db`;
 
-  private static _instance: DbMyCalibre = new DbMyCalibre();
+    private static _instance: DbMyCalibre = new DbMyCalibre();
 
-  private _db;
+    private _db;
 
-  constructor() {
+    constructor() {
 
-    debug("Opening '"+DbMyCalibre.DB_FILE+"'");
+        debug("Opening '" + DbMyCalibre.DB_FILE + "'");
 
-    try {
-      this._db = new sqlite3.Database(DbMyCalibre.DB_FILE);
-    } catch (error) {
-      throw(error);
-    }
-    if (DbMyCalibre._instance) {
-      throw new Error("Error: Instantiation failed: Use DbMyCalibre.getInstance() instead of new.");
-    }
-    DbMyCalibre._instance = this;
-
-    //fs.stat(DB_FILE, function (err, stats) {
-    //  if (err) {
-    //    console.log(err);
-    //  } else {
-    //    console.log('stats: ' + JSON.stringify(stats));
-    //    debug(stats);
-    //  }
-    //});
-  }
-
-  public static getInstance(): DbMyCalibre {
-    return DbMyCalibre._instance;
-  }
-
-  /**
-   * get configuration from Db
-   * @returns {Promise<Configuration>}
-   */
-  public getConf(): Promise<Configuration> {
-
-    return new Promise<Configuration>((resolve, reject) => {
-
-      const query = squel
-        .select({separator: "\n"})
-
-        // bookFields
-        .field('config.smtp_user_name', 'smtp_user_name')
-        .field('config.smtp_password', 'smtp_password')
-        .field('config.smtp_server_name', 'smtp_server_name')
-        .field('config.smtp_port', 'smtp_port')
-        .field('config.smtp_encryption', 'smtp_encryption')
-
-        .from('config');
-
-      this._db.get(query.toString(), (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(new Configuration(row));
+        try {
+            this._db = new sqlite3.Database(DbMyCalibre.DB_FILE);
+        } catch (error) {
+            throw(error);
         }
-      })
-    })
+        if (DbMyCalibre._instance) {
+            throw new Error("Error: Instantiation failed: Use DbMyCalibre.getInstance() instead of new.");
+        }
+        DbMyCalibre._instance = this;
 
-  }
+    }
 
-//  /**
+    public static getInstance(): DbMyCalibre {
+        return DbMyCalibre._instance;
+    }
+
+    /**
+     * get configuration from Db
+     * @returns {Promise<Configuration>}
+     */
+    public getConf(): Promise<Configuration> {
+
+        return new Promise<Configuration>((resolve, reject) => {
+
+            const query = squel
+                .select({separator: "\n"})
+
+                // bookFields
+                .field('config.smtp_user_name', 'smtp_user_name')
+                .field('config.smtp_password', 'smtp_password')
+                .field('config.smtp_server_name', 'smtp_server_name')
+                .field('config.smtp_port', 'smtp_port')
+                .field('config.smtp_encryption', 'smtp_encryption')
+                .field('config.authent_secret', 'authent_secret')
+                .field('config.authent_length', 'authent_length')
+                .field('config.authent_digest', 'authent_digest')
+
+                .from('config');
+
+            this._db.get(query.toString(), (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(new Configuration(row));
+                }
+            })
+        })
+
+    }
+
+    /**
+     * get a user from Db
+     * @returns {Promise<User>}
+     */
+    public findUserByUsername(username: string): Promise<User> {
+
+        return new Promise<User>((resolve, reject) => {
+
+            const query = squel
+                .select({separator: "\n"})
+
+                // bookFields
+                .field('user.local_username', 'local.username')
+                .field('user.local_firstname', 'local.firstname')
+                .field('user.local_lastname', 'local.lastname')
+                .field('user.local_email', 'local.email')
+                .field('user.local_isAdmin', 'local.isAdmin')
+                .field('user.local_hashedPassword', 'local.hashedPassword')
+                .field('user.local_salt', 'local.salt')
+
+                .from('user')
+                .where("local_username = ?", username);
+
+            this._db.get(query.toString(), (err, row) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    if (row) {
+
+                        var options = {};
+                        _.forEach(row, (value, key) => {
+                            _.set(options, key, value);
+                        });
+
+                        resolve(new User(options));
+                    } else {
+                        resolve(null);
+                    }
+                }
+            })
+        })
+
+    }
+
+    /**
+     * Save a user
+     */
+    public saveUser(username: string, user: User, tryInsert: boolean): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this._updateUser(username, user, resolve, reject, tryInsert);
+        })
+    }
+
+    private _updateUser(username: string, user: User, resolve, reject, tryInsert: boolean) {
+        const query = squel
+            .update({separator: "\n"})
+            .table("user")
+            .set('local_username', user.local.username)
+            .set('local_firstname', user.local.firstname)
+            .set('local_lastname', user.local.lastname)
+            .set('local_email', user.local.email)
+            .set('local_isAdmin', user.local.isAdmin)
+            .set("local_hashedPassword", user.local.hashedPassword)
+            .set("local_salt", user.local.salt)
+            .set("updated", "current_timestamp", {dontQuote: true})
+
+            .where("local_username = ?", username);
+
+        //debug(query.toString());
+        const that = this;
+        this._db.run(query.toString(), function (err) {
+            if (err) {
+                console.log(err);
+                reject(err);
+            } else {
+                if (tryInsert && (this.changes == 0)) {
+                    that._insertUser(user, resolve, reject);
+                } else {
+                    debug("user updated " + user.local.username + " (" + this.changes + ")");
+                    resolve();
+                }
+            }
+
+        })
+    }
+
+    private _insertUser(user, resolve, reject) {
+        const query = squel
+                .insert({separator: "\n"})
+                .into("user")
+                .set('local_username', user.local.username)
+                .set('local_firstname', user.local.firstname)
+                .set('local_lastname', user.local.lastname)
+                .set('local_email', user.local.email)
+                .set('local_isAdmin', user.local.isAdmin)
+                .set("local_hashedPassword", user.local.hashedPassword)
+                .set("local_salt", user.local.salt)
+            //.set("updated", "current_timestamp", { dontQuote: true })
+        ;
+
+        //debug(query.toString());
+        this._db.run(query.toString(), function (err) {
+            if (err) {
+                console.log(err);
+                reject(err);
+            } else {
+                debug("user created " + user.local.username + " (" + this.changes + ")");
+                resolve();
+            }
+
+        })
+    }
+
+    //  /**
 //   * get cache dates from Db
 //   * @returns {Promise<CacheDate[]>}
 //   */

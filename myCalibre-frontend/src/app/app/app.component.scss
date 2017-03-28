@@ -2,18 +2,18 @@
 
 :host {
   display: block;
-  background-color: md-color($md-background, 100);
+  background-color: mat-color(map-get($theme,background), app-bar);
 
-  > md-sidenav-layout {
+  > md-sidenav-container {
     md-sidenav {
       width: $app-sidenav-width;
     }
-    > > .md-sidenav-content {
+    > > .mat-sidenav-content {
       width: 100%;
     }
   }
 
-  .md-icon-button {
+  .mat-icon-button {
     margin: 0 6px;
     height: 40px;
     min-width: 0;
@@ -34,30 +34,26 @@
     }
   }
   .app-menu {
-    border-right: 1px solid md-color($md-foreground, divider);
-    md-list-item {
-      position: relative;
-      display: flex;
+    border-right: 1px solid mat-color(map-get($theme,foreground), divider);
+    [md-list-item] {
       font-size: $subheader-font-size;
       font-weight: $subheader-font-weight;
-      cursor: pointer;
-      will-change: color;
-      transition: color $swift-ease-in-duration $swift-ease-in-timing-function;
       &.active {
-        color: md-color($md-primary, 500);
+        color: mat-color($primary, 500);
       }
     }
     md-toolbar {
-      color: md-color($md-foreground, secondary-text);
-      border-bottom: 1px solid md-color($md-foreground, divider);
+      color: mat-color(map-get($theme,foreground), secondary-text);
+      border-bottom: 1px solid mat-color(map-get($theme,foreground), divider);
       position: relative;
+      overflow: hidden;
       h3 {
         font-weight: 500;
         cursor: pointer;
       }
       .beta {
         -webkit-transform: rotate(45deg);
-        background-color: md-color($md-warn, 100);
+        background-color: mat-color(map-get($theme, warn), 100);
         position: absolute;
         right: -34px;
         top: 10px;
@@ -68,7 +64,7 @@
     }
     .version {
       text-decoration: none;
-      color: md-color($md-foreground, hint-text);
+      color: mat-color(map-get($theme,foreground), hint-text);
       position: absolute;
       bottom: 0;
       right: 0;
@@ -114,7 +110,7 @@
     @include md-hero-toolbar();
     padding: 135px 16px 0;
     h1 {
-      color: #fff;
+      color: mat-color($primary, default-contrast);
       font-size: 56px;
       font-weight: 400;
       line-height: 1.5;
@@ -160,13 +156,13 @@
       margin-top: rem(6);
       margin-bottom: rem(6);
       font-weight: 300;
-      color: md-color($md-primary, 900);
+      color: mat-color($primary, 900);
     }
     > md-divider {
       margin-top: rem(6);
     }
     .card-media {
-      background-color: md-color($md-background);
+      background-color: mat-color(map-get($theme,background), app-bar);
     }
   }
 

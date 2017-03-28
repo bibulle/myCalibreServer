@@ -6,12 +6,12 @@
     <md-card class="authors" layout="column" flex="100">
       <div class="date">{{book.book_date | date: 'MMMM yyyy'}}</div>
       <md-card-title>Authors</md-card-title>
-      <button md-button="" class="author" *ngFor="let name of book.author_name; let i = index"
+      <button md-button class="author" *ngFor="let name of book.author_name; let i = index"
               (click)="openAuthor(book.author_id[i], name)">
         {{name}}
       </button>
       <md-card-title class="series" *ngIf="book.series_id">Series</md-card-title>
-      <button md-button="" class="series" *ngIf="book.series_id" (click)="openSeries(book.series_id, book.series_name)">
+      <button md-button class="series" *ngIf="book.series_id" (click)="openSeries(book.series_id, book.series_name)">
         {{book.series_name}}
       </button>
       <md-card-title class="description">Description</md-card-title>
@@ -19,7 +19,7 @@
       </div>
       <md-card-title class="tags">Tags</md-card-title>
       <div class="tags-content">
-        <button md-button="" *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i], name)">
+        <button md-button *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i], name)">
           {{name}}
         </button>
       </div>
@@ -46,7 +46,9 @@
         </button>
       </md-menu>
       <md-menu x-position="before" y-position="below" #kindledmenu="mdMenu" class="download-menu">
-        <md-input placeholder="Search" flex="75"></md-input>
+        <md-input-container>
+          <input mdInput placeholder="Search" flex="75">
+        </md-input-container>
       </md-menu>
     </md-card>
 

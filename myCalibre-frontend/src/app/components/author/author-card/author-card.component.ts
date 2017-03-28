@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, NgModule } from '@angular/core';
 import { Author } from "../author";
 import { CommonModule } from "@angular/common";
-import { MdCardModule, MdIconModule } from "@angular/material";
+import { MdCardModule, MdIconModule, MdButtonModule } from "@angular/material";
 import { BookCardModule } from "../../book/book-card/book-card.component";
 
 @Component({
@@ -34,6 +34,7 @@ export class AuthorCardComponent implements OnInit {
     CommonModule,
     MdCardModule,
     MdIconModule,
+    MdButtonModule,
     BookCardModule
   ],
   declarations: [

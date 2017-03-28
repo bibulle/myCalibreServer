@@ -2,7 +2,7 @@
   <md-card-title class="tag-name">
     {{tag.tag_name}}
     <span class="count" >{{tag.books.length}} book<span *ngIf="tag.books.length > 1">s</span></span>
-    <button md-icon-button>
+    <button md-icon-button class="mat-icon-button">
       <md-icon *ngIf="booksClosed">keyboard_arrow_down</md-icon>
       <md-icon *ngIf="!booksClosed">keyboard_arrow_up</md-icon>
     </button>

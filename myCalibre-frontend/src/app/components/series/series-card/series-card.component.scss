@@ -1,4 +1,5 @@
-@import "../../../shared/styles";
+//@import "../../../shared/styles";
+@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
 
 md-card-title .date {
   font-size: 0.6em;
@@ -70,7 +71,7 @@ md-card-subtitle .author:not(:last-child):after {
     justify-content: center;
     display: flex;
     flex-direction: column;
-    border-bottom: md-color($md-foreground, divider) 1px solid;
+    border-bottom: mat-color(map-get($theme,foreground), divider) 1px solid;
 
   }
 }
