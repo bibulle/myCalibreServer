@@ -13,6 +13,9 @@ IndexIgnore */*
 	RewriteCond %{REQUEST_URI} /api
 	RewriteRule ^(.*)$ http://localhost:4000/$1 [P]
 
-	# otherwise forward it to index.html 
+	RewriteCond %{REQUEST_URI} /authent
+	RewriteRule ^(.*)$ http://localhost:4000/$1 [P]
+
+	# otherwise forward it to index.html
 	RewriteRule ^(.*) /bib/index.html [NC,L]
 </IfModule>
