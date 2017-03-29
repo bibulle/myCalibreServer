@@ -1,6 +1,6 @@
 import * as _ from "lodash";
-import { Router, Response, Request, NextFunction } from "express";
-import { User } from "../models/user";
+import {Router, Response, Request, NextFunction} from "express";
+import {User} from "../models/user";
 import DbMyCalibre from "../models/dbMyCalibre";
 
 const debug = require('debug')('server:routes:authent');
@@ -9,124 +9,154 @@ const debug = require('debug')('server:routes:authent');
 // --     /authent routes     --
 // -----------------------------------
 
-function authentRouter (passport): Router {
+function authentRouter(passport): Router {
   const router: Router = Router();
 
+  // =====================================
+  // LOCAL ROUTES =====================
+  // =====================================
   router.route('/login')
-        // ====================================
-        // route for processing the login form
-        // ====================================
-        //
-        .post((request: Request, response: Response, next: NextFunction) => {
-          debug("POST /login");
-          passport.authenticate(['jwt-check', 'local-login'], {session: false}, (err, user, info): any => {
-            if (err) {
-              return next(err);
-            }
+  // ====================================
+  // route for processing the local login form
+  // ====================================
+  //
+    .post((request: Request, response: Response, next: NextFunction) => {
+      debug("POST /login");
+      passport.authenticate(['jwt-check', 'local-login'], {session: false}, (err, user, info): any => {
+        if (err) {
+          return next(err);
+        }
 
-            if (! user) {
-              debug(info);
-              //debug(info.name);
-              //debug(info.message);
-              const msg = info.message || info || 'authentication failed';
-              return response.status(401).send({error: msg});
-            }
+        if (!user) {
+          debug(info);
+          //debug(info.name);
+          //debug(info.message);
+          const msg = info.message || info || 'authentication failed';
+          return response.status(401).send({error: msg});
+        }
 
-            request.login(user, loginErr => {
-              if (loginErr) {
-                return next(loginErr);
-              }
-              debug("201 : token created(" + user + ")");
-              return response.status(201).send({
-                id_token: User.createToken(user)
-              });
-            })
-          })(request, response, next);
-        });
+        request.login(user, loginErr => {
+          if (loginErr) {
+            return next(loginErr);
+          }
+          debug("201 : token created(" + user.id + ")");
+          return response.status(201).send({
+            id_token: User.createToken(user)
+          });
+        })
+      })(request, response, next);
+    });
 
-    router.route('/signup')
-    // ====================================
-    // route for processing the signup form
-    // ====================================
-        .post((request: Request, response: Response, next: NextFunction) => {
-            debug("POST /login");
-            passport.authenticate(['jwt-check', 'local-signup'], {session: false}, (err, user, info): any => {
-                if (err) {
-                    return next(err);
-                }
+  router.route('/signup')
+  // ====================================
+  // route for processing the local signup form
+  // ====================================
+    .post((request: Request, response: Response, next: NextFunction) => {
+      debug("POST /login");
+      passport.authenticate(['jwt-check', 'local-signup'], {session: false}, (err, user, info): any => {
+        if (err) {
+          return next(err);
+        }
 
-                if (! user) {
-                    debug(info);
-                    //debug(info.name);
-                    //debug(info.message);
-                    const msg = info.message || info || 'authentication failed';
-                    return response.status(401).send({error: msg});
-                }
+        if (!user) {
+          debug(info);
+          //debug(info.name);
+          //debug(info.message);
+          const msg = info.message || info || 'authentication failed';
+          return response.status(401).send({error: msg});
+        }
 
-                request.login(user, loginErr => {
-                    if (loginErr) {
-                        return next(loginErr);
-                    }
-                    debug("201 : token created(" + user + ")");
-                    return response.status(201).send({
-                        id_token: User.createToken(user)
-                    });
+        request.login(user, loginErr => {
+          if (loginErr) {
+            return next(loginErr);
+          }
+          debug("201 : token created(" + user.id + ")");
+          return response.status(201).send({
+            id_token: User.createToken(user)
+          });
+        })
+      })(request, response, next);
+    });
+
+  router.route('/save')
+  // ====================================
+  // route for processing the local profile form (save a user)
+  // ====================================
+    .post((request: Request, response: Response, next: NextFunction) => {
+      debug("POST /save");
+      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        const options = _.omit(request.body['user'], ['id', 'local.salt', 'local.password', 'local.hashedPassword']);
+        _.merge(user, options);
+
+        // Check if username already exist
+        DbMyCalibre.getInstance()
+          .findUserByUsername(user.local.username)
+          .then((userDb) => {
+            if (userDb && (userDb.id !== user.id)) {
+              response.status(401).send({error: "That username already exists."})
+            } else {
+              DbMyCalibre.getInstance()
+                .saveUser(user, false)
+                .then(() => {
+                  debug("201 : token created(" + user.id + ")");
+                  response.status(201).send({
+                    id_token: User.createToken(user)
+                  });
                 })
-            })(request, response, next);
+                .catch(err => {
+                  return next(err);
+                });
+            }
+          });
+
+      })(request, response, next);
+    });
+
+  // =====================================
+  // FACEBOOK ROUTES =====================
+  // =====================================
+
+  router.route('/facebook')
+  // ====================================
+  // route for sending our user to Facebook to authenticate
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /facebook");
+      passport.authenticate(['facebook'], {scope: 'email'}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        debug(err);
+        debug(user);
+        debug(info);
+      })(request, response, next);
+    });
+  router.route('/facebook/login')
+  // ====================================
+  // route for sending our user to Facebook to authenticate
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /facebook/login");
+      passport.authenticate(['facebook'], {}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        //debug(user);
+        debug("201 : token created(" + user.id + ")");
+        return response.status(201).send({
+          id_token: User.createToken(user)
         });
-
-    router.route('/save')
-    // ====================================
-    // route for processing the profile form (save a user)
-    // ====================================
-        .post((request: Request, response: Response, next: NextFunction) => {
-            debug("POST /save");
-            passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
-
-                if (err) {
-                    return next(err);
-                }
-
-                var oldUsername = user.local.username;
-                var options = _.omit(request.body['user'], ['local.salt', 'local.password', 'local.hashedPassword']);
-                _.merge(user, options);
-
-                DbMyCalibre.getInstance()
-                    .saveUser(oldUsername, user, false)
-                    .then(() => {
-                        debug("201 : token created(" + user + ")");
-                        response.status(201).send({
-                            id_token: User.createToken(user)
-                        });
-                    })
-                    .catch(err => {
-                        return next(err);
-                    });
-
-            })(request, response, next);
-        });
-
-    router.route('/profile')
-        // ====================================
-        // route for showing the profile form TODO: should be moved to frontend ?
-        // ====================================
-        .get((request: Request, response: Response) => {
-          debug("GET /profile");
-
-          //debug(request.query);
-        });
-
-  router.route('/logout')
-        // ====================================
-        // route for logout  TODO: should be moved to frontend ?
-        // ====================================
-        .get((request: Request, response: Response) => {
-          debug("GET /logout");
-
-          request.logout();
-          response.redirect('/');
-          //debug(request.query);
-        });
+      })(request, response, next);
+    });
 
   return router;
 }
@@ -138,7 +168,7 @@ function authentRouter (passport): Router {
  * @param next
  * @returns {any}
  */
-function isLoggedIn (request, response, next) {
+function isLoggedIn(request, response, next) {
 
   // if user is authenticated in the session, carry on
   if (request.isAuthenticated())
@@ -149,5 +179,5 @@ function isLoggedIn (request, response, next) {
 }
 
 
-export { authentRouter }
+export {authentRouter}
 

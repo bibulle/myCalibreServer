@@ -66,9 +66,9 @@ export class UserService {
     //console.log(this.user);
 
     // if only username add to lastname
-    if (this.user.local && !this.user.local.lastname && !this.user.local.firstname) {
-      this.user.local.lastname = this.user.local.username;
-    }
+    //if (this.user.local && !this.user.local.lastname && !this.user.local.firstname) {
+    //  this.user.local.lastname = this.user.local.username;
+    //}
 
     this.userSubject.next(this.user);
 
@@ -92,6 +92,45 @@ export class UserService {
             headers: new Headers({
               'Accept': 'application/json',
               'Content-Type': 'application/json',
+            })
+          }
+        )
+        .timeout(3000)
+        .toPromise()
+        .then(res => {
+          const data = res.json();
+          //console.log(res.json());
+          if (data[this.keyTokenId]) {
+            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+            this.loggedIn = true;
+            this.checkAuthent();
+            resolve();
+          }
+          reject();
+        })
+        .catch(error => {
+          this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
+          reject(msg);
+        })
+    });
+  }
+
+  /**
+   * Login with facebook code (and get a JWT token)
+   * @param code
+   * @returns {Promise<void>}
+   */
+  loginFacebook(code): Promise<void> {
+
+    return new Promise<void>((resolve, reject) => {
+      this._http
+        .get(
+          environment.serverUrl + 'authent/facebook/login?code='+code,
+          {
+            headers: new Headers({
+              'Accept': 'application/json',
             })
           }
         )

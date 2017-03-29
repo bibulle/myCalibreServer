@@ -12,6 +12,18 @@ export class Configuration {
   authent_length: number;
   authent_digest: string;
 
+  authent_facebook_clientID: string;
+  authent_facebook_clientSecret: string;
+  authent_facebook_callbackURL: string;
+
+  authent_twitter_consumerKey: string;
+  authent_twitter_consumerSecret: string;
+  authent_twitter_callbackURL: string;
+
+  authent_google_clientID: string;
+  authent_google_clientSecret: string;
+  authent_google_callbackURL: string;
+
   constructor (options: {}) {
     _.merge(this, options);
 
