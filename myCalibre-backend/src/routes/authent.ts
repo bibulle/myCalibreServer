@@ -128,19 +128,22 @@ function authentRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /facebook");
       passport.authenticate(['facebook'], {scope: 'email'}, (err, user, info): any => {
-
         if (err) {
           return next(err);
         }
-
-        debug(err);
-        debug(user);
-        debug(info);
       })(request, response, next);
+    });
+  router.route('/facebook/logged')
+  // ====================================
+  // route for Facebook callback (do nothing.. should be detected by the frontend)
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /facebook/logged");
+      return response.send('logged');
     });
   router.route('/facebook/login')
   // ====================================
-  // route for sending our user to Facebook to authenticate
+  // route to get a jwt token for a facebook authenticate user
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /facebook/login");

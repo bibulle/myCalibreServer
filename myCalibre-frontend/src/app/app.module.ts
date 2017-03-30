@@ -28,6 +28,7 @@ import {AuthGuard} from "./components/authent/auth.guard";
 import {AuthConfig, AuthHttp} from "angular2-jwt";
 import {NotificationService} from "./components/notification/notification.service";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {WindowService} from "./core/util/window.service";
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig(), http, options);
@@ -64,6 +65,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     Media,
     TitleService,
     NotificationService,
+    WindowService,
     { provide: ViewportHelper, useClass: BrowserViewportHelper },
     {
       provide: AuthHttp,

@@ -10,7 +10,7 @@
         </md-input-container>
       </md-card-content>
       <md-card-actions align="end">
-        <a md-raised-button href="{{facebookUrlBase}}">Facebook</a>
+        <a md-raised-button (click)="startLoginFacebook()">Facebook</a>
         <a md-raised-button (click)="signup()">Signup</a>
         <button md-raised-button color="primary" type="submit">LOGIN</button>
       </md-card-actions>
