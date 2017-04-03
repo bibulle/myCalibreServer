@@ -124,6 +124,18 @@ export class User {
       })
   }
 
+  static findByGoogleId(googleId: string, callback: (err: Error, user: User) => any) {
+    DbMyCalibre.getInstance()
+      .findByGoogleId(googleId)
+      .then(user => {
+        callback(null, user);
+      })
+      .catch(err => {
+        //debug(err);
+        callback(err, null);
+      })
+  }
+
   save(callback: (err: Error) => any) {
     DbMyCalibre.getInstance()
       .saveUser(this, true)

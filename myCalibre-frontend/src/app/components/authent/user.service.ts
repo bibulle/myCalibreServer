@@ -10,6 +10,8 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {WindowService} from "../../core/util/window.service";
 
 
+enum LoginProvider { FACEBOOK, GOOGLE }
+
 @Injectable()
 export class UserService {
 
@@ -35,7 +37,6 @@ export class UserService {
     });
 
   }
-
 
   /**
    * Get the observable on user changes
@@ -120,15 +121,56 @@ export class UserService {
 
   /**
    * Login with facebook code (and get a JWT token)
-   * @param code
+   * @param parsed
    * @returns {Promise<void>}
    */
-  loginFacebook(code): Promise<void> {
+  loginFacebook(parsed): Promise<void> {
     //console.log("loginFacebook "+code);
     return new Promise<void>((resolve, reject) => {
       this._http
         .get(
-          environment.serverUrl + 'authent/facebook/login?code=' + code,
+          environment.serverUrl + 'authent/facebook/login?code=' + parsed.code,
+          {
+            headers: new Headers({
+              'Accept': 'application/json',
+            })
+          }
+        )
+        .timeout(3000)
+        .toPromise()
+        .then(res => {
+          const data = res.json();
+          //console.log(res.json());
+          if (data[this.keyTokenId]) {
+            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+            this.loggedIn = true;
+            this.checkAuthent();
+            resolve();
+          } else {
+            this.checkAuthent();
+            reject("Error");
+          }
+        })
+        .catch(error => {
+          this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
+          reject(msg);
+        })
+    });
+  }
+
+  /**
+   * Login with google codes (and get a JWT token)
+   * @param parsed
+   * @returns {Promise<void>}
+   */
+  loginGoogle(parsed): Promise<void> {
+    //console.log("loginGoogle "+code);
+    return new Promise<void>((resolve, reject) => {
+      this._http
+        .get(
+          environment.serverUrl + 'authent/google/login?code=' + parsed.code,
           {
             headers: new Headers({
               'Accept': 'application/json',
@@ -262,17 +304,39 @@ export class UserService {
   private intervalId: any = null;
 
   /**
-   *
+   * Start logging process with facebook
    */
   startLoginFacebook() {
     //console.log("startLoginFacebook");
-    const facebookUrlBase = `${environment.serverUrl}authent/facebook`;
+    const oAuthURL = `${environment.serverUrl}authent/facebook`;
+    return this._startLoginOAuth(oAuthURL, LoginProvider.FACEBOOK);
+
+  }
+
+  /**
+   * Start logging process with google
+   */
+  startLoginGoogle() {
+    console.log("startLoginGoogle");
+    const oAuthURL = `${environment.serverUrl}authent/google`;
+    return this._startLoginOAuth(oAuthURL, LoginProvider.GOOGLE);
+
+  }
+
+  /**
+   * Start logging process
+   * @param oAuthURL
+   * @param loginProvider
+   * @returns {Promise<void>}
+   * @private
+   */
+  private _startLoginOAuth(oAuthURL: string, loginProvider: LoginProvider) {
     const oAuthCalbackUrl = "/assets/logged.html";
 
 
     return new Promise<void>((resolve, reject) => {
       let loopCount = this.loopCount;
-      this.windowHandle = WindowService.createWindow(facebookUrlBase, 'OAuth2 Login');
+      this.windowHandle = WindowService.createWindow(oAuthURL, 'OAuth2 Login');
 
       this.intervalId = setInterval(() => {
         let parsed;
@@ -296,30 +360,42 @@ export class UserService {
           if (href != null) {
 
             // We got an answer...
-          //console.log(href);
+            //console.log(href);
 
             // try to find the code
-            const re = /[?&](code|access_token)=(.*)/;
-            const found = href.match(re);
+            const reSimple = /[?&](code|access_token)=(.*)/;
+            const foundSimple = href.match(reSimple);
 
-            if (found) {
+            if (foundSimple) {
               clearInterval(this.intervalId);
               this.windowHandle.close();
 
               parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ""));
+              //console.log(parsed);
 
               if (parsed.code) {
                 // we got the code... login
-                this.loginFacebook(parsed.code)
-                  .then(() => {
-                    resolve();
-                  })
-                  .catch(msg => {
-                    this.checkAuthent();
-                    reject(msg);
-                  })
+                if (loginProvider == LoginProvider.FACEBOOK) {
+                  this.loginFacebook(parsed)
+                    .then(() => {
+                      resolve();
+                    })
+                    .catch(msg => {
+                      this.checkAuthent();
+                      reject(msg);
+                    })
+                } else {
+                  this.loginGoogle(parsed)
+                    .then(() => {
+                      resolve();
+                    })
+                    .catch(msg => {
+                      this.checkAuthent();
+                      reject(msg);
+                    })
+                }
               } else {
-                console.error("oAuth callback without and with code...?.. "+href);
+                console.error("oAuth callback without and with code...?.. " + href);
                 this.checkAuthent();
                 reject("login error");
               }
@@ -346,8 +422,8 @@ export class UserService {
         }
       }, this.intervalLength)
     })
-
   }
+
 
 
   /**

@@ -113,6 +113,15 @@ class DbMyCalibre {
 
   /**
    * get a user from Db
+   * @param googleId
+   * @returns {Promise<User>}
+   */
+  public findByGoogleId(googleId: string): Promise<User> {
+    return this._findUserBy("google_id", googleId);
+  }
+
+  /**
+   * get a user from Db
    * @param fieldName
    * @param value
    * @returns {Promise<User>}

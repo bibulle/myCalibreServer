@@ -48,6 +48,20 @@ export class LoginComponent implements OnInit {
 
   }
 
+  startLoginGoogle() {
+    event.preventDefault();
+
+    this._userService.logout();
+    this._userService.startLoginGoogle()
+      .then(() => {
+        this._router.navigate(['home']);
+      })
+      .catch((err) => {
+        this._notificationService.error(err);
+      });
+
+  }
+
   signup() {
     this._router.navigate(['signup']);
   }

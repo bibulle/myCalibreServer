@@ -133,14 +133,6 @@ function authentRouter(passport): Router {
         }
       })(request, response, next);
     });
-  router.route('/facebook/logged')
-  // ====================================
-  // route for Facebook callback (do nothing.. should be detected by the frontend)
-  // ====================================
-    .get((request: Request, response: Response, next: NextFunction) => {
-      debug("GET /facebook/logged");
-      return response.send('logged');
-    });
   router.route('/facebook/login')
   // ====================================
   // route to get a jwt token for a facebook authenticate user
@@ -148,6 +140,45 @@ function authentRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /facebook/login");
       passport.authenticate(['facebook'], {}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        //debug(user);
+        debug("201 : token created(" + user.id + ")");
+        return response.status(201).send({
+          id_token: User.createToken(user)
+        });
+      })(request, response, next);
+    });
+
+  // =====================================
+  // GOOGLE ROUTES ======================
+  // =====================================
+
+  router.route('/google')
+  // ====================================
+  // route for sending our user to Google to authenticate
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /google");
+      passport.authenticate('google', { scope : ['profile', 'email'] }, (err, user, info): any => {
+        //console.log(err);
+        //console.log(user);
+        //console.log(info);
+        if (err) {
+          return next(err);
+        }
+      })(request, response, next);
+    });
+  router.route('/google/login')
+  // ====================================
+  // route to get a jwt token for a google authenticate user
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /google/login");
+      passport.authenticate(['google'], {}, (err, user, info): any => {
 
         if (err) {
           return next(err);

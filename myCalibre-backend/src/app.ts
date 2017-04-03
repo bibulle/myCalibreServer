@@ -5,7 +5,7 @@ import cookieParser = require("cookie-parser");
 const cors = require('cors');
 import { join } from "path";
 const passport = require('passport');
-//const session = require('express-session');
+const session = require('express-session');
 const flash = require('connect-flash');
 
 import { bookRouter } from "./routes/book";
@@ -49,11 +49,11 @@ app.use(cors(corsOptions));
 //--------------
 require('./config_passport')(passport); // pass passport for configuration
 
-//app.use(session({
-//  secret: 'ilovescotchscotchyscotchscotch',
-//  resave: true,
-//  saveUninitialized: true
-//}));
+app.use(session({
+  secret: 'ilovescotchscotchyscotchscotch',
+  resave: true,
+  saveUninitialized: true
+}));
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
