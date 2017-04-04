@@ -10,7 +10,7 @@
             [ngClass]="{hide:over}"
             [style.left]="sidenavWidth + 'px'"
             [style.right]="scrollWidth + 'px'">
-  <button md-button  *ngIf="!title.backUrl"
+  <button md-button
           class="md-hamburger mat-icon-button"
           hide-gt-lg
           (click)="menu.open($event)"

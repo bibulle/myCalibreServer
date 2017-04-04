@@ -149,6 +149,68 @@ export class User {
 
   }
 
+  remove(callback: (err: Error) => any) {
+    DbMyCalibre.getInstance()
+      .deleteUser(this)
+      .then(() => {
+        callback(null);
+      })
+      .catch(err => {
+        debug(err);
+        callback(err);
+      })
+
+  }
+
+  static mergeAndSave(trg: User, src: User, done: (err: Error) => (any)) {
+
+    // the salt must be transferred sometime
+    if (!trg.local.hashedPassword && src.local.hashedPassword) {
+      trg.local.salt = src.local.salt;
+    }
+
+    _.mergeWith(trg.local, src.local, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+    _.mergeWith(trg.facebook, src.facebook, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+    _.mergeWith(trg.twitter, src.twitter, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+    _.mergeWith(trg.google, src.google, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+
+    src.remove((err) => {
+      if (err) {
+        return done(err);
+      } else {
+        trg.save(done);
+      }
+    })
+
+  }
+
+
+
+
   validPassword(password: string): boolean {
     const hash = this.generateHash(password);
 

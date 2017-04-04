@@ -55,8 +55,61 @@ module.exports = function (passport) {
               return done(err);
             }
             request.user = decoded;
-            //debug(request.user);
-            return done(null, request.user);
+
+            if (request.body.username && request.body.password) {
+              // if we are connecting user... do it
+              process.nextTick(function () {
+                // find a user whose username is the same as the forms username
+                // we are checking to see if the user trying to login already exists
+                User.findByUsername(request.body.username, function (err, user) {
+                  // if there are any errors, return the error
+                  if (err) {
+                    debug(err);
+                    return done(err);
+                  }
+
+                  // check to see if there is already a user with that email
+                  if (user) {
+                    // It's an existing user... check the password... and if ok, merge them
+                    if (!user.validPassword(request.body.password)) {
+                      return done(null, false, 'Your user or your password is wrong.');
+                    }
+
+                    User.mergeAndSave(
+                      request.user,
+                      user,
+                      function (err) {
+                        if (err) {
+                          return done(err);
+                        }
+                        return done(null, request.user);
+                      });
+                  } else {
+
+                    User.mergeAndSave(
+                      request.user,
+                      new User({
+                        local: {
+                          username: request.body.username,
+                          password: request.body.password,
+                        }
+                      }),
+                      function (err) {
+                        if (err) {
+                          return done(err);
+                        }
+                        return done(null, request.user);
+                      });
+                  }
+
+                });
+
+              });
+
+            } else {
+              // Just logging... we are done
+              return done(null, request.user);
+            }
           })
         })
       );
@@ -72,6 +125,7 @@ module.exports = function (passport) {
         function (req, username, password, done) {
 
           debug("local-signup");
+          debug(req.user);
 
           const firstname = req.body.firstname || '';
           const lastname = req.body.lastname || '';
@@ -222,19 +276,19 @@ module.exports = function (passport) {
       // GOOGLE ==================================================================
       // =========================================================================
       passport.use(new GoogleStrategy({
-          clientID     : config.authent_google_clientID,
-          clientSecret  : config.authent_google_clientSecret,
-          callbackURL     : config.authent_google_callbackURL
+          clientID: config.authent_google_clientID,
+          clientSecret: config.authent_google_clientSecret,
+          callbackURL: config.authent_google_callbackURL
         },
-        function(token, tokenSecret, profile, done) {
+        function (token, tokenSecret, profile, done) {
           //console.log(token);
           //console.log(tokenSecret);
           //console.log(profile);
 
           // make the code asynchronous
-          process.nextTick(function() {
+          process.nextTick(function () {
 
-            User.findByGoogleId(profile.id, function(err, user) {
+            User.findByGoogleId(profile.id, function (err, user) {
 
               // if there is an error, stop everything and return that
               // ie an error connecting to the database
@@ -258,7 +312,8 @@ module.exports = function (passport) {
                   local: {
                     username: profile.username,
                     firstname: firstName,
-                    lastname: lastName
+                    lastname: lastName,
+                    email: email
                   },
                   google: {
                     id: profile.id, // set the users facebook id
@@ -271,7 +326,7 @@ module.exports = function (passport) {
                 //debug(user);
 
                 // save our user into the database
-                newUser.save(function(err) {
+                newUser.save(function (err) {
                   if (err)
                     throw err;
                   return done(null, newUser);

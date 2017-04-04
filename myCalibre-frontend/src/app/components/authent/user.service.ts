@@ -54,15 +54,19 @@ export class UserService {
 
   /**
    * Check authentication locally (is the jwt not expired)
+   * @returns {boolean} are we authenticate
    */
-  checkAuthent() {
+  checkAuthent(): boolean {
     //console.log("checkAuthent");
+    let ret = false;
+
     let jwt = localStorage.getItem(this.keyTokenId);
 
     if (!jwt || !tokenNotExpired()) {
       this.user = {} as User;
     } else {
       this.user = this.jwtHelper.decodeToken(jwt) as User;
+      ret = true;
     }
 
     //console.log(this.user);
@@ -74,6 +78,16 @@ export class UserService {
 
     this.userSubject.next(this.user);
 
+    return ret;
+  }
+
+  /**
+   * Get the logged user
+   * @returns {User}
+   */
+  getUser() {
+    this.checkAuthent();
+    return this.user;
   }
 
   /**
@@ -84,121 +98,22 @@ export class UserService {
    */
   login(username, password): Promise<void> {
     let body = JSON.stringify({username, password});
+    let url = environment.serverUrl + 'authent/login';
 
-    return new Promise<void>((resolve, reject) => {
-      this._http
-        .post(
-          environment.serverUrl + 'authent/login',
-          body,
-          {
-            headers: new Headers({
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            })
-          }
-        )
-        .timeout(3000)
-        .toPromise()
-        .then(res => {
-          const data = res.json();
-          //console.log(res.json());
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
-            this.loggedIn = true;
-            this.checkAuthent();
-            resolve();
-          }
-          reject();
-        })
-        .catch(error => {
-          this.checkAuthent();
-
-          const msg = UserService._getMSgFromError(error);
-          reject(msg);
-        })
-    });
+    return this._doLocalStuff(body, url);
   }
 
   /**
-   * Login with facebook code (and get a JWT token)
-   * @param parsed
+   * Connect Local
+   * @param username
+   * @param password
    * @returns {Promise<void>}
    */
-  loginFacebook(parsed): Promise<void> {
-    //console.log("loginFacebook "+code);
-    return new Promise<void>((resolve, reject) => {
-      this._http
-        .get(
-          environment.serverUrl + 'authent/facebook/login?code=' + parsed.code,
-          {
-            headers: new Headers({
-              'Accept': 'application/json',
-            })
-          }
-        )
-        .timeout(3000)
-        .toPromise()
-        .then(res => {
-          const data = res.json();
-          //console.log(res.json());
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
-            this.loggedIn = true;
-            this.checkAuthent();
-            resolve();
-          } else {
-            this.checkAuthent();
-            reject("Error");
-          }
-        })
-        .catch(error => {
-          this.checkAuthent();
+  connectLocal(username, password): Promise<void> {
+    let body = JSON.stringify({username, password});
+    let url = environment.serverUrl + 'authent/connect/local';
 
-          const msg = UserService._getMSgFromError(error);
-          reject(msg);
-        })
-    });
-  }
-
-  /**
-   * Login with google codes (and get a JWT token)
-   * @param parsed
-   * @returns {Promise<void>}
-   */
-  loginGoogle(parsed): Promise<void> {
-    //console.log("loginGoogle "+code);
-    return new Promise<void>((resolve, reject) => {
-      this._http
-        .get(
-          environment.serverUrl + 'authent/google/login?code=' + parsed.code,
-          {
-            headers: new Headers({
-              'Accept': 'application/json',
-            })
-          }
-        )
-        .timeout(3000)
-        .toPromise()
-        .then(res => {
-          const data = res.json();
-          //console.log(res.json());
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
-            this.loggedIn = true;
-            this.checkAuthent();
-            resolve();
-          } else {
-            this.checkAuthent();
-            reject("Error");
-          }
-        })
-        .catch(error => {
-          this.checkAuthent();
-
-          const msg = UserService._getMSgFromError(error);
-          reject(msg);
-        })
-    });
+    return this._doLocalStuff(body, url);
   }
 
   /**
@@ -212,38 +127,9 @@ export class UserService {
    */
   signup(username, password, firstname, lastname, email): Promise<void> {
     let body = JSON.stringify({username, password, firstname, lastname, email});
+    let url = environment.serverUrl + 'authent/signup';
 
-    return new Promise<void>((resolve, reject) => {
-      this._http
-        .post(
-          environment.serverUrl + 'authent/signup',
-          body,
-          {
-            headers: new Headers({
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            })
-          }
-        )
-        .timeout(3000)
-        .toPromise()
-        .then(res => {
-          const data = res.json();
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
-            this.loggedIn = true;
-            this.checkAuthent();
-            resolve();
-          }
-          reject("System error");
-        })
-        .catch(error => {
-          this.checkAuthent();
-
-          const msg = UserService._getMSgFromError(error);
-          reject(msg);
-        })
-    });
+    return this._doLocalStuff(body, url);
   }
 
   /**
@@ -253,38 +139,9 @@ export class UserService {
    */
   save(user: User): Promise<void> {
     let body = JSON.stringify({user});
+    let url = environment.serverUrl + 'authent/save';
 
-    return new Promise<void>((resolve, reject) => {
-      this._authHttp
-        .post(
-          environment.serverUrl + 'authent/save',
-          body,
-          {
-            headers: new Headers({
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            })
-          }
-        )
-        .timeout(3000)
-        .toPromise()
-        .then(res => {
-          const data = res.json();
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
-            this.loggedIn = true;
-            this.checkAuthent();
-            resolve();
-          }
-          reject("System error");
-        })
-        .catch(error => {
-          this.checkAuthent();
-
-          const msg = UserService._getMSgFromError(error);
-          reject(msg);
-        })
-    });
+    return this._doLocalStuff(body, url);
   }
 
   /**
@@ -321,6 +178,94 @@ export class UserService {
     const oAuthURL = `${environment.serverUrl}authent/google`;
     return this._startLoginOAuth(oAuthURL, LoginProvider.GOOGLE);
 
+  }
+
+  /**
+   * Login with facebook code (and get a JWT token)
+   * @param parsed
+   * @returns {Promise<void>}
+   */
+  loginFacebook(parsed): Promise<void> {
+    //console.log("loginFacebook "+code);
+    return this._loginOAuth(environment.serverUrl + 'authent/facebook/login?code=' + parsed.code);
+  }
+
+  /**
+   * Login with google codes (and get a JWT token)
+   * @param parsed
+   * @returns {Promise<void>}
+   */
+  loginGoogle(parsed): Promise<void> {
+    //console.log("loginGoogle "+code);
+    return this._loginOAuth(environment.serverUrl + 'authent/google/login?code=' + parsed.code);
+  }
+
+  /**
+   * Unlink with facebook (and get a JWT token)
+   * @param parsed
+   * @returns {Promise<void>}
+   */
+  unlinkFacebook(): Promise<void> {
+    //console.log("unlinkFacebook ");
+    return this._loginOAuth(environment.serverUrl + 'authent/facebook/unlink');
+  }
+
+  /**
+   * Unlink with google (and get a JWT token)
+   * @param parsed
+   * @returns {Promise<void>}
+   */
+  unlinkGoogle(): Promise<void> {
+    //console.log("unlinkGoogle ");
+    return this._loginOAuth(environment.serverUrl + 'authent/google/unlink');
+  }
+
+
+  /**
+   * Post request for local authent
+   * @param body
+   * @param url
+   * @returns {Promise<void>}
+   * @private
+   */
+  private _doLocalStuff(body: string, url: string) {
+    return new Promise<void>((resolve, reject) => {
+      // depending on connected or not... use authHttp or simple http
+      let usedHttp: (Http | AuthHttp) = this._http;
+      if (this.checkAuthent()) {
+        usedHttp = this._authHttp;
+      }
+      usedHttp
+        .post(
+          url,
+          body,
+          {
+            headers: new Headers({
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            })
+          }
+        )
+        .timeout(3000)
+        .toPromise()
+        .then(res => {
+          const data = res.json();
+          //console.log(res.json());
+          if (data[this.keyTokenId]) {
+            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+            this.loggedIn = true;
+            this.checkAuthent();
+            resolve();
+          }
+          reject();
+        })
+        .catch(error => {
+          this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
+          reject(msg);
+        })
+    });
   }
 
   /**
@@ -425,6 +370,51 @@ export class UserService {
   }
 
 
+  /**
+   * Perform the login (get after external popup)
+   * @param authentUrl
+   * @returns {Promise<void>}
+   * @private
+   */
+  private _loginOAuth(authentUrl: string) {
+    return new Promise<void>((resolve, reject) => {
+      // depending on connected or not... use authHttp or simple http
+      let usedHttp: (Http | AuthHttp) = this._http;
+      if (this.checkAuthent()) {
+        usedHttp = this._authHttp;
+      }
+      usedHttp
+        .get(
+          authentUrl,
+          {
+            headers: new Headers({
+              'Accept': 'application/json',
+            })
+          }
+        )
+        .timeout(3000)
+        .toPromise()
+        .then(res => {
+          const data = res.json();
+          //console.log(res.json());
+          if (data[this.keyTokenId]) {
+            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+            this.loggedIn = true;
+            this.checkAuthent();
+            resolve();
+          } else {
+            this.checkAuthent();
+            reject("Error");
+          }
+        })
+        .catch(error => {
+          this.checkAuthent();
+
+          const msg = UserService._getMSgFromError(error);
+          reject(msg);
+        })
+    });
+  }
 
   /**
    * get user message from error
@@ -434,6 +424,7 @@ export class UserService {
    */
   private static _getMSgFromError(error): string {
 
+    console.error(error);
     // Try to get the content
     const data = error.json();
     if (data && data.error) {

@@ -181,6 +181,32 @@ class DbMyCalibre {
   }
 
   /**
+   * Delete a user
+   * @param user
+   * @returns {Promise<User>}
+   */
+  public deleteUser(user: User) {
+    return new Promise<User>((resolve, reject) => {
+      const query = squel
+        .remove({separator: "\n"})
+        .from("user")
+        .where("id = ?", user.id);
+
+      //debug(query.toString());
+      this._db.run(query.toString(), function (err) {
+        if (err) {
+          console.log(err);
+          reject(err);
+        } else {
+          debug("user deleted " + user.local.username + " (" + this.changes + ")");
+          resolve();
+        }
+
+      })
+    })
+  }
+
+  /**
    * Save a user
    */
   public saveUser(user: User, tryInsert: boolean): Promise<void> {
