@@ -1,0 +1,17 @@
+<div class="md-content" flex="100" layout-align="center center" layout="row">
+  <md-card flex="60">
+    <form role="form" (submit)="connect($event, username.value, password.value)">
+      <md-card-content>
+        <md-input-container>
+          <input mdInput placeholder="Username"  required                 #username>
+        </md-input-container>
+        <md-input-container>
+          <input mdInput placeholder="Password"  required type="password" #password>
+        </md-input-container>
+      </md-card-content>
+      <md-card-actions align="end">
+        <button md-raised-button color="primary" type="submit">Add/connect a local account</button>
+      </md-card-actions>
+    </form>
+  </md-card>
+</div>

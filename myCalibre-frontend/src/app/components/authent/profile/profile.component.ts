@@ -85,4 +85,53 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/home'])
   }
 
+  connectLocal() {
+    this._router.navigate(['/connect/local']);
+  }
+  connectFacebook() {
+    event.preventDefault();
+
+    this._userService.startLoginFacebook()
+      .then(() => {
+        this._router.navigate(['/profile']);
+      })
+      .catch( (err) => {
+        this._notificationService.error(err);
+      });
+  }
+  connectGoogle() {
+    event.preventDefault();
+
+    this._userService.startLoginGoogle()
+      .then(() => {
+        this._router.navigate(['/profile']);
+      })
+      .catch( (err) => {
+        this._notificationService.error(err);
+      });
+  }
+
+  unlinkFacebook() {
+    event.preventDefault();
+
+    this._userService.unlinkFacebook()
+      .then(() => {
+        this._router.navigate(['/profile']);
+      })
+      .catch( (err) => {
+        this._notificationService.error(err);
+      });
+  }
+  unlinkGoogle() {
+    event.preventDefault();
+
+    this._userService.unlinkGoogle()
+      .then(() => {
+        this._router.navigate(['/profile']);
+      })
+      .catch( (err) => {
+        this._notificationService.error(err);
+      });
+  }
+
 }

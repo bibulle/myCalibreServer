@@ -1,5 +1,6 @@
-<a *ngIf="user?.local?.username" (click)="openProfile($event, user)" md-button>
-  <div class="name">{{user?.local?.firstname}} {{user?.local?.lastname}}</div>
+<a *ngIf="user?.id" (click)="openProfile($event, user)" md-button>
+  <div class="name" *ngIf="user?.local?.lastname || user?.local?.firstname">{{user?.local?.firstname}} {{user?.local?.lastname}}</div>
+  <div class="name" *ngIf="!user?.local?.lastname && !user?.local?.firstname">{{user?.local?.username}}</div>
   <div class="email">{{user?.local?.email}}</div>
 </a>
 <!--<a *ngIf="!user?.local?.username" (click)="login()" md-button>-->

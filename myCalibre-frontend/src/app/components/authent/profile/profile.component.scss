@@ -1,7 +1,72 @@
-.md-content md-card {
-  margin-top: 2em;
-}
+@import "../../../shared/styles";
 
-md-input-container {
-  width: 100%;
+:host {
+  .md-content {
+
+    md-card {
+      margin-top: 2em;
+
+      md-card-content {
+        position: relative;
+        md-input-container {
+          width: 100%;
+        }
+        .provider {
+          font-size: 1.5em;
+          padding-bottom: 0.2em;
+        }
+        .info {
+          padding-left: 2em;
+        }
+      }
+      md-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+
+      }
+      .fa.mat-mini-fab {
+        position: absolute;
+        top: 3px;
+        right: 0px;
+        font-size: 18px;
+        line-height: 40px;
+        md-icon {
+          position: absolute;
+          left: 2px;
+          font-size: 37px;
+          color: rgba(20, 20, 20, 0.5);
+        }
+      }
+      .fa:before {
+        font-family: FontAwesome;
+      }
+
+      .fa-facebook {
+        background-color: #3b5998;
+        color: white;
+      }
+
+      .fa-google {
+        background-color: #3079ed;
+        color: white;
+      }
+    }
+    md-card[flex="60"] {
+      @media screen and (max-width: $layout-breakpoint-sm) {
+        max-width: 100%;
+      }
+      @media screen and (max-width: $layout-breakpoint-md) {
+        max-width: 90%;
+      }
+    }
+  }
+
+  //.logout {
+  //  float: left;
+  //}
+  //.connect, .unlink {
+  //  float: right;
+  //}
+
 }

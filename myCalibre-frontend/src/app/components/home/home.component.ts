@@ -6,6 +6,7 @@ import { CommonModule } from "@angular/common";
 import { BookCardModule } from "../book/book-card/book-card.component";
 import { MdContentModule } from "../content/content.component";
 import { MdProgressCircleModule, MdCardModule } from "@angular/material";
+import {NotificationService} from "../notification/notification.service";
 
 @Component({
   selector: 'app-home',
@@ -19,6 +20,7 @@ export class HomeComponent implements OnInit {
   BOOKS_LIMIT = 20;
 
   constructor(private _bookService: BookService,
+              private _notificationService: NotificationService,
               private _filterService: FilterService) { }
 
   ngOnInit() {
@@ -31,6 +33,7 @@ export class HomeComponent implements OnInit {
         })
         .catch(err => {
           console.log(err);
+          this._notificationService.error(err);
         })
 
   }

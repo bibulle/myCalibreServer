@@ -1,6 +1,6 @@
 {
-  "name": "essai",
-  "version": "0.3.0",
+  "name": "myCalibreServer",
+  "version": "0.3.1",
   "license": "MIT",
   "angular-cli": {},
   "scripts": {

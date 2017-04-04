@@ -1,5 +1,5 @@
 <div class="md-content" flex="100" layout-align="center center" layout="row">
-  <md-card flex="30">
+  <md-card flex="60">
     <form role="form" (submit)="login($event, username.value, password.value)">
       <md-card-content>
         <md-input-container>
@@ -10,6 +10,8 @@
         </md-input-container>
       </md-card-content>
       <md-card-actions align="end">
+        <a md-raised-button (click)="startLoginGoogle()" class="fa fa-google"> Google</a>
+        <a md-raised-button (click)="startLoginFacebook()" class="fa fa-facebook"> Facebook</a>
         <a md-raised-button (click)="signup()">Signup</a>
         <button md-raised-button color="primary" type="submit">LOGIN</button>
       </md-card-actions>

@@ -1,18 +1,18 @@
 import * as _ from "lodash";
-import { randomBytes, pbkdf2Sync } from "crypto";
-import { sign, verify } from "jsonwebtoken";
+import {randomBytes, pbkdf2Sync} from "crypto";
+import {sign, verify} from "jsonwebtoken";
 
 import DbMyCalibre from "./dbMyCalibre";
-import { Configuration } from "./configuration";
+import {Configuration} from "./configuration";
 
 const debug = require('debug')('server:model:user');
 
 
 export class User {
 
-  // TODO : see if it's better with an id
+  id: string;
 
-  local : {
+  local: {
     username: string;
     firstname: string;
     lastname: string;
@@ -20,37 +20,60 @@ export class User {
     isAdmin: boolean;
     hashedPassword: string,
     salt: string
+  } = {
+    username: null,
+    firstname: null,
+    lastname: null,
+    email: null,
+    isAdmin: null,
+    hashedPassword: null,
+    salt: null
   };
 
-  facebook : {
+  facebook: {
     id: string,
     token: string,
     email: string,
     name: string,
+  } = {
+    id: null,
+    token: null,
+    email: null,
+    name: null
   };
 
-  twitter : {
+  twitter: {
     id: string,
     token: string,
     displayName: string,
     username: string,
+  } = {
+    id: null,
+    token: null,
+    displayName: null,
+    username: null
   };
 
-  google : {
+  google: {
     id: string,
     token: string,
     email: string,
     name: string,
+  } = {
+    id: null,
+    token: null,
+    email: null,
+    name: null
   };
 
-  static conf : Configuration;
+  static conf: Configuration;
 
-  constructor (options: {}) {
+  constructor(options: {}) {
 
     _.merge(this, options);
 
     //debug(options);
-    if (! this.local.salt) {
+    if (!this.local.salt) {
       this.local.salt = User.generateSalt();
     }
     if (this.local['password']) {
@@ -58,12 +81,52 @@ export class User {
       delete this.local['password'];
     }
     //debug(this);
+
+    if (!options['id']) {
+      this.id = User.generateSalt();
+    }
   }
 
+
+  static findById(id: string, callback: (err: Error, user: User) => any) {
+    DbMyCalibre.getInstance()
+      .findUserById(id)
+      .then(user => {
+        callback(null, user);
+      })
+      .catch(err => {
+        debug(err);
+        callback(err, null);
+      })
+  }
 
   static findByUsername(username: string, callback: (err: Error, user: User) => any) {
     DbMyCalibre.getInstance()
       .findUserByUsername(username)
+      .then(user => {
+        callback(null, user);
+      })
+      .catch(err => {
+        debug(err);
+        callback(err, null);
+      })
+  }
+
+  static findByFacebookId(facebookId: string, callback: (err: Error, user: User) => any) {
+    DbMyCalibre.getInstance()
+      .findByFacebookId(facebookId)
+      .then(user => {
+        callback(null, user);
+      })
+      .catch(err => {
+        //debug(err);
+        callback(err, null);
+      })
+  }
+
+  static findByGoogleId(googleId: string, callback: (err: Error, user: User) => any) {
+    DbMyCalibre.getInstance()
+      .findByGoogleId(googleId)
       .then(user => {
         callback(null, user);
       })
@@ -75,16 +138,78 @@ export class User {
 
   save(callback: (err: Error) => any) {
     DbMyCalibre.getInstance()
-               .saveUser(this.local.username, this, true)
-               .then(() => {
-                 callback(null);
-               })
-               .catch(err => {
-                 debug(err);
-                 callback(err);
-               })
+      .saveUser(this, true)
+      .then(() => {
+        callback(null);
+      })
+      .catch(err => {
+        debug(err);
+        callback(err);
+      })
 
   }
+
+  remove(callback: (err: Error) => any) {
+    DbMyCalibre.getInstance()
+      .deleteUser(this)
+      .then(() => {
+        callback(null);
+      })
+      .catch(err => {
+        debug(err);
+        callback(err);
+      })
+
+  }
+
+  static mergeAndSave(trg: User, src: User, done: (err: Error) => (any)) {
+
+    // the salt must be transferred sometime
+    if (!trg.local.hashedPassword && src.local.hashedPassword) {
+      trg.local.salt = src.local.salt;
+    }
+
+    _.mergeWith(trg.local, src.local, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+    _.mergeWith(trg.facebook, src.facebook, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+    _.mergeWith(trg.twitter, src.twitter, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+    _.mergeWith(trg.google, src.google, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue
+      } else {
+        return srcValue
+      }
+    });
+
+    src.remove((err) => {
+      if (err) {
+        return done(err);
+      } else {
+        trg.save(done);
+      }
+    })
+
+  }
+
+
+
 
   validPassword(password: string): boolean {
     const hash = this.generateHash(password);
@@ -99,7 +224,7 @@ export class User {
    * @returns {string|void}
    */
   static createToken(user): string {
-    return sign(_.pick(user, ['local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
+    return sign(_.pick(user, ['id', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
   }
 
   /**
@@ -112,8 +237,8 @@ export class User {
       if (err) {
         return done(err, null);
       }
-
-      User.findByUsername(decoded.local.username, (err, user) => {
+      //debug(decoded);
+      User.findById(decoded.id, (err, user) => {
         if (err) {
           done(err, null);
         } else {
@@ -133,38 +258,37 @@ export class User {
   }
 
 
-
   static init() {
     debug("init...");
     DbMyCalibre.getInstance()
-               .getConf()
-               .then(conf => {
-                 User.conf = conf;
-                 debug("init...done");
+      .getConf()
+      .then(conf => {
+        User.conf = conf;
+        debug("init...done");
 
-                 //User.findByEmail("", (err, user) => {
-                 //  debug(err);
-                 //  debug(user);
-                 //});
-                 //User.findByEmail("eric@eric.fr", (err, user) => {
-                 //  debug(err);
-                 //  debug(user);
-                 //});
-                 //var user = new User({
-                 //  local : {
-                 //    email : "eric@eric.fr",
-                 //    password: "eric"
-                 //  }
-                 //});
+        //User.findByEmail("", (err, user) => {
+        //  debug(err);
+        //  debug(user);
+        //});
+        //User.findByEmail("eric@eric.fr", (err, user) => {
+        //  debug(err);
+        //  debug(user);
+        //});
+        //var user = new User({
+        //  local : {
+        //    email : "eric@eric.fr",
+        //    password: "eric"
+        //  }
+        //});
 
-                 //user.save((err) => {
-                 //  debug(err);
-                 //})
+        //user.save((err) => {
+        //  debug(err);
+        //})
 
-               })
-               .catch(err => {
-                 debug(err);
-               })
+      })
+      .catch(err => {
+        debug(err);
+      })
   }
 
 }
