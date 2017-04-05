@@ -1,5 +1,7 @@
 export class User {
 
+  id: string;
+
   local: {
     username: string;
     firstname: string;
@@ -24,6 +26,9 @@ export class User {
   };
 
   constructor(options) {
+    if (options) {
+      this.id = options.id;
+    }
     if (options && options.local) {
       this.local = {
         username: options.local.username,
