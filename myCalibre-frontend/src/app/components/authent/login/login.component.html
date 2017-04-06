@@ -3,7 +3,7 @@
     <form role="form" (submit)="login($event, username.value, password.value)">
       <md-card-content>
         <md-input-container>
-          <input mdInput placeholder="Username" required                 #username>
+          <input mdInput placeholder="Username" required                 #username autocorrect="off" autocapitalize="off" spellcheck="false">
         </md-input-container>
         <md-input-container>
           <input mdInput placeholder="Password" required type="password" #password>

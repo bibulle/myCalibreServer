@@ -19,7 +19,13 @@ html, body {
 
 body, input {
   font-family: Roboto, sans-serif, Verdana, Geneva;
-
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  select.mat-select,
+  textarea.mat-input-element,
+  input.mat-input-element {
+    font-size: 16px;
+  }
 }
 
 app-root {
