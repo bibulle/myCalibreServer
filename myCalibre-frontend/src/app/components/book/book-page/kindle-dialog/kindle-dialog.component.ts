@@ -27,6 +27,9 @@ export class KindleDialogComponent implements OnInit {
 
   send() {
     // Add book to list if not exists
+    if (!this.user.local.amazonEmails) {
+      this.user.local.amazonEmails = [];
+    }
     const found = this.user.local.amazonEmails.filter(el => {
       return el.trim() === this.mail;
     });
