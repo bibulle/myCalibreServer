@@ -38,7 +38,7 @@ export class User {
         lastname: options.local.lastname,
         email: options.local.email,
         isAdmin: options.local.isAdmin,
-        amazonEmails: options.local.amazonEmails.filter(el => { return (el.trim().length > 0)})
+        amazonEmails: options.local.amazonEmails ? options.local.amazonEmails.filter(el => { return (el.trim().length > 0)}) : []
       }
     } else {
       this.local = {
