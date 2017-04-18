@@ -107,6 +107,8 @@ module.exports = function (passport) {
               });
 
             } else {
+              // debug(request.user.local);
+
               // Just logging... we are done
               return done(null, request.user);
             }
