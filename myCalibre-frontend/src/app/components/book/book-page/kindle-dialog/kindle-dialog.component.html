@@ -4,8 +4,14 @@
     <md-card-content>
       <h4>Enter your Kindle e-mail address to sync this book to your device.</h4>
       <md-input-container>
-        <input mdInput placeholder="Mail" type="email" required [(ngModel)]="mail" name="mail">
+        <input mdInput placeholder="Mail" type="email" required [mdAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
       </md-input-container>
+
+      <md-autocomplete #auto="mdAutocomplete">
+        <md-option *ngFor="let mail of filteredMails" [value]="mail">
+          {{ mail }}
+        </md-option>
+      </md-autocomplete>
       <div class="message"><em>famille.martin@gmail.com</em> needs to be added as an approved sender to your Amazon account.</div>
     </md-card-content>
     <md-card-actions align="end">
