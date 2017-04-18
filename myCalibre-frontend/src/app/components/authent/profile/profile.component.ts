@@ -13,7 +13,9 @@ import {NotificationService} from "../../notification/notification.service";
 })
 export class ProfileComponent implements OnInit {
 
-  user: User;
+  user: User = new User({});
+
+  amazonEmail:string;
 
   oldUserJson: string;
 
@@ -35,6 +37,7 @@ export class ProfileComponent implements OnInit {
     // get user change from elsewhere
     this._userService.userObservable().subscribe(
       user => {
+        //console.log(user.local);
         this.user = new User(user);
 
         this.oldUserJson = JSON.stringify(this.user);
@@ -68,26 +71,78 @@ export class ProfileComponent implements OnInit {
 
   }
 
+  /**
+   * Save user changes
+   */
   userChange() {
 
     if (this.oldUserJson === JSON.stringify(this.user)) {
       return;
     }
 
-    this.oldUserJson = JSON.stringify(this.user)
+    this.oldUserJson = JSON.stringify(this.user);
 
     this.subjectUser.next(this.user);
   }
 
+  /**
+   * Add an email to the list
+   */
+  addEmail() {
+    if (!this.user || !this.user.local || !this.user.local.amazonEmails) {
+      this.user.local.amazonEmails = [];
+    }
 
+    if (!this.amazonEmail || (this.amazonEmail.trim() == "")) {
+      return;
+    }
+    this.amazonEmail = this.amazonEmail.trim();
+
+    const found = this.user.local.amazonEmails.filter(el => {
+      return el.trim() === this.amazonEmail;
+    });
+    if (found.length == 0) {
+      this.user.local.amazonEmails.push(this.amazonEmail);
+      this.amazonEmail = null;
+    }
+
+    this.userChange();
+  }
+
+  /**
+   * Del an email to the list
+   */
+  delEmail(email) {
+    if (!this.user && !this.user.local && !this.user.local.amazonEmails) {
+      this.user.local.amazonEmails = [];
+    }
+
+    // filter
+    this.user.local.amazonEmails = this.user.local.amazonEmails.filter(el => {
+       return el.trim() !== email.trim();
+     });
+
+    this.userChange();
+  }
+
+
+  /**
+   * Logout
+   */
   logout() {
     this._userService.logout();
     this._router.navigate(['/home'])
   }
 
+  /**
+   * Connect locally (with user/password)
+   */
   connectLocal() {
     this._router.navigate(['/connect/local']);
   }
+  /**
+   * Connect with facebook
+   */
   connectFacebook() {
     event.preventDefault();
 
@@ -99,6 +154,9 @@ export class ProfileComponent implements OnInit {
         this._notificationService.error(err);
       });
   }
+  /**
+   * Connect with google
+   */
   connectGoogle() {
     event.preventDefault();
 
@@ -111,6 +169,9 @@ export class ProfileComponent implements OnInit {
       });
   }
 
+  /**
+   * Unlink with facebook
+   */
   unlinkFacebook() {
     event.preventDefault();
 
@@ -122,6 +183,9 @@ export class ProfileComponent implements OnInit {
         this._notificationService.error(err);
       });
   }
+  /**
+   * Unlink with google
+   */
   unlinkGoogle() {
     event.preventDefault();
 

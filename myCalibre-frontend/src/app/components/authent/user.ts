@@ -8,6 +8,7 @@ export class User {
     lastname: string;
     email: string;
     isAdmin: boolean;
+    amazonEmails: string[];
   };
 
   facebook: {
@@ -26,6 +27,7 @@ export class User {
   };
 
   constructor(options) {
+
     if (options) {
       this.id = options.id;
     }
@@ -35,7 +37,17 @@ export class User {
         firstname: options.local.firstname,
         lastname: options.local.lastname,
         email: options.local.email,
-        isAdmin: options.local.isAdmin
+        isAdmin: options.local.isAdmin,
+        amazonEmails: options.local.amazonEmails.filter(el => { return (el.trim().length > 0)})
+      }
+    } else {
+      this.local = {
+        username: null,
+        firstname: null,
+        lastname: null,
+        email: null,
+        isAdmin: null,
+        amazonEmails: []
       }
     }
     if (options && options.facebook) {
@@ -58,4 +70,5 @@ export class User {
     }
 
   }
+
 }

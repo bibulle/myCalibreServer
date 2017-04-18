@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {MdCardModule, MdInputModule, MdButtonModule, MdTooltipModule, MdIconModule} from "@angular/material";
+import {
+  MdCardModule, MdInputModule, MdButtonModule, MdTooltipModule, MdIconModule,
+  MdAutocompleteModule
+} from "@angular/material";
 
 import { LoginComponent } from './login/login.component';
 import { UserService } from "./user.service";

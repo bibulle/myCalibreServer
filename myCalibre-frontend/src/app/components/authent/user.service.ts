@@ -43,20 +43,22 @@ export class UserService {
    * @returns {Observable<User>}
    */
   userObservable(): Observable<User> {
-    return this.userSubject.distinctUntilChanged(
-      (a, b) => {
-        //console.log(JSON.stringify(a.local));
-        //console.log(JSON.stringify(b.local));
-        return JSON.stringify(a) === JSON.stringify(b)
-      }
-    );
+    return this.userSubject
+      //.debounceTime(200)
+      .distinctUntilChanged(
+        (a, b) => {
+          //console.log(JSON.stringify(a.local));
+          //console.log(JSON.stringify(b.local));
+          return JSON.stringify(a) === JSON.stringify(b)
+        }
+      );
   }
 
   /**
    * Check authentication locally (is the jwt not expired)
    * @returns {boolean} are we authenticate
    */
-  checkAuthent(): boolean {
+  checkAuthent(emitEvent = true): boolean {
     //console.log("checkAuthent");
     let ret = false;
 
@@ -76,7 +78,9 @@ export class UserService {
     //  this.user.local.lastname = this.user.local.username;
     //}
 
-    this.userSubject.next(this.user);
+    if (emitEvent) {
+      this.userSubject.next(this.user);
+    }
 
     return ret;
   }
@@ -202,7 +206,6 @@ export class UserService {
 
   /**
    * Unlink with facebook (and get a JWT token)
-   * @param parsed
    * @returns {Promise<void>}
    */
   unlinkFacebook(): Promise<void> {
@@ -212,7 +215,6 @@ export class UserService {
 
   /**
    * Unlink with google (and get a JWT token)
-   * @param parsed
    * @returns {Promise<void>}
    */
   unlinkGoogle(): Promise<void> {
@@ -232,7 +234,7 @@ export class UserService {
     return new Promise<void>((resolve, reject) => {
       // depending on connected or not... use authHttp or simple http
       let usedHttp: (Http | AuthHttp) = this._http;
-      if (this.checkAuthent()) {
+      if (this.checkAuthent(false)) {
         usedHttp = this._authHttp;
       }
       usedHttp
@@ -380,7 +382,7 @@ export class UserService {
     return new Promise<void>((resolve, reject) => {
       // depending on connected or not... use authHttp or simple http
       let usedHttp: (Http | AuthHttp) = this._http;
-      if (this.checkAuthent()) {
+      if (this.checkAuthent(false)) {
         usedHttp = this._authHttp;
       }
       usedHttp

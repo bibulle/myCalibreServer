@@ -124,7 +124,14 @@ function authentRouter(passport): Router {
         }
 
         const options = _.omit(request.body['user'], ['id', 'local.salt', 'local.password', 'local.hashedPassword']);
+
+        if (options['local']['amazonEmails']) {
+          user['local']['amazonEmails'] = options['local']['amazonEmails'];
+        }
         _.merge(user, options);
+
+        // debug(user['local']);
+        // debug(options['local']);
 
         // Check if username already exist
         DbMyCalibre.getInstance()

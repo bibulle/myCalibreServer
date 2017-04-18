@@ -19,7 +19,8 @@ export class User {
     email: string;
     isAdmin: boolean;
     hashedPassword: string,
-    salt: string
+    salt: string,
+    amazonEmails: string[]
   } = {
     username: null,
     firstname: null,
@@ -27,7 +28,8 @@ export class User {
     email: null,
     isAdmin: null,
     hashedPassword: null,
-    salt: null
+    salt: null,
+    amazonEmails: []
   };
 
   facebook: {
@@ -70,6 +72,10 @@ export class User {
 
   constructor(options: {}) {
 
+    if (typeof options['local']['amazonEmails'] === "string" ) {
+      options['local']['amazonEmails'] = options['local']['amazonEmails'].split("|");
+    }
+
     _.merge(this, options);
 
     //debug(options);
@@ -85,6 +91,7 @@ export class User {
     if (!options['id']) {
       this.id = User.generateSalt();
     }
+
   }
 
 
@@ -169,6 +176,8 @@ export class User {
       trg.local.salt = src.local.salt;
     }
 
+    debug(src.local);
+    debug(trg.local);
     _.mergeWith(trg.local, src.local, (objValue, srcValue) => {
       if (objValue) {
         return objValue
@@ -224,7 +233,7 @@ export class User {
    * @returns {string|void}
    */
   static createToken(user): string {
-    return sign(_.pick(user, ['id', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
+    return sign(_.pick(user, ['id', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
   }
 
   /**
