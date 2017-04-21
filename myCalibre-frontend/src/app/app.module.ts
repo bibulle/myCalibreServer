@@ -29,6 +29,7 @@ import {AuthConfig, AuthHttp} from "angular2-jwt";
 import {NotificationService} from "./components/notification/notification.service";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {WindowService} from "./core/util/window.service";
+import {AuthGuardAdmin} from "./components/authent/auth.guard.admin";
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig(), http, options);
@@ -72,7 +73,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
       useFactory: authHttpServiceFactory,
       deps: [Http, RequestOptions]
     },
-    AuthGuard
+    AuthGuard,
+    AuthGuardAdmin
   ],
   bootstrap: [AppComponent]
 })

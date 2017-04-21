@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers} from "@angular/http";
 import {JwtHelper, tokenNotExpired} from "angular2-jwt";
+import { Response } from "@angular/http";
 import {AuthHttp} from "angular2-jwt";
 
 
@@ -89,9 +90,19 @@ export class UserService {
    * Get the logged user
    * @returns {User}
    */
-  getUser() {
+  getUser(): User {
     this.checkAuthent();
     return this.user;
+  }
+
+  /**
+   * Is the logged user admin
+   * @returns {boolean}
+   */
+  isUserAdmin(): boolean {
+    this.checkAuthent();
+    return (this.user && this.user.local && (this.user.local.isAdmin === true));
+    //return true;
   }
 
   /**
@@ -100,11 +111,11 @@ export class UserService {
    * @param password
    * @returns {Promise<void>}
    */
-  login(username, password): Promise<void> {
+  login(username, password): Promise<User> {
     let body = JSON.stringify({username, password});
     let url = environment.serverUrl + 'authent/login';
 
-    return this._doLocalStuff(body, url);
+    return this._doPost(body, url);
   }
 
   /**
@@ -113,11 +124,11 @@ export class UserService {
    * @param password
    * @returns {Promise<void>}
    */
-  connectLocal(username, password): Promise<void> {
+  connectLocal(username, password): Promise<User> {
     let body = JSON.stringify({username, password});
     let url = environment.serverUrl + 'authent/connect/local';
 
-    return this._doLocalStuff(body, url);
+    return this._doPost(body, url);
   }
 
   /**
@@ -129,11 +140,11 @@ export class UserService {
    * @param email
    * @returns {Promise<void>}
    */
-  signup(username, password, firstname, lastname, email): Promise<void> {
+  signup(username, password, firstname, lastname, email): Promise<User> {
     let body = JSON.stringify({username, password, firstname, lastname, email});
     let url = environment.serverUrl + 'authent/signup';
 
-    return this._doLocalStuff(body, url);
+    return this._doPost(body, url);
   }
 
   /**
@@ -141,11 +152,39 @@ export class UserService {
    * @param user
    * @returns {Promise<void>}
    */
-  save(user: User): Promise<void> {
+  save(user: User): Promise<User> {
     let body = JSON.stringify({user});
     let url = environment.serverUrl + 'authent/save';
 
-    return this._doLocalStuff(body, url);
+    return this._doPost(body, url);
+  }
+
+  /**
+   * Delete a user a user
+   * @param user
+   * @returns {Promise<void>}
+   */
+  remove(user: User): Promise<User> {
+    return this._doGet(environment.serverUrl + 'authent/delete?userId=' + user.id);
+  }
+
+  /**
+   * Get all users
+   * @returns {Promise<User[]>}
+   */
+  getAll(): Promise<User[]> {
+    return new Promise<User[]>((resolve, reject) => {
+      this._authHttp.get(environment.serverUrl + 'authent/list')
+        .map((res: Response) => res.json().data as User[])
+        .subscribe(
+          data => {
+            resolve(data);
+          },
+          err => {
+            reject(err);
+          },
+        );
+    });
   }
 
   /**
@@ -189,9 +228,9 @@ export class UserService {
    * @param parsed
    * @returns {Promise<void>}
    */
-  loginFacebook(parsed): Promise<void> {
+  loginFacebook(parsed): Promise<User> {
     //console.log("loginFacebook "+code);
-    return this._loginOAuth(environment.serverUrl + 'authent/facebook/login?code=' + parsed.code);
+    return this._doGet(environment.serverUrl + 'authent/facebook/login?code=' + parsed.code);
   }
 
   /**
@@ -199,27 +238,29 @@ export class UserService {
    * @param parsed
    * @returns {Promise<void>}
    */
-  loginGoogle(parsed): Promise<void> {
+  loginGoogle(parsed): Promise<User> {
     //console.log("loginGoogle "+code);
-    return this._loginOAuth(environment.serverUrl + 'authent/google/login?code=' + parsed.code);
+    return this._doGet(environment.serverUrl + 'authent/google/login?code=' + parsed.code);
   }
 
   /**
    * Unlink with facebook (and get a JWT token)
+   * @param userId
    * @returns {Promise<void>}
    */
-  unlinkFacebook(): Promise<void> {
+  unlinkFacebook(userId : string): Promise<User> {
     //console.log("unlinkFacebook ");
-    return this._loginOAuth(environment.serverUrl + 'authent/facebook/unlink');
+    return this._doGet(environment.serverUrl + 'authent/facebook/unlink?userId=' + userId);
   }
 
   /**
    * Unlink with google (and get a JWT token)
+   * @param userId
    * @returns {Promise<void>}
    */
-  unlinkGoogle(): Promise<void> {
+  unlinkGoogle(userId : string): Promise<User> {
     //console.log("unlinkGoogle ");
-    return this._loginOAuth(environment.serverUrl + 'authent/google/unlink');
+    return this._doGet(environment.serverUrl + 'authent/google/unlink?userId=' + userId);
   }
 
 
@@ -230,8 +271,8 @@ export class UserService {
    * @returns {Promise<void>}
    * @private
    */
-  private _doLocalStuff(body: string, url: string) {
-    return new Promise<void>((resolve, reject) => {
+  private _doPost(body: string, url: string) {
+    return new Promise<User>((resolve, reject) => {
       // depending on connected or not... use authHttp or simple http
       let usedHttp: (Http | AuthHttp) = this._http;
       if (this.checkAuthent(false)) {
@@ -258,8 +299,11 @@ export class UserService {
             this.loggedIn = true;
             this.checkAuthent();
             resolve();
+          } else if (data['data']) {
+            resolve(data['data'] as User);
+          } else {
+            reject();
           }
-          reject();
         })
         .catch(error => {
           this.checkAuthent();
@@ -301,7 +345,7 @@ export class UserService {
           try {
             href = this.windowHandle.location.href;
           } catch (e) {
-            //console.log('Error:', e);
+            console.log('Error:', e);
           }
 
           if (href != null) {
@@ -378,8 +422,8 @@ export class UserService {
    * @returns {Promise<void>}
    * @private
    */
-  private _loginOAuth(authentUrl: string) {
-    return new Promise<void>((resolve, reject) => {
+  private _doGet(authentUrl: string) {
+    return new Promise<User>((resolve, reject) => {
       // depending on connected or not... use authHttp or simple http
       let usedHttp: (Http | AuthHttp) = this._http;
       if (this.checkAuthent(false)) {
@@ -404,9 +448,10 @@ export class UserService {
             this.loggedIn = true;
             this.checkAuthent();
             resolve();
+          } else if (data['data']) {
+            resolve(data['data'] as User);
           } else {
-            this.checkAuthent();
-            reject("Error");
+            resolve();
           }
         })
         .catch(error => {

@@ -1,0 +1,76 @@
+.row {
+  line-height: 24px;
+
+  .open-close {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+
+  .admin, .facebook, .google, .local {
+    text-align: center;
+
+    md-slide-toggle {
+      margin: 0;
+    }
+  }
+
+  .content {
+    padding-left: 40px;
+
+    .provider {
+      font-size: 1.5em;
+      padding-bottom: 0.2em;
+    }
+    .info {
+      margin-left: 4%;
+      margin-right: 2%;
+    }
+
+    md-input-container {
+      width: 95%;
+    }
+
+    a.add_email {
+      position: absolute;
+      right: 20px;
+      margin-top: -3.5em;
+      z-index: 10;
+    }
+    a.del_email {
+      position: absolute;
+      right: 0;
+      z-index: 10;
+      line-height: 30px;
+      &.mat-mini-fab {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+        margin-top: 4px;
+        md-icon {
+          padding-top: 1px;
+          font-size: 20px;
+        }
+      }
+    }
+    .emails {
+      margin-left: 4em;
+      margin-top: -1em;
+      font-size: 0.8em;
+      line-height: 26px;
+
+    }
+
+    md-card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+
+    }
+  }
+
+}
+
+.user-closed .content {
+  display: none;
+}

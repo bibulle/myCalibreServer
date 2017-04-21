@@ -72,9 +72,11 @@ export class User {
 
   constructor(options: {}) {
 
+    // Manage special types (string array, boolean, ...
     if (typeof options['local']['amazonEmails'] === "string" ) {
-      options['local']['amazonEmails'] = options['local']['amazonEmails'].split("|");
+      options['local']['amazonEmails'] = options['local']['amazonEmails'].split("|").filter(s => s.trim() != "");
     }
+    options['local']['isAdmin'] = (options['local']['isAdmin'] === 1);
 
     _.merge(this, options);
 
@@ -86,11 +88,11 @@ export class User {
       this.local.hashedPassword = this.generateHash(this.local['password']);
       delete this.local['password'];
     }
-    //debug(this);
 
     if (!options['id']) {
       this.id = User.generateSalt();
     }
+
 
   }
 
@@ -176,8 +178,8 @@ export class User {
       trg.local.salt = src.local.salt;
     }
 
-    debug(src.local);
-    debug(trg.local);
+    //debug(src.local);
+    //debug(trg.local);
     _.mergeWith(trg.local, src.local, (objValue, srcValue) => {
       if (objValue) {
         return objValue

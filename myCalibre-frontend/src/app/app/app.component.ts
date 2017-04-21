@@ -129,16 +129,23 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     );
 
-    this._router.config.forEach(obj => {
-      if (!obj.redirectTo && obj.data && obj.data['menu']) {
-        this.links.push({path: obj.path, label: obj.data['label']});
-      }
-    });
-
     this._userService.checkAuthent();
     this._currentUserSubscription = this._userService.userObservable().subscribe(
       user => {
         this.user = user;
+
+        const isAdmin = this._userService.isUserAdmin();
+        const newLinks: {path: string, label: string}[] = [];
+
+        this._router.config.forEach(obj => {
+          if (!obj.redirectTo && obj.data && obj.data['menu']) {
+            if (obj.data['admin'] && !isAdmin) {
+              return;
+            }
+            newLinks.push({path: obj.path, label: obj.data['label']});
+          }
+        });
+        this.links = newLinks;
       });
   }
 

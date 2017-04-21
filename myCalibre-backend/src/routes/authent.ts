@@ -113,7 +113,7 @@ function authentRouter(passport): Router {
 
   router.route('/save')
   // ====================================
-  // route for processing the local profile form (save a user)
+  // route for saving a user
   // ====================================
     .post((request: Request, response: Response, next: NextFunction) => {
       debug("POST /save");
@@ -123,43 +123,112 @@ function authentRouter(passport): Router {
           return next(err);
         }
 
-        const options = _.omit(request.body['user'], ['id', 'local.salt', 'local.password', 'local.hashedPassword']);
+        // user is the connected user
+        // request.body['user'] is the user to save
 
-        if (options['local']['amazonEmails']) {
-          user['local']['amazonEmails'] = options['local']['amazonEmails'];
+        // if trying to update me (not another user.. do it)
+        if (user.id === request.body['user']['id']) {
+          return _saveAUser(user, request, response, next, true);
         }
-        _.merge(user, options);
 
-        // debug(user['local']);
-        // debug(options['local']);
+        // trying to update another user
+        if (!user.local || !user.local.isAdmin) {
+          return response.status(401).send({error: "Not authorized."})
+        }
 
-        // Check if username already exist
-        DbMyCalibre.getInstance()
-          .findUserByUsername(user.local.username)
-          .then((userDb) => {
-            if (userDb && (userDb.id !== user.id)) {
-              response.status(401).send({error: "That username already exists."})
-            } else {
-              DbMyCalibre.getInstance()
-                .saveUser(user, false)
-                .then(() => {
-                  debug("201 : token created(" + user.id + ")");
-                  response.status(201).send({
-                    id_token: User.createToken(user)
-                  });
-                })
-                .catch(err => {
-                  return next(err);
+        User.findById(request.body['user']['id'], (err: Error, modifiedUser: User) => {
+          if (err) {
+            return next(err);
+          }
+          return _saveAUser(modifiedUser, request, response, next, false);
+        });
+
+      })(request, response, next);
+    });
+
+  router.route('/delete')
+  // ====================================
+  // route for deleting a user
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /delete");
+      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        // get the parameter
+        let deletedUserId: string = request.query['userId'];
+        if (!deletedUserId) {
+          return response.status(400).send({error: "Bad request"});
+        }
+        deletedUserId = deletedUserId.replace(/ /g, "+");
+
+        // user must be an admin
+        if (!user.local || !user.local.isAdmin) {
+          return response.status(401).send({error: "Not authorized."})
+        }
+
+        // you can't delete yourself
+        if (user.id === deletedUserId) {
+          return response.status(401).send({error: "Not authorized."})
+        }
+
+        // Do the job
+        User.findById(deletedUserId, (err: Error, deletedUser: User) => {
+          if (err) {
+            return next(err);
+          }
+          DbMyCalibre.getInstance()
+            .deleteUser(deletedUser)
+            .then(() => {
+              response.status(200).send({
+                  data: "done"
                 });
-            }
+            })
+            .catch(err => {
+              return next(err);
+            });
+        });
+
+      })(request, response, next);
+    });
+
+  router.route('/list')
+  // ====================================
+  // route for getting all users list
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("POST /list");
+      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        // Must be admin
+        if (!user.local || !user.local.isAdmin) {
+          return response.status(401).send({error: "Not authorized."})
+        }
+
+        // Get the list
+        DbMyCalibre.getInstance()
+          .getAllUsers()
+          .then((users) => {
+            users = users.map(u => _.omit(u, ['local.salt', 'local.password', 'local.hashedPassword']) as User);
+            response.status(200).send(JSON.stringify({data: users}));
+          })
+          .catch(err => {
+            return next(err);
           });
 
       })(request, response, next);
     });
 
-  // =====================================
-  // FACEBOOK ROUTES =====================
-  // =====================================
+// =====================================
+// FACEBOOK ROUTES =====================
+// =====================================
 
   router.route('/facebook')
   // ====================================
@@ -222,6 +291,13 @@ function authentRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /facebook/unlink");
 
+      let modifiedUserId: string = request.query['userId'];
+      if (!modifiedUserId) {
+        return response.status(400).send({error: "Bad request"});
+      }
+
+      modifiedUserId = modifiedUserId.replace(/ /g, "+");
+
       _getBearerUser(request, (err, user) => {
         if (err) {
           return next(err);
@@ -231,27 +307,41 @@ function authentRouter(passport): Router {
           return response.status(401).send({error: "Not authenticate"});
         }
 
-        user.facebook.token = null;
-        user.facebook.id = null;
-        user.facebook.email = null;
-        user.facebook.name = null;
+        console.log(modifiedUserId);
+        console.log(user.id);
+        // Modifying another user
+        if (modifiedUserId !== user.id) {
+          if (!user.local.isAdmin) {
+            return response.status(403).send({error: "Not authorized"});
+          } else {
+            User.findById(modifiedUserId, (err: Error, modifiedUser: User) => {
+              if (err) {
+                return next(err);
+              }
+              modifiedUser.facebook.token = null;
+              modifiedUser.facebook.id = null;
+              modifiedUser.facebook.email = null;
+              modifiedUser.facebook.name = null;
 
-        user.save(err => {
-          if (err) {
-            return next(err);
+              _saveAndSendBack(modifiedUser, false, response, next);
+
+            });
           }
-          debug("201 : token created(" + user.id + ")");
-          return response.status(201).send({
-            id_token: User.createToken(user)
-          });
-        })
+        } else {
+          user.facebook.token = null;
+          user.facebook.id = null;
+          user.facebook.email = null;
+          user.facebook.name = null;
+
+          _saveAndSendBack(user, true, response, next);
+        }
 
       });
     });
 
-  // =====================================
-  // GOOGLE ROUTES ======================
-  // =====================================
+// =====================================
+// GOOGLE ROUTES ======================
+// =====================================
 
   router.route('/google')
   // ====================================
@@ -280,6 +370,8 @@ function authentRouter(passport): Router {
         if (err) {
           return next(err);
         }
+        //debug("----- connected -----");
+        //debug(connectedUser);
 
         passport.authenticate(['google'], {}, (err, newUser: User, info): any => {
 
@@ -287,6 +379,8 @@ function authentRouter(passport): Router {
             return next(err);
           }
 
+          //debug("----- newUser -----");
+          //debug(newUser);
           // if two users
           if (connectedUser) {
             User.mergeAndSave(connectedUser, newUser, err => {
@@ -317,6 +411,13 @@ function authentRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /google/unlink");
 
+      let modifiedUserId: string = request.query['userId'];
+      if (!modifiedUserId) {
+        return response.status(400).send({error: "Bad request"});
+      }
+
+      modifiedUserId = modifiedUserId.replace(/ /g, "+");
+
       _getBearerUser(request, (err, user) => {
         if (err) {
           return next(err);
@@ -326,20 +427,34 @@ function authentRouter(passport): Router {
           return response.status(401).send({error: "Not authenticate"});
         }
 
-        user.google.token = null;
-        user.google.id = null;
-        user.google.email = null;
-        user.google.name = null;
+        // Modifying another user
+        if (modifiedUserId !== user.id) {
+          if (!user.local.isAdmin) {
+            return response.status(403).send({error: "Not authorized"});
+          } else {
+            User.findById(modifiedUserId, (err: Error, modifiedUser: User) => {
+              if (err) {
+                return next(err);
+              }
+              modifiedUser.google.token = null;
+              modifiedUser.google.id = null;
+              modifiedUser.google.email = null;
+              modifiedUser.google.name = null;
 
-        user.save(err => {
-          if (err) {
-            return next(err);
+              _saveAndSendBack(modifiedUser, false, response, next);
+
+            });
           }
-          debug("201 : token created(" + user.id + ")");
-          return response.status(201).send({
-            id_token: User.createToken(user)
-          });
-        })
+        } else {
+          user.google.token = null;
+          user.google.id = null;
+          user.google.email = null;
+          user.google.name = null;
+
+          _saveAndSendBack(user, true, response, next);
+
+        }
+
 
       });
     });
@@ -392,6 +507,68 @@ function _getBearerUser(request: Request, callback: (err, user: User) => (any)):
 
 }
 
+/**
+ * Save user and send back (user or bearer depending on autoUpdate or not)
+ * @param user
+ * @param autoUpdate
+ * @param response
+ * @param next
+ * @returns {any}
+ * @private
+ */
+function _saveAndSendBack(user, autoUpdate: boolean, response: Response, next: NextFunction) {
+  DbMyCalibre.getInstance()
+    .saveUser(user, false)
+    .then(() => {
+
+      if (autoUpdate) {
+        debug("201 : token created(" + user.id + ")");
+        response.status(201).send({
+          id_token: User.createToken(user)
+        });
+      } else {
+        user = _.omit(user, ['local.salt', 'local.password', 'local.hashedPassword']);
+        response.status(200).send({
+          data: user
+        });
+      }
+    })
+    .catch(err => {
+      return next(err);
+    });
+  return user;
+}
+/**
+ * Save a user a return what is needed (bearer or object)
+ * @param user
+ * @param request
+ * @param response
+ * @param next
+ * @param autoUpdate
+ * @private
+ */
+function _saveAUser(user, request: Request, response: Response, next: NextFunction, autoUpdate: boolean) {
+  const options = _.omit(request.body['user'], ['id', 'local.salt', 'local.password', 'local.hashedPassword']);
+
+  if (options['local']['amazonEmails']) {
+    user['local']['amazonEmails'] = options['local']['amazonEmails'];
+  }
+  _.merge(user, options);
+
+  // debug(user['local']);
+  // debug(options['local']);
+
+  // Check if username already exist
+  DbMyCalibre.getInstance()
+    .findUserByUsername(user.local.username)
+    .then((userDb) => {
+      if (userDb && (userDb.id !== user.id)) {
+        response.status(401).send({error: "That username already exists."})
+      } else {
+        user = _saveAndSendBack(user, autoUpdate, response, next);
+      }
+    });
+}
+
 
 export {authentRouter}
-
