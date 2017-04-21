@@ -52,7 +52,7 @@ function authentRouter(passport): Router {
   // route for processing the local signup form
   // ====================================
     .post((request: Request, response: Response, next: NextFunction) => {
-      debug("POST /login");
+      debug("POST /signup");
       passport.authenticate(['jwt-check', 'local-signup'], {session: false}, (err, user, info): any => {
         if (err) {
           return next(err);
@@ -184,12 +184,64 @@ function authentRouter(passport): Router {
             .deleteUser(deletedUser)
             .then(() => {
               response.status(200).send({
-                  data: "done"
-                });
+                data: "done"
+              });
             })
             .catch(err => {
               return next(err);
             });
+        });
+
+      })(request, response, next);
+    });
+
+  router.route('/reset')
+  // ====================================
+  // route for resetting a password
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /reset");
+      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        // get the parameter
+        let modifiedUserId: string = request.query['userId'];
+        if (!modifiedUserId) {
+          return response.status(400).send({error: "Bad request"});
+        }
+        modifiedUserId = modifiedUserId.replace(/ /g, "+");
+
+        // user must be an admin
+        if (!user.local || !user.local.isAdmin) {
+          return response.status(401).send({error: "Not authorized."})
+        }
+
+
+        // Do the job
+        User.findById(modifiedUserId, (err: Error, modifiedUser: User) => {
+          if (err) {
+            return next(err);
+          }
+
+          // generate a password
+          let newPassword =(Math.random()*100000).toFixed(0)+"";
+          while (newPassword.length < 5) newPassword = "0" + newPassword;
+
+          modifiedUser.local['password'] = newPassword;
+          const newUser = new User(modifiedUser);
+
+          DbMyCalibre.getInstance()
+            .saveUser(newUser, false)
+            .then(() => {
+              response.status(200).send(JSON.stringify({newPassword: newPassword}));
+            })
+            .catch(err => {
+              return next(err);
+            });
+
         });
 
       })(request, response, next);

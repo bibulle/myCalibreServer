@@ -3,7 +3,7 @@ import {User} from "../../user";
 import {CommonModule} from "@angular/common";
 import {MdButtonModule, MdCardModule, MdCheckboxModule, MdIconModule, MdInputModule, MdSlideToggleModule} from "@angular/material";
 import {FormsModule} from "@angular/forms";
-import {UserProfileComponent, UserProfileModule} from "../../profile/user-profile/user-profile.component";
+import {UserProfileModule} from "../../profile/user-profile/user-profile.component";
 import {NotificationService} from "app/components/notification/notification.service";
 import {UserService} from "../../user.service";
 
@@ -38,6 +38,19 @@ export class UserListItemComponent implements OnInit {
     this._userService.remove(this.user)
       .then(() => {
         this.listChanged.emit("user deleted");
+      })
+      .catch(err => {
+        console.log(err);
+        this._notificationService.error(err.statusText || err);
+      });
+
+
+  }
+
+  resetPassword() {
+    this._userService.resetPassword(this.user)
+      .then((newPassword) => {
+        this._notificationService.info("Password change to "+newPassword);
       })
       .catch(err => {
         console.log(err);

@@ -150,7 +150,7 @@ export class UserService {
   /**
    * Save a user
    * @param user
-   * @returns {Promise<void>}
+   * @returns {Promise<User>}
    */
   save(user: User): Promise<User> {
     let body = JSON.stringify({user});
@@ -160,12 +160,21 @@ export class UserService {
   }
 
   /**
-   * Delete a user a user
+   * Delete a user
    * @param user
-   * @returns {Promise<void>}
+   * @returns {Promise<User>}
    */
   remove(user: User): Promise<User> {
     return this._doGet(environment.serverUrl + 'authent/delete?userId=' + user.id);
+  }
+
+  /**
+   * Reset a password
+   * @param user
+   * @returns {Promise<string>}
+   */
+  resetPassword(user: User): Promise<string> {
+    return this._doGet(environment.serverUrl + 'authent/reset?userId=' + user.id);
   }
 
   /**
@@ -423,7 +432,7 @@ export class UserService {
    * @private
    */
   private _doGet(authentUrl: string) {
-    return new Promise<User>((resolve, reject) => {
+    return new Promise<User|string>((resolve, reject) => {
       // depending on connected or not... use authHttp or simple http
       let usedHttp: (Http | AuthHttp) = this._http;
       if (this.checkAuthent(false)) {
@@ -450,6 +459,8 @@ export class UserService {
             resolve();
           } else if (data['data']) {
             resolve(data['data'] as User);
+          } else if (data['newPassword']) {
+            resolve(data['newPassword'] as string);
           } else {
             resolve();
           }
