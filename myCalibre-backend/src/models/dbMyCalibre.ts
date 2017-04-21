@@ -122,6 +122,61 @@ class DbMyCalibre {
 
   /**
    * get a user from Db
+   * @returns {Promise<User[]>}
+   * @private
+   */
+  public getAllUsers(): Promise<User[]> {
+
+    return new Promise<User[]>((resolve, reject) => {
+
+      const query = squel
+        .select({separator: "\n"})
+
+        // bookFields
+        .field('user.id', 'id')
+        .field('user.local_username', 'local.username')
+        .field('user.local_firstname', 'local.firstname')
+        .field('user.local_lastname', 'local.lastname')
+        .field('user.local_email', 'local.email')
+        .field('user.local_isAdmin', 'local.isAdmin')
+        .field('user.local_hashedPassword', 'local.hashedPassword')
+        .field('user.local_salt', 'local.salt')
+        .field('user.local_amazon_emails', 'local.amazonEmails')
+        .field('user.facebook_id', 'facebook.id')
+        .field('user.facebook_token', 'facebook.token')
+        .field('user.facebook_email', 'facebook.email')
+        .field('user.facebook_name', 'facebook.name')
+        .field('user.twitter_id', 'twitter.id')
+        .field('user.twitter_token', 'twitter.token')
+        .field('user.twitter_displayName', 'twitter.displayName')
+        .field('user.twitter_username', 'twitter.username')
+        .field('user.google_id', 'google.id')
+        .field('user.google_token', 'google.token')
+        .field('user.google_email', 'google.email')
+        .field('user.google_name', 'google.name')
+
+        .from('user');
+
+      this._db.all(query.toString(), (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          const users = rows.map(r => {
+            let options = {};
+            _.forEach(r, (value, key) => {
+              _.set(options, key, value);
+            });
+            return new User(options)
+          });
+          resolve(users);
+        }
+      })
+    })
+
+  }
+
+  /**
+   * get a user from Db
    * @param fieldName
    * @param value
    * @returns {Promise<User>}
@@ -167,6 +222,7 @@ class DbMyCalibre {
           if (row) {
 
             let options = {};
+            //console.log(row);
             _.forEach(row, (value, key) => {
               _.set(options, key, value);
             });
@@ -225,7 +281,7 @@ class DbMyCalibre {
       .set('local_firstname', user.local.firstname)
       .set('local_lastname', user.local.lastname)
       .set('local_email', user.local.email)
-      .set('local_isAdmin', user.local.isAdmin)
+      .set('local_isAdmin', user.local.isAdmin ? 1 : 0)
       .set("local_hashedPassword", user.local.hashedPassword)
       .set("local_salt", user.local.salt)
       .set('local_amazon_emails', user.local.amazonEmails.join('|'))
@@ -272,7 +328,7 @@ class DbMyCalibre {
       .set('local_firstname', user.local.firstname)
       .set('local_lastname', user.local.lastname)
       .set('local_email', user.local.email)
-      .set('local_isAdmin', user.local.isAdmin)
+      .set('local_isAdmin', user.local.isAdmin ? 1 : 0)
       .set("local_hashedPassword", user.local.hashedPassword)
       .set("local_salt", user.local.salt)
       .set('local_amazon_emails', user.local.amazonEmails.join('|'))

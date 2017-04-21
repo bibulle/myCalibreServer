@@ -1,0 +1,38 @@
+@import "../../../shared/styles";
+
+.user-list-header {
+  padding-right: 24px;
+  padding-left: 24px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: bold;
+  line-height: 40px;
+
+  .admin, .facebook, .google, .local {
+    text-align: center;
+  }
+
+  .fa:before {
+    font-family: FontAwesome;
+  }
+
+  .fa.mat-mini-fab {
+    font-size: 18px;
+  }
+
+  .fa-facebook[disabled] {
+    background-color: #3b5998;
+    color: white;
+  }
+
+  .fa-google[disabled] {
+    background-color: #3079ed;
+    color: white;
+  }
+
+  .fa-home[disabled] {
+    background-color: mat-color($primary, 500);
+    color: mat-color($primary, default-contrast);
+  }
+}
+

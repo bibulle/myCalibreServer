@@ -13,19 +13,22 @@ import { SignupComponent } from "./components/authent/signup/signup.component";
 import { AuthGuard } from "./components/authent/auth.guard";
 import {ProfileComponent} from "./components/authent/profile/profile.component";
 import {ConnectLocalComponent} from "./components/authent/connect-local/connect-local.component";
+import {UsersListComponent} from "./components/authent/users-list/users-list.component";
+import {AuthGuardAdmin} from "./components/authent/auth.guard.admin";
 
 const routes: Routes = [
   { path: '',               redirectTo: '/home', pathMatch: 'full'},
-  { path: 'login',          component: LoginComponent                ,                           data: {label: 'Login'  , menu: false}},
-  { path: 'signup',         component: SignupComponent               ,                           data: {label: 'Signup' , menu: false}},
-  { path: 'profile',        component: ProfileComponent              , canActivate: [AuthGuard], data: {label: 'Profile', menu: false}},
-  { path: 'connect/local',  component: ConnectLocalComponent         , canActivate: [AuthGuard], data: {label: 'Connect', menu: false}},
-  { path: 'home',           component: HomeComponent                 , canActivate: [AuthGuard], data: {label: 'News'   , menu: true}},
-  { path: 'books',          component: BookListComponent             , canActivate: [AuthGuard], data: {label: 'Books'  , menu: true}},
-  { path: 'series',         component: SeriesListComponent           , canActivate: [AuthGuard], data: {label: 'Series' , menu: true}},
-  { path: 'authors',        component: AuthorListComponent           , canActivate: [AuthGuard], data: {label: 'Authors', menu: true}},
-  { path: 'tags',           component: TagListComponent              , canActivate: [AuthGuard], data: {label: 'Tags'   , menu: true}},
-  { path: 'book/:id',       component: BookPageComponent             , canActivate: [AuthGuard], data: {label: 'Book'   , menu: false}},
+  { path: 'login',          component: LoginComponent                ,                                data: {label: 'Login'  , menu: false}},
+  { path: 'signup',         component: SignupComponent               ,                                data: {label: 'Signup' , menu: false}},
+  { path: 'profile',        component: ProfileComponent              , canActivate: [AuthGuard],      data: {label: 'Profile', menu: false}},
+  { path: 'users',          component: UsersListComponent            , canActivate: [AuthGuardAdmin], data: {label: 'Users'  , menu: true  , admin: true}},
+  { path: 'connect/local',  component: ConnectLocalComponent         , canActivate: [AuthGuard],      data: {label: 'Connect', menu: false}},
+  { path: 'home',           component: HomeComponent                 , canActivate: [AuthGuard],      data: {label: 'News'   , menu: true}},
+  { path: 'books',          component: BookListComponent             , canActivate: [AuthGuard],      data: {label: 'Books'  , menu: true}},
+  { path: 'series',         component: SeriesListComponent           , canActivate: [AuthGuard],      data: {label: 'Series' , menu: true}},
+  { path: 'authors',        component: AuthorListComponent           , canActivate: [AuthGuard],      data: {label: 'Authors', menu: true}},
+  { path: 'tags',           component: TagListComponent              , canActivate: [AuthGuard],      data: {label: 'Tags'   , menu: true}},
+  { path: 'book/:id',       component: BookPageComponent             , canActivate: [AuthGuard],      data: {label: 'Book'   , menu: false}},
   // { path: 'login',        component: LoginComponent },
   // { path: 'signup',       component: SignupComponent },
   // { path: 'awards',       component: AwardsComponent,       canActivate: [AuthGuard] },
