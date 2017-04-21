@@ -1,6 +1,6 @@
 {
   "name": "myCalibreServer",
-  "version": "0.3.5",
+  "version": "0.3.7",
   "description": "A new calibre server",
   "scripts": {
     "start": "node ./src/bin/www",
