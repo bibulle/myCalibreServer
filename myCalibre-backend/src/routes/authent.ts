@@ -252,7 +252,7 @@ function authentRouter(passport): Router {
   // route for getting all users list
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
-      debug("POST /list");
+      debug("GET /list");
       passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
 
         if (err) {
@@ -270,6 +270,78 @@ function authentRouter(passport): Router {
           .then((users) => {
             users = users.map(u => _.omit(u, ['local.salt', 'local.password', 'local.hashedPassword']) as User);
             response.status(200).send(JSON.stringify({data: users}));
+          })
+          .catch(err => {
+            return next(err);
+          });
+
+      })(request, response, next);
+    });
+
+  router.route('/merge')
+  // ====================================
+  // route for merging user
+  // ====================================
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /merge");
+      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+
+        if (err) {
+          return next(err);
+        }
+
+        // Must be admin
+        if (!user.local || !user.local.isAdmin) {
+          return response.status(401).send({error: "Not authorized."})
+        }
+
+        // Get the users id
+        let modifiedUserId1: string = request.query['userId1'];
+        let modifiedUserId2: string = request.query['userId2'];
+        if (!modifiedUserId1 || !modifiedUserId2) {
+          return response.status(400).send({error: "Bad request"});
+        }
+
+        modifiedUserId1 = modifiedUserId1.replace(/ /g, "+");
+        modifiedUserId2 = modifiedUserId2.replace(/ /g, "+");
+
+        // Get the Users
+        DbMyCalibre.getInstance()
+          .findUserById(modifiedUserId1)
+          .then((user1) => {
+
+            if (!user1) {
+              return response.status(400).send({error: "Bad request"});
+            }
+
+            DbMyCalibre.getInstance()
+              .findUserById(modifiedUserId2)
+              .then((user2) => {
+
+                if (!user2) {
+                  return response.status(400).send({error: "Bad request"});
+                }
+
+                User.mergeAndSave(user1, user2, err => {
+                  if (err) {
+                    return next(err);
+                  }
+
+                  // return the users list
+                  DbMyCalibre.getInstance()
+                    .getAllUsers()
+                    .then((users) => {
+                      users = users.map(u => _.omit(u, ['local.salt', 'local.password', 'local.hashedPassword']) as User);
+                      response.status(200).send(JSON.stringify({data: users}));
+                    })
+                    .catch(err => {
+                      return next(err);
+                    });
+                });
+              })
+              .catch(err => {
+                return next(err);
+              });
           })
           .catch(err => {
             return next(err);

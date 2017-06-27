@@ -10,5 +10,5 @@
     <div class="facebook"  flex="5"><button class="fa fa-facebook" md-mini-fab disabled></button></div>
     <div class="google"    flex="5"><button class="fa fa-google" md-mini-fab disabled></button></div>
   </div>
-  <app-user-list-item *ngFor="let user of users" [user]="user" (listChanged)="loadUsers()"></app-user-list-item>
+  <app-user-list-item *ngFor="let user of users" [user]="user" (listChanged)="loadUsers()" (mergeUser)="mergeUsers(user)" [selectedMergeUser]="selectedMergeUser"></app-user-list-item>
 </md-content>

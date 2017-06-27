@@ -197,6 +197,25 @@ export class UserService {
   }
 
   /**
+   * Merge two users
+   * @returns {Promise<User[]>}
+   */
+  merge(user1: User, user2: User): Promise<User[]> {
+    return new Promise<User[]>((resolve, reject) => {
+      this._authHttp.get(environment.serverUrl + 'authent/merge?userId1=' + user1.id + '&userId2=' + user2.id)
+        .map((res: Response) => res.json().data as User[])
+        .subscribe(
+          data => {
+            resolve(data);
+          },
+          err => {
+            reject(err);
+          },
+        );
+    });
+  }
+
+  /**
    * Logout (just remove the JWT token)
    */
   logout() {

@@ -1,76 +1,105 @@
-.row {
-  line-height: 24px;
+@import "../../../../shared/styles";
 
-  .open-close {
-    width: 24px;
-    height: 24px;
+:host {
+  .row {
     line-height: 24px;
-  }
 
-  .admin, .facebook, .google, .local {
-    text-align: center;
-
-    md-slide-toggle {
-      margin: 0;
-    }
-  }
-
-  .content {
-    padding-left: 40px;
-
-    .provider {
-      font-size: 1.5em;
-      padding-bottom: 0.2em;
-    }
-    .info {
-      margin-left: 4%;
-      margin-right: 2%;
+    .open-close {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
     }
 
-    md-input-container {
-      width: 95%;
-    }
+    .admin, .facebook, .google, .local {
+      text-align: center;
 
-    a.add_email {
-      position: absolute;
-      right: 20px;
-      margin-top: -3.5em;
-      z-index: 10;
-    }
-    a.del_email {
-      position: absolute;
-      right: 0;
-      z-index: 10;
-      line-height: 30px;
-      &.mat-mini-fab {
-        width: 24px;
-        height: 24px;
-        margin-right: 8px;
-        margin-top: 4px;
-        md-icon {
-          padding-top: 1px;
-          font-size: 20px;
-        }
+      md-slide-toggle {
+        margin: 0;
       }
     }
-    .emails {
-      margin-left: 4em;
-      margin-top: -1em;
-      font-size: 0.8em;
-      line-height: 26px;
 
+    .content {
+      padding-left: 40px;
+
+      .provider {
+        font-size: 1.5em;
+        padding-bottom: 0.2em;
+      }
+      .info {
+        margin-left: 4%;
+        margin-right: 2%;
+      }
+
+      md-input-container {
+        width: 95%;
+      }
+
+      a.add_email {
+        position: absolute;
+        right: 20px;
+        margin-top: -3.5em;
+        z-index: 10;
+      }
+      a.del_email {
+        position: absolute;
+        right: 0;
+        z-index: 10;
+        line-height: 30px;
+        &.mat-mini-fab {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+          margin-top: 4px;
+          md-icon {
+            padding-top: 1px;
+            font-size: 20px;
+          }
+        }
+      }
+      .emails {
+        margin-left: 4em;
+        margin-top: -1em;
+        font-size: 0.8em;
+        line-height: 26px;
+
+      }
+
+      md-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+
+      }
     }
 
-    md-card-actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
 
-    }
   }
 
-}
+  .user-closed .content {
+    display: none;
+  }
 
-.user-closed .content {
-  display: none;
+  .merge-unselect, .merge-launch {
+    display: none
+  }
+  .user-selected {
+    background-color: mat-color($primary, 300);
+
+    .merge-select {
+      display: none;
+    }
+    .merge-unselect {
+      display: inherit;
+    }
+  }
+  .anotheruser-selected {
+    .merge-select {
+      display: none
+    }
+    .merge-launch {
+      display: inherit;
+    }
+
+  }
+
 }

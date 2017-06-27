@@ -1,10 +1,10 @@
-<md-card class="user-card" flex="100" [class.user-closed]="userClosed">
+<md-card class="user-card" flex="100" [class.user-closed]="userClosed && !(selectedMergeUser === user)" [class.user-selected]="(selectedMergeUser === user)" [class.anotheruser-selected]="selectedMergeUser && (selectedMergeUser !== user)">
   <div layout="column" class="row">
     <div layout="row" class="title">
       <div flex="5">
         <button md-icon-button class="mat-icon-button open-close" (click)="toggleUserClosed()">
-          <md-icon *ngIf="userClosed">keyboard_arrow_down</md-icon>
-          <md-icon *ngIf="!userClosed">keyboard_arrow_up</md-icon>
+          <md-icon *ngIf="userClosed && !selectedMergeUser">keyboard_arrow_down</md-icon>
+          <md-icon *ngIf="!userClosed || selectedMergeUser">keyboard_arrow_up</md-icon>
         </button>
       </div>
 
@@ -29,6 +29,9 @@
       <app-user-profile [user]="user" urlToRedirect="/users"></app-user-profile>
       <md-card-actions>
         <a class="delete" md-raised-button (click)="remove()">Delete</a>
+        <a class="merge-select" md-raised-button (click)="merge()">Merge select</a>
+        <a class="merge-unselect" md-raised-button (click)="merge()">Merge unselect</a>
+        <a class="merge-launch" md-raised-button (click)="merge()">Merge launch</a>
         <a class="resetPassword" md-raised-button (click)="resetPassword()">Reset password</a>
       </md-card-actions>
     </div>

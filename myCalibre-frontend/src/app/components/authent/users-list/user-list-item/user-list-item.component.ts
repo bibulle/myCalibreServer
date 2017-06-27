@@ -20,7 +20,13 @@ export class UserListItemComponent implements OnInit {
   @Output()
   listChanged:EventEmitter<string> = new EventEmitter();
 
+  @Output()
+  mergeUser:EventEmitter<User> = new EventEmitter();
+
   userClosed = true;
+
+  @Input()
+  selectedMergeUser: User = null;
 
 
   constructor(private _userService: UserService,
@@ -58,6 +64,10 @@ export class UserListItemComponent implements OnInit {
       });
 
 
+  }
+
+  merge() {
+    this.mergeUser.emit(this.user);
   }
 
 }
