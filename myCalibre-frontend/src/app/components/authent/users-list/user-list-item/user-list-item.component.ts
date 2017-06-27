@@ -37,7 +37,10 @@ export class UserListItemComponent implements OnInit {
 
   toggleUserClosed () {
     //console.log("toggle");
-    this.userClosed = !this.userClosed;
+    if (this.selectedMergeUser !== this.user) {
+      this.userClosed = !this.userClosed;
+
+    }
   }
 
   remove() {

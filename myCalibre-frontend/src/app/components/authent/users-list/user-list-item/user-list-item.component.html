@@ -3,8 +3,8 @@
     <div layout="row" class="title">
       <div flex="5">
         <button md-icon-button class="mat-icon-button open-close" (click)="toggleUserClosed()">
-          <md-icon *ngIf="userClosed && !selectedMergeUser">keyboard_arrow_down</md-icon>
-          <md-icon *ngIf="!userClosed || selectedMergeUser">keyboard_arrow_up</md-icon>
+          <md-icon *ngIf="userClosed">keyboard_arrow_down</md-icon>
+          <md-icon *ngIf="!userClosed">keyboard_arrow_up</md-icon>
         </button>
       </div>
 
