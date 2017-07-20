@@ -132,6 +132,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this._userService.checkAuthent();
     this._currentUserSubscription = this._userService.userObservable().subscribe(
       user => {
+        if (!user || !user.id) {
+          this._router.navigate(['/login'])
+        }
         this.user = user;
 
         const isAdmin = this._userService.isUserAdmin();

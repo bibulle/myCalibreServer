@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
 import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {UserService} from "../authent/user.service";
 
 @Injectable()
 export class NotificationService {
 
-  constructor(public _snackBar: MdSnackBar) {
+  constructor(public _snackBar: MdSnackBar,
+              private _userService: UserService) {
   }
 
   message(message: string) {
@@ -22,7 +24,10 @@ export class NotificationService {
     this._display(message, 5000, ['warn']);
   }
 
-  error(message: string) {
+  error(err: string) {
+
+    console.error(err);
+    let message = this._extractMessage(err);
     console.error(message);
     this._display(message, 5000, ['error']);
   }
@@ -34,5 +39,20 @@ export class NotificationService {
     config.extraClasses = extraClasses;
 
     this._snackBar.open(message, null, config);
+  }
+
+  _extractMessage(err: any) {
+    let message = err.statusText || err;
+    if (err['_body']) {
+      let error = JSON.parse(err['_body'])
+      console.log(error)
+      if ( error.error && error.error.name === "JsonWebTokenError") {
+        this._userService.logout();
+      }
+
+      message = error.message || message;
+    }
+
+    return message;
   }
 }
