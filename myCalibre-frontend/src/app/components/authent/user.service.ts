@@ -317,7 +317,7 @@ export class UserService {
             })
           }
         )
-        .timeout(3000)
+        .timeout(5000)
         .toPromise()
         .then(res => {
           const data = res.json();
@@ -503,15 +503,19 @@ export class UserService {
 
     console.error(error);
     // Try to get the content
-    const data = error.json();
-    if (data && data.error) {
-      if (data.error instanceof Array) {
-        error = data.error[data.error.length - 1];
-      } else if (data.message) {
-        error = "Systeme error : " + data.message;
-      } else {
-        error = data.error;
+    try {
+      const data = error.json();
+      if (data && data.error) {
+        if (data.error instanceof Array) {
+          error = data.error[data.error.length - 1];
+        } else if (data.message) {
+          error = "Systeme error : " + data.message;
+        } else {
+          error = data.error;
+        }
       }
+    } catch (er) {
+      console.error(er)
     }
 
     return error.statusText || error.message || error || 'Connection error';
