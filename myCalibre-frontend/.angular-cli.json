@@ -12,7 +12,9 @@
         "assets",
         "favicon.ico",
         ".htaccess",
-        "version.json"
+        "version.json",
+        "manifest.json",
+        "manifest.webmanifest"
       ],
       "index": "index.html",
       "main": "main.ts",
