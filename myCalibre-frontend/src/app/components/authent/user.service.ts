@@ -317,7 +317,7 @@ export class UserService {
             })
           }
         )
-        .timeout(5000)
+        .timeout(10000)
         .toPromise()
         .then(res => {
           const data = res.json();
