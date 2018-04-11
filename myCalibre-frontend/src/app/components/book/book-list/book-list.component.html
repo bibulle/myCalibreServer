@@ -1,9 +1,9 @@
-<md-content *ngIf="books">
+<mat-content *ngIf="books">
   <app-book-card *ngFor="let book of books" [book]="book">
   </app-book-card>
   <div class="max-reached" *ngIf="books.length == MAX_BOOK">
     <span>Limited to {{MAX_BOOK}}/{{totalBooksCount}}.
       Try to use search...</span>
   </div>
-</md-content>
-<md-spinner *ngIf="!books"></md-spinner>
+</mat-content>
+<mat-spinner *ngIf="!books"></mat-spinner>

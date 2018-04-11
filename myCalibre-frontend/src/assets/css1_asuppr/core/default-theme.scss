@@ -23,16 +23,16 @@ $candy-app-theme: mat-light-theme($mat-primary, $mat-accent, $mat-warn);
 @include angular-material-theme($candy-app-theme);
 
 
-//$md-primary: md-palette($md-deep-purple, 500, 100, 700, $md-contrast-palettes) !default;
-//$md-accent: md-palette($md-amber, A200, A100, A400, $md-contrast-palettes) !default;
-//$md-warn: md-palette($md-red, 500, 300, 900, $md-contrast-palettes) !default;
+//$mat-primary: mat-palette($mat-deep-purple, 500, 100, 700, $mat-contrast-palettes) !default;
+//$mat-accent: mat-palette($mat-amber, A200, A100, A400, $mat-contrast-palettes) !default;
+//$mat-warn: mat-palette($mat-red, 500, 300, 900, $mat-contrast-palettes) !default;
 
-//$md-primary: mat-palette($md-blue, 500, 100, 700) !default;
-//$md-accent: md-palette($md-amber, 500, 300,800) !default;
-//$md-warn: md-palette($md-red, 500, 300, 900) !default;
+//$mat-primary: mat-palette($mat-blue, 500, 100, 700) !default;
+//$mat-accent: mat-palette($mat-amber, 500, 300,800) !default;
+//$mat-warn: mat-palette($mat-red, 500, 300, 900) !default;
 
-//$md-background: md-palette($md-grey, 500, 0, 600) !default;
-//$md-foreground: if($md-is-dark-theme, $md-dark-theme-foreground, $md-light-theme-foreground) !default;
+//$mat-background: mat-palette($mat-grey, 500, 0, 600) !default;
+//$mat-foreground: if($mat-is-dark-theme, $mat-dark-theme-foreground, $mat-light-theme-foreground) !default;
 
-//$theme: md-light-theme($md-primary, $md-accent, $md-warn);
+//$theme: mat-light-theme($mat-primary, $mat-accent, $mat-warn);
 //@include angular-material-theme($theme);

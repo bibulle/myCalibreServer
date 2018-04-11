@@ -1,20 +1,20 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { TagCardModule } from "../tag-card/tag-card.component";
-import { MdContentModule } from "../../content/content.component";
-import { MdProgressCircleModule } from "@angular/material";
-import { CommonModule } from "@angular/common";
-import { Tag } from "../tag";
-import { Filter, SortType, FilterService, SortingDirection } from "../../filter-bar/filter.service";
-import { TagService } from "../tag.service";
-import { ActivatedRoute, Params } from "@angular/router";
-import { Subscription } from "rxjs";
+import {Component, OnInit, NgModule, OnDestroy, AfterViewInit} from '@angular/core';
+import { TagCardModule } from '../tag-card/tag-card.component';
+import { MatContentModule } from '../../content/content.component';
+import { MatProgressSpinnerModule } from '@angular/material';
+import { CommonModule } from '@angular/common';
+import { Tag } from '../tag';
+import { Filter, SortType, FilterService, SortingDirection } from '../../filter-bar/filter.service';
+import { TagService } from '../tag.service';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-tag-list',
   templateUrl: './tag-list.component.html',
   styleUrls: ['./tag-list.component.scss']
 })
-export class TagListComponent implements OnInit {
+export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   MAX_TAGS = 100;
 
@@ -26,10 +26,21 @@ export class TagListComponent implements OnInit {
   totalTagsCount = 0;
 
   filter: Filter;
-  private previousFilterJson: string = "";
+  private previousFilterJson = '';
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription;
+
+  static _cleanAccent (str: string): string {
+    return str.toLowerCase()
+      .replace(/[àâªáäãåā]/g, 'a')
+      .replace(/[èéêëęėē]/g, 'e')
+      .replace(/[iïìíįī]/g, 'i')
+      .replace(/[ôºöòóõøō]/g, 'o')
+      .replace(/[ûùüúū]/g, 'u')
+      .replace(/[æ]/g, 'ae')
+      .replace(/[œ]/g, 'oe');
+  }
 
   constructor (private _tagService: TagService,
                private _filterService: FilterService,
@@ -55,7 +66,7 @@ export class TagListComponent implements OnInit {
     this._filterService.updateLimitTo([SortType.Name]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
-        //console.log(filter);
+        // console.log(filter);
         this.filter = filter;
         if (this.fullTags) {
           this._fillTags();
@@ -121,7 +132,7 @@ export class TagListComponent implements OnInit {
       while (cpt * STEP <= tmpTags.length + STEP) {
         const _cpt = cpt + 1;
         setTimeout(() => {
-            if (_filterCount == this.filterCount) {
+            if (_filterCount === this.filterCount) {
               this.tags = tmpTags.filter((b, i) => {
                 return i < _cpt * STEP;
               });
@@ -187,25 +198,14 @@ export class TagListComponent implements OnInit {
       });
   }
 
-  static _cleanAccent (str: string): string {
-    return str.toLowerCase()
-              .replace(/[àâªáäãåā]/g, "a")
-              .replace(/[èéêëęėē]/g, "e")
-              .replace(/[iïìíįī]/g, "i")
-              .replace(/[ôºöòóõøō]/g, "o")
-              .replace(/[ûùüúū]/g, "u")
-              .replace(/[æ]/g, "ae")
-              .replace(/[œ]/g, "oe");
-  }
-
 
 }
 
 @NgModule({
   imports: [
     CommonModule,
-    MdProgressCircleModule,
-    MdContentModule,
+    MatProgressSpinnerModule,
+    MatContentModule,
     TagCardModule,
   ],
   declarations: [

@@ -1,18 +1,18 @@
 //@import "../../../shared/styles";
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
+//@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
-md-card {
+mat-card {
   padding: 0;
 }
 
-md-card-title {
-  font-size: 1.5em;
+mat-card-title {
+  font-size: 1.40em;
   .date {
     font-size: 0.6em;
   }
 }
 
-md-card-subtitle {
+mat-card-subtitle {
   margin-bottom: 0;
   .other {
     font-size: 0.6em;
@@ -32,7 +32,7 @@ md-card-subtitle {
     flex-shrink: 0;
     flex-grow: 0;
     padding: 3px;
-    [md-card-sm-image] {
+    [mat-card-sm-image] {
       display: block;
       height: auto;
       width: auto;
@@ -48,7 +48,7 @@ md-card-subtitle {
     justify-content: center;
     display: flex;
     flex-direction: column;
-    border-bottom: mat-color(map-get($theme,foreground), divider) 1px solid;
+    //border-bottom: mat-color(map-get($theme,foreground), divider) 1px solid;
 
   }
 }

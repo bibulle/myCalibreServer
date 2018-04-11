@@ -1,9 +1,9 @@
 import { Component, OnInit, NgModule, Input } from '@angular/core';
-import { Book } from "../book";
-import { CommonModule } from "@angular/common";
-import { environment } from "../../../../environments/environment";
-import { Router } from "@angular/router";
-import { MdCardModule, MdIconModule } from "@angular/material";
+import { Book } from '../book';
+import { CommonModule } from '@angular/common';
+import { environment } from '../../../../environments/environment';
+import { Router } from '@angular/router';
+import { MatCardModule, MatIconModule } from '@angular/material';
 
 @Component({
   selector: 'app-book-card',
@@ -15,7 +15,7 @@ export class BookCardComponent implements OnInit {
   @Input()
   book: Book;
 
-  thumbnailUrlBase= `${environment.serverUrl}api/book/thumbnail`;
+  thumbnailUrlBase = `${environment.serverUrl}api/book/thumbnail`;
 
 
   constructor (private router: Router) { }
@@ -39,8 +39,8 @@ export class BookCardComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdCardModule,
-    MdIconModule,
+    MatCardModule,
+    MatIconModule,
   ],
   declarations: [
     BookCardComponent

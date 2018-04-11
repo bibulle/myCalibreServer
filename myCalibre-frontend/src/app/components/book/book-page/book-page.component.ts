@@ -1,16 +1,19 @@
-import {Component, NgModule, OnInit} from "@angular/core";
-import {FilterService} from "../../filter-bar/filter.service";
-import {Book} from "../book";
-import {environment} from "../../../../environments/environment";
-import {ActivatedRoute, Router} from "@angular/router";
-import {BookService} from "../book.service";
-import {MdContentModule} from "../../content/content.component";
-import {CommonModule} from "@angular/common";
-import {TitleService} from "../../../app/title.service";
-import {FormsModule} from "@angular/forms";
-import {MdAutocompleteModule, MdButtonModule, MdCardModule, MdDialog, MdIconModule, MdInputModule, MdMenuModule, MdProgressCircleModule} from "@angular/material";
-import {KindleDialogComponent} from "./kindle-dialog/kindle-dialog.component";
-import {NotificationService} from "../../notification/notification.service";
+import {Component, NgModule, OnInit} from '@angular/core';
+import {FilterService} from '../../filter-bar/filter.service';
+import {Book} from '../book';
+import {environment} from '../../../../environments/environment';
+import {ActivatedRoute, Router} from '@angular/router';
+import {BookService} from '../book.service';
+import {MatContentModule} from '../../content/content.component';
+import {CommonModule} from '@angular/common';
+import {TitleService} from '../../../app/title.service';
+import {FormsModule} from '@angular/forms';
+import {
+  MatAutocompleteModule, MatButtonModule, MatCardModule, MatDialog, MatDialogModule, MatIconModule, MatInputModule, MatMenuModule,
+  MatProgressSpinnerModule
+} from '@angular/material';
+import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
+import {NotificationService} from '../../notification/notification.service';
 
 @Component({
   selector: 'app-book-page',
@@ -19,7 +22,7 @@ import {NotificationService} from "../../notification/notification.service";
 })
 export class BookPageComponent implements OnInit {
 
-  //filter: Filter;
+  // filter: Filter;
 
 
   book: Book;
@@ -35,7 +38,7 @@ export class BookPageComponent implements OnInit {
               private _bookService: BookService,
               private _route: ActivatedRoute,
               private _router: Router,
-              private _dialog: MdDialog,
+              private _dialog: MatDialog,
               private _notificationService: NotificationService) {
   }
 
@@ -48,13 +51,13 @@ export class BookPageComponent implements OnInit {
     this._bookService
       .getBook(id)
       .then(book => {
-        //console.log(book);
+        // console.log(book);
         this.book = book;
 
         this.book.data.forEach(bd => {
-          if (bd.data_format == 'EPUB') {
-            this.bookHasEpub = true;
-          } else if (bd.data_format == 'MOBI') {
+          if (bd.data_format === 'EPUB') {
+             this.bookHasEpub = true;
+          } else if (bd.data_format === 'MOBI') {
             this.bookHasMobi = true;
           }
         });
@@ -110,7 +113,7 @@ export class BookPageComponent implements OnInit {
     dialogRef.afterClosed().subscribe(email => {
 
 
-      //console.log("Book page '"+email+"'");
+      // console.log("Book page '"+email+"'");
       // if there is an email
       if (email) {
 
@@ -134,14 +137,15 @@ export class BookPageComponent implements OnInit {
   imports: [
     CommonModule,
     FormsModule,
-    MdButtonModule,
-    MdIconModule,
-    MdInputModule,
-    MdProgressCircleModule,
-    MdContentModule,
-    MdCardModule,
-    MdMenuModule.forRoot(),
-    MdAutocompleteModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatContentModule,
+    MatCardModule,
+    MatMenuModule,
+    MatAutocompleteModule,
+    MatDialogModule
   ],
   declarations: [
     BookPageComponent,

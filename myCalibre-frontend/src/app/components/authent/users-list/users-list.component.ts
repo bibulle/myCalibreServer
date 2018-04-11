@@ -1,13 +1,13 @@
 import {Component, NgModule, OnInit} from '@angular/core';
-import {User} from "../user";
-import {UserService} from "../user.service";
-import {NotificationService} from "../../notification/notification.service";
-import {Filter, FilterService} from "../../filter-bar/filter.service";
-import {UserListItemComponent, UserListItemModule} from "./user-list-item/user-list-item.component";
-import {FormsModule} from "@angular/forms";
-import {MdButtonModule, MdCardModule, MdCoreModule, MdIconModule, MdInputModule, MdToolbarModule} from "@angular/material";
-import {CommonModule} from "@angular/common";
-import {MdContentModule} from "../../content/content.component";
+import {User} from '../user';
+import {UserService} from '../user.service';
+import {NotificationService} from '../../notification/notification.service';
+import {Filter, FilterService} from '../../filter-bar/filter.service';
+import {UserListItemComponent, UserListItemModule} from './user-list-item/user-list-item.component';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule, MatCardModule, MatCommonModule, MatIconModule, MatInputModule, MatToolbarModule} from '@angular/material';
+import {CommonModule} from '@angular/common';
+import {MatContentModule} from '../../content/content.component';
 
 @Component({
   selector: 'app-users-list',
@@ -18,7 +18,7 @@ export class UsersListComponent implements OnInit {
 
   users: User[];
 
-  selectedMergeUser : User;
+  selectedMergeUser: User;
 
   constructor(private _userService: UserService,
               private _notificationService: NotificationService,
@@ -46,7 +46,7 @@ export class UsersListComponent implements OnInit {
   mergeUsers(user: User) {
     if (!this.selectedMergeUser) {
       this.selectedMergeUser = user;
-    } else if (this.selectedMergeUser == user) {
+    } else if (this.selectedMergeUser === user) {
       this.selectedMergeUser = null;
     } else {
       this._userService.merge(this.selectedMergeUser, user)
@@ -66,16 +66,16 @@ export class UsersListComponent implements OnInit {
 @NgModule({
   imports: [
     FormsModule,
-    MdCoreModule,
+    MatCommonModule,
     CommonModule,
-    MdCardModule,
-    MdButtonModule,
-    MdIconModule.forRoot(),
-    MdInputModule,
-    MdContentModule,
-    MdToolbarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatContentModule,
+    MatToolbarModule,
     UserListItemModule
-    // MdInputModule,
+    // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,
   ],

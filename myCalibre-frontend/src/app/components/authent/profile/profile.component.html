@@ -1,11 +1,11 @@
 <div class="md-content" flex="100" layout-align="center center" layout="row">
-  <md-card flex="60">
+  <mat-card flex="60">
     <app-user-profile [user]="user" urlToRedirect="/profile"></app-user-profile>
-    <md-card-actions>
+    <mat-card-actions>
       <a class="logout" md-raised-button (click)="logout()">Logout</a>
       <!--<a class="connect" md-raised-button (click)="connectLocal()" *ngIf="!user?.local?.username">Connect local</a>-->
       <!--<a class="unlink" md-raised-button (click)="unlinkLocal()" *ngIf="user?.local?.username">Unlink local</a>-->
 
-    </md-card-actions>
-  </md-card>
+    </mat-card-actions>
+  </mat-card>
 </div>

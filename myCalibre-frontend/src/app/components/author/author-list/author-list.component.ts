@@ -1,20 +1,20 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { MdProgressCircleModule } from "@angular/material";
-import { MdContentModule } from "../../content/content.component";
-import { Author } from "../author";
-import { Filter, FilterService, SortType, SortingDirection } from "../../filter-bar/filter.service";
-import { AuthorService } from "../author.service";
-import { AuthorCardModule } from "../author-card/author-card.component";
-import { ActivatedRoute, Params } from "@angular/router";
-import { Subscription } from "rxjs";
+import {Component, OnInit, NgModule, AfterViewInit, OnDestroy} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material';
+import { MatContentModule } from '../../content/content.component';
+import { Author } from '../author';
+import { Filter, FilterService, SortType, SortingDirection } from '../../filter-bar/filter.service';
+import { AuthorService } from '../author.service';
+import { AuthorCardModule } from '../author-card/author-card.component';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-author-list',
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.scss']
 })
-export class AuthorListComponent implements OnInit {
+export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   MAX_AUTHORS = 100;
 
@@ -26,10 +26,21 @@ export class AuthorListComponent implements OnInit {
   totalAuthorsCount = 0;
 
   filter: Filter;
-  private previousFilterJson: string = "";
+  private previousFilterJson = '';
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription;
+
+  static _cleanAccent (str: string): string {
+    return str.toLowerCase()
+      .replace(/[àâªáäãåā]/g, 'a')
+      .replace(/[èéêëęėē]/g, 'e')
+      .replace(/[iïìíįī]/g, 'i')
+      .replace(/[ôºöòóõøō]/g, 'o')
+      .replace(/[ûùüúū]/g, 'u')
+      .replace(/[æ]/g, 'ae')
+      .replace(/[œ]/g, 'oe');
+  }
 
   constructor (private _authorService: AuthorService,
                private _filterService: FilterService,
@@ -55,7 +66,7 @@ export class AuthorListComponent implements OnInit {
     this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
-        //console.log(filter);
+        // console.log(filter);
         this.filter = filter;
         if (this.fullAuthors) {
           this._fillAuthors();
@@ -122,7 +133,7 @@ export class AuthorListComponent implements OnInit {
       while (cpt * STEP <= tmpAuthors.length + STEP) {
         const _cpt = cpt + 1;
         setTimeout(() => {
-            if (_filterCount == this.filterCount) {
+            if (_filterCount === this.filterCount) {
               this.authors = tmpAuthors.filter((b, i) => {
                 return i < _cpt * STEP;
               });
@@ -152,7 +163,7 @@ export class AuthorListComponent implements OnInit {
     const filteredAuthors = this.fullAuthors
                                 .filter((a: Author) => {
 
-                                  const strToSearch = a.author_name + " " + a.author_sort;
+                                  const strToSearch = a.author_name + ' ' + a.author_sort;
 
                                   return (AuthorListComponent._cleanAccent(strToSearch).includes(AuthorListComponent._cleanAccent(this.filter.search)));
                                 })
@@ -171,12 +182,12 @@ export class AuthorListComponent implements OnInit {
                                     case SortType.PublishDate:
                                       const v1Lst = b1.book_date.concat();
                                       const v2Lst = b2.book_date.concat();
-                                      if (this.filter.sorting_direction == SortingDirection.Desc) {
+                                      if (this.filter.sorting_direction === SortingDirection.Desc) {
                                         v1Lst.reverse();
                                         v2Lst.reverse();
                                       }
-                                      v1 = v1Lst.toString() + " " + v1;
-                                      v2 = v2Lst.toString() + " " + v2;
+                                      v1 = v1Lst.toString() + ' ' + v1;
+                                      v2 = v2Lst.toString() + ' ' + v2;
                                       break;
                                   }
 
@@ -198,16 +209,6 @@ export class AuthorListComponent implements OnInit {
       });
   }
 
-  static _cleanAccent (str: string): string {
-    return str.toLowerCase()
-              .replace(/[àâªáäãåā]/g, "a")
-              .replace(/[èéêëęėē]/g, "e")
-              .replace(/[iïìíįī]/g, "i")
-              .replace(/[ôºöòóõøō]/g, "o")
-              .replace(/[ûùüúū]/g, "u")
-              .replace(/[æ]/g, "ae")
-              .replace(/[œ]/g, "oe");
-  }
 
 
 }
@@ -215,8 +216,8 @@ export class AuthorListComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdProgressCircleModule,
-    MdContentModule,
+    MatProgressSpinnerModule,
+    MatContentModule,
     AuthorCardModule,
   ],
   declarations: [

@@ -5,27 +5,39 @@ import {ViewportHelper} from '../core/util/viewport';
 export type BreakAction = 'hide' | 'show';
 
 /**
- * @name mdPeekaboo
+ * @name matPeekaboo
  *
  * @description
- * The `[md-peekaboo]` directive is an attribute that toggles the visibility of elements based
+ * The `[mat-peekaboo]` directive is an attribute that toggles the visibility of elements based
  * on the current viewport size and scrollTop.
  *
  */
 @Directive({
-  selector: '[md-peekaboo]',
+  selector: '[mat-peekaboo]',
   host: {
-    '[class.md-peekaboo-active]': 'active',
+    '[class.mat-peekaboo-active]': 'active',
     '[attr.breakAction]': 'breakAction',
     '(window:scroll)': '_windowScroll($event)'
   }
 })
-export class MdPeekaboo implements OnDestroy {
+export class MdPeekabooDirective implements OnDestroy {
 
   static SIZES: string[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 
+  private _active = false;
+  private _breakXs = -1;
+  private _breakSm = -1;
+  private _breakMd = -1;
+  private _breakLg = -1;
+  private _breakXl = -1;
+  private _breakpoint: string = null;
+  private _scroller: any;
+  private _mediaListeners: MediaListener[] = [];
+  private _windowScroll = this.evaluate.bind(this);
+
+
   @Input()
-  break: number = 100;
+  break = 100;
 
   @Input()
   breakAction: BreakAction;
@@ -34,57 +46,50 @@ export class MdPeekaboo implements OnDestroy {
     return typeof value === 'string' ? parseInt(value, 10) : value;
   }
 
-  private _active: boolean = false;
   get active(): boolean {
     return this._active;
   }
 
-  private _breakXs: number = -1;
   @Input() set breakXs(value: number) {
-    this._breakXs = MdPeekaboo.MakeNumber(value);
+    this._breakXs = MdPeekabooDirective.MakeNumber(value);
   }
 
   get breakXs(): number {
     return this._breakXs;
   }
 
-  private _breakSm: number = -1;
   @Input() set breakSm(value: number) {
-    this._breakSm = MdPeekaboo.MakeNumber(value);
+    this._breakSm = MdPeekabooDirective.MakeNumber(value);
   }
 
   get breakSm(): number {
     return this._breakSm;
   }
 
-  private _breakMd: number = -1;
   @Input() set breakMd(value: number) {
-    this._breakMd = MdPeekaboo.MakeNumber(value);
+    this._breakMd = MdPeekabooDirective.MakeNumber(value);
   }
 
   get breakMd(): number {
     return this._breakMd;
   }
 
-  private _breakLg: number = -1;
   @Input() set breakLg(value: number) {
-    this._breakLg = MdPeekaboo.MakeNumber(value);
+    this._breakLg = MdPeekabooDirective.MakeNumber(value);
   }
 
   get breakLg(): number {
     return this._breakLg;
   }
 
-  private _breakXl: number = -1;
   @Input() set breakXl(value: number) {
-    this._breakXl = MdPeekaboo.MakeNumber(value);
+    this._breakXl = MdPeekabooDirective.MakeNumber(value);
   }
 
   get breakXl(): number {
     return this._breakXl;
   }
 
-  private _breakpoint: string = null;
   set breakpoint(size: string) {
     this._breakpoint = size;
     this.evaluate();
@@ -95,29 +100,30 @@ export class MdPeekaboo implements OnDestroy {
   }
 
 
-  private _scroller: any = null;
   @Input() set scroller(scroll: any) {
-    if (this._scroller) {
-      this._scroller.removeEventListener('scroll', this._windowScroll);
-    }
-    this._scroller = scroll;
-    if (this._scroller) {
-      this._scroller.addEventListener('scroll', this._windowScroll, true);
-    }
+    setTimeout(() => {
+      if (this._scroller) {
+        this._scroller.removeEventListener('scroll', this._windowScroll);
+      }
+      this._scroller = scroll;
+      if (this._scroller) {
+        this._scroller.addEventListener('scroll', this._windowScroll, true);
+      }
+    }, 100)
   }
 
   get scroller(): any {
+    console.log('A');
     return this._scroller;
   }
 
-  private _mediaListeners: MediaListener[] = [];
 
 
   constructor(public media: Media,
               private element: ElementRef,
               public viewport: ViewportHelper,
               private zone: NgZone) {
-    MdPeekaboo.SIZES.forEach((size: string) => {
+    MdPeekabooDirective.SIZES.forEach((size: string) => {
       this._watchMediaQuery(size);
       if (this.media.hasMedia(size)) {
         this._breakpoint = size;
@@ -140,8 +146,6 @@ export class MdPeekaboo implements OnDestroy {
     });
     this._mediaListeners.push(l);
   }
-
-  private _windowScroll = this.evaluate.bind(this);
 
   /**
    * Evaluate the current scroll and media breakpoint to determine what scrollTop
@@ -182,8 +186,7 @@ export class MdPeekaboo implements OnDestroy {
       this.zone.run(() => {
         this._active = true;
       });
-    }
-    else if (top < bp && this._active) {
+    } else if (top < bp && this._active) {
       this.zone.run(() => {
         this._active = false;
       });
@@ -194,7 +197,7 @@ export class MdPeekaboo implements OnDestroy {
 }
 
 @NgModule({
-  declarations: [MdPeekaboo],
-  exports: [MdPeekaboo]
+  declarations: [MdPeekabooDirective],
+  exports: [MdPeekabooDirective]
 })
 export class MdPeekabooModule {}

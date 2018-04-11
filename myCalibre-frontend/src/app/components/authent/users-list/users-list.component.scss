@@ -1,4 +1,4 @@
-@import "../../../shared/styles";
+//@import "../../../shared/styles";
 
 .user-list-header {
   padding-right: 24px;
@@ -30,9 +30,5 @@
     color: white;
   }
 
-  .fa-home[disabled] {
-    background-color: mat-color($primary, 500);
-    color: mat-color($primary, default-contrast);
-  }
 }
 

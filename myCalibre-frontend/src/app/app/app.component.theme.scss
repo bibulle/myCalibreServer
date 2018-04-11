@@ -1,0 +1,55 @@
+@import '~@angular/material/theming';
+
+// mixin name will be used in main style.scss
+@mixin app-component-theme($theme) {
+
+  // retrieve variables from theme
+  // (all possible variables, use only what you really need)
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  // all of these variables contain many additional variables
+
+  app-root {
+    background-color: mat-color($background, app-bar);
+
+    .app-menu {
+      border-right-color: mat-color($foreground, divider);
+
+      [mat-list-item] {
+        &.active {
+          color: mat-color($primary, 500);
+        }
+      }
+      mat-toolbar {
+        color: mat-color($foreground, secondary-text);
+        border-bottom-color: mat-color($foreground, divider);
+
+        .beta {
+          background-color: mat-color($warn, 100);
+        }
+      }
+      .version {
+        color: mat-color($foreground, hint-text);
+      }
+    }
+    mat-toolbar.hero {
+      h1 {
+        color: mat-color($primary, default-contrast);
+      }
+    }
+    mat-content {
+      > h1 {
+        color: mat-color($primary, 900);
+      }
+      .card-media {
+        background-color: mat-color($background, app-bar);
+      }
+    }
+
+
+  }
+}

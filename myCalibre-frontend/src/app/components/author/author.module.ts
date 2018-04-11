@@ -1,15 +1,15 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { MdCardModule, MdIconModule } from "@angular/material";
-import { AuthorService } from "./author.service";
-import { AuthorListModule } from "./author-list/author-list.component";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule, MatIconModule } from '@angular/material';
+import { AuthorService } from './author.service';
+import { AuthorListModule } from './author-list/author-list.component';
 
 @NgModule({
   imports: [
     CommonModule,
     AuthorListModule,
-    MdCardModule,
-    MdIconModule
+    MatCardModule,
+    MatIconModule
   ],
   providers: [
     AuthorService

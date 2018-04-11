@@ -1,12 +1,12 @@
-md-card-title .count {
+mat-card-title .count {
   font-size: 0.6em;
 }
 
-md-card-title button {
+mat-card-title button {
   float: right;
 }
 
-md-card-title md-icon {
+mat-card-title mat-icon {
   margin-top: 10px;
 }
 
@@ -15,7 +15,7 @@ md-card-title md-icon {
   padding-bottom: 12px;
 }
 
-.tag-card md-card-subtitle, .tag-card .count {
+.tag-card mat-card-subtitle, .tag-card .count {
   display: none;
 }
 
@@ -23,7 +23,7 @@ md-card-title md-icon {
   margin: 0;
 }
 
-.tag-card.books-closed md-card-subtitle {
+.tag-card.books-closed mat-card-subtitle {
   display: block;
 }
 

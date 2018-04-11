@@ -1,18 +1,18 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
+import {Component, OnInit, NgModule, OnDestroy} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-import { Subject, Subscription } from "rxjs";
+import { Subject, Subscription } from 'rxjs';
 
-import { FilterService, Filter, SortType, SortingDirection } from "./filter.service";
-import { MdIconModule, MdInputModule, MdMenuModule, MdButtonModule } from "@angular/material";
+import { FilterService, Filter, SortType, SortingDirection } from './filter.service';
+import { MatIconModule, MatInputModule, MatMenuModule, MatButtonModule } from '@angular/material';
 
 @Component({
   selector: 'filter-bar',
   templateUrl: './filter-bar.component.html',
   styleUrls: ['./filter-bar.component.scss']
 })
-export class FilterBarComponent implements OnInit {
+export class FilterBarComponent implements OnInit, OnDestroy {
 
   filter = new Filter();
 
@@ -63,7 +63,7 @@ export class FilterBarComponent implements OnInit {
 
 
   toggleSort(sortType: SortType) {
-    if (this.filter.sort == sortType) {
+    if (this.filter.sort === sortType) {
       this.filter.sorting_direction = (this.filter.sorting_direction + 1) % 2;
     } else {
       this.filter.sort = sortType;
@@ -86,10 +86,10 @@ export class FilterBarComponent implements OnInit {
   imports: [
     CommonModule,
     FormsModule,
-    MdIconModule,
-    MdInputModule,
-    MdButtonModule,
-    MdMenuModule.forRoot()
+    MatIconModule,
+    MatInputModule,
+    MatButtonModule,
+    MatMenuModule
   ],
   declarations: [
     FilterBarComponent

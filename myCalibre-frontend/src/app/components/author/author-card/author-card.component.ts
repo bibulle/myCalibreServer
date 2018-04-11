@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, NgModule } from '@angular/core';
-import { Author } from "../author";
-import { CommonModule } from "@angular/common";
-import { MdCardModule, MdIconModule, MdButtonModule } from "@angular/material";
-import { BookCardModule } from "../../book/book-card/book-card.component";
+import { Author } from '../author';
+import { CommonModule } from '@angular/common';
+import { MatCardModule, MatIconModule, MatButtonModule } from '@angular/material';
+import { BookCardModule } from '../../book/book-card/book-card.component';
 
 @Component({
   selector: 'app-author-card',
@@ -32,9 +32,9 @@ export class AuthorCardComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdCardModule,
-    MdIconModule,
-    MdButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
     BookCardModule
   ],
   declarations: [

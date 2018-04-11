@@ -1,4 +1,4 @@
-<md-content *ngIf="users">
+<mat-content *ngIf="users">
   <div layout="row" class="user-list-header">
     <div                   flex="5"></div>
     <div class="username"  flex="15">Username</div>
@@ -11,4 +11,4 @@
     <div class="google"    flex="5"><button class="fa fa-google" md-mini-fab disabled></button></div>
   </div>
   <app-user-list-item *ngFor="let user of users" [user]="user" (listChanged)="loadUsers()" (mergeUser)="mergeUsers(user)" [selectedMergeUser]="selectedMergeUser"></app-user-list-item>
-</md-content>
+</mat-content>

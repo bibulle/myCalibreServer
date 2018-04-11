@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {Filter, FilterService} from "../filter-bar/filter.service";
+import {Filter, FilterService} from '../filter-bar/filter.service';
 
 @Component({
   selector: 'not-found',

@@ -1,12 +1,12 @@
-md-card-title .date {
+mat-card-title .date {
   font-size: 0.6em;
 }
 
-md-card-title button {
+mat-card-title button {
   float: right;
 }
 
-//md-card-title md-icon {
+//mat-card-title mat-icon {
   //margin-top: 10px;
 //}
 
@@ -15,7 +15,7 @@ md-card-title button {
   padding-bottom: 12px;
 }
 
-.author-card md-card-subtitle, .author-card .date {
+.author-card mat-card-subtitle, .author-card .date {
   display: none;
 }
 
@@ -23,7 +23,7 @@ md-card-title button {
   margin: 0;
 }
 
-.author-card.books-closed md-card-subtitle {
+.author-card.books-closed mat-card-subtitle {
   display: block;
 }
 

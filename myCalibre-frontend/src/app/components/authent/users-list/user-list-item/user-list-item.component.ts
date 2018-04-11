@@ -1,11 +1,11 @@
-import {Component, EventEmitter, Input, NgModule, OnInit, Output} from "@angular/core";
-import {User} from "../../user";
-import {CommonModule} from "@angular/common";
-import {MdButtonModule, MdCardModule, MdCheckboxModule, MdIconModule, MdInputModule, MdSlideToggleModule} from "@angular/material";
-import {FormsModule} from "@angular/forms";
-import {UserProfileModule} from "../../profile/user-profile/user-profile.component";
-import {NotificationService} from "app/components/notification/notification.service";
-import {UserService} from "../../user.service";
+import {Component, EventEmitter, Input, NgModule, OnInit, Output} from '@angular/core';
+import {User} from '../../user';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule, MatSlideToggleModule} from '@angular/material';
+import {FormsModule} from '@angular/forms';
+import {UserProfileModule} from '../../profile/user-profile/user-profile.component';
+import {NotificationService} from 'app/components/notification/notification.service';
+import {UserService} from '../../user.service';
 
 @Component({
   selector: 'app-user-list-item',
@@ -18,10 +18,10 @@ export class UserListItemComponent implements OnInit {
   user: User;
 
   @Output()
-  listChanged:EventEmitter<string> = new EventEmitter();
+  listChanged: EventEmitter<string> = new EventEmitter();
 
   @Output()
-  mergeUser:EventEmitter<User> = new EventEmitter();
+  mergeUser: EventEmitter<User> = new EventEmitter();
 
   userClosed = true;
 
@@ -36,7 +36,7 @@ export class UserListItemComponent implements OnInit {
   }
 
   toggleUserClosed () {
-    //console.log("toggle");
+    // console.log("toggle");
     if (this.selectedMergeUser !== this.user) {
       this.userClosed = !this.userClosed;
 
@@ -46,7 +46,7 @@ export class UserListItemComponent implements OnInit {
   remove() {
     this._userService.remove(this.user)
       .then(() => {
-        this.listChanged.emit("user deleted");
+        this.listChanged.emit('user deleted');
       })
       .catch(err => {
         console.log(err);
@@ -59,7 +59,7 @@ export class UserListItemComponent implements OnInit {
   resetPassword() {
     this._userService.resetPassword(this.user)
       .then((newPassword) => {
-        this._notificationService.info("Password change to "+newPassword);
+        this._notificationService.info('Password change to ' + newPassword);
       })
       .catch(err => {
         console.log(err);
@@ -78,13 +78,13 @@ export class UserListItemComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdButtonModule,
-    MdCardModule,
-    MdIconModule,
-    MdSlideToggleModule,
-    MdCheckboxModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatSlideToggleModule,
+    MatCheckboxModule,
     FormsModule,
-    MdInputModule,
+    MatInputModule,
     UserProfileModule
   ],
   declarations: [

@@ -1,41 +1,41 @@
-<md-card-content>
+<mat-card-content>
   <div class="provider">Account :</div>
-  <md-input-container class="info">
-    <input mdInput placeholder="Username" required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()">
-  </md-input-container>
-  <md-input-container class="info">
-    <input mdInput placeholder="Firstname" [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()">
-  </md-input-container>
-  <md-input-container class="info">
-    <input mdInput placeholder="Lastname" [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()">
-  </md-input-container>
-  <md-input-container class="info">
-    <input mdInput placeholder="email" type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()">
-  </md-input-container>
-  <md-input-container class="info">
-    <input mdInput placeholder="amazon emails" type="email" [(ngModel)]="amazonEmail">
-  </md-input-container>
-  <a class="add_email" md-mini-fab (click)="addEmail()" mdTooltip="Add email to list"><md-icon>add</md-icon></a>
+  <mat-input-container class="info">
+    <input matInput placeholder="Username" required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()">
+  </mat-input-container>
+  <mat-input-container class="info">
+    <input matInput placeholder="Firstname" [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()">
+  </mat-input-container>
+  <mat-input-container class="info">
+    <input matInput placeholder="Lastname" [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()">
+  </mat-input-container>
+  <mat-input-container class="info">
+    <input matInput placeholder="email" type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()">
+  </mat-input-container>
+  <mat-input-container class="info">
+    <input matInput placeholder="amazon emails" type="email" [(ngModel)]="amazonEmail">
+  </mat-input-container>
+  <a class="add_email" md-mini-fab (click)="addEmail()" mdTooltip="Add email to list"><mat-icon>add</mat-icon></a>
   <div class="info emails">
     <div *ngFor="let amazonEmail of user.local.amazonEmails">
       {{amazonEmail}}
-      <a class="del_email" md-mini-fab (click)="delEmail(amazonEmail)" mdTooltip="Remove email from list"><md-icon>remove</md-icon></a>
+      <a class="del_email" md-mini-fab (click)="delEmail(amazonEmail)" mdTooltip="Remove email from list"><mat-icon>remove</mat-icon></a>
     </div>
   </div>
-</md-card-content>
-<md-card-content>
+</mat-card-content>
+<mat-card-content>
   <div class="provider">Facebook :</div>
   <div class="info name" *ngIf="user?.facebook?.name">{{user?.facebook?.name}}</div>
   <div class="info name" *ngIf="!user?.facebook?.name">none</div>
   <div class="info email" *ngIf="user?.facebook?.name">{{user?.facebook?.email}}</div>
   <a class="connect fa fa-facebook" md-mini-fab (click)="connectFacebook()" *ngIf="!user?.facebook?.name" mdTooltip="Connect Facebook" mdTooltipPosition="before"></a>
-  <a class="unlink fa fa-facebook" md-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" mdTooltip="Unlink Facebook" mdTooltipPosition="before"><md-icon>clear</md-icon></a>
-</md-card-content>
-<md-card-content>
+  <a class="unlink fa fa-facebook" md-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" mdTooltip="Unlink Facebook" mdTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+</mat-card-content>
+<mat-card-content>
   <div class="provider">Google :</div>
   <div class="info name" *ngIf="user?.google?.name">{{user?.google?.name}}</div>
   <div class="info name" *ngIf="!user?.google?.name">none</div>
   <div class="info email" *ngIf="user?.google?.name">{{user?.google?.email}}</div>
   <a class="connect fa fa-google" md-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" mdTooltip="Connect Google" mdTooltipPosition="before"></a>
-  <a class="unlink fa fa-google" md-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" mdTooltip="Unlink Google" mdTooltipPosition="before"><md-icon>clear</md-icon></a>
-</md-card-content>
+  <a class="unlink fa fa-google" md-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" mdTooltip="Unlink Google" mdTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+</mat-card-content>

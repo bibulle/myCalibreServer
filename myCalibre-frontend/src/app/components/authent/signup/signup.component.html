@@ -1,27 +1,27 @@
 <div class="md-content" flex="100" layout-align="center center" layout="row">
-  <md-card flex="60">
+  <mat-card flex="60">
     <form role="form" (submit)="signup($event, username.value, password.value, firstname.value, lastname.value, email.value)">
-      <md-card-content>
-        <md-input-container>
-          <input mdInput placeholder="Username"  required                 #username>
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Password"  required type="password" #password>
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Firstname" #firstname>
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Lastname"  #lastname>
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="email"     type="email" #email>
-        </md-input-container>
-      </md-card-content>
-      <md-card-actions align="end">
-        <a md-raised-button (click)="login()">Login</a>
-        <button md-raised-button color="primary" type="submit">SIGNUP</button>
-      </md-card-actions>
+      <mat-card-content>
+        <mat-input-container>
+          <input MatInput placeholder="Username"  required                 #username>
+        </mat-input-container>
+        <mat-input-container>
+          <input MatInput placeholder="Password"  required type="password" #password>
+        </mat-input-container>
+        <mat-input-container>
+          <input MatInput placeholder="Firstname" #firstname>
+        </mat-input-container>
+        <mat-input-container>
+          <input MatInput placeholder="Lastname"  #lastname>
+        </mat-input-container>
+        <mat-input-container>
+          <input MatInput placeholder="email"     type="email" #email>
+        </mat-input-container>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a mat-raised-button (click)="login()">Login</a>
+        <button mat-raised-button color="primary" type="submit">SIGNUP</button>
+      </mat-card-actions>
     </form>
-  </md-card>
+  </mat-card>
 </div>

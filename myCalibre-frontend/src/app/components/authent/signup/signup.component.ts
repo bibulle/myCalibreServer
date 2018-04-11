@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {FilterService, Filter} from "../../filter-bar/filter.service";
-import {UserService} from "../user.service";
-import {Router} from "@angular/router";
-import {NotificationService} from "../../notification/notification.service";
+import {FilterService, Filter} from '../../filter-bar/filter.service';
+import {UserService} from '../user.service';
+import {Router} from '@angular/router';
+import {NotificationService} from '../../notification/notification.service';
 
 @Component({
   selector: 'app-signup',

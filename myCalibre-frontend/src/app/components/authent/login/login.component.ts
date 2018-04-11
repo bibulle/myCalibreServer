@@ -1,8 +1,8 @@
-import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
-import {Filter, FilterService} from "../../filter-bar/filter.service";
-import {UserService} from "../user.service";
-import {NotificationService} from "../../notification/notification.service";
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {Filter, FilterService} from '../../filter-bar/filter.service';
+import {UserService} from '../user.service';
+import {NotificationService} from '../../notification/notification.service';
 
 @Component({
   selector: 'app-login',

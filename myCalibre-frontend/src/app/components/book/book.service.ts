@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
-import { environment } from "../../../environments/environment";
-import { Book } from "./book";
-import { Response } from "@angular/http";
-import { AuthHttp } from "angular2-jwt";
+import { environment } from '../../../environments/environment';
+import { Book } from './book';
+import { Response } from '@angular/http';
+import { AuthHttp } from 'angular2-jwt';
 
 @Injectable()
 export class BookService {
 
+  private static booksList: Book[];
+
   private booksUrl = environment.serverUrl + 'api/book';
   private sendKindleUrl = '/send/kindle';
 
-  constructor (private authHttp: AuthHttp) { }
 
-  private static booksList: Book[];
+  constructor (private authHttp: AuthHttp) { }
 
   /**
    * get the books list
@@ -21,11 +22,11 @@ export class BookService {
 
     return new Promise<Book[]>((resolve, reject) => {
       this.authHttp.get(this.booksUrl)
-          .map((res: Response) => res.json().data as Book[])
+          // .map((res: Response) => res.json().data as Book[])
           .subscribe(
-            data => {
-              BookService.booksList = data;
-              resolve(data);
+            (res: Response) => {
+              BookService.booksList = res.json().data as Book[];
+              resolve(BookService.booksList);
             },
             err => {
               reject(err);
@@ -40,11 +41,11 @@ export class BookService {
   getNewBooks (): Promise<Book[]> {
 
     return new Promise<Book[]>((resolve, reject) => {
-      this.authHttp.get(this.booksUrl+"/new")
-          .map((res: Response) => res.json().data as Book[])
+      this.authHttp.get(this.booksUrl + '/new')
+          // .map((res: Response) => res.json().data as Book[])
           .subscribe(
-            data => {
-              resolve(data);
+            (res: Response) => {
+              resolve(res.json().data as Book[]);
             },
             err => {
               reject(err);
@@ -56,12 +57,11 @@ export class BookService {
   /**
    * get a book
    */
-  getBook (book_id: number): Promise<Book> {
-
+  getBook (book_id: string): Promise<Book> {
     return new Promise<Book>((resolve, reject) => {
       let book: Book;
       if (BookService.booksList) {
-        book = BookService.booksList.find(b => { return b.book_id == book_id});
+        book = BookService.booksList.find(b => { return b.book_id.toString() === book_id});
       }
 
       if (book) {
@@ -69,11 +69,11 @@ export class BookService {
       } else {
         this.getBooks()
             .then((books: Book[]) => {
-              book = books.find(b => { return b.book_id == book_id});
+              book = books.find(b => { return b.book_id.toString() === book_id});
               if (book) {
                 resolve(book);
               } else {
-                reject("Not found");
+                reject('Not found');
               }
 
             })
@@ -90,7 +90,7 @@ export class BookService {
   sendKindle (book_id: number, email: string): Promise<void> {
 
     return new Promise<void>((resolve, reject) => {
-      this.authHttp.get(this.booksUrl+"/"+book_id+this.sendKindleUrl+"?mail="+email)
+      this.authHttp.get(this.booksUrl + '/' + book_id + this.sendKindleUrl + '?mail=' + email)
           .subscribe(
             () => {
               resolve();

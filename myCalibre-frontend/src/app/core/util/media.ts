@@ -1,7 +1,7 @@
-import {Injectable, NgZone} from "@angular/core";
-import {ViewportHelper} from "./viewport";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {Observable} from "rxjs/Observable";
+import {Injectable, NgZone} from '@angular/core';
+import {ViewportHelper} from './viewport';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
 
 
 /**
@@ -56,7 +56,7 @@ export class MediaListener {
     return !this._destroyed && this.mql.matches;
   }
 
-  private _destroyed: boolean = false;
+  private _destroyed = false;
 
   private _listener: MediaQueryListListener;
 
@@ -97,7 +97,16 @@ export interface IMediaQueryCache {
 @Injectable()
 export class Media {
 
-  cache: {[query: string]: IMediaQueryCache} = {};
+  cache: { [query: string]: IMediaQueryCache } = {};
+
+  static getQuery(size: string): string {
+    let query = MEDIA[size];
+    if (!query) {
+      console.warn(`unknown media query size ${size}. Expected one of [${MEDIA_PRIORITY.join(',')}]`);
+      return null;
+    }
+    return query;
+  }
 
   constructor(public viewport: ViewportHelper, private zone: NgZone) {
 
@@ -131,15 +140,6 @@ export class Media {
       return false;
     }
     return this.viewport.matchMedia(query).matches;
-  }
-
-  static getQuery(size: string): string {
-    let query = MEDIA[size];
-    if (!query) {
-      console.warn(`unknown media query size ${size}. Expected one of [${MEDIA_PRIORITY.join(',')}]`);
-      return null;
-    }
-    return query;
   }
 
 }

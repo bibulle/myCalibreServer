@@ -1,6 +1,6 @@
 @import "../../../shared/styles";
 
-md-spinner {
+mat-spinner {
   width: 50px;
   margin-left: auto;
   margin-right: auto;
@@ -19,24 +19,22 @@ md-spinner {
   font-size: 18px;
 }
 
-.book md-card {
+.book mat-card {
   height: 100%;
   box-shadow: none;
 }
 
-.book md-card-title {
+.book mat-card-title {
   //font-size: 2em;
   margin-bottom: 10px;
-  color: mat-color($primary, 500);
-  font-size: 2em;
-
-}
-
-.book .authors [md-button].author {
   font-size: 2em;
 }
 
-.book .authors [md-button].series {
+.book .authors [mat-button].author {
+  font-size: 2em;
+}
+
+.book .authors [mat-button].series {
   font-size: 1.5em;
 }
 
@@ -46,19 +44,19 @@ md-spinner {
   margin-top: -10px;
 }
 
-.book md-card-title.series {
+.book mat-card-title.series {
   padding-top: 1em;
 }
 
-.book md-card-title.description {
+.book mat-card-title.description {
   padding-top: 1em;
 }
 
-.book md-card-title.tags {
+.book mat-card-title.tags {
   padding-top: 1em;
 }
 
-.book [md-mini-fab] {
+.book [mat-mini-fab] {
   position: absolute;
   right: 20px;
   top: 3em;
@@ -69,7 +67,7 @@ md-spinner {
 }
 
 :host {
-  md-content[layout="row"] {
+  mat-content[layout="row"] {
     @media screen and (max-width: $layout-breakpoint-sm) {
       flex-direction: column;
       .title {

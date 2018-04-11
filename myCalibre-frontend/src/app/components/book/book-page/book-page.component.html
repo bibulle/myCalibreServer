@@ -1,58 +1,58 @@
-<md-content *ngIf="book" flex layout="row">
+<mat-content *ngIf="book" flex layout="row">
   <div class="cover">
     <img src="{{coverUrlBase}}/{{book.book_id}}.jpg">
   </div>
   <div class="book" flex="60" flex layout="column">
-    <md-card class="authors" layout="column" flex="100">
+    <mat-card class="authors" layout="column" flex="100">
       <div class="date">{{book.book_date | date: 'MMMM yyyy'}}</div>
-      <md-card-title>Authors</md-card-title>
-      <button md-button class="author" *ngFor="let name of book.author_name; let i = index"
+      <mat-card-title>Authors</mat-card-title>
+      <button mat-button class="author" *ngFor="let name of book.author_name; let i = index"
               (click)="openAuthor(book.author_id[i], name)">
         {{name}}
       </button>
-      <md-card-title class="series" *ngIf="book.series_id">Series</md-card-title>
-      <button md-button class="series" *ngIf="book.series_id" (click)="openSeries(book.series_id, book.series_name)">
+      <mat-card-title class="series" *ngIf="book.series_id">Series</mat-card-title>
+      <button mat-button class="series" *ngIf="book.series_id" (click)="openSeries(book.series_id, book.series_name)">
         {{book.series_name}}
       </button>
-      <md-card-title class="description">Description</md-card-title>
+      <mat-card-title class="description">Description</mat-card-title>
       <div class="description-content" [innerHTML]="book.comment ? book.comment : 'None'">
       </div>
-      <md-card-title class="tags">Tags</md-card-title>
+      <mat-card-title class="tags">Tags</mat-card-title>
       <div class="tags-content">
-        <button md-button *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i], name)">
+        <button mat-button *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i], name)">
           {{name}}
         </button>
       </div>
 
-      <button md-mini-fab aria-label="Sort" [md-menu-trigger-for]="downloadmenu" *ngIf="bookHasMobi || bookHasEpub">
-        <md-icon md-icon>file_download</md-icon>
+      <button mat-mini-fab aria-label="Sort" [matMenuTriggerFor]="downloadmenu" *ngIf="bookHasMobi || bookHasEpub">
+        <mat-icon mat-icon>file_download</mat-icon>
       </button>
-      <md-menu x-position="before" y-position="below" #downloadmenu="mdMenu" class="download-menu">
+      <mat-menu x-position="before" y-position="below" #downloadmenu="matMenu" class="download-menu">
         <a href="{{bookUrlBase}}/{{book.book_id}}.epub">
-          <button md-menu-item *ngIf="bookHasEpub">
-            <md-icon>file_download</md-icon>
+          <button mat-menu-item *ngIf="bookHasEpub">
+            <mat-icon>file_download</mat-icon>
             <span>ePub format</span>
           </button>
         </a>
         <a href="{{bookUrlBase}}/{{book.book_id}}.mobi">
-          <button md-menu-item *ngIf="bookHasMobi">
-            <md-icon>file_download</md-icon>
+          <button mat-menu-item *ngIf="bookHasMobi">
+            <mat-icon>file_download</mat-icon>
             <span>Mobi format</span>
           </button>
         </a>
-        <button md-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
-          <md-icon>send</md-icon>
+        <button mat-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
+          <mat-icon>send</mat-icon>
           <span>Send to Kindle</span>
         </button>
-      </md-menu>
-      <md-menu x-position="before" y-position="below" #kindledmenu="mdMenu" class="download-menu">
-        <md-input-container>
-          <input mdInput placeholder="Search" flex="75">
-        </md-input-container>
-      </md-menu>
-    </md-card>
+      </mat-menu>
+      <mat-menu x-position="before" y-position="below" #kindledmenu="matMenu" class="download-menu">
+        <mat-input-container>
+          <input matInput placeholder="Search" flex="75">
+        </mat-input-container>
+      </mat-menu>
+    </mat-card>
 
   </div>
 
-</md-content>
-<md-spinner *ngIf="!book"></md-spinner>
+</mat-content>
+<mat-spinner *ngIf="!book"></mat-spinner>

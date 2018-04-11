@@ -3,15 +3,20 @@
  */
 export class Animate {
 
+  /**
+   * Look up the transition event name for the browser type and cache it.
+   */
+  static TRANSITION_EVENT: string = Animate.whichTransitionEvent();
+
   static enter(el: HTMLElement, cssClass: string): Promise<void> {
     el.classList.remove(cssClass);
-    return new Promise<void>((resolve)=> {
+    return new Promise<void>((resolve) => {
       el.classList.add(cssClass + '-add');
       setTimeout(() => {
-        var duration = Animate.getTransitionDuration(el, true);
+        let duration = Animate.getTransitionDuration(el, true);
         let removeListener = () => done(false);
-        var callTimeout = setTimeout(() => done(true), duration);
-        var done = (timeout) => {
+        let callTimeout = setTimeout(() => done(true), duration);
+        let done = (timeout) => {
           if (!removeListener) {
             return;
           }
@@ -32,14 +37,14 @@ export class Animate {
   }
 
   static leave(el: HTMLElement, cssClass: string): Promise<void> {
-    return new Promise<void>((resolve)=> {
+    return new Promise<void>((resolve) => {
       el.classList.add(cssClass + '-remove');
       setTimeout(() => {
-        var duration = Animate.getTransitionDuration(el, true);
-        var callTimeout = setTimeout(() => done(true), duration);
+        let duration = Animate.getTransitionDuration(el, true);
+        let callTimeout = setTimeout(() => done(true), duration);
         let removeListener = () => done(false);
 
-        var done = (timeout) => {
+        let done = (timeout) => {
           if (!removeListener) {
             return;
           }
@@ -67,24 +72,24 @@ export class Animate {
    * @param includeDelay Include any specified transition-delay value.
    * @returns {number}
    */
-  static getTransitionDuration(element: HTMLElement, includeDelay: boolean = false) {
-    var prefixes = ['', 'moz', 'webkit', 'ms', 'o', 'khtml'];
-    var style: any = window.getComputedStyle(element);
+  static getTransitionDuration(element: HTMLElement, includeDelay = false) {
+    let prefixes = ['', 'moz', 'webkit', 'ms', 'o', 'khtml'];
+    let style: any = window.getComputedStyle(element);
     for (let i = 0; i < prefixes.length; i++) {
       let durationProperty = (i === 0 ? '' : `-${prefixes[i]}-`) + `transition-duration`;
       let duration = style[durationProperty];
       if (!duration) {
         continue;
       }
-      duration = ( duration.indexOf('ms') > -1 ) ? parseFloat(duration) : parseFloat(duration) * 1000;
+      duration = (duration.indexOf('ms') > -1) ? parseFloat(duration) : parseFloat(duration) * 1000;
       if (duration === 0) {
         continue;
       }
       if (includeDelay) {
         let delayProperty = (i === 0 ? '' : `-${prefixes[i]}-`) + `transition-delay`;
-        var delay = style[delayProperty];
+        let delay = style[delayProperty];
         if (typeof delay !== 'undefined') {
-          duration += ( delay.indexOf('ms') > -1 ) ? parseFloat(delay) : parseFloat(delay) * 1000;
+          duration += (delay.indexOf('ms') > -1) ? parseFloat(delay) : parseFloat(delay) * 1000;
         }
       }
       return duration;
@@ -101,9 +106,9 @@ export class Animate {
     if (typeof document === 'undefined') {
       return 'transitionend';
     }
-    var t: string;
-    var el: any = document.createElement('fakeelement');
-    var transitions: {[prefix: string]: string} = {
+    let t: string;
+    let el: any = document.createElement('fakeelement');
+    let transitions: { [prefix: string]: string } = {
       'transition': 'transitionend',
       'OTransition': 'oTransitionEnd',
       'MozTransition': 'transitionend',
@@ -120,7 +125,7 @@ export class Animate {
   /**
    * Set CSS styles immediately by turning off transition duration and restoring it afterward
    */
-  static setStyles(element: HTMLElement, styles: {[style: string]: string|number}): Promise<void> {
+  static setStyles(element: HTMLElement, styles: { [style: string]: string | number }): Promise<void> {
     let saveDuration = Animate.getTransitionDuration(element);
     Animate.setTransitionDuration(element, 0);
     return new Promise<void>((resolve, reject) => {
@@ -129,8 +134,7 @@ export class Animate {
       });
       if (saveDuration !== -1) {
         Animate.setTransitionDuration(element, saveDuration);
-      }
-      else {
+      } else {
         element.style['transition-duration'] = null;
       }
       resolve();
@@ -143,16 +147,12 @@ export class Animate {
    * @param milliseconds The period to wait before resolving.
    * @returns {Promise<void>|Promise} A promise that resolves after a period of time.
    */
-  static wait(milliseconds: number = 10): Promise<void> {
-    return new Promise<void>((resolve)=> {
+  static wait(milliseconds = 10): Promise<void> {
+    return new Promise<void>((resolve) => {
       setTimeout(() => resolve(), milliseconds);
     });
   }
 
-  /**
-   * Look up the transition event name for the browser type and cache it.
-   */
-  static TRANSITION_EVENT: string = Animate.whichTransitionEvent();
 
 
 }

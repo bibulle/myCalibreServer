@@ -1,13 +1,13 @@
-<md-card class="author-card" flex="100" *ngIf="author.author_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
-  <md-card-title class="author-name">
+<mat-card class="author-card" flex="100" *ngIf="author.author_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
+  <mat-card-title class="author-name">
     {{author.author_name}}
     <span class="date" *ngIf="author.book_date[1]">{{author.book_date[0] | date: 'yyyy'}}-</span><span class="date" *ngIf="author.book_date[author.book_date.length-1]">{{author.book_date[author.book_date.length-1] | date: 'yyyy'}}</span>
-    <button md-icon-button class="mat-icon-button">
-      <md-icon *ngIf="booksClosed">keyboard_arrow_down</md-icon>
-      <md-icon *ngIf="!booksClosed">keyboard_arrow_up</md-icon>
+    <button mat-icon-button class="mat-icon-button">
+      <mat-icon *ngIf="booksClosed">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="!booksClosed">keyboard_arrow_up</mat-icon>
     </button>
-  </md-card-title>
+  </mat-card-title>
 
   <app-book-card *ngFor="let book of author.books" [book]="book">
   </app-book-card>
-</md-card>
+</mat-card>

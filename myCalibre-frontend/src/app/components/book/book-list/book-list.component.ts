@@ -1,24 +1,24 @@
-///<reference path="../../../../../node_modules/@angular/material/core/core.d.ts"/>
-import { Component, OnInit, NgModule } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { CommonModule } from "@angular/common";
+// <reference path="../../../../../node_modules/@angular/material/core/core.d.ts"/>
+import {Component, OnInit, NgModule, OnDestroy} from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 const leftPad = require('left-pad');
-import { Subscription } from "rxjs";
+import { Subscription } from 'rxjs';
 
-import { FilterService, Filter, SortType, SortingDirection } from "../../filter-bar/filter.service";
-import { MdContentModule } from "../../content/content.component";
-import { BookCardModule } from "../book-card/book-card.component";
-import { BookService } from "../book.service";
-import { Book } from "../book";
-import { MdCoreModule, MdCardModule, MdButtonModule, MdIconModule, MdInputModule, MdProgressCircleModule, MdToolbarModule } from "@angular/material";
+import { FilterService, Filter, SortType, SortingDirection } from '../../filter-bar/filter.service';
+import { MatContentModule } from '../../content/content.component';
+import { BookCardModule } from '../book-card/book-card.component';
+import { BookService } from '../book.service';
+import { Book } from '../book';
+import { MatCommonModule, MatCardModule, MatButtonModule, MatIconModule, MatInputModule, MatProgressSpinnerModule, MatToolbarModule } from '@angular/material';
 
 @Component({
   selector: 'app-book-list',
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.scss']
 })
-export class BookListComponent implements OnInit {
+export class BookListComponent implements OnInit, OnDestroy {
 
   MAX_BOOK = 500;
 
@@ -28,10 +28,21 @@ export class BookListComponent implements OnInit {
   totalBooksCount = 0;
 
   filter: Filter;
-  private previousFilterJson: string = "";
+  private previousFilterJson = '';
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription;
+
+  static _cleanAccent (str: string): string {
+    return str.toLowerCase()
+      .replace(/[àâªáäãåā]/g, 'a')
+      .replace(/[èéêëęėē]/g, 'e')
+      .replace(/[iïìíįī]/g, 'i')
+      .replace(/[ôºöòóõøō]/g, 'o')
+      .replace(/[ûùüúū]/g, 'u')
+      .replace(/[æ]/g, 'ae')
+      .replace(/[œ]/g, 'oe');
+  }
 
   constructor (private _bookService: BookService,
                private _filterService: FilterService) {
@@ -45,7 +56,7 @@ export class BookListComponent implements OnInit {
     this._filterService.updateLimitTo(null);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
-        //console.log(filter);
+        // console.log(filter);
         this.filter = filter;
         if (this.fullBooks) {
           this._fillBooks();
@@ -101,7 +112,7 @@ export class BookListComponent implements OnInit {
       while (cpt * STEP <= tmpBooks.length + STEP) {
         const _cpt = cpt + 1;
         setTimeout(() => {
-            if (_filterCount == this.filterCount) {
+            if (_filterCount === this.filterCount) {
               this.books = tmpBooks.filter((b, i) => {
                 return i < _cpt * STEP;
               });
@@ -134,7 +145,7 @@ export class BookListComponent implements OnInit {
                                 const strToSearch = b.book_title
                                                      .concat(b.series_name)
                                                      .concat(b.comment)
-                                                     .concat("" + b.author_name);
+                                                     .concat('' + b.author_name);
 
                                 const ret = (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
 
@@ -144,19 +155,19 @@ export class BookListComponent implements OnInit {
                               .sort((b1: Book, b2: Book) => {
                                 let v1: string;
                                 let v2: string;
-                                v1 = (b1.series_name == null ? "" : b1.series_sort + " ") + (b1.series_name == null ? "" : leftPad(b1.book_series_index, 6, 0) + " ") + b1.book_sort;
-                                v2 = (b2.series_name == null ? "" : b2.series_sort + " ") + (b2.series_name == null ? "" : leftPad(b2.book_series_index, 6, 0) + " ") + b2.book_sort;
+                                v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : leftPad(b1.book_series_index, 6, 0) + ' ') + b1.book_sort;
+                                v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : leftPad(b2.book_series_index, 6, 0) + ' ') + b2.book_sort;
                                 switch (this.filter.sort) {
                                   case SortType.Name:
                                     break;
                                   case SortType.Author:
-                                    v1 = b1.author_sort.toString() + " " + v1;
-                                    v2 = b2.author_sort.toString() + " " + v2;
+                                    v1 = b1.author_sort.toString() + ' ' + v1;
+                                    v2 = b2.author_sort.toString() + ' ' + v2;
                                     break;
                                   case SortType.PublishDate:
                                   default:
-                                    v1 = b1.book_date + " " + v1;
-                                    v2 = b2.book_date + " " + v2;
+                                    v1 = b1.book_date + ' ' + v1;
+                                    v2 = b2.book_date + ' ' + v2;
                                     break;
                                 }
 
@@ -180,33 +191,22 @@ export class BookListComponent implements OnInit {
       });
   }
 
-  static _cleanAccent (str: string): string {
-    return str.toLowerCase()
-              .replace(/[àâªáäãåā]/g, "a")
-              .replace(/[èéêëęėē]/g, "e")
-              .replace(/[iïìíįī]/g, "i")
-              .replace(/[ôºöòóõøō]/g, "o")
-              .replace(/[ûùüúū]/g, "u")
-              .replace(/[æ]/g, "ae")
-              .replace(/[œ]/g, "oe");
-  }
-
 }
 
 @NgModule({
   imports: [
     FormsModule,
-    MdCoreModule,
+    MatCommonModule,
     CommonModule,
-    MdCardModule,
-    MdButtonModule,
-    MdIconModule.forRoot(),
-    MdInputModule,
-    MdProgressCircleModule,
-    MdContentModule,
-    MdToolbarModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatContentModule,
+    MatToolbarModule,
     BookCardModule,
-    // MdInputModule,
+    // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,
   ],
