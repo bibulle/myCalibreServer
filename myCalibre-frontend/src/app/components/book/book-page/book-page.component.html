@@ -1,9 +1,9 @@
-<mat-content *ngIf="book" flex layout="row">
-  <div class="cover">
+<mat-content *ngIf="book"  fxFlex="100">
+  <div class="cover" fxFlex>
     <img src="{{coverUrlBase}}/{{book.book_id}}.jpg">
   </div>
-  <div class="book" flex="60" flex layout="column">
-    <mat-card class="authors" layout="column" flex="100">
+  <div class="book" fxFlex fxLayout="column">
+    <mat-card class="authors" fxLayout="column" fxFlex="100">
       <div class="date">{{book.book_date | date: 'MMMM yyyy'}}</div>
       <mat-card-title>Authors</mat-card-title>
       <button mat-button class="author" *ngFor="let name of book.author_name; let i = index"
@@ -47,7 +47,7 @@
       </mat-menu>
       <mat-menu x-position="before" y-position="below" #kindledmenu="matMenu" class="download-menu">
         <mat-input-container>
-          <input matInput placeholder="Search" flex="75">
+          <input matInput placeholder="Search" fxFlex="75">
         </mat-input-container>
       </mat-menu>
     </mat-card>

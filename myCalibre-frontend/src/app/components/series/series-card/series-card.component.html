@@ -1,4 +1,4 @@
-<mat-card class="series-card" flex="100" *ngIf="series.series_name" [class.books-closed]="booksClosed"
+<mat-card class="series-card" fxFlex="100" *ngIf="series.series_name" [class.books-closed]="booksClosed"
          (click)="toggleBooksClosed()">
   <div class="cover">
     <img mat-card-sm-image src="{{thumbnailUrlBase}}/{{series.series_id}}.png">

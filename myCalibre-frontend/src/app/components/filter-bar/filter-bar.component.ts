@@ -6,6 +6,7 @@ import { Subject, Subscription } from 'rxjs';
 
 import { FilterService, Filter, SortType, SortingDirection } from './filter.service';
 import { MatIconModule, MatInputModule, MatMenuModule, MatButtonModule } from '@angular/material';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'filter-bar',
@@ -89,7 +90,8 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     MatIconModule,
     MatInputModule,
     MatButtonModule,
-    MatMenuModule
+    MatMenuModule,
+    FlexLayoutModule
   ],
   declarations: [
     FilterBarComponent

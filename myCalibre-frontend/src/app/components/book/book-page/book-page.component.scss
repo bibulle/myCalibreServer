@@ -1,5 +1,5 @@
 @import "../../../shared/styles";
-@import "../../../shared/layout";
+//@import "../../../shared/layout";
 
 mat-spinner {
   width: 50px;
@@ -68,7 +68,9 @@ mat-spinner {
 }
 
 :host {
-  mat-content[layout="row"] {
+  > mat-content {
+    flex-direction: row;
+    display: flex;
     @media screen and (max-width: $layout-breakpoint-sm) {
       flex-direction: column;
       .title {

@@ -6,6 +6,7 @@ import {FormsModule} from '@angular/forms';
 import {UserProfileModule} from '../../profile/user-profile/user-profile.component';
 import {NotificationService} from 'app/components/notification/notification.service';
 import {UserService} from '../../user.service';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'app-user-list-item',
@@ -85,7 +86,8 @@ export class UserListItemComponent implements OnInit {
     MatCheckboxModule,
     FormsModule,
     MatInputModule,
-    UserProfileModule
+    UserProfileModule,
+    FlexLayoutModule
   ],
   declarations: [
     UserListItemComponent

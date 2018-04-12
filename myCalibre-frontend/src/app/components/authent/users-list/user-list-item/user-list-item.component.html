@@ -1,31 +1,31 @@
-<mat-card class="user-card" flex="100" [class.user-closed]="userClosed && !(selectedMergeUser === user)" [class.user-selected]="(selectedMergeUser === user)" [class.anotheruser-selected]="selectedMergeUser && (selectedMergeUser !== user)">
-  <div layout="column" class="row">
-    <div layout="row" class="title">
-      <div flex="5">
+<mat-card class="user-card" fxFlex="100" [class.user-closed]="userClosed && !(selectedMergeUser === user)" [class.user-selected]="(selectedMergeUser === user)" [class.anotheruser-selected]="selectedMergeUser && (selectedMergeUser !== user)">
+  <div fxLayout="column" class="row">
+    <div fxLayout="row" class="title">
+      <div fxFlex="5">
         <button mat-icon-button class="mat-icon-button open-close" (click)="toggleUserClosed()">
           <mat-icon *ngIf="userClosed">keyboard_arrow_down</mat-icon>
           <mat-icon *ngIf="!userClosed">keyboard_arrow_up</mat-icon>
         </button>
       </div>
 
-      <div class="username" flex="15">{{user.local.username}}</div>
-      <div class="firstname" flex="20">{{user.local.firstname}}</div>
-      <div class="lastname" flex="20">{{user.local.lastname}}</div>
-      <div class="email" flex="20">{{user.local.email}}</div>
-      <div class="admin" flex="10">
+      <div class="username" fxFlex="15">{{user.local.username}}</div>
+      <div class="firstname" fxFlex="20">{{user.local.firstname}}</div>
+      <div class="lastname" fxFlex="20">{{user.local.lastname}}</div>
+      <div class="email" fxFlex="20">{{user.local.email}}</div>
+      <div class="admin" fxFlex="10">
         <mat-slide-toggle [checked]="user.local.isAdmin" color="primary"></mat-slide-toggle>
       </div>
-      <div class="local" flex="5">
+      <div class="local" fxFlex="5">
         <mat-checkbox [checked]="user.local.username" disabled="true"></mat-checkbox>
       </div>
-      <div class="facebook" flex="5">
+      <div class="facebook" fxFlex="5">
         <mat-checkbox [checked]="user.facebook.name" disabled="true"></mat-checkbox>
       </div>
-      <div class="google" flex="5">
+      <div class="google" fxFlex="5">
         <mat-checkbox [checked]="user.google.name" disabled="true"></mat-checkbox>
       </div>
     </div>
-    <div class="content" flex="100">
+    <div class="content" fxFlex="100">
       <app-user-profile [user]="user" urlToRedirect="/users"></app-user-profile>
       <mat-card-actions>
         <a class="delete" mat-raised-button (click)="remove()">Delete</a>

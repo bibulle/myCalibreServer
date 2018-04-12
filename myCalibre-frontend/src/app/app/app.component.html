@@ -29,8 +29,8 @@
         breakAction="show">
     <span class="verbose-title">{{getPrimaryLabel()}}</span>
   </span>
-  <span flex></span>
-  <div flex="50" class="filter" mat-peekaboo [scroller]="content.parentElement"
+  <span fxFlex="100"></span>
+  <div fxFlex="50" class="filter" mat-peekaboo [scroller]="content.parentElement"
        [breakMd]="202"
        [breakXs]="100"
        breakAction="show">
@@ -64,12 +64,12 @@
                 [breakMd]="202"
                 [breakXs]="100"
                 breakAction="hide" *ngIf="!filter.not_displayed">
-      <span flex></span>
-      <div flex="50">
+      <span fxFlex="100"></span>
+      <div fxFlex="50">
         <filter-bar></filter-bar>
       </div>
     </mat-toolbar>
-    <main layout="row" layout-align="center center">
+    <main fxLayout="row" fxLayoutAlign="center center">
       <mat-content class="contents" mat-scroll-y layout-padding>
         <router-outlet></router-outlet>
       </mat-content>

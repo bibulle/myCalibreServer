@@ -14,6 +14,7 @@ import {
 } from '@angular/material';
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'app-book-page',
@@ -145,7 +146,8 @@ export class BookPageComponent implements OnInit {
     MatCardModule,
     MatMenuModule,
     MatAutocompleteModule,
-    MatDialogModule
+    MatDialogModule,
+    FlexLayoutModule
   ],
   declarations: [
     BookPageComponent,
