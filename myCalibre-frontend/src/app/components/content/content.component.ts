@@ -1,28 +1,28 @@
-import {Directive, NgModule} from "@angular/core";
+import {Component, Directive, NgModule} from '@angular/core';
 
 /**
- * @name mdContent
+ * @name matContent
  *
  * @description
- * The `<md-content>` directive is a container element useful for scrollable content
+ * The `<mat-content>` directive is a container element useful for scrollable content
  *
  * @usage
  *
  * - Add the `[layout-padding]` attribute to make the content padded.
  *
  * <hljs lang="html">
- *  <md-content layout-padding>
+ *  <mat-content layout-padding>
  *      Lorem ipsum dolor sit amet, ne quod novum mei.
- *  </md-content>
+ *  </mat-content>
  * </hljs>
  *
  */
-@Directive({selector: 'md-content'})
-export class MdContent {
+@Directive({selector: 'mat-content'})
+export class MatContentDirective {
 }
 
 @NgModule({
-  declarations: [MdContent],
-  exports: [MdContent]
+  declarations: [MatContentDirective],
+  exports: [MatContentDirective]
 })
-export class MdContentModule {}
+export class MatContentModule {}

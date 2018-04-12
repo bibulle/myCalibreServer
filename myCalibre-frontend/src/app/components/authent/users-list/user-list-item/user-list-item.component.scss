@@ -1,4 +1,5 @@
 @import "../../../../shared/styles";
+@import "../../../../shared/layout";
 
 :host {
   .row {
@@ -13,7 +14,7 @@
     .admin, .facebook, .google, .local {
       text-align: center;
 
-      md-slide-toggle {
+      mat-slide-toggle {
         margin: 0;
       }
     }
@@ -30,7 +31,7 @@
         margin-right: 2%;
       }
 
-      md-input-container {
+      mat-input-container {
         width: 95%;
       }
 
@@ -50,7 +51,7 @@
           height: 24px;
           margin-right: 8px;
           margin-top: 4px;
-          md-icon {
+          mat-icon {
             padding-top: 1px;
             font-size: 20px;
           }
@@ -64,7 +65,7 @@
 
       }
 
-      md-card-actions {
+      mat-card-actions {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
@@ -83,7 +84,6 @@
     display: none
   }
   .user-selected {
-    background-color: mat-color($primary, 300);
 
     .merge-select {
       display: none;

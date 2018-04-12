@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { environment } from "../../../environments/environment";
-import { Http, Response } from "@angular/http";
-import { Tag } from "./tag";
+import { environment } from '../../../environments/environment';
+import { Http, Response } from '@angular/http';
+import { Tag } from './tag';
 
 @Injectable()
 export class TagService {
@@ -18,10 +18,10 @@ export class TagService {
 
     return new Promise<Tag[]>((resolve, reject) => {
       this.http.get(this.tagUrl)
-          .map((res: Response) => res.json().data as Tag[])
+          // .map((res: Response) => res.json().data as Tag[])
           .subscribe(
-            data => {
-              resolve(data);
+            (res: Response) => {
+              resolve(res.json().data as Tag[]);
             },
             err => {
               reject(err);

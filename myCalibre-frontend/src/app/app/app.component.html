@@ -1,81 +1,81 @@
-<md-toolbar color="primary" class="fixed-toolbar"
-            md-peekaboo [scroller]="content.parentElement"
+<mat-toolbar color="primary" class="fixed-toolbar"
+            mat-peekaboo [scroller]="content.parentElement"
             [break]="190"
             breakAction="show"
             [ngClass]="{hide:over}"
-            [style.left]="sidenavWidth + 'px'"
+            [style.left]="(sidenavWidth-1) + 'px'"
             [style.right]="scrollWidth + 'px'">
-</md-toolbar>
-<md-toolbar color="primary" class="fixed-toolbar"
+</mat-toolbar>
+<mat-toolbar color="primary" class="fixed-toolbar"
             [ngClass]="{hide:over}"
-            [style.left]="sidenavWidth + 'px'"
+            [style.left]="(sidenavWidth-1) + 'px'"
             [style.right]="scrollWidth + 'px'">
-  <button md-button
-          class="md-hamburger mat-icon-button"
+  <button mat-button
+          class="mat-hamburger mat-icon-button"
           hide-gt-lg
           (click)="menu.open($event)"
           aria-label="Home">
-    <md-icon>menu</md-icon>
+    <mat-icon>menu</mat-icon>
   </button>
-  <button md-button *ngIf="title.backUrl"
+  <button mat-button *ngIf="title.backUrl"
           class="mat-icon-button"
           (click)="goBack()"
           aria-label="Back">
-    <md-icon>arrow_back</md-icon>
+    <mat-icon>arrow_back</mat-icon>
   </button>
-  <span md-peekaboo [scroller]="content.parentElement"
+  <span mat-peekaboo [scroller]="content.parentElement"
         [breakMd]="72"
         [breakXs]="20"
         breakAction="show">
     <span class="verbose-title">{{getPrimaryLabel()}}</span>
   </span>
   <span flex></span>
-  <div flex="50" class="filter" md-peekaboo [scroller]="content.parentElement"
-       [breakMd]="185"
+  <div flex="50" class="filter" mat-peekaboo [scroller]="content.parentElement"
+       [breakMd]="202"
        [breakXs]="100"
        breakAction="show">
     <filter-bar></filter-bar>
   </div>
-</md-toolbar>
+</mat-toolbar>
 
-<md-sidenav-container layout="row" fullscreen>
-  <md-sidenav #menu class="app-menu" mode="side" >
-    <md-toolbar routerLink="/" [class.beta]="version.isBeta()">
+<mat-sidenav-container fullscreen>
+  <mat-sidenav #menu class="app-menu" mode="side" >
+    <mat-toolbar routerLink="/" [class.beta]="version.isBeta()">
       <div class="beta"      *ngIf="version.isBeta()">beta</div>
       <h3>{{getSecondaryLabel()}}</h3>
       <a href="{{version.github_url}}"
          target="_blank"
-         *ngIf="version.version" class="md-caption version">v{{version.version}}</a>
-    </md-toolbar>
+         *ngIf="version.version" class="mat-caption version">v{{version.version}}</a>
+    </mat-toolbar>
     <app-profile-button (click)="itemClicked()"></app-profile-button>
-    <md-nav-list *ngIf="user?.id">
-      <a md-list-item *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="itemClicked()"> {{ l.label }} </a>
-    </md-nav-list>
-  </md-sidenav>
+    <mat-nav-list *ngIf="user?.id">
+      <a mat-list-item *ngFor="let l of links" routerLinkActive="active" routerLink="{{l.path}}" (click)="itemClicked()"> {{ l.label }} </a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-  <md-content #content id="scrollView">
-    <md-toolbar color="primary" class="hero">
-      <h1 md-peekaboo [scroller]="content.parentElement"
+  <mat-content #content id="scrollView">
+    <mat-toolbar color="primary" class="hero">
+      <h1 mat-peekaboo [scroller]="content.parentElement"
           [breakMd]="72"
           [breakXs]="20"
           breakAction="hide">{{getPrimaryLabel()}}</h1>
-    </md-toolbar>
-    <md-toolbar class="filter" md-peekaboo [scroller]="content.parentElement"
-                [breakMd]="185"
+    </mat-toolbar>
+    <mat-toolbar class="filter" mat-peekaboo [scroller]="content.parentElement"
+                [breakMd]="202"
                 [breakXs]="100"
                 breakAction="hide" *ngIf="!filter.not_displayed">
       <span flex></span>
       <div flex="50">
         <filter-bar></filter-bar>
       </div>
-    </md-toolbar>
+    </mat-toolbar>
     <main layout="row" layout-align="center center">
-      <md-content class="contents" md-scroll-y layout-padding>
+      <mat-content class="contents" mat-scroll-y layout-padding>
         <router-outlet></router-outlet>
-      </md-content>
+      </mat-content>
     </main>
 
     <docs-footer></docs-footer>
 
-  </md-content>
-</md-sidenav-container>
+  </mat-content>
+</mat-sidenav-container>

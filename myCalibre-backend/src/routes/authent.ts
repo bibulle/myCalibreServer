@@ -35,7 +35,7 @@ function authentRouter(passport): Router {
           return response.status(401).send({error: msg});
         }
 
-        request.login(user, loginErr => {
+        request['login'](user, loginErr => {
           if (loginErr) {
             return next(loginErr);
           }
@@ -66,7 +66,7 @@ function authentRouter(passport): Router {
           return response.status(401).send({error: msg});
         }
 
-        request.login(user, loginErr => {
+        request['login'](user, loginErr => {
           if (loginErr) {
             return next(loginErr);
           }
@@ -99,7 +99,7 @@ function authentRouter(passport): Router {
           return response.status(401).send({error: msg});
         }
 
-        request.login(user, loginErr => {
+        request['login'](user, loginErr => {
           if (loginErr) {
             return next(loginErr);
           }
@@ -613,7 +613,9 @@ function isLoggedIn(request, response, next) {
 function _getBearerUser(request: Request, callback: (err, user: User) => (any)): User {
   let token: string;
   if (request.headers && request.headers.authorization) {
-    const parts = request.headers.authorization.split(' ');
+    console.log(request.headers.authorization)
+    const parts = request.headers.authorization[0].split(' ');
+    console.log(parts)
     if (parts.length == 2) {
       const scheme = parts[0]
         , credentials = parts[1];

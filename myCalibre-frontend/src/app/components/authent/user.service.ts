@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers} from "@angular/http";
-import {JwtHelper, tokenNotExpired} from "angular2-jwt";
-import { Response } from "@angular/http";
-import {AuthHttp} from "angular2-jwt";
+import {Http, Headers} from '@angular/http';
+import {AuthConfigConsts, JwtHelper, tokenNotExpired} from 'angular2-jwt';
+import { Response } from '@angular/http';
+import {AuthHttp} from 'angular2-jwt';
 
 
-import {environment} from "../../../environments/environment";
-import {User} from "./user";
-import {BehaviorSubject, Observable} from "rxjs";
-import {WindowService} from "../../core/util/window.service";
+import {environment} from '../../../environments/environment';
+import {User} from './user';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {WindowService} from '../../core/util/window.service';
 
 
 enum LoginProvider { FACEBOOK, GOOGLE }
@@ -16,19 +16,53 @@ enum LoginProvider { FACEBOOK, GOOGLE }
 @Injectable()
 export class UserService {
 
+  static keyTokenId = 'id_token';
+
   private loggedIn = false;
 
   private userSubject: BehaviorSubject<User>;
 
-  private keyTokenId = 'id_token';
-
   private user = {} as User;
   private jwtHelper: JwtHelper = new JwtHelper();
+
+  private loopCount = 600;
+  private intervalLength = 100;
+
+  private windowHandle: any = null;
+  private intervalId: any = null;
+
+  /**
+   * get user message from error
+   * @param error
+   * @returns string
+   * @private
+   */
+  private static _getMSgFromError(error): string {
+
+    console.error(error);
+    // Try to get the content
+    try {
+      const data = error.json();
+      if (data && data.error) {
+        if (data.error instanceof Array) {
+          error = data.error[data.error.length - 1];
+        } else if (data.message) {
+          error = 'Systeme error : ' + data.message;
+        } else {
+          error = data.error;
+        }
+      }
+    } catch (er) {
+      console.error(er)
+    }
+
+    return error.statusText || error.message || error || 'Connection error';
+  }
 
   constructor(private _http: Http,
               private _authHttp: AuthHttp) {
 
-    this.loggedIn = !!localStorage.getItem(this.keyTokenId);
+    this.loggedIn = !!localStorage.getItem(AuthConfigConsts.DEFAULT_TOKEN_NAME);
 
     this.userSubject = new BehaviorSubject<User>(this.user);
 
@@ -45,11 +79,11 @@ export class UserService {
    */
   userObservable(): Observable<User> {
     return this.userSubject
-      //.debounceTime(200)
+      // .debounceTime(200)
       .distinctUntilChanged(
         (a, b) => {
-          //console.log(JSON.stringify(a.local));
-          //console.log(JSON.stringify(b.local));
+          // console.log(JSON.stringify(a.local));
+          // console.log(JSON.stringify(b.local));
           return JSON.stringify(a) === JSON.stringify(b)
         }
       );
@@ -60,10 +94,10 @@ export class UserService {
    * @returns {boolean} are we authenticate
    */
   checkAuthent(emitEvent = true): boolean {
-    //console.log("checkAuthent");
+    // console.log("checkAuthent");
     let ret = false;
 
-    let jwt = localStorage.getItem(this.keyTokenId);
+    let jwt = localStorage.getItem(AuthConfigConsts.DEFAULT_TOKEN_NAME);
 
     if (!jwt || !tokenNotExpired()) {
       this.user = {} as User;
@@ -72,12 +106,12 @@ export class UserService {
       ret = true;
     }
 
-    //console.log(this.user);
+    // console.log(this.user);
 
     // if only username add to lastname
-    //if (this.user.local && !this.user.local.lastname && !this.user.local.firstname) {
+    // if (this.user.local && !this.user.local.lastname && !this.user.local.firstname) {
     //  this.user.local.lastname = this.user.local.username;
-    //}
+    // }
 
     if (emitEvent) {
       this.userSubject.next(this.user);
@@ -102,7 +136,7 @@ export class UserService {
   isUserAdmin(): boolean {
     this.checkAuthent();
     return (this.user && this.user.local && (this.user.local.isAdmin === true));
-    //return true;
+    // return true;
   }
 
   /**
@@ -164,7 +198,7 @@ export class UserService {
    * @param user
    * @returns {Promise<User>}
    */
-  remove(user: User): Promise<User> {
+  remove(user: User): Promise<User|string> {
     return this._doGet(environment.serverUrl + 'authent/delete?userId=' + user.id);
   }
 
@@ -173,7 +207,7 @@ export class UserService {
    * @param user
    * @returns {Promise<string>}
    */
-  resetPassword(user: User): Promise<string> {
+  resetPassword(user: User): Promise<User|string> {
     return this._doGet(environment.serverUrl + 'authent/reset?userId=' + user.id);
   }
 
@@ -184,10 +218,10 @@ export class UserService {
   getAll(): Promise<User[]> {
     return new Promise<User[]>((resolve, reject) => {
       this._authHttp.get(environment.serverUrl + 'authent/list')
-        .map((res: Response) => res.json().data as User[])
+        // .map((res: Response) => res.json().data as User[])
         .subscribe(
-          data => {
-            resolve(data);
+          (res: Response) => {
+            resolve(res.json().data as User[]);
           },
           err => {
             reject(err);
@@ -203,10 +237,10 @@ export class UserService {
   merge(user1: User, user2: User): Promise<User[]> {
     return new Promise<User[]>((resolve, reject) => {
       this._authHttp.get(environment.serverUrl + 'authent/merge?userId1=' + user1.id + '&userId2=' + user2.id)
-        .map((res: Response) => res.json().data as User[])
+        // .map((res: Response) => res.json().data as User[])
         .subscribe(
-          data => {
-            resolve(data);
+          (res: Response) => {
+            resolve(res.json().data as User[]);
           },
           err => {
             reject(err);
@@ -219,23 +253,17 @@ export class UserService {
    * Logout (just remove the JWT token)
    */
   logout() {
-    localStorage.removeItem(this.keyTokenId);
+    localStorage.removeItem(AuthConfigConsts.DEFAULT_TOKEN_NAME);
     this.loggedIn = false;
     this.checkAuthent();
   }
 
 
-  private loopCount = 600;
-  private intervalLength = 100;
-
-  private windowHandle: any = null;
-  private intervalId: any = null;
-
   /**
    * Start logging process with facebook
    */
   startLoginFacebook() {
-    //console.log("startLoginFacebook");
+    // console.log("startLoginFacebook");
     const oAuthURL = `${environment.serverUrl}authent/facebook`;
     return this._startLoginOAuth(oAuthURL, LoginProvider.FACEBOOK);
 
@@ -245,7 +273,7 @@ export class UserService {
    * Start logging process with google
    */
   startLoginGoogle() {
-    console.log("startLoginGoogle");
+    console.log('startLoginGoogle');
     const oAuthURL = `${environment.serverUrl}authent/google`;
     return this._startLoginOAuth(oAuthURL, LoginProvider.GOOGLE);
 
@@ -256,8 +284,8 @@ export class UserService {
    * @param parsed
    * @returns {Promise<void>}
    */
-  loginFacebook(parsed): Promise<User> {
-    //console.log("loginFacebook "+code);
+  loginFacebook(parsed): Promise<User|string> {
+    // console.log("loginFacebook "+code);
     return this._doGet(environment.serverUrl + 'authent/facebook/login?code=' + parsed.code);
   }
 
@@ -266,8 +294,8 @@ export class UserService {
    * @param parsed
    * @returns {Promise<void>}
    */
-  loginGoogle(parsed): Promise<User> {
-    //console.log("loginGoogle "+code);
+  loginGoogle(parsed): Promise<User|string> {
+    // console.log("loginGoogle "+code);
     return this._doGet(environment.serverUrl + 'authent/google/login?code=' + parsed.code);
   }
 
@@ -276,8 +304,8 @@ export class UserService {
    * @param userId
    * @returns {Promise<void>}
    */
-  unlinkFacebook(userId : string): Promise<User> {
-    //console.log("unlinkFacebook ");
+  unlinkFacebook(userId: string): Promise<User|string> {
+    // console.log("unlinkFacebook ");
     return this._doGet(environment.serverUrl + 'authent/facebook/unlink?userId=' + userId);
   }
 
@@ -286,8 +314,8 @@ export class UserService {
    * @param userId
    * @returns {Promise<void>}
    */
-  unlinkGoogle(userId : string): Promise<User> {
-    //console.log("unlinkGoogle ");
+  unlinkGoogle(userId: string): Promise<User|string> {
+    // console.log("unlinkGoogle ");
     return this._doGet(environment.serverUrl + 'authent/google/unlink?userId=' + userId);
   }
 
@@ -317,13 +345,13 @@ export class UserService {
             })
           }
         )
-        .timeout(10000)
+        // .timeout(10000)
         .toPromise()
         .then(res => {
           const data = res.json();
-          //console.log(res.json());
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+          // console.log(res.json());
+          if (data[UserService.keyTokenId]) {
+            localStorage.setItem(AuthConfigConsts.DEFAULT_TOKEN_NAME, data[UserService.keyTokenId]);
             this.loggedIn = true;
             this.checkAuthent();
             resolve();
@@ -350,7 +378,7 @@ export class UserService {
    * @private
    */
   private _startLoginOAuth(oAuthURL: string, loginProvider: LoginProvider) {
-    const oAuthCalbackUrl = "/assets/logged.html";
+    const oAuthCalbackUrl = '/assets/logged.html';
 
 
     return new Promise<void>((resolve, reject) => {
@@ -364,8 +392,8 @@ export class UserService {
           clearInterval(this.intervalId);
           this.windowHandle.close();
           this.checkAuthent();
-          console.error("Time out : close logging window");
-          reject("Time out");
+          console.error('Time out : close logging window');
+          reject('Time out');
         } else {
 
           // Read th URL in the window
@@ -379,7 +407,7 @@ export class UserService {
           if (href != null) {
 
             // We got an answer...
-            //console.log(href);
+            // console.log(href);
 
             // try to find the code
             const reSimple = /[?&](code|access_token)=(.*)/;
@@ -389,12 +417,12 @@ export class UserService {
               clearInterval(this.intervalId);
               this.windowHandle.close();
 
-              parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ""));
-              //console.log(parsed);
+              parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ''));
+              // console.log(parsed);
 
               if (parsed.code) {
                 // we got the code... login
-                if (loginProvider == LoginProvider.FACEBOOK) {
+                if (loginProvider === LoginProvider.FACEBOOK) {
                   this.loginFacebook(parsed)
                     .then(() => {
                       resolve();
@@ -414,9 +442,9 @@ export class UserService {
                     })
                 }
               } else {
-                console.error("oAuth callback without and with code...?.. " + href);
+                console.error('oAuth callback without and with code...?.. ' + href);
                 this.checkAuthent();
-                reject("login error");
+                reject('login error');
               }
 
             } else {
@@ -427,12 +455,12 @@ export class UserService {
                 this.windowHandle.close();
                 this.checkAuthent();
 
-                parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ""));
+                parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ''));
 
                 if (parsed.error_message) {
-                  reject(parsed.error_message.replace(/[+]/g, " "));
+                  reject(parsed.error_message.replace(/[+]/g, ' '));
                 } else {
-                  reject("Login error");
+                  reject('Login error');
                 }
               }
             }
@@ -470,9 +498,9 @@ export class UserService {
         .toPromise()
         .then(res => {
           const data = res.json();
-          //console.log(res.json());
-          if (data[this.keyTokenId]) {
-            localStorage.setItem(this.keyTokenId, data[this.keyTokenId]);
+          // console.log(res.json());
+          if (data[UserService.keyTokenId]) {
+            localStorage.setItem(AuthConfigConsts.DEFAULT_TOKEN_NAME, data[UserService.keyTokenId]);
             this.loggedIn = true;
             this.checkAuthent();
             resolve();
@@ -494,40 +522,12 @@ export class UserService {
   }
 
   /**
-   * get user message from error
-   * @param error
-   * @returns string
-   * @private
-   */
-  private static _getMSgFromError(error): string {
-
-    console.error(error);
-    // Try to get the content
-    try {
-      const data = error.json();
-      if (data && data.error) {
-        if (data.error instanceof Array) {
-          error = data.error[data.error.length - 1];
-        } else if (data.message) {
-          error = "Systeme error : " + data.message;
-        } else {
-          error = data.error;
-        }
-      }
-    } catch (er) {
-      console.error(er)
-    }
-
-    return error.statusText || error.message || error || 'Connection error';
-  }
-
-  /**
    * Parse a query string (lifted from https://github.com/sindresorhus/query-string)
    * @param str
    * @returns {{}}
    */
   private _parseQueryString(str) {
-    //log("_parseQueryString : "+str);
+    // log("_parseQueryString : "+str);
     if (typeof str !== 'string') {
       return {};
     }

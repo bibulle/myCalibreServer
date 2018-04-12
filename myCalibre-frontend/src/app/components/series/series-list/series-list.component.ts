@@ -1,20 +1,20 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { Series } from "../series";
-import { Filter, FilterService, SortType, SortingDirection } from "../../filter-bar/filter.service";
-import { SeriesService } from "../series.service";
-import { CommonModule } from "@angular/common";
-import { MdContentModule } from "../../content/content.component";
-import { SeriesCardModule } from "../series-card/series-card.component";
-import { MdProgressCircleModule } from "@angular/material";
-import { ActivatedRoute, Params } from "@angular/router";
-import { Subscription } from "rxjs";
+import {Component, OnInit, NgModule, OnDestroy, AfterViewInit} from '@angular/core';
+import { Series } from '../series';
+import { Filter, FilterService, SortType, SortingDirection } from '../../filter-bar/filter.service';
+import { SeriesService } from '../series.service';
+import { CommonModule } from '@angular/common';
+import { MatContentModule } from '../../content/content.component';
+import { SeriesCardModule } from '../series-card/series-card.component';
+import { MatProgressSpinnerModule } from '@angular/material';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-series-list',
   templateUrl: './series-list.component.html',
   styleUrls: ['./series-list.component.scss']
 })
-export class SeriesListComponent implements OnInit {
+export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   MAX_SERIES = 100;
 
@@ -26,10 +26,22 @@ export class SeriesListComponent implements OnInit {
   totalSeriesCount = 0;
 
   filter: Filter = new Filter();
-  private previousFilterJson: string = "";
+  private previousFilterJson = '';
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription;
+
+  static _cleanAccent (str: string): string {
+    return str.toLowerCase()
+      .replace(/[àâªáäãåā]/g, 'a')
+      .replace(/[èéêëęėē]/g, 'e')
+      .replace(/[iïìíįī]/g, 'i')
+      .replace(/[ôºöòóõøō]/g, 'o')
+      .replace(/[ûùüúū]/g, 'u')
+      .replace(/[æ]/g, 'ae')
+      .replace(/[œ]/g, 'oe');
+  }
+
 
   constructor (private _seriesService: SeriesService,
                private _filterService: FilterService,
@@ -55,7 +67,7 @@ export class SeriesListComponent implements OnInit {
     this._filterService.updateLimitTo(null);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
-        //console.log(filter);
+        // console.log(filter);
         this.filter = filter;
         if (this.fullSeries) {
           this._fillSeries();
@@ -121,7 +133,7 @@ export class SeriesListComponent implements OnInit {
       while (cpt * STEP <= tmpSeries.length + STEP) {
         const _cpt = cpt + 1;
         setTimeout(() => {
-            if (_filterCount == this.filterCount) {
+            if (_filterCount === this.filterCount) {
               this.series = tmpSeries.filter((b, i) => {
                 return i < _cpt * STEP;
               });
@@ -155,7 +167,7 @@ export class SeriesListComponent implements OnInit {
                                                       .concat(s.author_name.toString())
                                                       .concat(s.books.reduce((p, c) => {
                                                         return p + c;
-                                                      }, ""));
+                                                      }, ''));
 
                                  const ret = (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search)));
 
@@ -172,24 +184,24 @@ export class SeriesListComponent implements OnInit {
                                    case SortType.Author: {
                                      let v1Lst = b1.author_sort.concat();
                                      let v2Lst = b2.author_sort.concat();
-                                     if (this.filter.sorting_direction == SortingDirection.Desc) {
+                                     if (this.filter.sorting_direction === SortingDirection.Desc) {
                                        v1Lst.reverse();
                                        v2Lst.reverse();
                                      }
-                                     v1 = v1Lst.toString() + " " + v1;
-                                     v2 = v2Lst.toString() + " " + v2;
+                                     v1 = v1Lst.toString() + ' ' + v1;
+                                     v2 = v2Lst.toString() + ' ' + v2;
                                    }
                                      break;
                                    case SortType.PublishDate:
                                    default: {
                                      let v1Lst = b1.book_date.concat();
                                      let v2Lst = b2.book_date.concat();
-                                     if (this.filter.sorting_direction == SortingDirection.Desc) {
+                                     if (this.filter.sorting_direction === SortingDirection.Desc) {
                                        v1Lst.reverse();
                                        v2Lst.reverse();
                                      }
-                                     v1 = v1Lst.toString() + " " + v1;
-                                     v2 = v2Lst.toString() + " " + v2;
+                                     v1 = v1Lst.toString() + ' ' + v1;
+                                     v2 = v2Lst.toString() + ' ' + v2;
                                    }
                                      break;
                                  }
@@ -212,26 +224,14 @@ export class SeriesListComponent implements OnInit {
       });
   }
 
-  static _cleanAccent (str: string): string {
-    return str.toLowerCase()
-              .replace(/[àâªáäãåā]/g, "a")
-              .replace(/[èéêëęėē]/g, "e")
-              .replace(/[iïìíįī]/g, "i")
-              .replace(/[ôºöòóõøō]/g, "o")
-              .replace(/[ûùüúū]/g, "u")
-              .replace(/[æ]/g, "ae")
-              .replace(/[œ]/g, "oe");
-  }
-
-
 }
 
 
 @NgModule({
   imports: [
     CommonModule,
-    MdProgressCircleModule,
-    MdContentModule,
+    MatProgressSpinnerModule,
+    MatContentModule,
     SeriesCardModule,
   ],
   declarations: [

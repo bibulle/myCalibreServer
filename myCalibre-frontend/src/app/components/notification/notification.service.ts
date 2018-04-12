@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
-import {MdSnackBar, MdSnackBarConfig} from "@angular/material";
-import {UserService} from "../authent/user.service";
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import {UserService} from '../authent/user.service';
 
 @Injectable()
 export class NotificationService {
 
-  constructor(public _snackBar: MdSnackBar,
+  constructor(public _snackBar: MatSnackBar,
               private _userService: UserService) {
   }
 
   message(message: string) {
-    //console.log(message);
+    // console.log(message);
     this._display(message, 5000, ['message']);
   }
 
@@ -34,7 +34,7 @@ export class NotificationService {
 
   _display(message: string, duration: number, extraClasses: [string]) {
 
-    let config = new MdSnackBarConfig();
+    let config = new MatSnackBarConfig();
     config.duration = duration;
     config.extraClasses = extraClasses;
 
@@ -46,7 +46,7 @@ export class NotificationService {
     if (err['_body']) {
       let error = JSON.parse(err['_body'])
       console.log(error)
-      if ( error.error && error.error.name === "JsonWebTokenError") {
+      if ( error.error && error.error.name === 'JsonWebTokenError') {
         this._userService.logout();
       }
 

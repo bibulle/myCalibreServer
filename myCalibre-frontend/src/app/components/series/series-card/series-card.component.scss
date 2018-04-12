@@ -1,19 +1,19 @@
 //@import "../../../shared/styles";
-@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
+//@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
 
-md-card-title .date {
+mat-card-title .date {
   font-size: 0.6em;
 }
 
-md-card-title button {
+mat-card-title button {
   float: right;
 }
 
-md-card-title md-icon {
+mat-card-title mat-icon {
   margin-top: 10px;
 }
 
-md-card-subtitle .author:not(:last-child):after {
+mat-card-subtitle .author:not(:last-child):after {
   content: ", ";
 }
 
@@ -22,7 +22,7 @@ md-card-subtitle .author:not(:last-child):after {
   padding-bottom: 12px;
 }
 
-.series-card md-card-subtitle, .series-card .date {
+.series-card mat-card-subtitle, .series-card .date {
   display: none;
 }
 
@@ -30,7 +30,7 @@ md-card-subtitle .author:not(:last-child):after {
   margin: 0;
 }
 
-.series-card.books-closed md-card-subtitle {
+.series-card.books-closed mat-card-subtitle {
   display: block;
 }
 
@@ -44,10 +44,10 @@ md-card-subtitle .author:not(:last-child):after {
 
 .series-card {
   display: flex;
-  align-items: center;
+  //align-items: center;
   justify-content: flex-start;
   align-items: stretch;
-  box-shadow: none;
+  //box-shadow: none;
   //margin: 0 -8px;
   .cover {
     width: 80px;
@@ -55,7 +55,7 @@ md-card-subtitle .author:not(:last-child):after {
     flex-shrink: 0;
     flex-grow: 0;
     padding: 3px;
-    [md-card-sm-image] {
+    [mat-card-sm-image] {
       display: block;
       height: auto;
       width: auto;
@@ -71,7 +71,5 @@ md-card-subtitle .author:not(:last-child):after {
     justify-content: center;
     display: flex;
     flex-direction: column;
-    border-bottom: mat-color(map-get($theme,foreground), divider) 1px solid;
-
   }
 }

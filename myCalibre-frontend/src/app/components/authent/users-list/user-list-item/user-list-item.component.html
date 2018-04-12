@@ -1,10 +1,10 @@
-<md-card class="user-card" flex="100" [class.user-closed]="userClosed && !(selectedMergeUser === user)" [class.user-selected]="(selectedMergeUser === user)" [class.anotheruser-selected]="selectedMergeUser && (selectedMergeUser !== user)">
+<mat-card class="user-card" flex="100" [class.user-closed]="userClosed && !(selectedMergeUser === user)" [class.user-selected]="(selectedMergeUser === user)" [class.anotheruser-selected]="selectedMergeUser && (selectedMergeUser !== user)">
   <div layout="column" class="row">
     <div layout="row" class="title">
       <div flex="5">
-        <button md-icon-button class="mat-icon-button open-close" (click)="toggleUserClosed()">
-          <md-icon *ngIf="userClosed">keyboard_arrow_down</md-icon>
-          <md-icon *ngIf="!userClosed">keyboard_arrow_up</md-icon>
+        <button mat-icon-button class="mat-icon-button open-close" (click)="toggleUserClosed()">
+          <mat-icon *ngIf="userClosed">keyboard_arrow_down</mat-icon>
+          <mat-icon *ngIf="!userClosed">keyboard_arrow_up</mat-icon>
         </button>
       </div>
 
@@ -13,27 +13,27 @@
       <div class="lastname" flex="20">{{user.local.lastname}}</div>
       <div class="email" flex="20">{{user.local.email}}</div>
       <div class="admin" flex="10">
-        <md-slide-toggle [checked]="user.local.isAdmin" color="primary"></md-slide-toggle>
+        <mat-slide-toggle [checked]="user.local.isAdmin" color="primary"></mat-slide-toggle>
       </div>
       <div class="local" flex="5">
-        <md-checkbox [checked]="user.local.username" disabled="true"></md-checkbox>
+        <mat-checkbox [checked]="user.local.username" disabled="true"></mat-checkbox>
       </div>
       <div class="facebook" flex="5">
-        <md-checkbox [checked]="user.facebook.name" disabled="true"></md-checkbox>
+        <mat-checkbox [checked]="user.facebook.name" disabled="true"></mat-checkbox>
       </div>
       <div class="google" flex="5">
-        <md-checkbox [checked]="user.google.name" disabled="true"></md-checkbox>
+        <mat-checkbox [checked]="user.google.name" disabled="true"></mat-checkbox>
       </div>
     </div>
     <div class="content" flex="100">
       <app-user-profile [user]="user" urlToRedirect="/users"></app-user-profile>
-      <md-card-actions>
-        <a class="delete" md-raised-button (click)="remove()">Delete</a>
-        <a class="merge-select" md-raised-button (click)="merge()">Merge select</a>
-        <a class="merge-unselect" md-raised-button (click)="merge()">Merge unselect</a>
-        <a class="merge-launch" md-raised-button (click)="merge()">Merge launch</a>
-        <a class="resetPassword" md-raised-button (click)="resetPassword()">Reset password</a>
-      </md-card-actions>
+      <mat-card-actions>
+        <a class="delete" mat-raised-button (click)="remove()">Delete</a>
+        <a class="merge-select" mat-raised-button (click)="merge()">Merge select</a>
+        <a class="merge-unselect" mat-raised-button (click)="merge()">Merge unselect</a>
+        <a class="merge-launch" mat-raised-button (click)="merge()">Merge launch</a>
+        <a class="resetPassword" mat-raised-button (click)="resetPassword()">Reset password</a>
+      </mat-card-actions>
     </div>
   </div>
-</md-card>
+</mat-card>

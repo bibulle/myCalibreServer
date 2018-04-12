@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Filter, FilterService} from "../../filter-bar/filter.service";
-import {UserService} from "../user.service";
-import {NotificationService} from "../../notification/notification.service";
-import {Router} from "@angular/router";
+import {Filter, FilterService} from '../../filter-bar/filter.service';
+import {UserService} from '../user.service';
+import {NotificationService} from '../../notification/notification.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-connect-local',

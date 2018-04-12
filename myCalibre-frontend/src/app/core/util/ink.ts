@@ -1,4 +1,4 @@
-import {Animate} from "./animate";
+import {Animate} from './animate';
 
 /**
  * Create ink ripples on elements in the page.

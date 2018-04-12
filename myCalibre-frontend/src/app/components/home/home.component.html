@@ -1,6 +1,6 @@
-<md-card class="new-book" *ngIf="books">
-  <md-card-title class="title">Here are the last {{BOOKS_LIMIT}} added books</md-card-title>
+<mat-card class="new-book" *ngIf="books">
+  <mat-card-title class="title">Here are the last {{BOOKS_LIMIT}} added books</mat-card-title>
   <app-book-card *ngFor="let book of books" [book]="book">
   </app-book-card>
-</md-card>
-<md-spinner *ngIf="!books"></md-spinner>
+</mat-card>
+<mat-spinner *ngIf="!books"></mat-spinner>

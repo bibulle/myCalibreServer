@@ -1,19 +1,19 @@
-<md-card class="book-card" flex="100" *ngIf="book.book_title" (click)="openBook($event)" >
-  <!--<md-card-header>-->
-  <!--<img md-card-avatar *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.png">-->
-  <!--<md-card-title>{{book.book_title}} (<span class="date">{{book.book_date | date: 'yyyy'}}</span>)</md-card-title>-->
-  <!--<md-card-subtitle>{{book.author_name}} <span class="other">({{book.data_format}})</span></md-card-subtitle>-->
-  <!--</md-card-header>-->
-  <!--<md-card-title-group>-->
+<mat-card class="book-card" flex="100" *ngIf="book.book_title" (click)="openBook($event)" >
+  <!--<mat-card-header>-->
+  <!--<img mat-card-avatar *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.png">-->
+  <!--<mat-card-title>{{book.book_title}} (<span class="date">{{book.book_date | date: 'yyyy'}}</span>)</mat-card-title>-->
+  <!--<mat-card-subtitle>{{book.author_name}} <span class="other">({{book.data_format}})</span></mat-card-subtitle>-->
+  <!--</mat-card-header>-->
+  <!--<mat-card-title-group>-->
   <div class="cover">
-    <img md-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
+    <img mat-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
   </div>
   <div class="text">
-    <md-card-title>
+    <mat-card-title>
       <span *ngIf="book.series_name">{{book.series_name}} - {{book.book_series_index}} - </span>
       {{book.book_title}} <span class="date" *ngIf="book.book_date>'011'">{{book.book_date | date: 'yyyy'}}</span>
-    </md-card-title>
-    <md-card-subtitle>{{book.author_name}} <span class="other">{{book.data_format}}</span></md-card-subtitle>
+    </mat-card-title>
+    <mat-card-subtitle>{{book.author_name}} <span class="other">{{book.data_format}}</span></mat-card-subtitle>
   </div>
-  <!--</md-card-title-group>-->
-</md-card>
+  <!--</mat-card-title-group>-->
+</mat-card>

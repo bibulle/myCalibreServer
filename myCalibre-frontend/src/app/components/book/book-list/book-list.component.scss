@@ -1,6 +1,6 @@
-@import "../../../shared/styles";
+//@import "../../../shared/styles";
 
-md-spinner {
+mat-spinner {
   width: 50px;
   margin-left: auto;
   margin-right: auto;
@@ -8,6 +8,5 @@ md-spinner {
 
 .max-reached {
   padding: 1.5em;
-  color: mat-color(map-get($theme,foreground), secondary-text);
-
 }
+

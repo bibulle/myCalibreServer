@@ -1,24 +1,23 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input } from '@angular/core';
-import {Router} from "@angular/router";
-import { Media } from "../core/util/media";
-import { FilterService, Filter } from "../components/filter-bar/filter.service";
-import { TitleService, Title, Version } from "./title.service";
-import { Location } from "@angular/common";
-import { MdSidenav } from "@angular/material";
-import { Subscription } from "rxjs";
-import {UserService} from "../components/authent/user.service";
-import {User} from "../components/authent/user";
+import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input, AfterViewChecked, ChangeDetectorRef} from '@angular/core';
+import {Router} from '@angular/router';
+import { Media } from '../core/util/media';
+import { FilterService, Filter } from '../components/filter-bar/filter.service';
+import { TitleService, Title, Version } from './title.service';
+import { MatSidenav } from '@angular/material';
+import { Subscription } from 'rxjs';
+import {UserService} from '../components/authent/user.service';
+import {User} from '../components/authent/user';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
+export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
 
-  static SIDE_MENU_BREAKPOINT: string = 'gt-md';
+  static SIDE_MENU_BREAKPOINT = 'gt-md';
 
-  @ViewChild(MdSidenav) private menu: MdSidenav;
+  @ViewChild(MatSidenav) private menu: MatSidenav;
 
   @Input() fullPage: boolean = this.media.hasMedia(AppComponent.SIDE_MENU_BREAKPOINT);
 
@@ -34,11 +33,14 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   private _currentFilterSubscription: Subscription;
   private _currentTitleSubscription: Subscription;
 
-  constructor (private media: Media,
+  private _scrollWidth = -1;
+
+  constructor(private media: Media,
                private _userService: UserService,
                private _filterService: FilterService,
                private _titleService: TitleService,
-               private _router: Router) {
+               private _router: Router,
+               private _cdRef:  ChangeDetectorRef) {
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -52,9 +54,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
+  ngAfterViewChecked () {
+    this._cdRef.detectChanges();
+  }
+
   /**
    * Is the sidenav menu pushed
-   * @returns {MdSidenav|boolean}
+   * @returns {MatSidenav|boolean}
    */
   get pushed (): boolean {
     return this.menu && this.menu.mode === 'side';
@@ -62,7 +68,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   /**
    * Is the sidenav menu opened
-   * @returns {MdSidenav|boolean}
+   * @returns {MatSidenav|boolean}
    */
   get over (): boolean {
     return this.menu && this.menu.mode === 'over' && this.menu.opened;
@@ -70,7 +76,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // TODO(jd): these two property hacks are to work around issues with the peekaboo fixed nav
   // overlapping the sidenav and toolbar.  They will not properly "fix" to the top if inside
-  // md-sidenav-layout, and they will overlap the sidenav and scrollbar when outside.  So just
+  // mat-sidenav-layout, and they will overlap the sidenav and scrollbar when outside.  So just
   // calculate left and right properties for fixed toolbars based on the media query and browser
   // scrollbar width.  :sob: :rage:
   @Input()
@@ -78,8 +84,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.pushed ? 181 : 0;
   }
 
-
-  private _scrollWidth: number = -1;
 
   @Input()
   get scrollWidth (): number {
@@ -102,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
       const w1 = inner.offsetWidth;
       outer.style.overflow = 'scroll';
       let w2 = inner.offsetWidth;
-      if (w1 == w2) w2 = outer.clientWidth;
+      if (w1 === w2) { w2 = outer.clientWidth; }
 
       document.body.removeChild(outer);
 
@@ -133,7 +137,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
     this._currentUserSubscription = this._userService.userObservable().subscribe(
       user => {
         if (!user || !user.id) {
-          this._router.navigate(['/login'])
+          this._router.navigate(['/login']).catch()
         }
         this.user = user;
 
@@ -189,7 +193,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   itemClicked() {
-    this.menu.opened=(this.menu.mode === 'side');
+    this.menu.opened = (this.menu.mode === 'side');
     this._filterService.updateAllButNotDisplayed(new Filter());
   }
 

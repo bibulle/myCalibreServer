@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TitleService, Version } from "../../app/title.service";
+import { TitleService, Version } from '../../app/title.service';
 
 @Component({
   selector: 'docs-footer',

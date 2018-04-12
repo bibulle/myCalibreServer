@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Location } from "@angular/common";
-import { Response, Http } from "@angular/http";
-import {NavigationCancel, NavigationEnd, Router, RoutesRecognized} from "@angular/router";
-import { BehaviorSubject, Observable } from "rxjs";
+import { Location } from '@angular/common';
+import { Response, Http } from '@angular/http';
+import {NavigationCancel, NavigationEnd, Router, RoutesRecognized} from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
 export class TitleService {
 
-  public static TITLE: string = 'Shared library';
+  public static TITLE = 'Shared library';
 
   private currentTitleSubject: BehaviorSubject<Title>;
 
   private titles: Title[] = [];
+
+  private _version: Version;
 
   constructor (private _http: Http,
                private _router: Router,
@@ -20,14 +22,14 @@ export class TitleService {
     this.currentTitleSubject = new BehaviorSubject<Title>(new Title());
 
     this._router.events.subscribe((data) => {
-      //console.log(data);
+      // console.log(data);
       if (data instanceof RoutesRecognized) {
         // Title has bee recognized, add it to history
         let backUrl: string = null;
         if (this.titles.length > 0) {
           backUrl = this.titles[0].url;
         }
-        this.titles.unshift(new Title(data.state.root.firstChild.data['label'],backUrl, data.id, data.url));
+        this.titles.unshift(new Title(data.state.root.firstChild.data['label'], backUrl, data.id, data.url));
         this.titles = this.titles.slice(0, 100);
 
       } else if (data instanceof NavigationCancel) {
@@ -51,7 +53,7 @@ export class TitleService {
     if ((this.titles.length > 1) && this.titles[0].backUrl) {
       const backUrl = this.titles[0].backUrl;
       this.titles = this.titles.slice(2);
-      this._router.navigateByUrl(backUrl);
+      this._router.navigateByUrl(backUrl).catch();
     } else {
       this._location.back();
     }
@@ -87,8 +89,6 @@ export class TitleService {
   /**
    * get the version values
    */
-  private _version: Version;
-
   getVersion (): Promise<Version> {
     return new Promise<Version>((resolve) => {
       if (this._version) {
@@ -125,8 +125,8 @@ export class Title {
   }
 
   setTitle(label: string) {
-    this.title = (label != 'Home') ? label : TitleService.TITLE;
-    this.full_title = (label != 'Home') ? TitleService.TITLE + ' - ' + label : TitleService.TITLE;
+    this.title = (label !== 'Home') ? label : TitleService.TITLE;
+    this.full_title = (label !== 'Home') ? TitleService.TITLE + ' - ' + label : TitleService.TITLE;
   }
 
 }
@@ -145,7 +145,7 @@ export class Version {
   }
 
   isBeta() {
-    return (""+this.version).startsWith("0.");
+    return ('' + this.version).startsWith('0.');
   }
 
 }

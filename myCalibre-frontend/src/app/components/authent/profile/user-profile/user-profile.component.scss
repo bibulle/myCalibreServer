@@ -1,7 +1,7 @@
 :host {
-  md-card-content {
+  mat-card-content {
     position: relative;
-    md-input-container {
+    mat-input-container {
       width: 95%;
     }
     .provider {
@@ -28,9 +28,10 @@
         height: 24px;
         margin-right: 8px;
         margin-top: 4px;
-        md-icon {
+        mat-icon {
           padding-top: 1px;
           font-size: 20px;
+          margin-top: -13px;
         }
       }
     }
@@ -47,15 +48,16 @@
       right: 0;
       font-size: 18px;
       line-height: 40px;
-      md-icon {
+      mat-icon {
         position: absolute;
         left: 2px;
+        top: 2px;
         font-size: 37px;
         color: rgba(20, 20, 20, 0.5);
       }
     }
     .fa:before {
-      font-family: FontAwesome;
+      font-family: FontAwesome, serif;
     }
 
     .fa-facebook {

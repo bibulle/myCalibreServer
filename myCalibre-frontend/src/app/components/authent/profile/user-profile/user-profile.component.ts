@@ -1,19 +1,19 @@
-import {Component, Input, NgModule, OnInit, SimpleChanges} from '@angular/core';
-import {User} from "../../user";
-import {Subject} from "rxjs";
-import {UserService} from "../../user.service";
-import {NotificationService} from "app/components/notification/notification.service";
-import {Router} from "@angular/router";
-import {CommonModule} from "@angular/common";
-import {MdButtonModule, MdCardModule, MdCheckboxModule, MdIconModule, MdInputModule} from "@angular/material";
-import {FormsModule} from "@angular/forms";
+import {Component, Input, NgModule, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {User} from '../../user';
+import {Subject} from 'rxjs';
+import {UserService} from '../../user.service';
+import {NotificationService} from 'app/components/notification/notification.service';
+import {Router} from '@angular/router';
+import {CommonModule} from '@angular/common';
+import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule} from '@angular/material';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.scss']
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnChanges {
 
   @Input()
   user: User;
@@ -44,23 +44,23 @@ export class UserProfileComponent implements OnInit {
         .debounceTime(500)
         .subscribe(
           user => {
-            //console.log(user);
+            // console.log(user);
             return this._userService.save(user)
               .then((newUser) => {
                 if (!newUser) {
                   this._userService.checkAuthent();
-                  this._notificationService.message("All your modifications have been saved...");
+                  this._notificationService.message('All your modifications have been saved...');
                 } else {
                   this.user = newUser;
-                  this._notificationService.message("All your modifications have been saved...");
+                  this._notificationService.message('All your modifications have been saved...');
                 }
               })
               .catch(error => {
                 console.error(error);
                 if (error) {
-                  this._notificationService.error("Error saving you changes !!\n\t" + (error.message || error));
+                  this._notificationService.error('Error saving you changes !!\n\t' + (error.message || error));
                 } else {
-                  this._notificationService.error("Error saving you changes !!");
+                  this._notificationService.error('Error saving you changes !!');
                 }
               });
           },
@@ -74,7 +74,7 @@ export class UserProfileComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.user) {
       this.oldUserJson = JSON.stringify(this.user);
-      //console.log(this.oldUserJson);
+      // console.log(this.oldUserJson);
     }
 
   }
@@ -101,7 +101,7 @@ export class UserProfileComponent implements OnInit {
       this.user.local.amazonEmails = [];
     }
 
-    if (!this.amazonEmail || (this.amazonEmail.trim() == "")) {
+    if (!this.amazonEmail || (this.amazonEmail.trim() === '')) {
       return;
     }
     this.amazonEmail = this.amazonEmail.trim();
@@ -109,7 +109,7 @@ export class UserProfileComponent implements OnInit {
     const found = this.user.local.amazonEmails.filter(el => {
       return el.trim() === this.amazonEmail;
     });
-    if (found.length == 0) {
+    if (found.length === 0) {
       this.user.local.amazonEmails.push(this.amazonEmail);
       this.amazonEmail = null;
     }
@@ -148,7 +148,7 @@ export class UserProfileComponent implements OnInit {
     event.preventDefault();
 
     if (this.user.id !== this._userService.getUser().id) {
-      return this._notificationService.error("Not allowed");
+      return this._notificationService.error('Not allowed');
     }
 
     this._userService.startLoginFacebook()
@@ -167,7 +167,7 @@ export class UserProfileComponent implements OnInit {
     event.preventDefault();
 
     if (this.user.id !== this._userService.getUser().id) {
-      return this._notificationService.error("Not allowed");
+      return this._notificationService.error('Not allowed');
     }
 
     this._userService.startLoginGoogle()
@@ -188,7 +188,7 @@ export class UserProfileComponent implements OnInit {
     this._userService.unlinkFacebook(this.user.id)
       .then((user) => {
         if (this.user.id !== this._userService.getUser().id) {
-          this.user.facebook = user.facebook;
+          this.user.facebook = user['facebook'];
         } else {
           this._router.navigate([this.urlToRedirect]);
         }
@@ -207,7 +207,7 @@ export class UserProfileComponent implements OnInit {
     this._userService.unlinkGoogle(this.user.id)
       .then((user) => {
         if (this.user.id !== this._userService.getUser().id) {
-          this.user.google = user.google;
+          this.user.google = user['google'];
         } else {
           this._router.navigate([this.urlToRedirect]);
         }
@@ -222,12 +222,12 @@ export class UserProfileComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdButtonModule,
-    MdCardModule,
-    MdIconModule,
-    MdCheckboxModule,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatCheckboxModule,
     FormsModule,
-    MdInputModule
+    MatInputModule
   ],
   declarations: [
     UserProfileComponent

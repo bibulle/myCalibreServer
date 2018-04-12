@@ -1,21 +1,20 @@
-Options +FollowSymLinks
-IndexIgnore */*
 <IfModule mod_rewrite.c>
-	RewriteEngine on
+    RewriteEngine On
 
-	# if a directory or a file exists, use it directly
-	RewriteCond %{REQUEST_FILENAME} -s [OR]
-	RewriteCond %{REQUEST_FILENAME} -l [OR]
-	RewriteCond %{REQUEST_FILENAME} -d
-	#RewriteCond %{REQUEST_URI} !/api
-	RewriteRule ^.*$ - [NC,L]
+   # if a directory or a file exists, use it directly
+   RewriteCond %{REQUEST_FILENAME} -s [OR]
+   RewriteCond %{REQUEST_FILENAME} -l [OR]
+   RewriteCond %{REQUEST_FILENAME} -d
+   #RewriteCond %{REQUEST_URI} !/api
+   RewriteRule ^.*$ - [NC,L]
 
-	RewriteCond %{REQUEST_URI} /api
-	RewriteRule ^(.*)$ http://localhost:4000/$1 [P]
+   RewriteCond %{REQUEST_URI} /api
+   RewriteRule ^(.*)$ http://localhost:4000/$1 [P]
 
-	RewriteCond %{REQUEST_URI} /authent
-	RewriteRule ^(.*)$ http://localhost:4000/$1 [P]
+   RewriteCond %{REQUEST_URI} /authent
+   RewriteRule ^(.*)$ http://localhost:4000/$1 [P]
 
-	# otherwise forward it to index.html
-	RewriteRule ^(.*) /index.html [NC,L]
+   # otherwise forward it to index.html
+   RewriteRule ^(.*) /bib/index.html [NC,L]
+
 </IfModule>

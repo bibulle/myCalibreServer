@@ -1,5 +1,5 @@
 
-import { Book } from "../book/book";
+import { Book } from '../book/book';
 export class Tag {
 
   tag_id: number;

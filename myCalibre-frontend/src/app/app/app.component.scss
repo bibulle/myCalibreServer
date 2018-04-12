@@ -1,11 +1,12 @@
 @import "../shared/styles";
+@import "../shared/layout";
 
 :host {
-  display: block;
-  background-color: mat-color(map-get($theme,background), app-bar);
 
-  > md-sidenav-container {
-    md-sidenav {
+  display: block;
+
+  > mat-sidenav-container {
+    mat-sidenav {
       width: $app-sidenav-width;
     }
     > > .mat-sidenav-content {
@@ -25,7 +26,7 @@
 
   main {
     background-color: whitesmoke;
-    md-content {
+    mat-content {
       margin-left: auto;
       margin-right: auto;
       &.examples {
@@ -34,54 +35,38 @@
     }
   }
   .app-menu {
-    border-right: 1px solid mat-color(map-get($theme,foreground), divider);
-    [md-list-item] {
-      font-size: $subheader-font-size;
+    border-right: 1px solid;
+
+    [mat-list-item] {
+      font-size: ($subheader-font-size+2);
       font-weight: $subheader-font-weight;
-      &.active {
-        color: mat-color($primary, 500);
-      }
+
     }
-    md-toolbar {
-      color: mat-color(map-get($theme,foreground), secondary-text);
-      border-bottom: 1px solid mat-color(map-get($theme,foreground), divider);
+    mat-toolbar {
+      border-bottom: 1px solid;
       position: relative;
       overflow: hidden;
       h3 {
+        font-size: 1.17em;
         font-weight: 500;
         cursor: pointer;
       }
       .beta {
         -webkit-transform: rotate(45deg);
-        background-color: mat-color(map-get($theme, warn), 100);
         position: absolute;
         right: -34px;
         top: 10px;
         width: 100px;
         text-align: center;
         font-size: 13px;
+        line-height: 15px;
       }
     }
     .version {
       text-decoration: none;
-      color: mat-color(map-get($theme,foreground), hint-text);
       position: absolute;
       bottom: 0;
       right: 0;
-    }
-  }
-
-  .examples {
-    background-color: transparent;
-    width: 800px;
-    @media screen and (min-width: $layout-breakpoint-lg - 1) {
-      width: $app-content-lg;
-    }
-    @media screen and (max-width: $layout-breakpoint-md) {
-      width: $app-content-md;
-    }
-    @media screen and (max-width: $layout-breakpoint-sm) {
-      width: $app-content-sm;
     }
   }
 
@@ -106,11 +91,12 @@
     }
   }
 
-  md-toolbar.hero {
-    @include md-hero-toolbar();
+  mat-toolbar.hero {
+    height: $toolbar-hero-height;
+    min-height: $toolbar-hero-height;
+    max-height: $toolbar-hero-height;
     padding: 135px 16px 0;
     h1 {
-      color: mat-color($primary, default-contrast);
       font-size: 56px;
       font-weight: 400;
       line-height: 1.5;
@@ -132,9 +118,11 @@
       }
     }
     @media screen and (max-width: $layout-breakpoint-sm) {
-      height: 128px;
+      //height: 128px;
       padding-top: 72px;
-      @include md-tall-toolbar();
+      height: $toolbar-tall-height;
+      min-height: $toolbar-tall-height;
+      max-height: $toolbar-tall-height;
       h1 {
         font-size: $title-font-size-base;
         width: $app-content-sm - 80px;
@@ -143,26 +131,22 @@
     }
   }
 
-  md-content {
+  mat-content {
     display: block;
-    font-size: rem(1.4);
+    font-size: 14px;
     @media screen and (max-width: $layout-breakpoint-md) {
-      font-size: rem(1.2);
+      font-size: 12px;
     }
     @media screen and (max-width: $layout-breakpoint-sm) {
-      font-size: rem(1.0);
+      font-size: 10px;
     }
     > h1 {
-      margin-top: rem(6);
-      margin-bottom: rem(6);
+      margin-top: 60px;
+      margin-bottom: 60px;
       font-weight: 300;
-      color: mat-color($primary, 900);
     }
-    > md-divider {
-      margin-top: rem(6);
-    }
-    .card-media {
-      background-color: mat-color(map-get($theme,background), app-bar);
+    > mat-divider {
+      margin-top: 60px;
     }
   }
 
@@ -170,10 +154,10 @@
     padding-top: 80px;
   }
   .seed-intro {
-    highlight {
-      border-radius: 2px;
-      margin: $baseline-grid * 4 0;
-    }
+    //highlight {
+    //  border-radius: 2px;
+    //  margin: $baseline-grid * 4 0;
+    //}
   }
 
   .contents {

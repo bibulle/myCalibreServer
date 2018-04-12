@@ -1,37 +1,37 @@
 <div  *ngIf="!filter.not_displayed">
   <div flex="100" layout="row" layout-align="end center">
-    <md-icon>search</md-icon>
+    <mat-icon>search</mat-icon>
     &nbsp;
-    <md-input-container flex="75">
-      <input mdInput placeholder="Search" #cataloguesearch [(ngModel)]="filter.search"
+    <mat-form-field flex="75">
+      <input matInput placeholder="Search" #cataloguesearch [(ngModel)]="filter.search"
                 (ngModelChange)="filterList()">
-    </md-input-container>
+    </mat-form-field>
   </div>
-  <!--<button md-button class="md-icon-button" aria-label="Favorite">-->
-  <!--<md-icon md-icon>favorite</md-icon>-->
+  <!--<button mat-button class="mat-icon-button" aria-label="Favorite">-->
+  <!--<mat-icon mat-icon>favorite</mat-icon>-->
   <!--</button>-->
-  <button md-button class="mat-icon-button" aria-label="Sort" [md-menu-trigger-for]="sortmenu">
-    <md-icon md-icon>sort</md-icon>
+  <button mat-button class="mat-icon-button" aria-label="Sort" [matMenuTriggerFor]="sortmenu">
+    <mat-icon mat-icon>sort</mat-icon>
   </button>
 
-  <md-menu x-position="before" y-position="below" #sortmenu="mdMenu" class="sort-menu">
-    <button md-menu-item (click)="toggleSort(0)" *ngIf="filter.isAvailable(0)">
-      <md-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
-      <md-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
-      <md-icon *ngIf="(filter.sort != 0)"></md-icon>
+  <mat-menu x-position="before" y-position="below" #sortmenu="matMenu" class="sort-menu">
+    <button mat-menu-item (click)="toggleSort(0)" *ngIf="filter.isAvailable(0)">
+      <mat-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(filter.sort != 0)"></mat-icon>
       <span>Name</span>
     </button>
-    <button md-menu-item (click)="toggleSort(1)" *ngIf="filter.isAvailable(1)">
-      <md-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
-      <md-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
-      <md-icon *ngIf="(filter.sort != 1)"></md-icon>
+    <button mat-menu-item (click)="toggleSort(1)" *ngIf="filter.isAvailable(1)">
+      <mat-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(filter.sort != 1)"></mat-icon>
       <span>Publish date</span>
     </button>
-    <button md-menu-item (click)="toggleSort(2)" *ngIf="filter.isAvailable(2)">
-      <md-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 0)">keyboard_arrow_up</md-icon>
-      <md-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 1)">keyboard_arrow_down</md-icon>
-      <md-icon *ngIf="(filter.sort != 2)"></md-icon>
+    <button mat-menu-item (click)="toggleSort(2)" *ngIf="filter.isAvailable(2)">
+      <mat-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(filter.sort != 2)"></mat-icon>
       <span>Author</span>
     </button>
-  </md-menu>
+  </mat-menu>
 </div>

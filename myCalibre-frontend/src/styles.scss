@@ -1,10 +1,48 @@
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 
-//@import "assets/css/all";
-//@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
-@import 'app/shared/styles.scss';
-@import 'app/shared/layout.scss';
+@import '~@angular/material/theming';
+
+// always include only once per project
+@include mat-core();
+
+// import our custom theme
+@import 'app/shared/theme.scss';
+
+// import custom component themes
+@import 'app/app/app.component.theme.scss';
+@import 'app/components/authent/users-list/users-list.component.theme';
+@import 'app/components/authent/users-list/user-list-item/user-list-item.component.theme';
+@import 'app/components/author/author-list/author-list.component.theme';
+@import 'app/components/book/book-card/book-card.component.theme';
+@import 'app/components/book/book-list/book-list.component.theme';
+@import 'app/components/book/book-page/book-page.component.theme';
+@import 'app/components/not-found/not-found.component.theme';
+@import 'app/components/series/series-list/series-list.component.theme';
+@import 'app/components/subheader/subheader.component.theme';
+
+@mixin custom-components-theme($theme) {
+  @include app-component-theme($theme);
+  @include author-list-component-theme($theme);
+  @include book-card-component-theme($theme);
+  @include book-list-component-theme($theme);
+  @include book-page-component-theme($theme);
+  @include not-found-component-theme($theme);
+  @include series-list-component-theme($theme);
+  @include subheader-component-theme($theme);
+  @include users-list-component-theme($theme);
+  @include user-list-item-component-theme($theme);
+}
+
+
+@include angular-material-theme($my-theme);
+@include custom-components-theme($my-theme);
+
+
+
+
+
+
 
 html, body {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -33,7 +71,7 @@ app-root {
     display: block;
     padding: 115px 16px 0;
     //background-color: #009688;
-    background-color: mat-color($primary);
+    //background-color: mat-color($primary);
     height: 256px;
     min-height: 256px;
     max-height: 256px;
@@ -53,16 +91,16 @@ app-root > h1 {
     }
 }
 
-body md-nav-list a[md-list-item].active .md-list-item, body md-nav-list md-list-item.active .md-list-item {
-  color: mat-color($primary);
+body mat-nav-list a[mat-list-item].active .mat-list-item, body mat-nav-list mat-list-item.active .mat-list-item {
+  //color: mat-color($primary);
 }
-body md-nav-list md-list-item[md-ink] .md-list-item:hover {
+body mat-nav-list mat-list-item[mat-ink] .mat-list-item:hover {
   background: none;
 
 }
 
-.md-caption {
-  font-size: $caption-font-size-base;
+.mat-caption {
+  //font-size: $caption-font-size-base;
   letter-spacing: 0.020em;
 }
 
@@ -99,18 +137,18 @@ body md-nav-list md-list-item[md-ink] .md-list-item:hover {
 }
 
 // Rules for sizing the icon.
-.material-icons.md-18 { font-size: 18px; }
-.material-icons.md-24 { font-size: 24px; }
-.material-icons.md-36 { font-size: 36px; }
-.material-icons.md-48 { font-size: 48px; }
+.material-icons.mat-18 { font-size: 18px; }
+.material-icons.mat-24 { font-size: 24px; }
+.material-icons.mat-36 { font-size: 36px; }
+.material-icons.mat-48 { font-size: 48px; }
 
 // Rules for using icons as black on a light background.
-.material-icons.md-dark { color: rgba(0, 0, 0, 0.54); }
-.material-icons.md-dark.md-inactive { color: rgba(0, 0, 0, 0.26); }
+.material-icons.mat-dark { color: rgba(0, 0, 0, 0.54); }
+.material-icons.mat-dark.mat-inactive { color: rgba(0, 0, 0, 0.26); }
 
 // Rules for using icons as white on a dark background.
-.material-icons.md-light { color: rgba(255, 255, 255, 1); }
-.material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
+.material-icons.mat-light { color: rgba(255, 255, 255, 1); }
+.material-icons.mat-light.mat-inactive { color: rgba(255, 255, 255, 0.3); }
 
 // Menu do not have the right host...
 .download-menu a {
@@ -120,21 +158,21 @@ body md-nav-list md-list-item[md-ink] .md-list-item:hover {
   display: flex;
 }
 
-.md-menu-ripple {
+.mat-menu-ripple {
   overflow: hidden;
 }
 
 // Snack-bar colors
 snack-bar-container.message {
-  background-color: mat-color(map-get($theme, background), status-bar);
+  //background-color: mat-color(map-get($theme, background), status-bar);
 }
 snack-bar-container.warn {
-  background-color: mat-color(map-get($theme, warn), 300);
+  //background-color: mat-color(map-get($theme, warn), 300);
 }
 
 snack-bar-container.error {
-  background-color: mat-color(map-get($theme, warn));
-  font-weight: bolder;
+  //background-color: mat-color(map-get($theme, warn));
+  //font-weight: bolder;
 }
 
 // Change of label position

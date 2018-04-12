@@ -1,15 +1,15 @@
-import { NgModule } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { MdCardModule, MdIconModule } from "@angular/material";
-import { TagListModule } from "./tag-list/tag-list.component";
-import { TagService } from "./tag.service";
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule, MatIconModule } from '@angular/material';
+import { TagListModule } from './tag-list/tag-list.component';
+import { TagService } from './tag.service';
 
 @NgModule({
   imports: [
     CommonModule,
     TagListModule,
-    MdCardModule,
-    MdIconModule
+    MatCardModule,
+    MatIconModule
   ],
   providers: [
     TagService

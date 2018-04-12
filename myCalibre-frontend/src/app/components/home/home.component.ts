@@ -1,12 +1,12 @@
 import { Component, OnInit, NgModule } from '@angular/core';
-import { FilterService, Filter } from "../filter-bar/filter.service";
-import { BookService } from "../book/book.service";
-import { Book } from "../book/book";
-import { CommonModule } from "@angular/common";
-import { BookCardModule } from "../book/book-card/book-card.component";
-import { MdContentModule } from "../content/content.component";
-import { MdProgressCircleModule, MdCardModule } from "@angular/material";
-import {NotificationService} from "../notification/notification.service";
+import { FilterService, Filter } from '../filter-bar/filter.service';
+import { BookService } from '../book/book.service';
+import { Book } from '../book/book';
+import { CommonModule } from '@angular/common';
+import { BookCardModule } from '../book/book-card/book-card.component';
+import { MatContentModule } from '../content/content.component';
+import { MatProgressSpinnerModule, MatCardModule } from '@angular/material';
+import {NotificationService} from '../notification/notification.service';
 
 @Component({
   selector: 'app-home',
@@ -43,9 +43,9 @@ export class HomeComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdContentModule,
-    MdProgressCircleModule,
-    MdCardModule,
+    MatContentModule,
+    MatProgressSpinnerModule,
+    MatCardModule,
     BookCardModule,
   ],
   declarations: [HomeComponent],

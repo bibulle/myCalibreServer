@@ -1,20 +1,20 @@
-import { Component, OnInit, NgModule } from '@angular/core';
-import { TagCardModule } from "../tag-card/tag-card.component";
-import { MdContentModule } from "../../content/content.component";
-import { MdProgressCircleModule } from "@angular/material";
-import { CommonModule } from "@angular/common";
-import { Tag } from "../tag";
-import { Filter, SortType, FilterService, SortingDirection } from "../../filter-bar/filter.service";
-import { TagService } from "../tag.service";
-import { ActivatedRoute, Params } from "@angular/router";
-import { Subscription } from "rxjs";
+import {Component, OnInit, NgModule, OnDestroy, AfterViewInit} from '@angular/core';
+import {TagCardModule} from '../tag-card/tag-card.component';
+import {MatContentModule} from '../../content/content.component';
+import {MatProgressSpinnerModule} from '@angular/material';
+import {CommonModule} from '@angular/common';
+import {Tag} from '../tag';
+import {Filter, SortType, FilterService, SortingDirection} from '../../filter-bar/filter.service';
+import {TagService} from '../tag.service';
+import {ActivatedRoute, Params} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-tag-list',
   templateUrl: './tag-list.component.html',
   styleUrls: ['./tag-list.component.scss']
 })
-export class TagListComponent implements OnInit {
+export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   MAX_TAGS = 100;
 
@@ -26,19 +26,30 @@ export class TagListComponent implements OnInit {
   totalTagsCount = 0;
 
   filter: Filter;
-  private previousFilterJson: string = "";
+  private previousFilterJson = '';
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription;
 
-  constructor (private _tagService: TagService,
-               private _filterService: FilterService,
-               private route: ActivatedRoute) {
+  static _cleanAccent(str: string): string {
+    return str.toLowerCase()
+      .replace(/[àâªáäãåā]/g, 'a')
+      .replace(/[èéêëęėē]/g, 'e')
+      .replace(/[iïìíįī]/g, 'i')
+      .replace(/[ôºöòóõøō]/g, 'o')
+      .replace(/[ûùüúū]/g, 'u')
+      .replace(/[æ]/g, 'ae')
+      .replace(/[œ]/g, 'oe');
+  }
+
+  constructor(private _tagService: TagService,
+              private _filterService: FilterService,
+              private route: ActivatedRoute) {
 
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnInit () {
+  ngOnInit() {
 
     // Search for params (search)
     this.route.queryParams.forEach((params: Params) => {
@@ -55,7 +66,7 @@ export class TagListComponent implements OnInit {
     this._filterService.updateLimitTo([SortType.Name]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
-        //console.log(filter);
+        // console.log(filter);
         this.filter = filter;
         if (this.fullTags) {
           this._fillTags();
@@ -64,15 +75,15 @@ export class TagListComponent implements OnInit {
     );
 
     this._tagService
-        .getTags()
-        .then(tags => {
-          this.fullTags = tags;
-          this._fillTags();
+      .getTags()
+      .then(tags => {
+        this.fullTags = tags;
+        this._fillTags();
 
-        })
-        .catch(err => {
-          console.log(err);
-        })
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -86,7 +97,7 @@ export class TagListComponent implements OnInit {
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnDestroy () {
+  ngOnDestroy() {
     // console.log("ngOnDestroy");
     if (this._currentFilterSubscription) {
       this._currentFilterSubscription.unsubscribe();
@@ -97,7 +108,7 @@ export class TagListComponent implements OnInit {
    * fill the this.tags list (slowly) with the filtered this.fullTags list
    * @private
    */
-  private _fillTags () {
+  private _fillTags() {
     if (!this.fullTags || !this.filter) {
       return;
     }
@@ -113,15 +124,15 @@ export class TagListComponent implements OnInit {
       // if tags list exists already, start from tags length
       if (this.tags) {
         cpt = Math.min(
-            Math.ceil(this.tags.length / STEP),
-            Math.floor(tmpTags.length / STEP)) + 1;
+          Math.ceil(this.tags.length / STEP),
+          Math.floor(tmpTags.length / STEP)) + 1;
       }
       const initCpt = cpt;
 
       while (cpt * STEP <= tmpTags.length + STEP) {
         const _cpt = cpt + 1;
         setTimeout(() => {
-            if (_filterCount == this.filterCount) {
+            if (_filterCount === this.filterCount) {
               this.tags = tmpTags.filter((b, i) => {
                 return i < _cpt * STEP;
               });
@@ -140,7 +151,7 @@ export class TagListComponent implements OnInit {
    * @returns {Tag[]} or null is nothing to do
    * @private
    */
-  _filterAndSortTags (): Tag[] {
+  _filterAndSortTags(): Tag[] {
     const filterJson = JSON.stringify(this.filter);
     if ((this.previousFilterJson === filterJson) && (this.tags != null)) {
       return null;
@@ -149,34 +160,34 @@ export class TagListComponent implements OnInit {
 
     // first filter
     const filteredTags = this.fullTags
-                                .filter((t: Tag) => {
+      .filter((t: Tag) => {
 
-                                  const strToSearch = t.tag_name;
+        const strToSearch = t.tag_name;
 
-                                  return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search)));
-                                })
-                                .sort((b1: Tag, b2: Tag) => {
-                                  // console.log(b1);
-                                  // console.log(b2);
+        return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search)));
+      })
+      .sort((b1: Tag, b2: Tag) => {
+        // console.log(b1);
+        // console.log(b2);
 
-                                  let v1: string;
-                                  let v2: string;
-                                  v1 = b1.tag_name;
-                                  v2 = b2.tag_name;
-                                  switch (this.filter.sort) {
-                                    case SortType.Author:
-                                    default:
-                                      break;
-                                  }
+        let v1: string;
+        let v2: string;
+        v1 = b1.tag_name;
+        v2 = b2.tag_name;
+        switch (this.filter.sort) {
+          case SortType.Author:
+          default:
+            break;
+        }
 
-                                  switch (this.filter.sorting_direction) {
-                                    case SortingDirection.Asc:
-                                      return v1.localeCompare(v2);
-                                    case SortingDirection.Desc:
-                                    default:
-                                      return v2.localeCompare(v1);
-                                  }
-                                });
+        switch (this.filter.sorting_direction) {
+          case SortingDirection.Asc:
+            return v1.localeCompare(v2);
+          case SortingDirection.Desc:
+          default:
+            return v2.localeCompare(v1);
+        }
+      });
 
     this.totalTagsCount = filteredTags.length;
 
@@ -187,25 +198,14 @@ export class TagListComponent implements OnInit {
       });
   }
 
-  static _cleanAccent (str: string): string {
-    return str.toLowerCase()
-              .replace(/[àâªáäãåā]/g, "a")
-              .replace(/[èéêëęėē]/g, "e")
-              .replace(/[iïìíįī]/g, "i")
-              .replace(/[ôºöòóõøō]/g, "o")
-              .replace(/[ûùüúū]/g, "u")
-              .replace(/[æ]/g, "ae")
-              .replace(/[œ]/g, "oe");
-  }
-
 
 }
 
 @NgModule({
   imports: [
     CommonModule,
-    MdProgressCircleModule,
-    MdContentModule,
+    MatProgressSpinnerModule,
+    MatContentModule,
     TagCardModule,
   ],
   declarations: [

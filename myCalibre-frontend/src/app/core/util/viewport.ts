@@ -22,14 +22,14 @@ export abstract class ViewportHelper {
   abstract scrollTop(): number;
   abstract getDocumentNativeElement(): any;
 
-  abstract requestFrame(fn: (elapsed?: number)=>any);
+  abstract requestFrame(fn: (elapsed?: number) => any);
 }
 
 export class BrowserViewportHelper extends ViewportHelper {
   getDocumentNativeElement(): any {
     return window.document;
   }
-  requestFrame(fn: (elapsed?: number)=>any) {
+  requestFrame(fn: (elapsed?: number) => any) {
     return window.requestAnimationFrame(fn);
   }
 
@@ -44,7 +44,7 @@ export class BrowserViewportHelper extends ViewportHelper {
 }
 
 export class NodeViewportMediaMatch implements ViewportMediaMatch {
-  constructor(public matches: boolean = false, public media: string = '') {
+  constructor(public matches = false, public media = '') {
 
   }
 
@@ -60,7 +60,7 @@ export class NodeViewportHelper extends ViewportHelper {
   getDocumentNativeElement(): any {
     return {};
   }
-  requestFrame(fn: (elapsed?: number)=>any) {
+  requestFrame(fn: (elapsed?: number) => any) {
     return process.nextTick(fn);
   }
 

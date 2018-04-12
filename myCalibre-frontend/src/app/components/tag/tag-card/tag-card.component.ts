@@ -1,8 +1,8 @@
 import { Component, OnInit, NgModule, Input } from '@angular/core';
-import { CommonModule } from "@angular/common";
-import { MdCardModule, MdIconModule } from "@angular/material";
-import { BookCardModule } from "../../book/book-card/book-card.component";
-import { Tag } from "../tag";
+import { CommonModule } from '@angular/common';
+import { MatCardModule, MatIconModule } from '@angular/material';
+import { BookCardModule } from '../../book/book-card/book-card.component';
+import { Tag } from '../tag';
 
 @Component({
   selector: 'app-tag-card',
@@ -32,8 +32,8 @@ export class TagCardComponent implements OnInit {
 @NgModule({
   imports: [
     CommonModule,
-    MdCardModule,
-    MdIconModule,
+    MatCardModule,
+    MatIconModule,
     BookCardModule
   ],
   declarations: [

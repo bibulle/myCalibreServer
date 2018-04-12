@@ -20,7 +20,7 @@ body {
   padding: 10px;
 }
 
-button.md-no-style {
+button.mat-no-style {
   font-weight: normal;
   background-color: inherit;
   text-align: left;
@@ -67,7 +67,7 @@ input {
   }
 }
 
-.md-visually-hidden {
+.mat-visually-hidden {
   border: 0;
   clip: rect(0 0 0 0);
   height: 1px;
@@ -79,7 +79,7 @@ input {
   width: 1px;
 }
 
-.md-shadow {
+.mat-shadow {
   position: absolute;
   top: 0;
   left: 0;
@@ -89,15 +89,15 @@ input {
   pointer-events: none;
 }
 
-.md-shadow-bottom-z-1 {
+.mat-shadow-bottom-z-1 {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
-.md-shadow-bottom-z-2 {
+.mat-shadow-bottom-z-2 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4);
 }
 
-.md-shadow-animated.md-shadow {
+.mat-shadow-animated.mat-shadow {
   transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -105,7 +105,7 @@ input {
  * A container inside of a rippling element (eg a button),
  * which contains all of the individual ripples
  */
-.md-ripple-container {
+.mat-ripple-container {
   pointer-events: none;
   position: absolute;
   overflow: hidden;
@@ -119,7 +119,7 @@ input {
  * A container inside of a rippling element (eg a button),
  * which contains all of the individual ripples
  */
-.md-ripple-container {
+.mat-ripple-container {
   pointer-events: none;
   position: absolute;
   overflow: hidden;
@@ -130,13 +130,13 @@ input {
   transition: all 0.55s $swift-ease-out-timing-function;
 }
 
-.md-ripple {
+.mat-ripple {
   position: absolute;
   transform: translate(-50%, -50%) scale(0);
   transform-origin: 50% 50%;
   opacity: 0;
   border-radius: 50%;
-  &.md-ripple-placed {
+  &.mat-ripple-placed {
     $sizeDuration: 0.45s * 2;
     transition: margin $sizeDuration $swift-ease-out-timing-function,
     border $sizeDuration $swift-ease-out-timing-function,
@@ -145,30 +145,30 @@ input {
     opacity $sizeDuration $swift-ease-out-timing-function,
     transform $sizeDuration $swift-ease-out-timing-function;
   }
-  &.md-ripple-scaled {
+  &.mat-ripple-scaled {
     transform: translate(-50%, -50%) scale(1);
   }
-  &.md-ripple-active, &.md-ripple-full, &.md-ripple-visible {
+  &.mat-ripple-active, &.mat-ripple-full, &.mat-ripple-visible {
     opacity: 0.20;
   }
 }
 
-.md-padding {
+.mat-padding {
   padding: 8px;
 }
 
-.md-margin {
+.mat-margin {
   margin: 8px;
 }
 
-.md-scroll-mask {
+.mat-scroll-mask {
   position: absolute;
   background-color: transparent;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  > .md-scroll-mask-bar {
+  > .mat-scroll-mask-bar {
     display: block;
     position: absolute;
     background-color: #fafafa;
@@ -180,7 +180,7 @@ input {
   }
 }
 
-.md-no-select {
+.mat-no-select {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -190,7 +190,7 @@ input {
 }
 
 @media (min-width: $layout-breakpoint-sm) {
-  .md-padding {
+  .mat-padding {
     padding: 16px;
   }
 }

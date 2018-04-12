@@ -1,8 +1,8 @@
-import {Component, OnInit} from "@angular/core";
-import {Filter, FilterService} from "../../filter-bar/filter.service";
-import {UserService} from "../user.service";
-import {User} from "../user";
-import {Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {Filter, FilterService} from '../../filter-bar/filter.service';
+import {UserService} from '../user.service';
+import {User} from '../user';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
     // get user change from elsewhere
     this._userService.userObservable().subscribe(
       user => {
-        //console.log(user.local);
+        // console.log(user.local);
         this.user = new User(user);
       });
 

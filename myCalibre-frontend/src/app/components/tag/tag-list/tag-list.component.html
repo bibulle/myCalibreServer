@@ -1,9 +1,11 @@
-<md-content *ngIf="tags">
+<mat-content *ngIf="tags">
   <app-tag-card *ngFor="let tag of tags" [tag]="tag" [booksClosed]="tag.tag_id != selectedId">
   </app-tag-card>
   <div class="max-reached" *ngIf="tags.length == MAX_TAGS">
     <span>Limited to {{MAX_TAGS}}/{{totalTagsCount}}.
       Try to use search...</span>
   </div>
-</md-content>
-<md-spinner *ngIf="!tags"></md-spinner>
+</mat-content>
+<mat-content *ngIf="!tags" class="spinner">
+  <mat-spinner></mat-spinner>
+</mat-content>

@@ -1,20 +1,20 @@
-<div class="md-content" flex="100" layout-align="center center" layout="row">
-  <md-card flex="60">
+<div class="mat-content" flex="100" layout-align="center center" layout="row">
+  <mat-card flex="60">
     <form role="form" (submit)="login($event, username.value, password.value)">
-      <md-card-content>
-        <md-input-container>
-          <input mdInput placeholder="Username" required                 #username autocorrect="off" autocapitalize="off" spellcheck="false">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Password" required type="password" #password>
-        </md-input-container>
-      </md-card-content>
-      <md-card-actions align="end">
-        <a md-raised-button (click)="startLoginGoogle()" class="fa fa-google"> Google</a>
-        <a md-raised-button (click)="startLoginFacebook()" class="fa fa-facebook"> Facebook</a>
-        <a md-raised-button (click)="signup()">Signup</a>
-        <button md-raised-button color="primary" type="submit">LOGIN</button>
-      </md-card-actions>
+      <mat-card-content>
+        <mat-input-container>
+          <input matInput placeholder="Username" required                 #username autocorrect="off" autocapitalize="off" spellcheck="false">
+        </mat-input-container>
+        <mat-input-container>
+          <input matInput placeholder="Password" required type="password" #password>
+        </mat-input-container>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <a mat-raised-button (click)="startLoginGoogle()" class="fa fa-google"> Google</a>
+        <a mat-raised-button (click)="startLoginFacebook()" class="fa fa-facebook"> Facebook</a>
+        <a mat-raised-button (click)="signup()">Signup</a>
+        <button mat-raised-button color="primary" type="submit">LOGIN</button>
+      </mat-card-actions>
     </form>
-  </md-card>
+  </mat-card>
 </div>

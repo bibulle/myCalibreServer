@@ -1,20 +1,20 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes }   from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 
-import { HomeComponent } from "./components/home/home.component";
-import { NotFoundComponent } from "./components/not-found/not-found.component";
-import { BookListComponent } from "./components/book/book-list/book-list.component";
-import { SeriesListComponent } from "./components/series/series-list/series-list.component";
-import { BookPageComponent } from "./components/book/book-page/book-page.component";
-import { AuthorListComponent } from "./components/author/author-list/author-list.component";
-import { TagListComponent } from "./components/tag/tag-list/tag-list.component";
-import { LoginComponent } from "./components/authent/login/login.component";
-import { SignupComponent } from "./components/authent/signup/signup.component";
-import { AuthGuard } from "./components/authent/auth.guard";
-import {ProfileComponent} from "./components/authent/profile/profile.component";
-import {ConnectLocalComponent} from "./components/authent/connect-local/connect-local.component";
-import {UsersListComponent} from "./components/authent/users-list/users-list.component";
-import {AuthGuardAdmin} from "./components/authent/auth.guard.admin";
+import {HomeComponent} from './components/home/home.component';
+import {NotFoundComponent} from './components/not-found/not-found.component';
+import {BookListComponent} from './components/book/book-list/book-list.component';
+import {SeriesListComponent} from './components/series/series-list/series-list.component';
+import {BookPageComponent} from './components/book/book-page/book-page.component';
+import {AuthorListComponent} from './components/author/author-list/author-list.component';
+import {TagListComponent} from './components/tag/tag-list/tag-list.component';
+import {LoginComponent} from './components/authent/login/login.component';
+import {SignupComponent} from './components/authent/signup/signup.component';
+import {AuthGuard} from './components/authent/auth.guard';
+import {ProfileComponent} from './components/authent/profile/profile.component';
+import {ConnectLocalComponent} from './components/authent/connect-local/connect-local.component';
+import {UsersListComponent} from './components/authent/users-list/users-list.component';
+import {AuthGuardAdmin} from './components/authent/auth.guard.admin';
 
 const routes: Routes = [
   { path: '',               redirectTo: '/home', pathMatch: 'full'},

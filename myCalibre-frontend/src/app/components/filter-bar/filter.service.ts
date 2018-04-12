@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable()
 export class FilterService {
@@ -20,7 +20,7 @@ export class FilterService {
   }
 
   updateNotDisplayed (notDisplayed: boolean) {
-    if (this.lastFilter.not_displayed != notDisplayed) {
+    if (this.lastFilter.not_displayed !== notDisplayed) {
       this.lastFilter.not_displayed = notDisplayed;
       this.currentFilterSubject.next(this.lastFilter)
     }
@@ -31,14 +31,14 @@ export class FilterService {
   }
 
   updateSearch (search: string) {
-    if (this.lastFilter.search != search) {
+    if (this.lastFilter.search !== search) {
       this.lastFilter.search = search;
       this.currentFilterSubject.next(this.lastFilter)
     }
   }
 
   updateLimitTo (limit_to: SortType[]) {
-    if (this.lastFilter.limit_to != limit_to) {
+    if (this.lastFilter.limit_to !== limit_to) {
       this.lastFilter.limit_to = limit_to;
       this.currentFilterSubject.next(this.lastFilter)
     }
@@ -58,7 +58,7 @@ export class FilterService {
 export class Filter {
   sort = SortType.Name;
   sorting_direction = SortingDirection.Asc;
-  search = "";
+  search = '';
   not_displayed = false;
   limit_to: SortType[];
 
@@ -72,7 +72,7 @@ export class Filter {
   };
 
   isAvailable (sortType: SortType): boolean {
-    return (this.limit_to == null) || (this.limit_to.some(s => s == sortType));
+    return (this.limit_to == null) || (this.limit_to.some(s => s === sortType));
   }
 
 }

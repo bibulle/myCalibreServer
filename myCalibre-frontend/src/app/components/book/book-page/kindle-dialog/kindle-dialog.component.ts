@@ -1,7 +1,7 @@
 import { Component, OnInit, Optional } from '@angular/core';
-import { MdDialogRef } from "@angular/material";
-import {UserService} from "../../../authent/user.service";
-import {User} from "../../../authent/user";
+import { MatDialogRef } from '@angular/material';
+import {UserService} from '../../../authent/user.service';
+import {User} from '../../../authent/user';
 
 @Component({
   selector: 'app-kindle-dialog',
@@ -14,10 +14,10 @@ export class KindleDialogComponent implements OnInit {
   user: User = new User({});
   filteredMails: String[];
 
-  mail: string = "";
+  mail = '';
 
 
-  constructor(@Optional() public dialogRef: MdDialogRef<KindleDialogComponent>,
+  constructor(@Optional() public dialogRef: MatDialogRef<KindleDialogComponent>,
               private _userService: UserService) { }
 
   ngOnInit() {
@@ -33,7 +33,7 @@ export class KindleDialogComponent implements OnInit {
     const found = this.user.local.amazonEmails.filter(el => {
       return el.trim() === this.mail;
     });
-    if (found.length == 0) {
+    if (found.length === 0) {
       this.user.local.amazonEmails.push(this.mail);
       //noinspection JSIgnoredPromiseFromCall
       this._userService.save(this.user);

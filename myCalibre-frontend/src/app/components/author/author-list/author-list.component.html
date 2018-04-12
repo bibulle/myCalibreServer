@@ -1,9 +1,9 @@
-<md-content *ngIf="authors">
+<mat-content *ngIf="authors">
   <app-author-card *ngFor="let author of authors" [author]="author" [booksClosed]="author.author_id != selectedId">
   </app-author-card>
   <div class="max-reached" *ngIf="authors.length == MAX_AUTHORS">
     <span>Limited to {{MAX_AUTHORS}}/{{totalAuthorsCount}}.
       Try to use search...</span>
   </div>
-</md-content>
-<md-spinner *ngIf="!authors"></md-spinner>
+</mat-content>
+<mat-spinner *ngIf="!authors"></mat-spinner>
