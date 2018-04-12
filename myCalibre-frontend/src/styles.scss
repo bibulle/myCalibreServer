@@ -14,6 +14,7 @@
 @import 'app/components/authent/users-list/users-list.component.theme';
 @import 'app/components/authent/users-list/user-list-item/user-list-item.component.theme';
 @import 'app/components/author/author-list/author-list.component.theme';
+@import 'app/components/book/book-card/book-card.component.theme';
 @import 'app/components/book/book-list/book-list.component.theme';
 @import 'app/components/book/book-page/book-page.component.theme';
 @import 'app/components/not-found/not-found.component.theme';
@@ -23,6 +24,7 @@
 @mixin custom-components-theme($theme) {
   @include app-component-theme($theme);
   @include author-list-component-theme($theme);
+  @include book-card-component-theme($theme);
   @include book-list-component-theme($theme);
   @include book-page-component-theme($theme);
   @include not-found-component-theme($theme);

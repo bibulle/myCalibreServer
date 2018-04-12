@@ -15,7 +15,7 @@
 
   app-root {
     //background-color: mat-color($primary, app-bar);
-    background-color: mat-color($primary, 900);
+    background-color: mat-color($primary, default);
 
 
     .app-menu {
@@ -23,7 +23,7 @@
 
       [mat-list-item] {
         &.active {
-          color: mat-color($primary, 500);
+          color: mat-color($primary, default);
         }
       }
       mat-toolbar {
@@ -45,7 +45,7 @@
     }
     mat-content {
       > h1 {
-        color: mat-color($primary, 900);
+        color: mat-color($primary, default);
       }
       .card-media {
         background-color: mat-color($background, app-bar);
