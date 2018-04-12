@@ -30,6 +30,7 @@ import {NotificationService} from './components/notification/notification.servic
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {WindowService} from './core/util/window.service';
 import {AuthGuardAdmin} from './components/authent/auth.guard.admin';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   return new AuthHttp(new AuthConfig(), http, options);
@@ -46,6 +47,7 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     BrowserModule,
     FormsModule,
     HttpModule,
+    FlexLayoutModule,
 
     MaterialModule,
     BrowserAnimationsModule,

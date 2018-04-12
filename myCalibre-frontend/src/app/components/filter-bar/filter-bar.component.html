@@ -1,8 +1,8 @@
 <div  *ngIf="!filter.not_displayed">
-  <div flex="100" layout="row" layout-align="end center">
+  <div fxFlex="100" fxLayout="row" fxLayoutAlign="end center">
     <mat-icon>search</mat-icon>
     &nbsp;
-    <mat-form-field flex="75">
+    <mat-form-field fxFlex="75">
       <input matInput placeholder="Search" #cataloguesearch [(ngModel)]="filter.search"
                 (ngModelChange)="filterList()">
     </mat-form-field>

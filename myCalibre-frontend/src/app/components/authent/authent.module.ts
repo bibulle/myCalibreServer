@@ -11,6 +11,7 @@ import {FormsModule} from '@angular/forms';
 import {ConnectLocalComponent} from './connect-local/connect-local.component';
 import {UsersListModule} from './users-list/users-list.component';
 import {UserProfileModule} from './profile/user-profile/user-profile.component';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import {UserProfileModule} from './profile/user-profile/user-profile.component';
     MatTooltipModule,
     MatIconModule,
     UsersListModule,
-    UserProfileModule
+    UserProfileModule,
+    FlexLayoutModule
   ],
   declarations: [
     LoginComponent,

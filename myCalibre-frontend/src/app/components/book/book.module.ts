@@ -4,6 +4,7 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {BookPageModule} from './book-page/book-page.component';
 import {MatCardModule, MatIconModule} from '@angular/material';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @NgModule({
   imports: [
@@ -11,7 +12,8 @@ import {MatCardModule, MatIconModule} from '@angular/material';
     BookListModule,
     MatCardModule,
     BookPageModule,
-    MatIconModule
+    MatIconModule,
+    FlexLayoutModule
   ],
   providers: [
     BookService
