@@ -1,13 +1,13 @@
 import {Component, OnInit, NgModule, OnDestroy, AfterViewInit} from '@angular/core';
-import { TagCardModule } from '../tag-card/tag-card.component';
-import { MatContentModule } from '../../content/content.component';
-import { MatProgressSpinnerModule } from '@angular/material';
-import { CommonModule } from '@angular/common';
-import { Tag } from '../tag';
-import { Filter, SortType, FilterService, SortingDirection } from '../../filter-bar/filter.service';
-import { TagService } from '../tag.service';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Subscription } from 'rxjs';
+import {TagCardModule} from '../tag-card/tag-card.component';
+import {MatContentModule} from '../../content/content.component';
+import {MatProgressSpinnerModule} from '@angular/material';
+import {CommonModule} from '@angular/common';
+import {Tag} from '../tag';
+import {Filter, SortType, FilterService, SortingDirection} from '../../filter-bar/filter.service';
+import {TagService} from '../tag.service';
+import {ActivatedRoute, Params} from '@angular/router';
+import {Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-tag-list',
@@ -31,7 +31,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private _currentFilterSubscription: Subscription;
 
-  static _cleanAccent (str: string): string {
+  static _cleanAccent(str: string): string {
     return str.toLowerCase()
       .replace(/[àâªáäãåā]/g, 'a')
       .replace(/[èéêëęėē]/g, 'e')
@@ -42,14 +42,14 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor (private _tagService: TagService,
-               private _filterService: FilterService,
-               private route: ActivatedRoute) {
+  constructor(private _tagService: TagService,
+              private _filterService: FilterService,
+              private route: ActivatedRoute) {
 
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnInit () {
+  ngOnInit() {
 
     // Search for params (search)
     this.route.queryParams.forEach((params: Params) => {
@@ -75,15 +75,15 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this._tagService
-        .getTags()
-        .then(tags => {
-          this.fullTags = tags;
-          this._fillTags();
+      .getTags()
+      .then(tags => {
+        this.fullTags = tags;
+        this._fillTags();
 
-        })
-        .catch(err => {
-          console.log(err);
-        })
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -97,7 +97,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnDestroy () {
+  ngOnDestroy() {
     // console.log("ngOnDestroy");
     if (this._currentFilterSubscription) {
       this._currentFilterSubscription.unsubscribe();
@@ -108,7 +108,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
    * fill the this.tags list (slowly) with the filtered this.fullTags list
    * @private
    */
-  private _fillTags () {
+  private _fillTags() {
     if (!this.fullTags || !this.filter) {
       return;
     }
@@ -124,8 +124,8 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       // if tags list exists already, start from tags length
       if (this.tags) {
         cpt = Math.min(
-            Math.ceil(this.tags.length / STEP),
-            Math.floor(tmpTags.length / STEP)) + 1;
+          Math.ceil(this.tags.length / STEP),
+          Math.floor(tmpTags.length / STEP)) + 1;
       }
       const initCpt = cpt;
 
@@ -151,7 +151,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns {Tag[]} or null is nothing to do
    * @private
    */
-  _filterAndSortTags (): Tag[] {
+  _filterAndSortTags(): Tag[] {
     const filterJson = JSON.stringify(this.filter);
     if ((this.previousFilterJson === filterJson) && (this.tags != null)) {
       return null;
@@ -160,34 +160,34 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // first filter
     const filteredTags = this.fullTags
-                                .filter((t: Tag) => {
+      .filter((t: Tag) => {
 
-                                  const strToSearch = t.tag_name;
+        const strToSearch = t.tag_name;
 
-                                  return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search)));
-                                })
-                                .sort((b1: Tag, b2: Tag) => {
-                                  // console.log(b1);
-                                  // console.log(b2);
+        return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search)));
+      })
+      .sort((b1: Tag, b2: Tag) => {
+        // console.log(b1);
+        // console.log(b2);
 
-                                  let v1: string;
-                                  let v2: string;
-                                  v1 = b1.tag_name;
-                                  v2 = b2.tag_name;
-                                  switch (this.filter.sort) {
-                                    case SortType.Author:
-                                    default:
-                                      break;
-                                  }
+        let v1: string;
+        let v2: string;
+        v1 = b1.tag_name;
+        v2 = b2.tag_name;
+        switch (this.filter.sort) {
+          case SortType.Author:
+          default:
+            break;
+        }
 
-                                  switch (this.filter.sorting_direction) {
-                                    case SortingDirection.Asc:
-                                      return v1.localeCompare(v2);
-                                    case SortingDirection.Desc:
-                                    default:
-                                      return v2.localeCompare(v1);
-                                  }
-                                });
+        switch (this.filter.sorting_direction) {
+          case SortingDirection.Asc:
+            return v1.localeCompare(v2);
+          case SortingDirection.Desc:
+          default:
+            return v2.localeCompare(v1);
+        }
+      });
 
     this.totalTagsCount = filteredTags.length;
 

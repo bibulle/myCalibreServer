@@ -88,6 +88,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
   @Input()
   get scrollWidth (): number {
     if (this._scrollWidth === -1) {
+      console.log(this._scrollWidth);
       const inner = document.createElement('p');
       inner.style.width = '100%';
       inner.style.height = '200px';

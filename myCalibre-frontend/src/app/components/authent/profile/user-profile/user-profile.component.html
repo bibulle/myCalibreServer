@@ -15,11 +15,11 @@
   <mat-input-container class="info">
     <input matInput placeholder="amazon emails" type="email" [(ngModel)]="amazonEmail">
   </mat-input-container>
-  <a class="add_email" md-mini-fab (click)="addEmail()" mdTooltip="Add email to list"><mat-icon>add</mat-icon></a>
+  <a class="add_email" mat-mini-fab (click)="addEmail()" matTooltip="Add email to list"><mat-icon>add</mat-icon></a>
   <div class="info emails">
     <div *ngFor="let amazonEmail of user.local.amazonEmails">
       {{amazonEmail}}
-      <a class="del_email" md-mini-fab (click)="delEmail(amazonEmail)" mdTooltip="Remove email from list"><mat-icon>remove</mat-icon></a>
+      <a class="del_email" mat-mini-fab (click)="delEmail(amazonEmail)" matTooltip="Remove email from list"><mat-icon>remove</mat-icon></a>
     </div>
   </div>
 </mat-card-content>
@@ -28,14 +28,14 @@
   <div class="info name" *ngIf="user?.facebook?.name">{{user?.facebook?.name}}</div>
   <div class="info name" *ngIf="!user?.facebook?.name">none</div>
   <div class="info email" *ngIf="user?.facebook?.name">{{user?.facebook?.email}}</div>
-  <a class="connect fa fa-facebook" md-mini-fab (click)="connectFacebook()" *ngIf="!user?.facebook?.name" mdTooltip="Connect Facebook" mdTooltipPosition="before"></a>
-  <a class="unlink fa fa-facebook" md-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" mdTooltip="Unlink Facebook" mdTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+  <a class="connect fa fa-facebook" mat-mini-fab (click)="connectFacebook()" *ngIf="!user?.facebook?.name" matTooltip="Connect Facebook" matTooltipPosition="before"></a>
+  <a class="unlink fa fa-facebook" mat-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" matTooltip="Unlink Facebook" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
 </mat-card-content>
 <mat-card-content>
   <div class="provider">Google :</div>
   <div class="info name" *ngIf="user?.google?.name">{{user?.google?.name}}</div>
   <div class="info name" *ngIf="!user?.google?.name">none</div>
   <div class="info email" *ngIf="user?.google?.name">{{user?.google?.email}}</div>
-  <a class="connect fa fa-google" md-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" mdTooltip="Connect Google" mdTooltipPosition="before"></a>
-  <a class="unlink fa fa-google" md-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" mdTooltip="Unlink Google" mdTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+  <a class="connect fa fa-google" mat-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" matTooltip="Connect Google" matTooltipPosition="before"></a>
+  <a class="unlink fa fa-google" mat-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" matTooltip="Unlink Google" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
 </mat-card-content>

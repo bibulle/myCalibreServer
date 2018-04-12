@@ -1,4 +1,4 @@
-import {Directive, OnDestroy, Input, ElementRef, NgZone, NgModule} from '@angular/core';
+import {Directive, OnDestroy, Input, ElementRef, NgZone, NgModule, HostBinding} from '@angular/core';
 import {Media, MediaListener} from '../core/util/media';
 import {ViewportHelper} from '../core/util/viewport';
 
@@ -16,11 +16,12 @@ export type BreakAction = 'hide' | 'show';
   selector: '[mat-peekaboo]',
   host: {
     '[class.mat-peekaboo-active]': 'active',
+    '[class.mat-peekaboo-inactive]': '!active',
     '[attr.breakAction]': 'breakAction',
     '(window:scroll)': '_windowScroll($event)'
   }
 })
-export class MdPeekabooDirective implements OnDestroy {
+export class MatPeekabooDirective implements OnDestroy {
 
   static SIZES: string[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 
@@ -33,7 +34,7 @@ export class MdPeekabooDirective implements OnDestroy {
   private _breakpoint: string = null;
   private _scroller: any;
   private _mediaListeners: MediaListener[] = [];
-  private _windowScroll = this.evaluate.bind(this);
+  _windowScroll = this.evaluate.bind(this);
 
 
   @Input()
@@ -51,7 +52,7 @@ export class MdPeekabooDirective implements OnDestroy {
   }
 
   @Input() set breakXs(value: number) {
-    this._breakXs = MdPeekabooDirective.MakeNumber(value);
+    this._breakXs = MatPeekabooDirective.MakeNumber(value);
   }
 
   get breakXs(): number {
@@ -59,7 +60,7 @@ export class MdPeekabooDirective implements OnDestroy {
   }
 
   @Input() set breakSm(value: number) {
-    this._breakSm = MdPeekabooDirective.MakeNumber(value);
+    this._breakSm = MatPeekabooDirective.MakeNumber(value);
   }
 
   get breakSm(): number {
@@ -67,7 +68,7 @@ export class MdPeekabooDirective implements OnDestroy {
   }
 
   @Input() set breakMd(value: number) {
-    this._breakMd = MdPeekabooDirective.MakeNumber(value);
+    this._breakMd = MatPeekabooDirective.MakeNumber(value);
   }
 
   get breakMd(): number {
@@ -75,7 +76,7 @@ export class MdPeekabooDirective implements OnDestroy {
   }
 
   @Input() set breakLg(value: number) {
-    this._breakLg = MdPeekabooDirective.MakeNumber(value);
+    this._breakLg = MatPeekabooDirective.MakeNumber(value);
   }
 
   get breakLg(): number {
@@ -83,7 +84,7 @@ export class MdPeekabooDirective implements OnDestroy {
   }
 
   @Input() set breakXl(value: number) {
-    this._breakXl = MdPeekabooDirective.MakeNumber(value);
+    this._breakXl = MatPeekabooDirective.MakeNumber(value);
   }
 
   get breakXl(): number {
@@ -113,7 +114,6 @@ export class MdPeekabooDirective implements OnDestroy {
   }
 
   get scroller(): any {
-    console.log('A');
     return this._scroller;
   }
 
@@ -123,7 +123,7 @@ export class MdPeekabooDirective implements OnDestroy {
               private element: ElementRef,
               public viewport: ViewportHelper,
               private zone: NgZone) {
-    MdPeekabooDirective.SIZES.forEach((size: string) => {
+    MatPeekabooDirective.SIZES.forEach((size: string) => {
       this._watchMediaQuery(size);
       if (this.media.hasMedia(size)) {
         this._breakpoint = size;
@@ -197,7 +197,7 @@ export class MdPeekabooDirective implements OnDestroy {
 }
 
 @NgModule({
-  declarations: [MdPeekabooDirective],
-  exports: [MdPeekabooDirective]
+  declarations: [MatPeekabooDirective],
+  exports: [MatPeekabooDirective]
 })
 export class MdPeekabooModule {}

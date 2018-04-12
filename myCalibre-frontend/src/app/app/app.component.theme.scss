@@ -14,7 +14,9 @@
   // all of these variables contain many additional variables
 
   app-root {
-    background-color: mat-color($background, app-bar);
+    //background-color: mat-color($primary, app-bar);
+    background-color: mat-color($primary, 900);
+
 
     .app-menu {
       border-right-color: mat-color($foreground, divider);

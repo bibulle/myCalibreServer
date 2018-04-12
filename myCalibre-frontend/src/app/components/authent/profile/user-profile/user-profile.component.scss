@@ -31,6 +31,7 @@
         mat-icon {
           padding-top: 1px;
           font-size: 20px;
+          margin-top: -13px;
         }
       }
     }
@@ -50,6 +51,7 @@
       mat-icon {
         position: absolute;
         left: 2px;
+        top: 2px;
         font-size: 37px;
         color: rgba(20, 20, 20, 0.5);
       }

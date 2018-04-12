@@ -1,12 +1,12 @@
 [mat-peekaboo] {
   &[breakAction=show] {
-    display: none;
-    &.mat-peekaboo-active {
-      display: inherit;
+    //display: inherit;
+    &.mat-peekaboo-inactive {
+      display: none;
     }
   }
   &[breakAction=hide] {
-    display: inherit;
+    //display: inherit;
     &.mat-peekaboo-active {
       display: none;
     }

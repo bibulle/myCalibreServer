@@ -13,11 +13,23 @@
 
   // all of these variables contain many additional variables
 
-  .fa-home[disabled] {
-    background-color: mat-color($primary, 500);
-    color: mat-color($primary, default-contrast);
-  }
+  .user-list-header {
 
+    .fa-home[disabled] {
+      background-color: mat-color($primary, 500);
+      color: mat-color($primary, default-contrast);
+    }
+
+    .fa-facebook[disabled] {
+      background-color: #3b5998;
+      color: white;
+    }
+
+    .fa-google[disabled] {
+      background-color: #3079ed;
+      color: white;
+    }
+  }
 
 
 }

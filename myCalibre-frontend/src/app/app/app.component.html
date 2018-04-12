@@ -3,12 +3,12 @@
             [break]="190"
             breakAction="show"
             [ngClass]="{hide:over}"
-            [style.left]="sidenavWidth + 'px'"
+            [style.left]="(sidenavWidth-1) + 'px'"
             [style.right]="scrollWidth + 'px'">
 </mat-toolbar>
 <mat-toolbar color="primary" class="fixed-toolbar"
             [ngClass]="{hide:over}"
-            [style.left]="sidenavWidth + 'px'"
+            [style.left]="(sidenavWidth-1) + 'px'"
             [style.right]="scrollWidth + 'px'">
   <button mat-button
           class="mat-hamburger mat-icon-button"
@@ -31,14 +31,14 @@
   </span>
   <span flex></span>
   <div flex="50" class="filter" mat-peekaboo [scroller]="content.parentElement"
-       [breakMd]="185"
+       [breakMd]="202"
        [breakXs]="100"
        breakAction="show">
     <filter-bar></filter-bar>
   </div>
 </mat-toolbar>
 
-<mat-sidenav-container layout="row" fullscreen>
+<mat-sidenav-container fullscreen>
   <mat-sidenav #menu class="app-menu" mode="side" >
     <mat-toolbar routerLink="/" [class.beta]="version.isBeta()">
       <div class="beta"      *ngIf="version.isBeta()">beta</div>
@@ -61,7 +61,7 @@
           breakAction="hide">{{getPrimaryLabel()}}</h1>
     </mat-toolbar>
     <mat-toolbar class="filter" mat-peekaboo [scroller]="content.parentElement"
-                [breakMd]="185"
+                [breakMd]="202"
                 [breakXs]="100"
                 breakAction="hide" *ngIf="!filter.not_displayed">
       <span flex></span>

@@ -1,6 +1,11 @@
 //@import "../../../shared/styles";
 //@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
 
+
+.spinner {
+  background-color: lightcyan;
+  height: 100px
+}
 mat-spinner {
   width: 50px;
   margin-left: auto;
