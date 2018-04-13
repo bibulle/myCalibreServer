@@ -1,14 +1,14 @@
 <mat-content *ngIf="users">
-  <div layout="row" class="user-list-header">
-    <div                   flex="5"></div>
-    <div class="username"  flex="15">Username</div>
-    <div class="firstname" flex="20">Firstname</div>
-    <div class="lastname"  flex="20">Lastname</div>
-    <div class="email"     flex="20">Email</div>
-    <div class="admin"     flex="10">Admin ?</div>
-    <div class="local"     flex="5"><button class="fa fa-home" mat-mini-fab disabled></button></div>
-    <div class="facebook"  flex="5"><button class="fa fa-facebook" mat-mini-fab disabled></button></div>
-    <div class="google"    flex="5"><button class="fa fa-google" mat-mini-fab disabled></button></div>
+  <div fxLayout="row" class="user-list-header">
+    <div                   fxFlex="5"></div>
+    <div class="username"  fxFlex="15">Username</div>
+    <div class="firstname" fxFlex="20">Firstname</div>
+    <div class="lastname"  fxFlex="20">Lastname</div>
+    <div class="email"     fxFlex="20">Email</div>
+    <div class="admin"     fxFlex="10">Admin ?</div>
+    <div class="local"     fxFlex="5"><button class="fa fa-home" mat-mini-fab disabled></button></div>
+    <div class="facebook"  fxFlex="5"><button class="fa fa-facebook" mat-mini-fab disabled></button></div>
+    <div class="google"    fxFlex="5"><button class="fa fa-google" mat-mini-fab disabled></button></div>
   </div>
   <app-user-list-item *ngFor="let user of users" [user]="user" (listChanged)="loadUsers()" (mergeUser)="mergeUsers(user)" [selectedMergeUser]="selectedMergeUser"></app-user-list-item>
 </mat-content>

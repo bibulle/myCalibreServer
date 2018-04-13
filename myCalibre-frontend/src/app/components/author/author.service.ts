@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { AuthHttp } from 'angular2-jwt';
-import { Http, Response } from '@angular/http';
 import { Author } from './author';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class AuthorService {
 
   private authorUrl = environment.serverUrl + 'api/author';
 
-  constructor (private authHttp: AuthHttp) { }
+  constructor (private httpClient: HttpClient) { }
 
 
   /**
@@ -18,11 +17,11 @@ export class AuthorService {
   getAuthors (): Promise<Author[]> {
 
     return new Promise<Author[]>((resolve, reject) => {
-      this.authHttp.get(this.authorUrl)
+      this.httpClient.get(this.authorUrl)
           // .map((res: Response) => res.json().data as Author[])
           .subscribe(
-            (res: Response) => {
-              resolve(res.json().data as Author[]);
+            (data: Object) => {
+              resolve(data['data'] as Author[]);
             },
             err => {
               reject(err);

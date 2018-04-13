@@ -1,5 +1,5 @@
 @import "../../shared/styles";
-@import "../../shared/layout";
+//@import "../../shared/layout";
 
 :host {
   display: flex;
@@ -19,6 +19,14 @@
     padding: 8px;
     width: 40px;
     border-radius: 50%;
+  }
+
+  /deep/ label {
+    top: 1.7em;
+  }
+
+  /deep/  .mat-input-element {
+    caret-color: currentColor;
   }
 
 }

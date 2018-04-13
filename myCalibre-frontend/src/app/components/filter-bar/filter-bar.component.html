@@ -1,8 +1,8 @@
 <div  *ngIf="!filter.not_displayed">
-  <div flex="100" layout="row" layout-align="end center">
+  <div fxFlex="100" fxLayout="row" fxLayoutAlign="end center">
     <mat-icon>search</mat-icon>
     &nbsp;
-    <mat-form-field flex="75">
+    <mat-form-field fxFlex="75" color="accent">
       <input matInput placeholder="Search" #cataloguesearch [(ngModel)]="filter.search"
                 (ngModelChange)="filterList()">
     </mat-form-field>
@@ -11,10 +11,10 @@
   <!--<mat-icon mat-icon>favorite</mat-icon>-->
   <!--</button>-->
   <button mat-button class="mat-icon-button" aria-label="Sort" [matMenuTriggerFor]="sortmenu">
-    <mat-icon mat-icon>sort</mat-icon>
+    <mat-icon>sort</mat-icon>
   </button>
 
-  <mat-menu x-position="before" y-position="below" #sortmenu="matMenu" class="sort-menu">
+  <mat-menu xPosition="before" yPosition="below" #sortmenu="matMenu" class="sort-menu">
     <button mat-menu-item (click)="toggleSort(0)" *ngIf="filter.isAvailable(0)">
       <mat-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
       <mat-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>

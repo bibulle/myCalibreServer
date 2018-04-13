@@ -1,7 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {Http, HttpModule, RequestOptions} from '@angular/http';
 import {MaterialModule} from './material.module';
 
 import {AppComponent} from './app/app.component';
@@ -25,15 +24,15 @@ import {HomeModule} from './components/home/home.component';
 import {TagModule} from './components/tag/tag.module';
 import {AuthentModule} from './components/authent/authent.module';
 import {AuthGuard} from './components/authent/auth.guard';
-import {AuthConfig, AuthHttp} from 'angular2-jwt';
 import {NotificationService} from './components/notification/notification.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {WindowService} from './core/util/window.service';
 import {AuthGuardAdmin} from './components/authent/auth.guard.admin';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {HttpClientModule} from '@angular/common/http';
+import {JwtModule} from '@auth0/angular-jwt';
+import {UserService} from './components/authent/user.service';
 
-export function authHttpServiceFactory(http: Http, options: RequestOptions) {
-  return new AuthHttp(new AuthConfig(), http, options);
-}
 
 @NgModule({
   declarations: [
@@ -45,7 +44,14 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: UserService.tokenGetter,
+        whitelistedDomains: ['localhost:4000', 'bibulle.fr']
+      }
+    }),
+    FlexLayoutModule,
 
     MaterialModule,
     BrowserAnimationsModule,
@@ -68,11 +74,6 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions) {
     NotificationService,
     WindowService,
     { provide: ViewportHelper, useClass: BrowserViewportHelper },
-    {
-      provide: AuthHttp,
-      useFactory: authHttpServiceFactory,
-      deps: [Http, RequestOptions]
-    },
     AuthGuard,
     AuthGuardAdmin
   ],

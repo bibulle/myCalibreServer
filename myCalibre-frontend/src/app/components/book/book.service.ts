@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Book } from './book';
-import { Response } from '@angular/http';
-import { AuthHttp } from 'angular2-jwt';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class BookService {
@@ -13,7 +12,7 @@ export class BookService {
   private sendKindleUrl = '/send/kindle';
 
 
-  constructor (private authHttp: AuthHttp) { }
+  constructor (private httpClient: HttpClient) { }
 
   /**
    * get the books list
@@ -21,11 +20,11 @@ export class BookService {
   getBooks (): Promise<Book[]> {
 
     return new Promise<Book[]>((resolve, reject) => {
-      this.authHttp.get(this.booksUrl)
+      this.httpClient.get(this.booksUrl)
           // .map((res: Response) => res.json().data as Book[])
           .subscribe(
-            (res: Response) => {
-              BookService.booksList = res.json().data as Book[];
+            (data: Object) => {
+              BookService.booksList = data['data'] as Book[];
               resolve(BookService.booksList);
             },
             err => {
@@ -41,11 +40,11 @@ export class BookService {
   getNewBooks (): Promise<Book[]> {
 
     return new Promise<Book[]>((resolve, reject) => {
-      this.authHttp.get(this.booksUrl + '/new')
+      this.httpClient.get(this.booksUrl + '/new')
           // .map((res: Response) => res.json().data as Book[])
           .subscribe(
-            (res: Response) => {
-              resolve(res.json().data as Book[]);
+            (data: Object) => {
+              resolve(data['data'] as Book[]);
             },
             err => {
               reject(err);
@@ -90,7 +89,7 @@ export class BookService {
   sendKindle (book_id: number, email: string): Promise<void> {
 
     return new Promise<void>((resolve, reject) => {
-      this.authHttp.get(this.booksUrl + '/' + book_id + this.sendKindleUrl + '?mail=' + email)
+      this.httpClient.get(this.booksUrl + '/' + book_id + this.sendKindleUrl + '?mail=' + email)
           .subscribe(
             () => {
               resolve();

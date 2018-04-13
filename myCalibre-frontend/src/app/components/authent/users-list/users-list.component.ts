@@ -8,6 +8,7 @@ import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatCardModule, MatCommonModule, MatIconModule, MatInputModule, MatToolbarModule} from '@angular/material';
 import {CommonModule} from '@angular/common';
 import {MatContentModule} from '../../content/content.component';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'app-users-list',
@@ -74,7 +75,8 @@ export class UsersListComponent implements OnInit {
     MatInputModule,
     MatContentModule,
     MatToolbarModule,
-    UserListItemModule
+    UserListItemModule,
+    FlexLayoutModule
     // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,
