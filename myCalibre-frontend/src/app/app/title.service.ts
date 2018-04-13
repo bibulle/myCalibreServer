@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import { Response, Http } from '@angular/http';
 import {NavigationCancel, NavigationEnd, Router, RoutesRecognized} from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class TitleService {
@@ -15,7 +15,7 @@ export class TitleService {
 
   private _version: Version;
 
-  constructor (private _http: Http,
+  constructor (private _http: HttpClient,
                private _router: Router,
                private _location: Location) {
 
@@ -96,8 +96,8 @@ export class TitleService {
       } else {
         this._http
             .get('version.json')
-            .subscribe((res: Response) => {
-              const json = res.json();
+            .subscribe((json: Object) => {
+              // const json = res.json();
               this._version = new Version(json);
               resolve(this._version);
             });
