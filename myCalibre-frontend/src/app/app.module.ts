@@ -48,7 +48,7 @@ import {UserService} from './components/authent/user.service';
     JwtModule.forRoot({
       config: {
         tokenGetter: UserService.tokenGetter,
-        whitelistedDomains: ['localhost:4000', 'bib.bibulle.fr', /^null$/ ]
+        whitelistedDomains: ['localhost:4000', 'bib.bibulle.fr', new RegExp('^null$') ]
       }
     }),
     FlexLayoutModule,
