@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Http, Response } from '@angular/http';
 import { Series } from './series';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class SeriesService {
 
   private seriesUrl = environment.serverUrl + 'api/series';
 
-  constructor (private http: Http) { }
+  constructor (private httpClient: HttpClient) { }
 
 
   /**
@@ -17,11 +17,11 @@ export class SeriesService {
   getSeries (): Promise<Series[]> {
 
     return new Promise<Series[]>((resolve, reject) => {
-      this.http.get(this.seriesUrl)
+      this.httpClient.get(this.seriesUrl)
           // .map((res: Response) => res.json().data as Series[])
           .subscribe(
-            (res: Response) => {
-              resolve(res.json().data as Series[]);
+            (data: Object) => {
+              resolve(data['data'] as Series[]);
             },
             err => {
               reject(err);

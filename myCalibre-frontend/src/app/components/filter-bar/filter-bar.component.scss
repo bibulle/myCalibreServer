@@ -21,5 +21,13 @@
     border-radius: 50%;
   }
 
+  /deep/ label {
+    top: 1.7em;
+  }
+
+  /deep/  .mat-input-element {
+    caret-color: currentColor;
+  }
+
 }
 

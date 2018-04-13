@@ -1,14 +1,12 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers} from '@angular/http';
-import {AuthConfigConsts, JwtHelper, tokenNotExpired} from 'angular2-jwt';
-import { Response } from '@angular/http';
-import {AuthHttp} from 'angular2-jwt';
+import {JwtHelperService} from '@auth0/angular-jwt';
 
 
 import {environment} from '../../../environments/environment';
 import {User} from './user';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {WindowService} from '../../core/util/window.service';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 
 enum LoginProvider { FACEBOOK, GOOGLE }
@@ -16,20 +14,45 @@ enum LoginProvider { FACEBOOK, GOOGLE }
 @Injectable()
 export class UserService {
 
-  static keyTokenId = 'id_token';
+  private static KEY_TOKEN_LOCAL_STORAGE = 'id_token';
+  private static KEY_TOKEN_REQUEST = 'id_token';
 
   private loggedIn = false;
 
   private userSubject: BehaviorSubject<User>;
 
   private user = {} as User;
-  private jwtHelper: JwtHelper = new JwtHelper();
+  private jwtHelper: JwtHelperService = new JwtHelperService();
 
   private loopCount = 600;
   private intervalLength = 100;
 
   private windowHandle: any = null;
   private intervalId: any = null;
+
+  /**
+   * Get token from local storage
+   * @returns {string | null}
+   */
+  public static  tokenGetter() {
+    return localStorage.getItem(UserService.KEY_TOKEN_LOCAL_STORAGE);
+  }
+
+  /**
+   * Set token to local storage
+   * @param {string | null} token
+   */
+  public static  tokenSetter(token: (string | null)) {
+    localStorage.setItem(UserService.KEY_TOKEN_LOCAL_STORAGE, token);
+  }
+
+  /**
+   * Remove token from local storage
+   */
+  public static  tokenRemove() {
+    localStorage.removeItem(UserService.KEY_TOKEN_LOCAL_STORAGE);
+  }
+
 
   /**
    * get user message from error
@@ -47,7 +70,7 @@ export class UserService {
         if (data.error instanceof Array) {
           error = data.error[data.error.length - 1];
         } else if (data.message) {
-          error = 'Systeme error : ' + data.message;
+          error = 'System error : ' + data.message;
         } else {
           error = data.error;
         }
@@ -59,10 +82,9 @@ export class UserService {
     return error.statusText || error.message || error || 'Connection error';
   }
 
-  constructor(private _http: Http,
-              private _authHttp: AuthHttp) {
+  constructor(private _http: HttpClient) {
 
-    this.loggedIn = !!localStorage.getItem(AuthConfigConsts.DEFAULT_TOKEN_NAME);
+    this.loggedIn = !!UserService.tokenGetter();
 
     this.userSubject = new BehaviorSubject<User>(this.user);
 
@@ -97,9 +119,9 @@ export class UserService {
     // console.log("checkAuthent");
     let ret = false;
 
-    let jwt = localStorage.getItem(AuthConfigConsts.DEFAULT_TOKEN_NAME);
+    let jwt = UserService.tokenGetter();
 
-    if (!jwt || !tokenNotExpired()) {
+    if (!jwt || this.jwtHelper.isTokenExpired(jwt)) {
       this.user = {} as User;
     } else {
       this.user = this.jwtHelper.decodeToken(jwt) as User;
@@ -127,6 +149,16 @@ export class UserService {
   getUser(): User {
     this.checkAuthent();
     return this.user;
+  }
+
+  /**
+   * Is logged ?
+   */
+  isAuthent(): Boolean {
+    this.checkAuthent();
+
+    return !!(this.user && this.user.id);
+
   }
 
   /**
@@ -217,11 +249,12 @@ export class UserService {
    */
   getAll(): Promise<User[]> {
     return new Promise<User[]>((resolve, reject) => {
-      this._authHttp.get(environment.serverUrl + 'authent/list')
+      this._http
+        .get(environment.serverUrl + 'authent/list')
         // .map((res: Response) => res.json().data as User[])
         .subscribe(
-          (res: Response) => {
-            resolve(res.json().data as User[]);
+          (data: Object) => {
+            resolve(data['data'] as User[]);
           },
           err => {
             reject(err);
@@ -236,11 +269,12 @@ export class UserService {
    */
   merge(user1: User, user2: User): Promise<User[]> {
     return new Promise<User[]>((resolve, reject) => {
-      this._authHttp.get(environment.serverUrl + 'authent/merge?userId1=' + user1.id + '&userId2=' + user2.id)
+      this._http
+        .get(environment.serverUrl + 'authent/merge?userId1=' + user1.id + '&userId2=' + user2.id)
         // .map((res: Response) => res.json().data as User[])
         .subscribe(
-          (res: Response) => {
-            resolve(res.json().data as User[]);
+          (data: Object) => {
+            resolve(data['data'] as User[]);
           },
           err => {
             reject(err);
@@ -253,7 +287,7 @@ export class UserService {
    * Logout (just remove the JWT token)
    */
   logout() {
-    localStorage.removeItem(AuthConfigConsts.DEFAULT_TOKEN_NAME);
+    UserService.tokenRemove();
     this.loggedIn = false;
     this.checkAuthent();
   }
@@ -273,7 +307,7 @@ export class UserService {
    * Start logging process with google
    */
   startLoginGoogle() {
-    console.log('startLoginGoogle');
+    // console.log('startLoginGoogle');
     const oAuthURL = `${environment.serverUrl}authent/google`;
     return this._startLoginOAuth(oAuthURL, LoginProvider.GOOGLE);
 
@@ -329,17 +363,12 @@ export class UserService {
    */
   private _doPost(body: string, url: string) {
     return new Promise<User>((resolve, reject) => {
-      // depending on connected or not... use authHttp or simple http
-      let usedHttp: (Http | AuthHttp) = this._http;
-      if (this.checkAuthent(false)) {
-        usedHttp = this._authHttp;
-      }
-      usedHttp
+      this._http
         .post(
           url,
           body,
           {
-            headers: new Headers({
+            headers: new HttpHeaders({
               'Accept': 'application/json',
               'Content-Type': 'application/json',
             })
@@ -347,11 +376,11 @@ export class UserService {
         )
         // .timeout(10000)
         .toPromise()
-        .then(res => {
-          const data = res.json();
+        .then(data => {
+          // const data = res.json();
           // console.log(res.json());
-          if (data[UserService.keyTokenId]) {
-            localStorage.setItem(AuthConfigConsts.DEFAULT_TOKEN_NAME, data[UserService.keyTokenId]);
+          if (data[UserService.KEY_TOKEN_REQUEST]) {
+            UserService.tokenSetter(data[UserService.KEY_TOKEN_REQUEST]);
             this.loggedIn = true;
             this.checkAuthent();
             resolve();
@@ -378,7 +407,7 @@ export class UserService {
    * @private
    */
   private _startLoginOAuth(oAuthURL: string, loginProvider: LoginProvider) {
-    const oAuthCalbackUrl = '/assets/logged.html';
+    const oAuthCallbackUrl = '/assets/logged.html';
 
 
     return new Promise<void>((resolve, reject) => {
@@ -417,7 +446,7 @@ export class UserService {
               clearInterval(this.intervalId);
               this.windowHandle.close();
 
-              parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ''));
+              parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCallbackUrl}[?]`), ''));
               // console.log(parsed);
 
               if (parsed.code) {
@@ -449,13 +478,13 @@ export class UserService {
 
             } else {
               // http://localhost:3000/auth/callback#error=access_denied
-              if (href.indexOf(oAuthCalbackUrl) > 0) {
+              if (href.indexOf(oAuthCallbackUrl) > 0) {
                 // If error
                 clearInterval(this.intervalId);
                 this.windowHandle.close();
                 this.checkAuthent();
 
-                parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCalbackUrl}[?]`), ''));
+                parsed = this._parseQueryString(href.replace(new RegExp(`^.*${oAuthCallbackUrl}[?]`), ''));
 
                 if (parsed.error_message) {
                   reject(parsed.error_message.replace(/[+]/g, ' '));
@@ -480,27 +509,22 @@ export class UserService {
    */
   private _doGet(authentUrl: string) {
     return new Promise<User|string>((resolve, reject) => {
-      // depending on connected or not... use authHttp or simple http
-      let usedHttp: (Http | AuthHttp) = this._http;
-      if (this.checkAuthent(false)) {
-        usedHttp = this._authHttp;
-      }
-      usedHttp
+      this._http
         .get(
           authentUrl,
           {
-            headers: new Headers({
+            headers: new HttpHeaders({
               'Accept': 'application/json',
             })
           }
         )
-        .timeout(3000)
+        // .timeout(3000)
         .toPromise()
-        .then(res => {
-          const data = res.json();
+        .then(data => {
+          // const data = res.json();
           // console.log(res.json());
-          if (data[UserService.keyTokenId]) {
-            localStorage.setItem(AuthConfigConsts.DEFAULT_TOKEN_NAME, data[UserService.keyTokenId]);
+          if (data[UserService.KEY_TOKEN_REQUEST]) {
+            UserService.tokenSetter(data[UserService.KEY_TOKEN_REQUEST]);
             this.loggedIn = true;
             this.checkAuthent();
             resolve();
