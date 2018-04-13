@@ -33,7 +33,6 @@ import {HttpClientModule} from '@angular/common/http';
 import {JwtModule} from '@auth0/angular-jwt';
 import {UserService} from './components/authent/user.service';
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,7 +47,7 @@ import {UserService} from './components/authent/user.service';
     JwtModule.forRoot({
       config: {
         tokenGetter: UserService.tokenGetter,
-        whitelistedDomains: ['localhost:4000', 'bib.bibulle.fr', new RegExp('^null$') ]
+        whitelistedDomains: new Array('localhost:4000' as (string|RegExp), 'bib.bibulle.fr', new RegExp('^null$'))
       }
     }),
     FlexLayoutModule,
