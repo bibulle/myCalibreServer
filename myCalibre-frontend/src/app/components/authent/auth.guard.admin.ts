@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate } from '@angular/router';
 import { UserService } from './user.service';
-import { tokenNotExpired } from 'angular2-jwt';
 
 @Injectable()
 export class AuthGuardAdmin implements CanActivate {
@@ -11,10 +10,7 @@ export class AuthGuardAdmin implements CanActivate {
 
   canActivate() {
 
-    this._userService.checkAuthent();
-
-
-    if (tokenNotExpired() && this._userService.isUserAdmin() ) {
+    if (this._userService.isUserAdmin() ) {
       // console.log("canActivate true");
       return true;
     }
