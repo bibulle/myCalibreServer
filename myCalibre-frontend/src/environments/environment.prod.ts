@@ -1,5 +1,5 @@
 //noinspection JSUnusedGlobalSymbols
 export const environment = {
   production: true,
-  serverUrl: '/',
+  serverUrl: 'https://bib.bibulle.fr/',
 };
