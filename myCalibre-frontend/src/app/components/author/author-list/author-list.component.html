@@ -2,8 +2,7 @@
   <app-author-card *ngFor="let author of authors" [author]="author" [booksClosed]="author.author_id != selectedId">
   </app-author-card>
   <div class="max-reached" *ngIf="authors.length == MAX_AUTHORS">
-    <span>Limited to {{MAX_AUTHORS}}/{{totalAuthorsCount}}.
-      Try to use search...</span>
+    <span>{{ 'label.limited' | translate:param }}</span>
   </div>
 </mat-content>
 <mat-spinner *ngIf="!authors"></mat-spinner>

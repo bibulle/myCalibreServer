@@ -1,5 +1,5 @@
 <mat-card class="new-book" *ngIf="books">
-  <mat-card-title class="title">Here are the last {{BOOKS_LIMIT}} added books</mat-card-title>
+  <mat-card-title class="title">{{ 'label.news' | translate:param }}</mat-card-title>
   <app-book-card *ngFor="let book of books" [book]="book">
   </app-book-card>
 </mat-card>

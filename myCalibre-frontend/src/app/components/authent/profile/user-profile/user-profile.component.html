@@ -1,41 +1,41 @@
 <mat-card-content>
-  <div class="provider">Account :</div>
+  <div class="provider">{{'label.account' | translate}} :</div>
   <mat-input-container class="info">
-    <input matInput placeholder="Username" required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()">
+    <input matInput placeholder="{{'label.username' | translate}}" required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()">
   </mat-input-container>
   <mat-input-container class="info">
-    <input matInput placeholder="Firstname" [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()">
+    <input matInput placeholder="{{'label.first-name' | translate}}" [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()">
   </mat-input-container>
   <mat-input-container class="info">
-    <input matInput placeholder="Lastname" [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()">
+    <input matInput placeholder="{{'label.last-name' | translate}}" [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()">
   </mat-input-container>
   <mat-input-container class="info">
-    <input matInput placeholder="email" type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()">
+    <input matInput placeholder="{{'label.email' | translate}}" type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()">
   </mat-input-container>
   <mat-input-container class="info">
-    <input matInput placeholder="amazon emails" type="email" [(ngModel)]="amazonEmail">
+    <input matInput placeholder="{{'label.amazon-emails' | translate}}" type="email" [(ngModel)]="amazonEmail">
   </mat-input-container>
-  <a class="add_email" mat-mini-fab (click)="addEmail()" matTooltip="Add email to list"><mat-icon>add</mat-icon></a>
+  <a class="add_email" mat-mini-fab (click)="addEmail()" matTooltip="{{'label.amazon-emails-add' | translate}}"><mat-icon>add</mat-icon></a>
   <div class="info emails">
     <div *ngFor="let amazonEmail of user.local.amazonEmails">
       {{amazonEmail}}
-      <a class="del_email" mat-mini-fab (click)="delEmail(amazonEmail)" matTooltip="Remove email from list"><mat-icon>remove</mat-icon></a>
+      <a class="del_email" mat-mini-fab (click)="delEmail(amazonEmail)" matTooltip="{{'label.amazon-emails-remove' | translate}}"><mat-icon>remove</mat-icon></a>
     </div>
   </div>
 </mat-card-content>
 <mat-card-content>
-  <div class="provider">Facebook :</div>
+  <div class="provider">{{'label.facebook' | translate}} :</div>
   <div class="info name" *ngIf="user?.facebook?.name">{{user?.facebook?.name}}</div>
   <div class="info name" *ngIf="!user?.facebook?.name">none</div>
   <div class="info email" *ngIf="user?.facebook?.name">{{user?.facebook?.email}}</div>
-  <a class="connect fa fa-facebook" mat-mini-fab (click)="connectFacebook()" *ngIf="!user?.facebook?.name" matTooltip="Connect Facebook" matTooltipPosition="before"></a>
-  <a class="unlink fa fa-facebook" mat-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" matTooltip="Unlink Facebook" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+  <a class="connect fa fa-facebook" mat-mini-fab (click)="connectFacebook()" *ngIf="!user?.facebook?.name" matTooltip="{{'label.facebook-connect' | translate}}" matTooltipPosition="before"></a>
+  <a class="unlink fa fa-facebook" mat-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" matTooltip="{{'label.facebook-unlink' | translate}}" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
 </mat-card-content>
 <mat-card-content>
-  <div class="provider">Google :</div>
+  <div class="provider">{{'label.google' | translate}} :</div>
   <div class="info name" *ngIf="user?.google?.name">{{user?.google?.name}}</div>
   <div class="info name" *ngIf="!user?.google?.name">none</div>
   <div class="info email" *ngIf="user?.google?.name">{{user?.google?.email}}</div>
-  <a class="connect fa fa-google" mat-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" matTooltip="Connect Google" matTooltipPosition="before"></a>
-  <a class="unlink fa fa-google" mat-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" matTooltip="Unlink Google" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+  <a class="connect fa fa-google" mat-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" matTooltip="{{'label.google-connect' | translate}}" matTooltipPosition="before"></a>
+  <a class="unlink fa fa-google" mat-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" matTooltip="{{'label.google-unlink' | translate}}" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
 </mat-card-content>

@@ -3,7 +3,7 @@
     <mat-icon>search</mat-icon>
     &nbsp;
     <mat-form-field fxFlex="75" color="accent">
-      <input matInput placeholder="Search" #cataloguesearch [(ngModel)]="filter.search"
+      <input matInput placeholder="{{ 'label.search' | translate }}" #cataloguesearch [(ngModel)]="filter.search"
                 (ngModelChange)="filterList()">
     </mat-form-field>
   </div>
@@ -19,19 +19,19 @@
       <mat-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
       <mat-icon *ngIf="(filter.sort == 0) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
       <mat-icon *ngIf="(filter.sort != 0)"></mat-icon>
-      <span>Name</span>
+      <span>{{ 'label.name' | translate }}</span>
     </button>
     <button mat-menu-item (click)="toggleSort(1)" *ngIf="filter.isAvailable(1)">
       <mat-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
       <mat-icon *ngIf="(filter.sort == 1) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
       <mat-icon *ngIf="(filter.sort != 1)"></mat-icon>
-      <span>Publish date</span>
+      <span>{{ 'label.publish_date' | translate }}</span>
     </button>
     <button mat-menu-item (click)="toggleSort(2)" *ngIf="filter.isAvailable(2)">
       <mat-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
       <mat-icon *ngIf="(filter.sort == 2) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
       <mat-icon *ngIf="(filter.sort != 2)"></mat-icon>
-      <span>Author</span>
+      <span>{{ 'label.author' | translate }}</span>
     </button>
   </mat-menu>
 </div>

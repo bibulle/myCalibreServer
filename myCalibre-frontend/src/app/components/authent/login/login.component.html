@@ -3,17 +3,17 @@
     <form role="form" (submit)="login($event, username.value, password.value)">
       <mat-card-content>
         <mat-input-container>
-          <input matInput placeholder="Username" required                 #username autocorrect="off" autocapitalize="off" spellcheck="false">
+          <input matInput placeholder="{{'label.username' | translate}}" required                 #username autocorrect="off" autocapitalize="off" spellcheck="false">
         </mat-input-container>
         <mat-input-container>
-          <input matInput placeholder="Password" required type="password" #password>
+          <input matInput placeholder="{{'label.password' | translate}}" required type="password" #password>
         </mat-input-container>
       </mat-card-content>
       <mat-card-actions align="end">
-        <a mat-raised-button (click)="startLoginGoogle()" class="fa fa-google"> Google</a>
-        <a mat-raised-button (click)="startLoginFacebook()" class="fa fa-facebook"> Facebook</a>
-        <a mat-raised-button (click)="signup()">Signup</a>
-        <button mat-raised-button color="primary" type="submit">LOGIN</button>
+        <a mat-raised-button (click)="startLoginGoogle()" class="fa fa-google"> {{'label.google' | translate}}</a>
+        <a mat-raised-button (click)="startLoginFacebook()" class="fa fa-facebook"> {{'label.facebook' | translate}}</a>
+        <a mat-raised-button (click)="signup()">{{'label.signup' | translate}}</a>
+        <button mat-raised-button color="primary" type="submit">{{'label.login' | translate | uppercase}}</button>
       </mat-card-actions>
     </form>
   </mat-card>

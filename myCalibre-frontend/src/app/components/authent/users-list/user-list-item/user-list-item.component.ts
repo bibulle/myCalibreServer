@@ -7,6 +7,7 @@ import {UserProfileModule} from '../../profile/user-profile/user-profile.compone
 import {NotificationService} from 'app/components/notification/notification.service';
 import {UserService} from '../../user.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-list-item',
@@ -87,7 +88,8 @@ export class UserListItemComponent implements OnInit {
     FormsModule,
     MatInputModule,
     UserProfileModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    TranslateModule
   ],
   declarations: [
     UserListItemComponent

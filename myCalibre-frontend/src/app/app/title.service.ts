@@ -7,7 +7,7 @@ import {HttpClient} from '@angular/common/http';
 @Injectable()
 export class TitleService {
 
-  public static TITLE = 'Shared library';
+  public static TITLE = 'title';
 
   private currentTitleSubject: BehaviorSubject<Title>;
 
@@ -67,6 +67,7 @@ export class TitleService {
   forceTitle(url: string, book_title: string) {
     if (this.titles[0].url === url) {
       this.titles[0].setTitle(book_title);
+      this.titles[0].book_title = true;
     }
   }
 
@@ -116,12 +117,14 @@ export class Title {
   backUrl: string;
   id: number;
   url: string;
+  book_title: boolean;
 
   constructor (label = 'Home', backUrl: string = null, id: number = null, url: string = null) {
     this.setTitle(label);
     this.backUrl = backUrl;
     this.id = id;
     this.url = url;
+    this.book_title = false;
   }
 
   setTitle(label: string) {

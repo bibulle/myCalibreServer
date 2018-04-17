@@ -29,9 +29,23 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {WindowService} from './core/util/window.service';
 import {AuthGuardAdmin} from './components/authent/auth.guard.admin';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {JwtModule} from '@auth0/angular-jwt';
 import {UserService} from './components/authent/user.service';
+import {MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {registerLocaleData} from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+import localeEn from '@angular/common/locales/en';
+
+export class MyMissingTranslationHandler implements MissingTranslationHandler {
+  handle(params: MissingTranslationHandlerParams) {
+    console.log(params);
+    return '?' + params.key + '?';
+  }
+}
+registerLocaleData(localeFr, 'fr');
+registerLocaleData(localeEn, 'en');
 
 @NgModule({
   declarations: [
@@ -47,11 +61,20 @@ import {UserService} from './components/authent/user.service';
     JwtModule.forRoot({
       config: {
         tokenGetter: UserService.tokenGetter,
-        whitelistedDomains: ['localhost:4000' as (string|RegExp), 'bib.bibulle.fr', new RegExp('^null$')]
+        whitelistedDomains: ['localhost:4000' as (string | RegExp), 'bib.bibulle.fr', new RegExp('^null$')]
 //        whitelistedDomains: new Array(new RegExp('^null$'))
       }
     }),
     FlexLayoutModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      },
+      missingTranslationHandler: {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
+      // useDefaultLang: false
+    }),
 
     MaterialModule,
     BrowserAnimationsModule,
@@ -73,11 +96,15 @@ import {UserService} from './components/authent/user.service';
     TitleService,
     NotificationService,
     WindowService,
-    { provide: ViewportHelper, useClass: BrowserViewportHelper },
+    {provide: ViewportHelper, useClass: BrowserViewportHelper},
     AuthGuard,
     AuthGuardAdmin
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
+}
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
 }

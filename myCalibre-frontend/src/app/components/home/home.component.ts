@@ -7,6 +7,7 @@ import { BookCardModule } from '../book/book-card/book-card.component';
 import { MatContentModule } from '../content/content.component';
 import { MatProgressSpinnerModule, MatCardModule } from '@angular/material';
 import {NotificationService} from '../notification/notification.service';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -18,6 +19,9 @@ export class HomeComponent implements OnInit {
   books: Book[];
 
   BOOKS_LIMIT = 20;
+  param = {
+    BOOKS_LIMIT: this.BOOKS_LIMIT
+  };
 
   constructor(private _bookService: BookService,
               private _notificationService: NotificationService,
@@ -47,6 +51,7 @@ export class HomeComponent implements OnInit {
     MatProgressSpinnerModule,
     MatCardModule,
     BookCardModule,
+    TranslateModule
   ],
   declarations: [HomeComponent],
   exports: [HomeComponent]

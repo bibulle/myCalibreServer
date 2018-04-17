@@ -3,10 +3,10 @@
     <form role="form" (submit)="connect($event, username.value, password.value)">
       <mat-card-content>
         <mat-input-container>
-          <input MatInput placeholder="Username"  required                 #username>
+          <input matInput placeholder="{{'label.username' | translate}}"  required                 #username>
         </mat-input-container>
         <mat-input-container>
-          <input MatInput placeholder="Password"  required type="password" #password>
+          <input matInput placeholder="{{'label.password' | translate}}"  required type="password" #password>
         </mat-input-container>
       </mat-card-content>
       <mat-card-actions align="end">

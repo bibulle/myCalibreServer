@@ -8,6 +8,7 @@ import {Filter, SortType, FilterService, SortingDirection} from '../../filter-ba
 import {TagService} from '../tag.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Subscription} from 'rxjs';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-tag-list',
@@ -17,6 +18,10 @@ import {Subscription} from 'rxjs';
 export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   MAX_TAGS = 100;
+  param = {
+    max: this.MAX_TAGS,
+    totalCount: this.MAX_TAGS
+  };
 
   tags: Tag[];
   fullTags: Tag[];
@@ -190,6 +195,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.totalTagsCount = filteredTags.length;
+    this.param.totalCount = this.totalTagsCount;
 
     // then limit size
     return filteredTags
@@ -207,6 +213,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
     MatProgressSpinnerModule,
     MatContentModule,
     TagCardModule,
+    TranslateModule
   ],
   declarations: [
     TagListComponent,

@@ -1,11 +1,11 @@
 <mat-content *ngIf="users">
   <div fxLayout="row" class="user-list-header">
     <div                   fxFlex="5"></div>
-    <div class="username"  fxFlex="15">Username</div>
-    <div class="firstname" fxFlex="20">Firstname</div>
-    <div class="lastname"  fxFlex="20">Lastname</div>
-    <div class="email"     fxFlex="20">Email</div>
-    <div class="admin"     fxFlex="10">Admin ?</div>
+    <div class="username"  fxFlex="15">{{'label.username' | translate}}</div>
+    <div class="firstname" fxFlex="20">{{'label.first-name' | translate}}</div>
+    <div class="lastname"  fxFlex="20">{{'label.last-name' | translate}}</div>
+    <div class="email"     fxFlex="20">{{'label.email' | translate}}</div>
+    <div class="admin"     fxFlex="10">{{'label.admin' | translate}} ?</div>
     <div class="local"     fxFlex="5"><button class="fa fa-home" mat-mini-fab disabled></button></div>
     <div class="facebook"  fxFlex="5"><button class="fa fa-facebook" mat-mini-fab disabled></button></div>
     <div class="google"    fxFlex="5"><button class="fa fa-google" mat-mini-fab disabled></button></div>
