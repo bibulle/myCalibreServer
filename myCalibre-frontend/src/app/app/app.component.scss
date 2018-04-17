@@ -84,10 +84,10 @@
       opacity: 0;
       pointer-events: none;
     }
-    .verbose-title {
-      @media screen and (max-width: $layout-breakpoint-sm) {
-        display: none;
-      }
+  }
+  .verbose-title.book-title, .verbose-title.app-title {
+    @media screen and (max-width: $layout-breakpoint-sm) {
+      display: none;
     }
   }
 
@@ -98,7 +98,7 @@
     padding: 135px 16px 0;
     h1 {
       font-size: 56px;
-      font-weight: 400;
+      font-weight: 600;
       line-height: 1.5;
       margin: 0 auto;
       overflow: visible;

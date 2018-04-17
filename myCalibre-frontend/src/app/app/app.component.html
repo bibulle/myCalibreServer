@@ -27,8 +27,8 @@
         [breakMd]="72"
         [breakXs]="20"
         breakAction="show">
-    <span class="verbose-title" *ngIf="!pushed">{{getSecondaryLabel() | translate}} - </span>
-    <span class="verbose-title" *ngIf="!title.book_title">{{title.title  | translate}}</span><span class="verbose-title" *ngIf="title.book_title">{{title.title}}</span>
+    <span class="verbose-title app-title" *ngIf="!pushed">{{getSecondaryLabel() | translate}} - </span>
+    <span class="verbose-title" *ngIf="!title.book_title">{{title.title  | translate}}</span><span class="verbose-title book-title" *ngIf="title.book_title">{{title.title}}</span>
   </span>
   <span fxFlex="100"></span>
   <div fxFlex="50" class="filter" mat-peekaboo [scroller]="content.parentElement"
@@ -59,7 +59,7 @@
       <h1 mat-peekaboo [scroller]="content.parentElement"
           [breakMd]="72"
           [breakXs]="20"
-          breakAction="hide"><span *ngIf="!pushed">{{getSecondaryLabel() | translate}} - </span><span *ngIf="!title.book_title">{{title.title  | translate}}</span><span *ngIf="title.book_title">{{title.title}}</span></h1>
+          breakAction="hide"><span class="verbose-title app-title" *ngIf="!pushed">{{getSecondaryLabel() | translate}} - </span><span *ngIf="!title.book_title">{{title.title  | translate}}</span><span *ngIf="title.book_title">{{title.title}}</span></h1>
     </mat-toolbar>
     <mat-toolbar class="filter" mat-peekaboo [scroller]="content.parentElement"
                 [breakMd]="202"

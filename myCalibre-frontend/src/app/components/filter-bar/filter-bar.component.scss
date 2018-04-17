@@ -1,5 +1,5 @@
 @import "../../shared/styles";
-//@import "../../shared/layout";
+@import "../../shared/layout";
 
 :host {
   display: flex;
@@ -27,6 +27,13 @@
 
   /deep/  .mat-input-element {
     caret-color: currentColor;
+  }
+
+  @media screen and (max-width: $layout-breakpoint-md) {
+    .mat-input-container {
+      width: $layout-breakpoint-md/8;
+      font-size: $display-2-font-size-base/4;
+    }
   }
 
 }
