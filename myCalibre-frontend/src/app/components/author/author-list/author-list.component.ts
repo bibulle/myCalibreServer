@@ -8,6 +8,7 @@ import { AuthorService } from '../author.service';
 import { AuthorCardModule } from '../author-card/author-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-author-list',
@@ -17,6 +18,10 @@ import { Subscription } from 'rxjs';
 export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   MAX_AUTHORS = 100;
+  param = {
+    max: this.MAX_AUTHORS,
+    totalCount: this.MAX_AUTHORS
+  };
 
   authors: Author[];
   fullAuthors: Author[];
@@ -201,6 +206,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
                                 });
 
     this.totalAuthorsCount = filteredAuthors.length;
+    this.param.totalCount = this.totalAuthorsCount;
 
     // then limit size
     return filteredAuthors
@@ -219,6 +225,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
     MatProgressSpinnerModule,
     MatContentModule,
     AuthorCardModule,
+    TranslateModule
   ],
   declarations: [
     AuthorListComponent,

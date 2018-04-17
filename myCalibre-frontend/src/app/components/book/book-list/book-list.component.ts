@@ -12,6 +12,7 @@ import { BookCardModule } from '../book-card/book-card.component';
 import { BookService } from '../book.service';
 import { Book } from '../book';
 import { MatCommonModule, MatCardModule, MatButtonModule, MatIconModule, MatInputModule, MatProgressSpinnerModule, MatToolbarModule } from '@angular/material';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-book-list',
@@ -21,6 +22,10 @@ import { MatCommonModule, MatCardModule, MatButtonModule, MatIconModule, MatInpu
 export class BookListComponent implements OnInit, OnDestroy {
 
   MAX_BOOK = 500;
+  param = {
+    max: this.MAX_BOOK,
+    totalCount: this.MAX_BOOK
+  };
 
   books: Book[];
   fullBooks: Book[];
@@ -147,9 +152,7 @@ export class BookListComponent implements OnInit, OnDestroy {
                                                      .concat(b.comment)
                                                      .concat('' + b.author_name);
 
-                                const ret = (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
-
-                                return ret;
+                                return (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
                               })
                               // then sort
                               .sort((b1: Book, b2: Book) => {
@@ -183,6 +186,7 @@ export class BookListComponent implements OnInit, OnDestroy {
 
 
     this.totalBooksCount = filteredBooks.length;
+    this.param.totalCount = this.totalBooksCount;
 
     // then limit size
     return filteredBooks
@@ -206,6 +210,7 @@ export class BookListComponent implements OnInit, OnDestroy {
     MatContentModule,
     MatToolbarModule,
     BookCardModule,
+    TranslateModule,
     // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,

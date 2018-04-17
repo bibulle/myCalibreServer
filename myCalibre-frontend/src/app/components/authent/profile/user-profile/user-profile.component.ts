@@ -5,8 +5,9 @@ import {UserService} from '../../user.service';
 import {NotificationService} from 'app/components/notification/notification.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule} from '@angular/material';
+import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule, MatTooltipModule} from '@angular/material';
 import {FormsModule} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-profile',
@@ -137,9 +138,9 @@ export class UserProfileComponent implements OnInit, OnChanges {
   /**
    * Connect locally (with user/password)
    */
-  connectLocal() {
-    this._router.navigate(['/connect/local']);
-  }
+  // connectLocal() {
+  //   this._router.navigate(['/connect/local']);
+  // }
 
   /**
    * Connect with facebook
@@ -227,7 +228,9 @@ export class UserProfileComponent implements OnInit, OnChanges {
     MatIconModule,
     MatCheckboxModule,
     FormsModule,
-    MatInputModule
+    MatInputModule,
+    MatTooltipModule,
+    TranslateModule
   ],
   declarations: [
     UserProfileComponent

@@ -28,11 +28,11 @@
     <div class="content" fxFlex="100">
       <app-user-profile [user]="user" urlToRedirect="/users"></app-user-profile>
       <mat-card-actions>
-        <a class="delete" mat-raised-button (click)="remove()">Delete</a>
-        <a class="merge-select" mat-raised-button (click)="merge()">Merge select</a>
-        <a class="merge-unselect" mat-raised-button (click)="merge()">Merge unselect</a>
-        <a class="merge-launch" mat-raised-button (click)="merge()">Merge launch</a>
-        <a class="resetPassword" mat-raised-button (click)="resetPassword()">Reset password</a>
+        <a class="delete" mat-raised-button (click)="remove()">{{'label.delete' | translate}}</a>
+        <a class="merge-select" mat-raised-button (click)="merge()">{{'label.merge.select' | translate}}</a>
+        <a class="merge-unselect" mat-raised-button (click)="merge()">{{'label.merge.unselect' | translate}}</a>
+        <a class="merge-launch" mat-raised-button (click)="merge()">{{'label.merge.launch' | translate}}</a>
+        <a class="resetPassword" mat-raised-button (click)="resetPassword()">{{'label.reset-password' | translate}}</a>
       </mat-card-actions>
     </div>
   </div>

@@ -2,8 +2,7 @@
   <app-tag-card *ngFor="let tag of tags" [tag]="tag" [booksClosed]="tag.tag_id != selectedId">
   </app-tag-card>
   <div class="max-reached" *ngIf="tags.length == MAX_TAGS">
-    <span>Limited to {{MAX_TAGS}}/{{totalTagsCount}}.
-      Try to use search...</span>
+    <span>{{ 'label.limited' | translate:param }}</span>
   </div>
 </mat-content>
 <mat-content *ngIf="!tags" class="spinner">

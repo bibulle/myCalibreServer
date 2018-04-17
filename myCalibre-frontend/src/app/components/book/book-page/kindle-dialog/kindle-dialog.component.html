@@ -1,10 +1,10 @@
 <mat-card class="kindle-card">
-  <mat-card-title>Send to Kindle</mat-card-title>
+  <mat-card-title>{{'label.kindle.send-to' | translate}}</mat-card-title>
   <form (ngSubmit)="send()">
     <mat-card-content>
-      <h4>Enter your Kindle e-mail address to sync this book to your device.</h4>
+      <h4>{{'label.kindle.enter-email' | translate}}</h4>
       <mat-input-container>
-        <input matInput placeholder="Mail" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
+        <input matInput placeholder="{{'label.email' | translate}}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
       </mat-input-container>
 
       <mat-autocomplete #auto="matAutocomplete">
@@ -12,14 +12,14 @@
           {{ mail }}
         </mat-option>
       </mat-autocomplete>
-      <div class="message"><em>famille.martin@gmail.com</em> needs to be added as an approved sender to your Amazon account.</div>
+      <div class="message" [innerHTML]="'label.kindle.warning' | translate"></div>
     </mat-card-content>
     <mat-card-actions align="end">
       <button mat-button type="submit">
-        Send now
+        {{'label.send-now' | translate}}
       </button>
       <button mat-button type="button" (click)="cancel()">
-        Cancel
+        {{'label.cancel' | translate}}
       </button>
     </mat-card-actions>
   </form>

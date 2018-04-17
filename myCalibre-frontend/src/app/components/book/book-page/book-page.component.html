@@ -4,20 +4,20 @@
   </div>
   <div class="book" fxFlex fxLayout="column">
     <mat-card class="authors" fxLayout="column" fxFlex="100">
-      <div class="date">{{book.book_date | date: 'MMMM yyyy'}}</div>
-      <mat-card-title>Authors</mat-card-title>
+      <div class="date">{{book.book_date | localizedDate: 'MMMM yyyy'}}</div>
+      <mat-card-title>{{'label.authors' | translate}}</mat-card-title>
       <button mat-button class="author" *ngFor="let name of book.author_name; let i = index"
               (click)="openAuthor(book.author_id[i], name)">
         {{name}}
       </button>
-      <mat-card-title class="series" *ngIf="book.series_id">Series</mat-card-title>
+      <mat-card-title class="series" *ngIf="book.series_id">{{'label.series' | translate}}</mat-card-title>
       <button mat-button class="series" *ngIf="book.series_id" (click)="openSeries(book.series_id, book.series_name)">
         {{book.series_name}}
       </button>
-      <mat-card-title class="description">Description</mat-card-title>
+      <mat-card-title class="description">{{'label.description' | translate}}</mat-card-title>
       <div class="description-content" [innerHTML]="book.comment ? book.comment : 'None'">
       </div>
-      <mat-card-title class="tags">Tags</mat-card-title>
+      <mat-card-title class="tags">{{'label.tags' | translate}}</mat-card-title>
       <div class="tags-content">
         <button mat-button *ngFor="let name of book.tag_name; let i = index" (click)="openTag(book.tag_id[i], name)">
           {{name}}
@@ -25,31 +25,31 @@
       </div>
 
       <button mat-mini-fab aria-label="Sort" [matMenuTriggerFor]="downloadmenu" *ngIf="bookHasMobi || bookHasEpub">
-        <mat-icon mat-icon>file_download</mat-icon>
+        <mat-icon>file_download</mat-icon>
       </button>
-      <mat-menu x-position="before" y-position="below" #downloadmenu="matMenu" class="download-menu">
+      <mat-menu xPosition="before" yPosition="below" #downloadmenu="matMenu" class="download-menu">
         <a href="{{bookUrlBase}}/{{book.book_id}}.epub">
           <button mat-menu-item *ngIf="bookHasEpub">
             <mat-icon>file_download</mat-icon>
-            <span>ePub format</span>
+            <span>{{'label.epub-format' | translate}}</span>
           </button>
         </a>
         <a href="{{bookUrlBase}}/{{book.book_id}}.mobi">
           <button mat-menu-item *ngIf="bookHasMobi">
             <mat-icon>file_download</mat-icon>
-            <span>Mobi format</span>
+            <span>{{'label.mobi-format' | translate}}</span>
           </button>
         </a>
         <button mat-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
           <mat-icon>send</mat-icon>
-          <span>Send to Kindle</span>
+          <span>{{'label.kindle.send-to' | translate}}</span>
         </button>
       </mat-menu>
-      <mat-menu x-position="before" y-position="below" #kindledmenu="matMenu" class="download-menu">
-        <mat-input-container>
-          <input matInput placeholder="Search" fxFlex="75">
-        </mat-input-container>
-      </mat-menu>
+      <!--<mat-menu x-position="before" y-position="below" #kindledmenu="matMenu" class="download-menu">-->
+        <!--<mat-input-container>-->
+          <!--<input matInput placeholder="Search" fxFlex="75">-->
+        <!--</mat-input-container>-->
+      <!--</mat-menu>-->
     </mat-card>
 
   </div>

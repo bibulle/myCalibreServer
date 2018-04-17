@@ -1,12 +1,13 @@
 import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input, AfterViewChecked, ChangeDetectorRef} from '@angular/core';
 import {Router} from '@angular/router';
-import { Media } from '../core/util/media';
-import { FilterService, Filter } from '../components/filter-bar/filter.service';
-import { TitleService, Title, Version } from './title.service';
-import { MatSidenav } from '@angular/material';
-import { Subscription } from 'rxjs';
+import {Media} from '../core/util/media';
+import {FilterService, Filter} from '../components/filter-bar/filter.service';
+import {TitleService, Title, Version} from './title.service';
+import {MatSidenav} from '@angular/material';
+import {Subscription} from 'rxjs';
 import {UserService} from '../components/authent/user.service';
 import {User} from '../components/authent/user';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
   @Input() fullPage: boolean = this.media.hasMedia(AppComponent.SIDE_MENU_BREAKPOINT);
 
   version: Version = new Version({});
-  links: {path: string, label: string}[] = [];
+  links: { path: string, label: string }[] = [];
 
   user: User;
   filter = new Filter();
@@ -36,15 +37,20 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
   private _scrollWidth = -1;
 
   constructor(private media: Media,
-               private _userService: UserService,
-               private _filterService: FilterService,
-               private _titleService: TitleService,
-               private _router: Router,
-               private _cdRef:  ChangeDetectorRef) {
+              private _userService: UserService,
+              private _filterService: FilterService,
+              private _titleService: TitleService,
+              private _router: Router,
+              private _cdRef: ChangeDetectorRef,
+              private _translate: TranslateService) {
+    this._translate.setDefaultLang('en');
+
+    // console.log(this._translate.getBrowserLang());
+    this._translate.use(this._translate.getBrowserLang());
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngAfterViewInit (): any {
+  ngAfterViewInit(): any {
     let query = Media.getQuery(AppComponent.SIDE_MENU_BREAKPOINT);
     this._mediaSubscription = this.media.listen(query).onMatched.subscribe((mql: MediaQueryList) => {
       setTimeout(() => {
@@ -54,7 +60,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
     });
   }
 
-  ngAfterViewChecked () {
+  ngAfterViewChecked() {
     this._cdRef.detectChanges();
   }
 
@@ -62,7 +68,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
    * Is the sidenav menu pushed
    * @returns {MatSidenav|boolean}
    */
-  get pushed (): boolean {
+  get pushed(): boolean {
     return this.menu && this.menu.mode === 'side';
   }
 
@@ -70,7 +76,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
    * Is the sidenav menu opened
    * @returns {MatSidenav|boolean}
    */
-  get over (): boolean {
+  get over(): boolean {
     return this.menu && this.menu.mode === 'over' && this.menu.opened;
   }
 
@@ -80,13 +86,13 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
   // calculate left and right properties for fixed toolbars based on the media query and browser
   // scrollbar width.  :sob: :rage:
   @Input()
-  get sidenavWidth (): number {
+  get sidenavWidth(): number {
     return this.pushed ? 181 : 0;
   }
 
 
   @Input()
-  get scrollWidth (): number {
+  get scrollWidth(): number {
     if (this._scrollWidth === -1) {
       const inner = document.createElement('p');
       inner.style.width = '100%';
@@ -106,7 +112,9 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
       const w1 = inner.offsetWidth;
       outer.style.overflow = 'scroll';
       let w2 = inner.offsetWidth;
-      if (w1 === w2) { w2 = outer.clientWidth; }
+      if (w1 === w2) {
+        w2 = outer.clientWidth;
+      }
 
       document.body.removeChild(outer);
 
@@ -115,11 +123,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
     return this._scrollWidth;
   };
 
-  ngOnInit () {
+  ngOnInit() {
     this._titleService.getVersion()
-        .then(v => {
-          this.version = v;
-        });
+      .then(v => {
+        this.version = v;
+      });
 
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       filter => {
@@ -142,7 +150,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
         this.user = user;
 
         const isAdmin = this._userService.isUserAdmin();
-        const newLinks: {path: string, label: string}[] = [];
+        const newLinks: { path: string, label: string }[] = [];
 
         this._router.config.forEach(obj => {
           if (!obj.redirectTo && obj.data && obj.data['menu']) {
@@ -158,7 +166,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
 
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnDestroy (): any {
+  ngOnDestroy(): any {
     if (this._mediaSubscription) {
       this._mediaSubscription.unsubscribe();
     }
@@ -175,7 +183,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
 
 
   //noinspection JSUnusedGlobalSymbols
-  getPrimaryLabel () {
+  getPrimaryLabel() {
     if (this.pushed) {
       return this.title.title;
     } else {
@@ -184,11 +192,11 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
   }
 
   //noinspection JSUnusedGlobalSymbols
-  getSecondaryLabel () {
+  getSecondaryLabel() {
     return this.title.main_title;
   }
 
-  goBack () {
+  goBack() {
     this._titleService.goBack();
   }
 

@@ -15,6 +15,8 @@ import {
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {TranslateModule} from '@ngx-translate/core';
+import {LocalizedDatePipe} from '../../../directives/localized-date.pipe';
 
 @Component({
   selector: 'app-book-page',
@@ -147,11 +149,13 @@ export class BookPageComponent implements OnInit {
     MatMenuModule,
     MatAutocompleteModule,
     MatDialogModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    TranslateModule
   ],
   declarations: [
     BookPageComponent,
-    KindleDialogComponent
+    KindleDialogComponent,
+    LocalizedDatePipe
   ],
   entryComponents: [
     KindleDialogComponent

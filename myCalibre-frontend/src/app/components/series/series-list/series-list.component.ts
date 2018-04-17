@@ -8,6 +8,7 @@ import { SeriesCardModule } from '../series-card/series-card.component';
 import { MatProgressSpinnerModule } from '@angular/material';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-series-list',
@@ -17,6 +18,10 @@ import { Subscription } from 'rxjs';
 export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   MAX_SERIES = 100;
+  param = {
+    max: this.MAX_SERIES,
+    totalCount: this.MAX_SERIES
+  };
 
   series: Series[];
   fullSeries: Series[];
@@ -169,9 +174,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
                                                         return p + c;
                                                       }, ''));
 
-                                 const ret = (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search)));
-
-                                 return ret;
+                                 return (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search)));
                                })
                                .sort((b1: Series, b2: Series) => {
                                  let v1: string;
@@ -216,6 +219,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
                                });
 
     this.totalSeriesCount = filteredSeries.length;
+    this.param.totalCount = this.totalSeriesCount;
 
     // then limit size
     return filteredSeries
@@ -233,6 +237,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
     MatProgressSpinnerModule,
     MatContentModule,
     SeriesCardModule,
+    TranslateModule
   ],
   declarations: [
     SeriesListComponent,

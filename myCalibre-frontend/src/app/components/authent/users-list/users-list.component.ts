@@ -3,12 +3,13 @@ import {User} from '../user';
 import {UserService} from '../user.service';
 import {NotificationService} from '../../notification/notification.service';
 import {Filter, FilterService} from '../../filter-bar/filter.service';
-import {UserListItemComponent, UserListItemModule} from './user-list-item/user-list-item.component';
+import {UserListItemModule} from './user-list-item/user-list-item.component';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatCardModule, MatCommonModule, MatIconModule, MatInputModule, MatToolbarModule} from '@angular/material';
 import {CommonModule} from '@angular/common';
 import {MatContentModule} from '../../content/content.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-users-list',
@@ -76,7 +77,8 @@ export class UsersListComponent implements OnInit {
     MatContentModule,
     MatToolbarModule,
     UserListItemModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    TranslateModule
     // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,

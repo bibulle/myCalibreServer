@@ -12,6 +12,7 @@ import {ConnectLocalComponent} from './connect-local/connect-local.component';
 import {UsersListModule} from './users-list/users-list.component';
 import {UserProfileModule} from './profile/user-profile/user-profile.component';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {TranslateModule} from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -24,7 +25,8 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     MatIconModule,
     UsersListModule,
     UserProfileModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    TranslateModule
   ],
   declarations: [
     LoginComponent,
