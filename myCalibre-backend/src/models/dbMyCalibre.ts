@@ -1,86 +1,119 @@
 import * as _ from "lodash";
 import {Configuration} from "./configuration";
 import {User} from "./user";
+
 const debug = require('debug')('server:dbMyCalibre');
+
+const MongoClient = require('mongodb').MongoClient;
+//const MongoDb = require('mongodb').Db;
+//const MongoServer = require('mongodb').Server;
+
 
 const fs = require('fs');
 const path = require('path');
 
-const sqlite3 = require("sqlite3").verbose();
-const squel = require("squel");
+//const sqlite3 = require("sqlite3").verbose();
+//const squel = require("squel");
+
+
+// try to migrate from sqlite to mongo
+// create Db
+//    use myCalibreDb
+// create collection
+//    db.createCollection("users")
+// export with intellij (Option JSON-groovy.json)
+// import : mongoimport -v --host localhost:27017 -d myCalibreDb -c users --jsonArray main_user.json
+
 
 class DbMyCalibre {
 
   public static MY_CALIBRE_DIR = path.resolve(`${__dirname}/../../data/my-calibre`);
-  private static DB_FILE = `${DbMyCalibre.MY_CALIBRE_DIR}/my-calibre.db`;
+  private static MONGO_URL = 'mongodb://localhost:27017';
+  private static MONGO_DB_NMAE = 'myCalibreDb';
+
 
   private static _instance: DbMyCalibre = new DbMyCalibre();
 
-  private _db;
+  private _mongoDb;
 
   constructor() {
 
-    debug("Opening '" + DbMyCalibre.DB_FILE + "'");
-
-    try {
-      this._db = new sqlite3.Database(DbMyCalibre.DB_FILE);
-    } catch (error) {
-      throw(error);
-    }
-    if (DbMyCalibre._instance) {
-      throw new Error("Error: Instantiation failed: Use DbMyCalibre.getInstance() instead of new.");
-    }
     DbMyCalibre._instance = this;
 
+    // Connect to MongoDb
+    MongoClient.connect(DbMyCalibre.MONGO_URL, function (err, mongoClient) {
+      // There is no error
+      if (err) {
+        throw(err);
+      }
+      debug("Connected correctly to mongo server");
+
+      DbMyCalibre._instance._mongoDb = mongoClient.db(DbMyCalibre.MONGO_DB_NMAE);
+
+
+    });
   }
 
-  public static getInstance(): DbMyCalibre {
-    return DbMyCalibre._instance;
-  }
+  // private static getInstance(): Promise<DbMyCalibre> {
+  //   return new Promise<DbMyCalibre>((resolve, reject) => {
+  //     if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
+  //       // it's ready, answer
+  //       resolve(DbMyCalibre._instance);
+  //     }
+  //     else {
+  //       setTimeout(() => {
+  //         // wait a second and retry
+  //         DbMyCalibre.getInstance()
+  //           .then(instance => {
+  //             resolve(DbMyCalibre._instance);
+  //           })
+  //           .catch(reason => {
+  //             reject(reason);
+  //           })
+  //
+  //       }, 1000)
+  //     }
+  //   });
+  // }
 
   /**
    * get configuration from Db
    * @returns {Promise<Configuration>}
    */
-  public getConf(): Promise<Configuration> {
+  public static getConf(): Promise<Configuration> {
 
     return new Promise<Configuration>((resolve, reject) => {
 
-      const query = squel
-        .select({separator: "\n"})
-
-        // bookFields
-        .field('config.smtp_user_name', 'smtp_user_name')
-        .field('config.smtp_password', 'smtp_password')
-        .field('config.smtp_server_name', 'smtp_server_name')
-        .field('config.smtp_port', 'smtp_port')
-        .field('config.smtp_encryption', 'smtp_encryption')
-        .field('config.authent_secret', 'authent_secret')
-        .field('config.authent_length', 'authent_length')
-        .field('config.authent_digest', 'authent_digest')
-        .field('config.authent_facebook_clientID', 'authent_facebook_clientID')
-        .field('config.authent_facebook_clientSecret', 'authent_facebook_clientSecret')
-        .field('config.authent_facebook_callbackURL', 'authent_facebook_callbackURL')
-
-        .field('config.authent_twitter_consumerKey', 'authent_twitter_consumerKey')
-        .field('config.authent_twitter_consumerSecret', 'authent_twitter_consumerSecret')
-        .field('config.authent_twitter_callbackURL', 'authent_twitter_callbackURL')
-
-        .field('config.authent_google_clientID', 'authent_google_clientID')
-        .field('config.authent_google_clientSecret', 'authent_google_clientSecret')
-        .field('config.authent_google_callbackURL', 'authent_google_callbackURL')
+      if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
 
 
-        .from('config');
+        DbMyCalibre._instance._mongoDb.collection('config').findOne({}, (err, row) => {
+          if (err) {
+            reject(err);
+          } else {
+            // debug("------");
+            // debug(row);
+            // debug("------");
+            resolve(new Configuration(row));
+          }
+        });
+      } else {
+        setTimeout(() => {
+          // wait a second and retry
+          DbMyCalibre.getConf()
+            .then(config => {
+              resolve(config);
+            })
+            .catch(reason => {
+              reject(reason);
+            })
 
-      this._db.get(query.toString(), (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(new Configuration(row));
-        }
-      })
+        }, 250)
+      }
+
+
     })
+
 
   }
 
@@ -89,8 +122,8 @@ class DbMyCalibre {
    * @param id
    * @returns {Promise<User>}
    */
-  public findUserById(id: string): Promise<User> {
-    return this._findUserBy("id", id);
+  public static findUserById(id: string): Promise<User> {
+    return DbMyCalibre._findUserBy("id", id);
   }
 
   /**
@@ -98,8 +131,8 @@ class DbMyCalibre {
    * @param username
    * @returns {Promise<User>}
    */
-  public findUserByUsername(username: string): Promise<User> {
-    return this._findUserBy("local_username", username);
+  public static findUserByUsername(username: string): Promise<User> {
+    return DbMyCalibre._findUserBy("local.username", username);
   }
 
   /**
@@ -107,8 +140,8 @@ class DbMyCalibre {
    * @param facebookId
    * @returns {Promise<User>}
    */
-  public findByFacebookId(facebookId: string): Promise<User> {
-    return this._findUserBy("facebook_id", facebookId);
+  public static findByFacebookId(facebookId: string): Promise<User> {
+    return DbMyCalibre._findUserBy("facebook.id", facebookId);
   }
 
   /**
@@ -116,8 +149,8 @@ class DbMyCalibre {
    * @param googleId
    * @returns {Promise<User>}
    */
-  public findByGoogleId(googleId: string): Promise<User> {
-    return this._findUserBy("google_id", googleId);
+  public static findByGoogleId(googleId: string): Promise<User> {
+    return DbMyCalibre._findUserBy("google.id", googleId);
   }
 
   /**
@@ -125,52 +158,38 @@ class DbMyCalibre {
    * @returns {Promise<User[]>}
    * @private
    */
-  public getAllUsers(): Promise<User[]> {
+  public static getAllUsers(): Promise<User[]> {
 
     return new Promise<User[]>((resolve, reject) => {
 
-      const query = squel
-        .select({separator: "\n"})
-
-        // bookFields
-        .field('user.id', 'id')
-        .field('user.local_username', 'local.username')
-        .field('user.local_firstname', 'local.firstname')
-        .field('user.local_lastname', 'local.lastname')
-        .field('user.local_email', 'local.email')
-        .field('user.local_isAdmin', 'local.isAdmin')
-        .field('user.local_hashedPassword', 'local.hashedPassword')
-        .field('user.local_salt', 'local.salt')
-        .field('user.local_amazon_emails', 'local.amazonEmails')
-        .field('user.facebook_id', 'facebook.id')
-        .field('user.facebook_token', 'facebook.token')
-        .field('user.facebook_email', 'facebook.email')
-        .field('user.facebook_name', 'facebook.name')
-        .field('user.twitter_id', 'twitter.id')
-        .field('user.twitter_token', 'twitter.token')
-        .field('user.twitter_displayName', 'twitter.displayName')
-        .field('user.twitter_username', 'twitter.username')
-        .field('user.google_id', 'google.id')
-        .field('user.google_token', 'google.token')
-        .field('user.google_email', 'google.email')
-        .field('user.google_name', 'google.name')
-
-        .from('user');
-
-      this._db.all(query.toString(), (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          const users = rows.map(r => {
-            let options = {};
-            _.forEach(r, (value, key) => {
-              _.set(options, key, value);
+      if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
+        DbMyCalibre._instance._mongoDb.collection('users').find({}).toArray((err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            const users = rows.map(r => {
+              let options = {};
+              _.forEach(r, (value, key) => {
+                _.set(options, key, value);
+              });
+              return new User(options)
             });
-            return new User(options)
-          });
-          resolve(users);
-        }
-      })
+            resolve(users);
+          }
+        })
+      } else {
+        setTimeout(() => {
+          // wait a second and retry
+          DbMyCalibre.getAllUsers()
+            .then(users => {
+              resolve(users);
+            })
+            .catch(reason => {
+              reject(reason);
+            })
+
+        }, 250)
+      }
     })
 
   }
@@ -182,57 +201,46 @@ class DbMyCalibre {
    * @returns {Promise<User>}
    * @private
    */
-  private _findUserBy(fieldName: string, value: string): Promise<User> {
+  private static _findUserBy(fieldName: string, value: string): Promise<User> {
 
     return new Promise<User>((resolve, reject) => {
 
-      const query = squel
-        .select({separator: "\n"})
+      let query = {};
+      query[fieldName] = value;
 
-        // bookFields
-        .field('user.id', 'id')
-        .field('user.local_username', 'local.username')
-        .field('user.local_firstname', 'local.firstname')
-        .field('user.local_lastname', 'local.lastname')
-        .field('user.local_email', 'local.email')
-        .field('user.local_isAdmin', 'local.isAdmin')
-        .field('user.local_hashedPassword', 'local.hashedPassword')
-        .field('user.local_salt', 'local.salt')
-        .field('user.local_amazon_emails', 'local.amazonEmails')
-        .field('user.facebook_id', 'facebook.id')
-        .field('user.facebook_token', 'facebook.token')
-        .field('user.facebook_email', 'facebook.email')
-        .field('user.facebook_name', 'facebook.name')
-        .field('user.twitter_id', 'twitter.id')
-        .field('user.twitter_token', 'twitter.token')
-        .field('user.twitter_displayName', 'twitter.displayName')
-        .field('user.twitter_username', 'twitter.username')
-        .field('user.google_id', 'google.id')
-        .field('user.google_token', 'google.token')
-        .field('user.google_email', 'google.email')
-        .field('user.google_name', 'google.name')
-
-        .from('user')
-        .where(fieldName + " = ?", value);
-
-      this._db.get(query.toString(), (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          if (row) {
-
-            let options = {};
-            //console.log(row);
-            _.forEach(row, (value, key) => {
-              _.set(options, key, value);
-            });
-
-            resolve(new User(options));
+      if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
+        DbMyCalibre._instance._mongoDb.collection('users').findOne(query, (err, row) => {
+          if (err) {
+            reject(err);
           } else {
-            resolve(null);
+            if (row) {
+
+              // let options = {};
+              // console.log(row);
+              // _.forEach(row, (value, key) => {
+              //   _.set(options, key, value);
+              // });
+              // console.log(options);
+
+              resolve(new User(row));
+            } else {
+              resolve(null);
+            }
           }
-        }
-      })
+        })
+      } else {
+        setTimeout(() => {
+          // wait a second and retry
+          DbMyCalibre._findUserBy(fieldName, value)
+            .then(user => {
+              resolve(user);
+            })
+            .catch(reason => {
+              reject(reason);
+            })
+
+        }, 250)
+      }
     })
 
   }
@@ -242,124 +250,117 @@ class DbMyCalibre {
    * @param user
    * @returns {Promise<User>}
    */
-  public deleteUser(user: User) {
-    return new Promise<User>((resolve, reject) => {
-      const query = squel
-        .remove({separator: "\n"})
-        .from("user")
-        .where("id = ?", user.id);
+  public static deleteUser(user: User): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
 
-      //debug(query.toString());
-      this._db.run(query.toString(), function (err) {
-        if (err) {
-          console.log(err);
-          reject(err);
-        } else {
-          debug("user deleted " + user.local.username + " (" + this.changes + ")");
-          resolve();
-        }
+      let query = {};
+      query['id'] = user.id;
 
-      })
+      if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
+        DbMyCalibre._instance._mongoDb.collection('users').deleteOne(query, (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            debug("user deleted " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")")
+
+            resolve();
+          }
+        })
+      } else {
+        setTimeout(() => {
+          // wait a second and retry
+          DbMyCalibre.deleteUser(user)
+            .then(() => {
+              resolve();
+            })
+            .catch(reason => {
+              reject(reason);
+            })
+
+        }, 250)
+      }
     })
   }
 
   /**
    * Save a user
    */
-  public saveUser(user: User, tryInsert: boolean): Promise<void> {
+  public static saveUser(user: User, tryInsert: boolean): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this._updateUser(user, resolve, reject, tryInsert);
     })
   }
 
-  private _updateUser(user: User, resolve, reject, tryInsert: boolean) {
-    const query = squel
-      .update({separator: "\n"})
-      .table("user")
-      .set('id', user.id)
-      .set('local_username', user.local.username)
-      .set('local_firstname', user.local.firstname)
-      .set('local_lastname', user.local.lastname)
-      .set('local_email', user.local.email)
-      .set('local_isAdmin', user.local.isAdmin ? 1 : 0)
-      .set("local_hashedPassword", user.local.hashedPassword)
-      .set("local_salt", user.local.salt)
-      .set('local_amazon_emails', user.local.amazonEmails.join('|'))
-      .set('facebook_id', user.facebook.id)
-      .set('facebook_token', user.facebook.token)
-      .set('facebook_email', user.facebook.email)
-      .set('facebook_name', user.facebook.name)
-      .set('twitter_id', user.twitter.id)
-      .set('twitter_token', user.twitter.token)
-      .set('twitter_displayName', user.twitter.displayName)
-      .set('twitter_username', user.twitter.username)
-      .set('google_id', user.google.id)
-      .set('google_token', user.google.token)
-      .set('google_email', user.google.email)
-      .set('google_name', user.google.name)
-      .set("updated", "current_timestamp", {dontQuote: true})
+  private static _updateUser(user: User, resolve, reject, tryInsert: boolean) {
+    let filter = {};
+    filter['id'] = user.id;
 
-      .where("id = ?", user.id);
+    //debug(user);
+    delete user['_id'];
+    //debug(user);
 
-    //debug(query.toString());
-    const that = this;
-    this._db.run(query.toString(), function (err) {
-      if (err) {
-        console.log(err);
-        reject(err);
-      } else {
-        if (tryInsert && (this.changes == 0)) {
-          that._insertUser(user, resolve, reject);
+    if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
+      // DbMyCalibre._instance._mongoDb.collection('users').updateOne(filter, {$set: user}, {upsert: tryInsert}, (err, result) => {
+      DbMyCalibre._instance._mongoDb.collection('users').replaceOne(filter, user, {upsert: tryInsert}, (err, result) => {
+        if (err) {
+          debug(err);
+          reject(err);
         } else {
-          debug("user updated " + user.local.username + " (" + this.changes + ")");
+          debug("user updated " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")")
+
           resolve();
         }
-      }
+      })
+    } else {
+      setTimeout(() => {
+        // wait a second and retry
+        DbMyCalibre._updateUser(user, resolve, reject, tryInsert);
 
-    })
+      }, 250)
+    }
   }
 
-  private _insertUser(user, resolve, reject) {
-    const query = squel
-      .insert({separator: "\n"})
-      .into("user")
-      .set('id', user.id)
-      .set('local_username', user.local.username)
-      .set('local_firstname', user.local.firstname)
-      .set('local_lastname', user.local.lastname)
-      .set('local_email', user.local.email)
-      .set('local_isAdmin', user.local.isAdmin ? 1 : 0)
-      .set("local_hashedPassword", user.local.hashedPassword)
-      .set("local_salt", user.local.salt)
-      .set('local_amazon_emails', user.local.amazonEmails.join('|'))
-      .set('facebook_id', user.facebook.id)
-      .set('facebook_token', user.facebook.token)
-      .set('facebook_email', user.facebook.email)
-      .set('facebook_name', user.facebook.name)
-      .set('twitter_id', user.twitter.id)
-      .set('twitter_token', user.twitter.token)
-      .set('twitter_displayName', user.twitter.displayName)
-      .set('twitter_username', user.twitter.username)
-      .set('google_id', user.google.id)
-      .set('google_token', user.google.token)
-      .set('google_email', user.google.email)
-      .set('google_name', user.google.name)
-    ;
-
-    //debug(query.toString());
-    this._db.run(query.toString(), function (err) {
-      if (err) {
-        console.log(err);
-        reject(err);
-      } else {
-        debug("user created " + user.id + " (" + this.changes + ")");
-        resolve();
-      }
-
-    })
+  private static _insertUser(user, resolve, reject) {
+    // const query = squel
+    //   .insert({separator: "\n"})
+    //   .into("user")
+    //   .set('id', user.id)
+    //   .set('local_username', user.local.username)
+    //   .set('local_firstname', user.local.firstname)
+    //   .set('local_lastname', user.local.lastname)
+    //   .set('local_email', user.local.email)
+    //   .set('local_isAdmin', user.local.isAdmin ? 1 : 0)
+    //   .set("local_hashedPassword", user.local.hashedPassword)
+    //   .set("local_salt", user.local.salt)
+    //   .set('local_amazon_emails', user.local.amazonEmails.join('|'))
+    //   .set('facebook_id', user.facebook.id)
+    //   .set('facebook_token', user.facebook.token)
+    //   .set('facebook_email', user.facebook.email)
+    //   .set('facebook_name', user.facebook.name)
+    //   .set('twitter_id', user.twitter.id)
+    //   .set('twitter_token', user.twitter.token)
+    //   .set('twitter_displayName', user.twitter.displayName)
+    //   .set('twitter_username', user.twitter.username)
+    //   .set('google_id', user.google.id)
+    //   .set('google_token', user.google.token)
+    //   .set('google_email', user.google.email)
+    //   .set('google_name', user.google.name)
+    // ;
+    //
+    // //debug(query.toString());
+    // this._db.run(query.toString(), function (err) {
+    //   if (err) {
+    //     console.log(err);
+    //     reject(err);
+    //   } else {
+    //     debug("user created " + user.id + " (" + this.changes + ")");
+    //     resolve();
+    //   }
+    //
+    // })
   }
 
-  //  /**
+//  /**
 //   * get cache dates from Db
 //   * @returns {Promise<CacheDate[]>}
 //   */

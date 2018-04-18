@@ -274,7 +274,7 @@ function bookRouter (passport): Router {
             return response.status(400).send({ error: 'Bad Request (mail needed)' });
           }
 
-          DbMyCalibre.getInstance()
+          DbMyCalibre
                      .getConf()
                      .then(config => {
 

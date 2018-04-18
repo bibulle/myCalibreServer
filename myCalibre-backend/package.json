@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./src/bin/www",
     "devel": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" \"VIPS_WARNING=0 DEBUG=server:* nodemon --ignore ./data/ ./src/bin/prepareCache.js\" ",
+    "devel-www": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" ",
     "tsc": "tsc"
   },
   "private": true,
@@ -25,6 +26,7 @@
     "left-pad": "^1.1.3",
     "lodash": "^4.17.2",
     "method-override": "^2.3.7",
+    "mongodb": "^3.0.7",
     "nodemailer": "^2.6.4",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",

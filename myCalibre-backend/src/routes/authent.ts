@@ -180,7 +180,7 @@ function authentRouter(passport): Router {
           if (err) {
             return next(err);
           }
-          DbMyCalibre.getInstance()
+          DbMyCalibre
             .deleteUser(deletedUser)
             .then(() => {
               response.status(200).send({
@@ -233,7 +233,7 @@ function authentRouter(passport): Router {
           modifiedUser.local['password'] = newPassword;
           const newUser = new User(modifiedUser);
 
-          DbMyCalibre.getInstance()
+          DbMyCalibre
             .saveUser(newUser, false)
             .then(() => {
               response.status(200).send(JSON.stringify({newPassword: newPassword}));
@@ -265,13 +265,14 @@ function authentRouter(passport): Router {
         }
 
         // Get the list
-        DbMyCalibre.getInstance()
+        DbMyCalibre
           .getAllUsers()
           .then((users) => {
             users = users.map(u => _.omit(u, ['local.salt', 'local.password', 'local.hashedPassword']) as User);
             response.status(200).send(JSON.stringify({data: users}));
           })
           .catch(err => {
+            debug(err);
             return next(err);
           });
 
@@ -306,7 +307,7 @@ function authentRouter(passport): Router {
         modifiedUserId2 = modifiedUserId2.replace(/ /g, "+");
 
         // Get the Users
-        DbMyCalibre.getInstance()
+        DbMyCalibre
           .findUserById(modifiedUserId1)
           .then((user1) => {
 
@@ -314,7 +315,7 @@ function authentRouter(passport): Router {
               return response.status(400).send({error: "Bad request"});
             }
 
-            DbMyCalibre.getInstance()
+            DbMyCalibre
               .findUserById(modifiedUserId2)
               .then((user2) => {
 
@@ -328,7 +329,7 @@ function authentRouter(passport): Router {
                   }
 
                   // return the users list
-                  DbMyCalibre.getInstance()
+                  DbMyCalibre
                     .getAllUsers()
                     .then((users) => {
                       users = users.map(u => _.omit(u, ['local.salt', 'local.password', 'local.hashedPassword']) as User);
@@ -613,8 +614,12 @@ function isLoggedIn(request, response, next) {
 function _getBearerUser(request: Request, callback: (err, user: User) => (any)): User {
   let token: string;
   if (request.headers && request.headers.authorization) {
-    console.log(request.headers.authorization)
-    const parts = request.headers.authorization[0].split(' ');
+    var authorization:string = request.headers.authorization[0];
+    if (typeof request.headers.authorization === "string") {
+      authorization = request.headers.authorization;
+    }
+    console.log(authorization)
+    const parts = authorization.split(' ');
     console.log(parts)
     if (parts.length == 2) {
       const scheme = parts[0]
@@ -643,7 +648,7 @@ function _getBearerUser(request: Request, callback: (err, user: User) => (any)):
  * @private
  */
 function _saveAndSendBack(user, autoUpdate: boolean, response: Response, next: NextFunction) {
-  DbMyCalibre.getInstance()
+  DbMyCalibre
     .saveUser(user, false)
     .then(() => {
 
@@ -685,7 +690,7 @@ function _saveAUser(user, request: Request, response: Response, next: NextFuncti
   // debug(options['local']);
 
   // Check if username already exist
-  DbMyCalibre.getInstance()
+  DbMyCalibre
     .findUserByUsername(user.local.username)
     .then((userDb) => {
       if (userDb && (userDb.id !== user.id)) {

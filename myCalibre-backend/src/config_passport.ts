@@ -15,8 +15,7 @@ import {User} from "./models/user";
 
 module.exports = function (passport) {
 
-  DbMyCalibre.getInstance()
-    .getConf()
+  DbMyCalibre.getConf()
     .then(config => {
       // =========================================================================
       // passport session setup ==================================================
@@ -345,7 +344,8 @@ module.exports = function (passport) {
     })
     .catch(err => {
       debug(err);
-    });
+    })
+  ;
 
 
 };

@@ -72,15 +72,89 @@ export class User {
 
   constructor(options: {}) {
 
+    // debug(options);
+    // TODO : Remove this part when data will be migrated
+    var oldFormat = false;
+    if (!options['local']) {
+      oldFormat = true;
+      options['local'] = {
+        username: options['local_username'],
+        firstname: options['local_firstname'],
+        lastname: options['local_lastname'],
+        email: options['local_email'],
+        isAdmin: options['local_isAdmin'],
+        hashedPassword: options['local_hashedPassword'],
+        salt: options['local_salt'],
+        amazonEmails: options['local_amazon_emails']
+      }
+    }
+    if (!options['facebook']) {
+      options['facebook'] = {
+        id: options['facebook_id'],
+        token: options['facebook_token'],
+        email: options['facebook_email'],
+        name: options['facebook_name']
+      }
+    }
+    if (!options['twitter']) {
+      options['twitter'] = {
+        id: options['twitter_id'],
+        token: options['twitter_token'],
+        displayName: options['twitter_displayName'],
+        username: options['twitter_username']
+      }
+    }
+    if (!options['google']) {
+      options['google'] = {
+        id: options['google_id'],
+        token: options['google_token'],
+        email: options['google_email'],
+        name: options['google_name']
+      }
+    }
+    delete options['local_username'];
+    delete options['local_firstname'];
+    delete options['local_lastname'];
+    delete options['local_email'];
+    delete options['local_isAdmin'];
+    delete options['local_hashedPassword'];
+    delete options['local_salt'];
+    delete options['local_amazon_emails'];
+    delete options['facebook_id'];
+    delete options['facebook_token'];
+    delete options['facebook_email'];
+    delete options['facebook_name'];
+    delete options['twitter_id'];
+    delete options['twitter_token'];
+    delete options['twitter_displayName'];
+    delete options['twitter_username'];
+    delete options['google_id'];
+    delete options['google_token'];
+    delete options['google_email'];
+    delete options['google_name'];
+    // TODO END : Remove this part when data will be migrated
+
     // Manage special types (string array, boolean, ...
-    if (typeof options['local']['amazonEmails'] === "string" ) {
+    if (typeof options['local']['amazonEmails'] === "string") {
       options['local']['amazonEmails'] = options['local']['amazonEmails'].split("|").filter(s => s.trim() != "");
     }
-    options['local']['isAdmin'] = (options['local']['isAdmin'] === 1);
+    if (typeof options['local']['isAdmin'] !== 'boolean') {
+      options['local']['isAdmin'] = (options['local']['isAdmin'] === 1);
+    }
+    delete options['_id'];
+
 
     _.merge(this, options);
 
-    //debug(options);
+    // TODO : Remove this part when data will be migrated
+    if (oldFormat) {
+      DbMyCalibre.saveUser(this, false)
+        .catch(err => {
+          debug(err)
+        });
+    }
+    // TODO END : Remove this part when data will be migrated
+    // debug(options);
     if (!this.local.salt) {
       this.local.salt = User.generateSalt();
     }
@@ -98,7 +172,7 @@ export class User {
 
 
   static findById(id: string, callback: (err: Error, user: User) => any) {
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .findUserById(id)
       .then(user => {
         callback(null, user);
@@ -110,7 +184,7 @@ export class User {
   }
 
   static findByUsername(username: string, callback: (err: Error, user: User) => any) {
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .findUserByUsername(username)
       .then(user => {
         callback(null, user);
@@ -122,7 +196,7 @@ export class User {
   }
 
   static findByFacebookId(facebookId: string, callback: (err: Error, user: User) => any) {
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .findByFacebookId(facebookId)
       .then(user => {
         callback(null, user);
@@ -134,7 +208,7 @@ export class User {
   }
 
   static findByGoogleId(googleId: string, callback: (err: Error, user: User) => any) {
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .findByGoogleId(googleId)
       .then(user => {
         callback(null, user);
@@ -146,7 +220,7 @@ export class User {
   }
 
   save(callback: (err: Error) => any) {
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .saveUser(this, true)
       .then(() => {
         callback(null);
@@ -159,7 +233,7 @@ export class User {
   }
 
   remove(callback: (err: Error) => any) {
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .deleteUser(this)
       .then(() => {
         callback(null);
@@ -220,8 +294,6 @@ export class User {
   }
 
 
-
-
   validPassword(password: string): boolean {
     const hash = this.generateHash(password);
 
@@ -271,7 +343,7 @@ export class User {
 
   static init() {
     debug("init...");
-    DbMyCalibre.getInstance()
+    DbMyCalibre
       .getConf()
       .then(conf => {
         User.conf = conf;
