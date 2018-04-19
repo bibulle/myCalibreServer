@@ -4,6 +4,7 @@ import {sign, verify} from "jsonwebtoken";
 
 import DbMyCalibre from "./dbMyCalibre";
 import {Configuration} from "./configuration";
+import {BookData} from "./book";
 
 const debug = require('debug')('server:model:user');
 
@@ -70,75 +71,26 @@ export class User {
     name: null
   };
 
+  history: {
+    lastConnection: Date,
+    downloadedBooks: Object[]
+  } = {
+    lastConnection: null,
+    downloadedBooks: []
+  };
+
   static conf: Configuration;
 
   constructor(options: {}) {
 
     // debug(options);
     // TODO : Remove this part when data will be migrated
-    var oldFormat = false;
-    if (!options['local']) {
-      oldFormat = true;
-      options['local'] = {
-        username: options['local_username'],
-        firstname: options['local_firstname'],
-        lastname: options['local_lastname'],
-        email: options['local_email'],
-        isAdmin: options['local_isAdmin'],
-        hashedPassword: options['local_hashedPassword'],
-        salt: options['local_salt'],
-        amazonEmails: options['local_amazon_emails']
-      }
-    }
-    if (!options['facebook']) {
-      options['facebook'] = {
-        id: options['facebook_id'],
-        token: options['facebook_token'],
-        email: options['facebook_email'],
-        name: options['facebook_name']
-      }
-    }
-    if (!options['twitter']) {
-      options['twitter'] = {
-        id: options['twitter_id'],
-        token: options['twitter_token'],
-        displayName: options['twitter_displayName'],
-        username: options['twitter_username']
-      }
-    }
-    if (!options['google']) {
-      options['google'] = {
-        id: options['google_id'],
-        token: options['google_token'],
-        email: options['google_email'],
-        name: options['google_name']
-      }
-    }
-    delete options['local_username'];
-    delete options['local_firstname'];
-    delete options['local_lastname'];
-    delete options['local_email'];
-    delete options['local_isAdmin'];
-    delete options['local_hashedPassword'];
-    delete options['local_salt'];
-    delete options['local_amazon_emails'];
-    delete options['facebook_id'];
-    delete options['facebook_token'];
-    delete options['facebook_email'];
-    delete options['facebook_name'];
-    delete options['twitter_id'];
-    delete options['twitter_token'];
-    delete options['twitter_displayName'];
-    delete options['twitter_username'];
-    delete options['google_id'];
-    delete options['google_token'];
-    delete options['google_email'];
-    delete options['google_name'];
-    if (typeof options['created'] === "string") {
-      options['created'] = new Date(options['created']);
-    }
-    if (typeof options['updated'] === "string") {
-      options['updated'] = new Date(options['updated']);
+    if (options['history'] && options['history']['bookDownloaded']) {
+      delete options['history']['bookDownloaded'];
+      DbMyCalibre.saveUser(this, false)
+        .catch(err => {
+          debug(err)
+        });
     }
     // TODO END : Remove this part when data will be migrated
 
@@ -154,14 +106,6 @@ export class User {
 
     _.merge(this, options);
 
-    // TODO : Remove this part when data will be migrated
-    if (oldFormat) {
-      DbMyCalibre.saveUser(this, false)
-        .catch(err => {
-          debug(err)
-        });
-    }
-    // TODO END : Remove this part when data will be migrated
     // debug(options);
     if (!this.local.salt) {
       this.local.salt = User.generateSalt();
@@ -227,9 +171,9 @@ export class User {
       })
   }
 
-  save(callback: (err: Error) => any) {
+  save(callback: (err: Error) => any, changeUpdateDate = true) {
     DbMyCalibre
-      .saveUser(this, true)
+      .saveUser(this, true, changeUpdateDate)
       .then(() => {
         callback(null);
       })
@@ -308,6 +252,43 @@ export class User {
     return (this.local.hashedPassword === hash);
   }
 
+  updateLastConnection() {
+    this.history.lastConnection = new Date();
+    this.save(err => {
+      if (err) {
+        debug(err);
+      }
+    }, false)
+  }
+
+  addDownloadedBook(book_id: number, bookDatum: BookData) {
+
+    let found = false;
+    for (let i = 0; i < this.history.downloadedBooks.length; i++) {
+      let book = this.history.downloadedBooks[i];
+      if (book['id'] === book_id) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      this.history.downloadedBooks.push({
+        id: book_id,
+        data: bookDatum,
+        date: new Date()
+      });
+      this.save(err => {
+        if (err) {
+          debug(err);
+        }
+      }, false)
+    }
+
+
+  }
+
+
 
   /**
    * Create e JWT token
@@ -316,6 +297,15 @@ export class User {
    */
   static createToken(user): string {
     return sign(_.pick(user, ['id', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
+  }
+
+  /**
+   * Create e JWT token (temporary one)
+   * @param user
+   * @returns {string|void}
+   */
+  static createTemporaryToken(user): string {
+    return sign(_.pick(user, ['id']), User.conf.authent_secret, {expiresIn: "5s"});
   }
 
   /**

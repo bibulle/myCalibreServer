@@ -48,6 +48,7 @@ module.exports = function (passport) {
         },
         (request, payload, done) => {
           debug("jwt-check ");
+
           User.checkToken(payload, function (err, decoded) {
             if (err) {
               //debug(err);
@@ -81,6 +82,7 @@ module.exports = function (passport) {
                         if (err) {
                           return done(err);
                         }
+                        request.user.updateLastConnection();
                         return done(null, request.user);
                       });
                   } else {
@@ -97,6 +99,7 @@ module.exports = function (passport) {
                         if (err) {
                           return done(err);
                         }
+                        request.user.updateLastConnection();
                         return done(null, request.user);
                       });
                   }
@@ -109,6 +112,7 @@ module.exports = function (passport) {
               // debug(request.user.local);
 
               // Just logging... we are done
+              request.user.updateLastConnection();
               return done(null, request.user);
             }
           })

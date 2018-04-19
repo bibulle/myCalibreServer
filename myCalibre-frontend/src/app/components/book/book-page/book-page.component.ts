@@ -34,7 +34,6 @@ export class BookPageComponent implements OnInit {
   bookHasMobi = false;
 
   coverUrlBase = `${environment.serverUrl}api/book/cover`;
-  bookUrlBase = `${environment.serverUrl}api/book/`;
 
   constructor(private _filterService: FilterService,
               private _titleService: TitleService,
@@ -131,6 +130,49 @@ export class BookPageComponent implements OnInit {
           });
       }
     });
+  }
+
+  /**
+   * Methode to download an epub
+   */
+  downloadEpub() {
+    this._bookService
+      .getEpubUrl(this.book.book_id)
+      .then((url) => {
+        let link = document.createElement('a');
+
+        link.setAttribute('href', url);
+        // link.setAttribute('download', this.book.book_id+'.epub');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);      })
+      .catch(err => {
+        console.log(err);
+        this._notificationService.error(err.statusText);
+      });
+
+  }
+  /**
+   * Methode to download an epub
+   */
+  downloadMobi() {
+    this._bookService
+      .getMobiUrl(this.book.book_id)
+      .then((url) => {
+        let link = document.createElement('a');
+
+        link.setAttribute('href', url);
+        // link.setAttribute('download', this.book.book_id+'.mobi');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);      })
+      .catch(err => {
+        console.log(err);
+        this._notificationService.error(err.statusText);
+      });
+
   }
 
 

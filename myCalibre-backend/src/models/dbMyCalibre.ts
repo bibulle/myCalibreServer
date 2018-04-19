@@ -169,8 +169,7 @@ class DbMyCalibre {
 
   /**
    * get a user from Db
-   * @param fieldName
-   * @param value
+   * @param {Object} query
    * @returns {Promise<User>}
    * @private
    */
@@ -224,7 +223,7 @@ class DbMyCalibre {
           if (err) {
             reject(err);
           } else {
-            debug("user deleted " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")")
+            debug("user deleted " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")");
 
             resolve();
           }
@@ -248,20 +247,22 @@ class DbMyCalibre {
   /**
    * Save a user
    */
-  public static saveUser(user: User, tryInsert: boolean): Promise<void> {
+  public static saveUser(user: User, tryInsert: boolean, changeUpdateDate = true): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this._updateUser(user, resolve, reject, tryInsert);
+      this._updateUser(user, resolve, reject, tryInsert, changeUpdateDate);
     })
   }
 
-  private static _updateUser(user: User, resolve, reject, tryInsert: boolean) {
+  private static _updateUser(user: User, resolve, reject, tryInsert: boolean, changeUpdateDate = true) {
     let filter = {};
     filter['id'] = user.id;
 
     if (!user.created) {
       user.created = new Date();
     }
-    user.updated = new Date();
+    if (changeUpdateDate) {
+      user.updated = new Date();
+    }
 
     //debug(user);
     delete user['_id'];
@@ -274,7 +275,7 @@ class DbMyCalibre {
           debug(err);
           reject(err);
         } else {
-          debug("user updated " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")")
+          debug("user updated " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")");
 
           resolve();
         }
