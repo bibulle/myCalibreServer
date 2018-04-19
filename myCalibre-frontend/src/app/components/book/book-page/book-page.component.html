@@ -28,18 +28,14 @@
         <mat-icon>file_download</mat-icon>
       </button>
       <mat-menu xPosition="before" yPosition="below" #downloadmenu="matMenu" class="download-menu">
-        <a href="{{bookUrlBase}}/{{book.book_id}}.epub">
-          <button mat-menu-item *ngIf="bookHasEpub">
-            <mat-icon>file_download</mat-icon>
-            <span>{{'label.epub-format' | translate}}</span>
-          </button>
-        </a>
-        <a href="{{bookUrlBase}}/{{book.book_id}}.mobi">
-          <button mat-menu-item *ngIf="bookHasMobi">
-            <mat-icon>file_download</mat-icon>
-            <span>{{'label.mobi-format' | translate}}</span>
-          </button>
-        </a>
+        <button mat-menu-item *ngIf="bookHasEpub" (click)="downloadEpub()" >
+          <mat-icon>file_download</mat-icon>
+          <span>{{'label.epub-format' | translate}}</span>
+        </button>
+        <button mat-menu-item *ngIf="bookHasMobi" (click)="downloadMobi()" >
+          <mat-icon>file_download</mat-icon>
+          <span>{{'label.mobi-format' | translate}}</span>
+        </button>
         <button mat-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
           <mat-icon>send</mat-icon>
           <span>{{'label.kindle.send-to' | translate}}</span>

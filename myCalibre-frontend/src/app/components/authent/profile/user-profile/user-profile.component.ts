@@ -8,6 +8,8 @@ import {CommonModule} from '@angular/common';
 import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule, MatTooltipModule} from '@angular/material';
 import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
+import {LocalizedDateModule} from '../../../../directives/localized-date.pipe';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'app-user-profile',
@@ -230,7 +232,9 @@ export class UserProfileComponent implements OnInit, OnChanges {
     FormsModule,
     MatInputModule,
     MatTooltipModule,
-    TranslateModule
+    TranslateModule,
+    LocalizedDateModule,
+    FlexLayoutModule
   ],
   declarations: [
     UserProfileComponent

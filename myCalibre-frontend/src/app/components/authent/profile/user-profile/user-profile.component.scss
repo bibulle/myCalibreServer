@@ -69,5 +69,27 @@
       background-color: #3079ed;
       color: white;
     }
+    .dates {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      font-size: 0.8em;
+      text-align: right;
+      line-height: 1em;
+      margin-top: 10px;
+      padding-left: 10em;
+    }
+    .dates .date {
+      width: 11em;
+    }
+
+    .book {
+      font-size: 0.9em;
+    }
+    .book div {
+      border-bottom-width: 1px;
+      border-bottom-style: solid;
+    }
   }
 }
