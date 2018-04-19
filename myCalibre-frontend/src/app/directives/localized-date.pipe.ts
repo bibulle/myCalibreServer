@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { TranslateService } from '@ngx-translate/core';
+import {NgModule, Pipe, PipeTransform} from '@angular/core';
+import {DatePipe} from '@angular/common';
+import {TranslateService} from '@ngx-translate/core';
 
 @Pipe({
   name: 'localizedDate',
@@ -28,3 +28,9 @@ export class LocalizedDatePipe implements PipeTransform {
     return this.value;
   }
 }
+
+@NgModule({
+  declarations: [LocalizedDatePipe],
+  exports: [LocalizedDatePipe]
+})
+export class LocalizedDateModule {}

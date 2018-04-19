@@ -9,14 +9,21 @@ import {CommonModule} from '@angular/common';
 import {TitleService} from '../../../app/title.service';
 import {FormsModule} from '@angular/forms';
 import {
-  MatAutocompleteModule, MatButtonModule, MatCardModule, MatDialog, MatDialogModule, MatIconModule, MatInputModule, MatMenuModule,
+  MatAutocompleteModule,
+  MatButtonModule,
+  MatCardModule,
+  MatDialog,
+  MatDialogModule,
+  MatIconModule,
+  MatInputModule,
+  MatMenuModule,
   MatProgressSpinnerModule
 } from '@angular/material';
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
-import {LocalizedDatePipe} from '../../../directives/localized-date.pipe';
+import {LocalizedDateModule} from '../../../directives/localized-date.pipe';
 
 @Component({
   selector: 'app-book-page',
@@ -192,12 +199,12 @@ export class BookPageComponent implements OnInit {
     MatAutocompleteModule,
     MatDialogModule,
     FlexLayoutModule,
-    TranslateModule
+    TranslateModule,
+    LocalizedDateModule
   ],
   declarations: [
     BookPageComponent,
-    KindleDialogComponent,
-    LocalizedDatePipe
+    KindleDialogComponent
   ],
   entryComponents: [
     KindleDialogComponent

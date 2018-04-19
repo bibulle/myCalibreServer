@@ -296,7 +296,7 @@ export class User {
    * @returns {string|void}
    */
   static createToken(user): string {
-    return sign(_.pick(user, ['id', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google']), User.conf.authent_secret, {expiresIn: "7d"});
+    return sign(_.pick(user, ['id', 'created', 'updated', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google', 'history']), User.conf.authent_secret, {expiresIn: "7d"});
   }
 
   /**

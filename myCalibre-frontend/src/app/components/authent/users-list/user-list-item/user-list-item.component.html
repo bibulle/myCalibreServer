@@ -9,9 +9,10 @@
       </div>
 
       <div class="username" fxFlex="15">{{user.local.username}}</div>
-      <div class="firstname" fxFlex="20">{{user.local.firstname}}</div>
-      <div class="lastname" fxFlex="20">{{user.local.lastname}}</div>
+      <div class="firstname" fxFlex="15">{{user.local.firstname}}</div>
+      <div class="lastname" fxFlex="15">{{user.local.lastname}}</div>
       <div class="email" fxFlex="20">{{user.local.email}}</div>
+      <div class="last-connection" fxFlex="10">{{user.history.lastConnection | localizedDate}} {{user.history.lastConnection | localizedDate: 'shortTime'}}</div>
       <div class="admin" fxFlex="10">
         <mat-slide-toggle [checked]="user.local.isAdmin" color="primary"></mat-slide-toggle>
       </div>

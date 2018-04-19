@@ -1,6 +1,8 @@
 export class User {
 
   id: string;
+  created: Date;
+  updated: Date;
 
   local: {
     username: string;
@@ -26,10 +28,18 @@ export class User {
     name: string,
   };
 
+  history: {
+    lastConnection: Date,
+    downloadedBooks: Object[]
+  };
+
+
   constructor(options) {
 
     if (options) {
       this.id = options.id;
+      this.created = new Date(options.created);
+      this.updated = new Date(options.updated);
     }
     if (options && options.local) {
       this.local = {
@@ -66,6 +76,12 @@ export class User {
       this.google = {
         email: options.google.email,
         name: options.google.name
+      }
+    }
+    if (options && options.history) {
+      this.history = {
+        lastConnection: options.history.lastConnection,
+        downloadedBooks: options.history.downloadedBooks
       }
     }
 

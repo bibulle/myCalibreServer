@@ -22,6 +22,14 @@
       <a class="del_email" mat-mini-fab (click)="delEmail(amazonEmail)" matTooltip="{{'label.amazon-emails-remove' | translate}}"><mat-icon>remove</mat-icon></a>
     </div>
   </div>
+  <div class="dates" fxLayout="column" fxLayoutAlign="stretch stretch" >
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end start">
+      <div class="label">{{'label.created' | translate}} : </div><div class="date">{{user.created | localizedDate: 'medium'}}</div>
+    </div>
+    <div fxLayout="row" fxFlex="100" fxLayoutAlign="end start">
+      <div class="last-connection">{{'label.last-connection' | translate}} :  </div><div class="date">{{user.history.lastConnection | localizedDate: 'medium'}}</div>
+    </div>
+  </div>
 </mat-card-content>
 <mat-card-content>
   <div class="provider">{{'label.facebook' | translate}} :</div>
@@ -38,4 +46,10 @@
   <div class="info email" *ngIf="user?.google?.name">{{user?.google?.email}}</div>
   <a class="connect fa fa-google" mat-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" matTooltip="{{'label.google-connect' | translate}}" matTooltipPosition="before"></a>
   <a class="unlink fa fa-google" mat-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" matTooltip="{{'label.google-unlink' | translate}}" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
+</mat-card-content>
+<mat-card-content>
+  <div class="provider">{{'label.downloaded-books' | translate}} :</div>
+  <div class="info book" *ngFor="let book of user.history.downloadedBooks" fxLayout="row" fxLayoutAlign="start stretch" >
+    <div class="date" fxFlex="30">{{book.date | localizedDate: 'medium'}}</div><div class="title" title="Id: {{book.id}}">{{book.data.data_name}}</div>
+  </div>
 </mat-card-content>

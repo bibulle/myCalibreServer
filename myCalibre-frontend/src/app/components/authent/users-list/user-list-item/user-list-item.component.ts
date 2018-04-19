@@ -8,6 +8,7 @@ import {NotificationService} from 'app/components/notification/notification.serv
 import {UserService} from '../../user.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
+import {LocalizedDateModule} from '../../../../directives/localized-date.pipe';
 
 @Component({
   selector: 'app-user-list-item',
@@ -89,7 +90,8 @@ export class UserListItemComponent implements OnInit {
     MatInputModule,
     UserProfileModule,
     FlexLayoutModule,
-    TranslateModule
+    TranslateModule,
+    LocalizedDateModule
   ],
   declarations: [
     UserListItemComponent

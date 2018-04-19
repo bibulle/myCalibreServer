@@ -28,7 +28,7 @@ export class ProfileComponent implements OnInit {
     // get user change from elsewhere
     this._userService.userObservable().subscribe(
       user => {
-        // console.log(user.local);
+        // console.log(user);
         this.user = new User(user);
       });
 

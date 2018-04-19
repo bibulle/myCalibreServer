@@ -37,7 +37,7 @@ const routes: Routes = [
   // { path: 'class/:id',    component: CoursePageComponent,   canActivate: [AuthGuard] },
   // { path: 'progress',     component: ProgressionComponent,  canActivate: [AuthGuard] },
   // // Show the 404 page for any routes that don't exist.
-  { path: '**',           component: NotFoundComponent, data: {label: 'Not found', menu: false} }
+  { path: '**',           component: NotFoundComponent, data: {label: 'route.not-found', menu: false} }
 ];
 
 

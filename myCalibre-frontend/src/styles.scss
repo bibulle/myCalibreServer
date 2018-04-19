@@ -13,6 +13,7 @@
 @import 'app/app/app.component.theme.scss';
 @import 'app/components/authent/users-list/users-list.component.theme';
 @import 'app/components/authent/users-list/user-list-item/user-list-item.component.theme';
+@import 'app/components/authent/profile/user-profile/user-profile.component.theme';
 @import 'app/components/author/author-list/author-list.component.theme';
 @import 'app/components/book/book-card/book-card.component.theme';
 @import 'app/components/book/book-list/book-list.component.theme';
@@ -28,6 +29,7 @@
   @include book-list-component-theme($theme);
   @include book-page-component-theme($theme);
   @include not-found-component-theme($theme);
+  @include user-profile-component-theme($theme);
   @include series-list-component-theme($theme);
   @include subheader-component-theme($theme);
   @include users-list-component-theme($theme);
