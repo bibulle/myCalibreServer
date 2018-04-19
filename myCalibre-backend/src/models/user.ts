@@ -11,6 +11,8 @@ const debug = require('debug')('server:model:user');
 export class User {
 
   id: string;
+  created: Date;
+  updated: Date;
 
   local: {
     username: string;
@@ -132,6 +134,12 @@ export class User {
     delete options['google_token'];
     delete options['google_email'];
     delete options['google_name'];
+    if (typeof options['created'] === "string") {
+      options['created'] = new Date(options['created']);
+    }
+    if (typeof options['updated'] === "string") {
+      options['updated'] = new Date(options['updated']);
+    }
     // TODO END : Remove this part when data will be migrated
 
     // Manage special types (string array, boolean, ...

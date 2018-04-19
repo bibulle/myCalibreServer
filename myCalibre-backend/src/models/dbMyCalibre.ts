@@ -5,15 +5,10 @@ import {User} from "./user";
 const debug = require('debug')('server:dbMyCalibre');
 
 const MongoClient = require('mongodb').MongoClient;
-//const MongoDb = require('mongodb').Db;
-//const MongoServer = require('mongodb').Server;
 
 
-const fs = require('fs');
 const path = require('path');
 
-//const sqlite3 = require("sqlite3").verbose();
-//const squel = require("squel");
 
 
 // try to migrate from sqlite to mongo
@@ -53,28 +48,6 @@ class DbMyCalibre {
 
     });
   }
-
-  // private static getInstance(): Promise<DbMyCalibre> {
-  //   return new Promise<DbMyCalibre>((resolve, reject) => {
-  //     if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
-  //       // it's ready, answer
-  //       resolve(DbMyCalibre._instance);
-  //     }
-  //     else {
-  //       setTimeout(() => {
-  //         // wait a second and retry
-  //         DbMyCalibre.getInstance()
-  //           .then(instance => {
-  //             resolve(DbMyCalibre._instance);
-  //           })
-  //           .catch(reason => {
-  //             reject(reason);
-  //           })
-  //
-  //       }, 1000)
-  //     }
-  //   });
-  // }
 
   /**
    * get configuration from Db
@@ -123,7 +96,7 @@ class DbMyCalibre {
    * @returns {Promise<User>}
    */
   public static findUserById(id: string): Promise<User> {
-    return DbMyCalibre._findUserBy("id", id);
+    return DbMyCalibre._findUserBy({id: id});
   }
 
   /**
@@ -132,7 +105,7 @@ class DbMyCalibre {
    * @returns {Promise<User>}
    */
   public static findUserByUsername(username: string): Promise<User> {
-    return DbMyCalibre._findUserBy("local.username", username);
+    return DbMyCalibre._findUserBy({ $or: [ { "local.username": username }, { local_username: username } ] });
   }
 
   /**
@@ -141,7 +114,7 @@ class DbMyCalibre {
    * @returns {Promise<User>}
    */
   public static findByFacebookId(facebookId: string): Promise<User> {
-    return DbMyCalibre._findUserBy("facebook.id", facebookId);
+    return DbMyCalibre._findUserBy({ $or: [ { "facebook.id": facebookId }, { facebook_id: facebookId } ] });
   }
 
   /**
@@ -150,7 +123,7 @@ class DbMyCalibre {
    * @returns {Promise<User>}
    */
   public static findByGoogleId(googleId: string): Promise<User> {
-    return DbMyCalibre._findUserBy("google.id", googleId);
+    return DbMyCalibre._findUserBy({ $or: [ { "google.id": googleId }, { google_id: googleId } ] });
   }
 
   /**
@@ -201,12 +174,9 @@ class DbMyCalibre {
    * @returns {Promise<User>}
    * @private
    */
-  private static _findUserBy(fieldName: string, value: string): Promise<User> {
+  private static _findUserBy(query: Object): Promise<User> {
 
     return new Promise<User>((resolve, reject) => {
-
-      let query = {};
-      query[fieldName] = value;
 
       if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
         DbMyCalibre._instance._mongoDb.collection('users').findOne(query, (err, row) => {
@@ -214,13 +184,6 @@ class DbMyCalibre {
             reject(err);
           } else {
             if (row) {
-
-              // let options = {};
-              // console.log(row);
-              // _.forEach(row, (value, key) => {
-              //   _.set(options, key, value);
-              // });
-              // console.log(options);
 
               resolve(new User(row));
             } else {
@@ -231,7 +194,7 @@ class DbMyCalibre {
       } else {
         setTimeout(() => {
           // wait a second and retry
-          DbMyCalibre._findUserBy(fieldName, value)
+          DbMyCalibre._findUserBy(query)
             .then(user => {
               resolve(user);
             })
@@ -295,6 +258,11 @@ class DbMyCalibre {
     let filter = {};
     filter['id'] = user.id;
 
+    if (!user.created) {
+      user.created = new Date();
+    }
+    user.updated = new Date();
+
     //debug(user);
     delete user['_id'];
     //debug(user);
@@ -320,98 +288,6 @@ class DbMyCalibre {
     }
   }
 
-  private static _insertUser(user, resolve, reject) {
-    // const query = squel
-    //   .insert({separator: "\n"})
-    //   .into("user")
-    //   .set('id', user.id)
-    //   .set('local_username', user.local.username)
-    //   .set('local_firstname', user.local.firstname)
-    //   .set('local_lastname', user.local.lastname)
-    //   .set('local_email', user.local.email)
-    //   .set('local_isAdmin', user.local.isAdmin ? 1 : 0)
-    //   .set("local_hashedPassword", user.local.hashedPassword)
-    //   .set("local_salt", user.local.salt)
-    //   .set('local_amazon_emails', user.local.amazonEmails.join('|'))
-    //   .set('facebook_id', user.facebook.id)
-    //   .set('facebook_token', user.facebook.token)
-    //   .set('facebook_email', user.facebook.email)
-    //   .set('facebook_name', user.facebook.name)
-    //   .set('twitter_id', user.twitter.id)
-    //   .set('twitter_token', user.twitter.token)
-    //   .set('twitter_displayName', user.twitter.displayName)
-    //   .set('twitter_username', user.twitter.username)
-    //   .set('google_id', user.google.id)
-    //   .set('google_token', user.google.token)
-    //   .set('google_email', user.google.email)
-    //   .set('google_name', user.google.name)
-    // ;
-    //
-    // //debug(query.toString());
-    // this._db.run(query.toString(), function (err) {
-    //   if (err) {
-    //     console.log(err);
-    //     reject(err);
-    //   } else {
-    //     debug("user created " + user.id + " (" + this.changes + ")");
-    //     resolve();
-    //   }
-    //
-    // })
-  }
-
-//  /**
-//   * get cache dates from Db
-//   * @returns {Promise<CacheDate[]>}
-//   */
-//  public getCaches(): Promise<CacheDate[]> {
-//
-//    return new Promise<CacheDate[]>((resolve, reject) => {
-//
-//      const query = squel
-//        .select({separator: "\n"})
-//
-//        // Fields
-//        .field('cache_date.key', 'key')
-//        .field('cache_date.date', 'date')
-//
-//        .from('cache_date');
-//
-//      this._db.all(query.toString(), (err, row) => {
-//        if (err) {
-//          console.log(err);
-//          reject(err);
-//        } else {
-//          const cacheDates = row.map(b => {
-//            return new CacheDate(b)
-//          });
-//          resolve(cacheDates);
-//        }
-//      })
-//    })
-//
-//  }
-//
-//  public setCache(cacheDate: CacheDate): Promise<void> {
-//    return new Promise<void>((resolve, reject) => {
-//      const query = squel
-//        .update({separator: "\n"})
-//        .table("cache-date")
-//        .set("cache-date.key", cacheDate.key)
-//        .set("cache-date.date", cacheDate.date);
-//
-//      this._db.run(query.toString(), function(err) {
-//        if (err) {
-//          console.log(err);
-//          reject(err);
-//        } else {
-//          console.log(this.changes);
-//          resolve();
-//        }
-//      })
-//    });
-//
-//}
 
 }
 
