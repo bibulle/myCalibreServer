@@ -39,10 +39,15 @@ mat-spinner {
   font-size: 1.5em;
 }
 
-.book .date {
+.book .top {
   font-size: 1.5em;
   text-align: right;
   margin-top: -10px;
+  mat-rating {
+    margin-top: -3px;
+    padding-right: 2em;
+  }
+
 }
 
 .book mat-card-title.series {

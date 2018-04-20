@@ -35,6 +35,7 @@
 	"label.name": "Nom",
 	"label.news": "Voici les {{BOOKS_LIMIT}} derniers livres ajoutés",
 	"label.password": "Mot de passe",
+  "label.public-rating": "Note publique",
 	"label.publish_date": "Date de publication",
 	"label.amazon-emails-remove": "Supprime l'email de la liste",
 	"label.reset-password": "Réinitialiser le mot de passe",

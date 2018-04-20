@@ -1,10 +1,13 @@
-<mat-content *ngIf="book"  fxFlex="100">
+<mat-content *ngIf="book" fxFlex="100">
   <div class="cover" fxFlex>
     <img src="{{coverUrlBase}}/{{book.book_id}}.jpg">
   </div>
   <div class="book" fxFlex fxLayout="column">
     <mat-card class="authors" fxLayout="column" fxFlex="100">
-      <div class="date">{{book.book_date | localizedDate: 'MMMM yyyy'}}</div>
+      <div class="top" fxLayout="row" fxLayoutAlign="end start">
+        <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.public-rating' | translate}}"></mat-rating>
+        <div class="date">{{book.book_date | localizedDate: 'MMMM yyyy'}}</div>
+      </div>
       <mat-card-title>{{'label.authors' | translate}}</mat-card-title>
       <button mat-button class="author" *ngFor="let name of book.author_name; let i = index"
               (click)="openAuthor(book.author_id[i], name)">
@@ -28,11 +31,11 @@
         <mat-icon>file_download</mat-icon>
       </button>
       <mat-menu xPosition="before" yPosition="below" #downloadmenu="matMenu" class="download-menu">
-        <button mat-menu-item *ngIf="bookHasEpub" (click)="downloadEpub()" >
+        <button mat-menu-item *ngIf="bookHasEpub" (click)="downloadEpub()">
           <mat-icon>file_download</mat-icon>
           <span>{{'label.epub-format' | translate}}</span>
         </button>
-        <button mat-menu-item *ngIf="bookHasMobi" (click)="downloadMobi()" >
+        <button mat-menu-item *ngIf="bookHasMobi" (click)="downloadMobi()">
           <mat-icon>file_download</mat-icon>
           <span>{{'label.mobi-format' | translate}}</span>
         </button>
@@ -42,9 +45,9 @@
         </button>
       </mat-menu>
       <!--<mat-menu x-position="before" y-position="below" #kindledmenu="matMenu" class="download-menu">-->
-        <!--<mat-input-container>-->
-          <!--<input matInput placeholder="Search" fxFlex="75">-->
-        <!--</mat-input-container>-->
+      <!--<mat-input-container>-->
+      <!--<input matInput placeholder="Search" fxFlex="75">-->
+      <!--</mat-input-container>-->
       <!--</mat-menu>-->
     </mat-card>
 

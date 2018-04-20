@@ -78,7 +78,7 @@ export class Filter {
 }
 
 export enum SortType {
-  Name, PublishDate, Author
+  Name, PublishDate, Author, PublicRating
 }
 export enum SortingDirection {
   Asc, Desc

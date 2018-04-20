@@ -13,6 +13,7 @@ export class Book {
   tag_id: number[];
   tag_name: string[];
   series_id: string;
+  rating: string;
   series_name: string;
   series_sort: string;
   comment: string;
