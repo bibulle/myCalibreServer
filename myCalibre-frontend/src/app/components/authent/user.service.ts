@@ -65,7 +65,8 @@ export class UserService {
     console.error(error);
     // Try to get the content
     try {
-      const data = error.json();
+      // const data = error.json();
+      const data = error;
       if (data && data.error) {
         if (data.error instanceof Array) {
           error = data.error[data.error.length - 1];
@@ -182,6 +183,14 @@ export class UserService {
     let url = environment.serverUrl + 'authent/login';
 
     return this._doPost(body, url);
+  }
+
+  /**
+   * Refresh the JWT token (if user is updated)
+   * @returns {Promise<void>}
+   */
+  refreshUser(): Promise<User|string> {
+    return this._doGet(environment.serverUrl + 'authent/refreshToken');
   }
 
   /**

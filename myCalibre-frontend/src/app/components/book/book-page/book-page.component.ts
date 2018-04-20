@@ -25,6 +25,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
 import {LocalizedDateModule} from '../../../directives/localized-date.pipe';
 import {MatRatingModule} from '../../rating/rating.component';
+import {UserService} from '../../authent/user.service';
 
 @Component({
   selector: 'app-book-page',
@@ -49,7 +50,8 @@ export class BookPageComponent implements OnInit {
               private _route: ActivatedRoute,
               private _router: Router,
               private _dialog: MatDialog,
-              private _notificationService: NotificationService) {
+              private _notificationService: NotificationService,
+              private _userService: UserService) {
   }
 
   ngOnInit() {
@@ -66,7 +68,7 @@ export class BookPageComponent implements OnInit {
 
         this.book.data.forEach(bd => {
           if (bd.data_format === 'EPUB') {
-             this.bookHasEpub = true;
+            this.bookHasEpub = true;
           } else if (bd.data_format === 'MOBI') {
             this.bookHasMobi = true;
           }
@@ -130,6 +132,12 @@ export class BookPageComponent implements OnInit {
         this._bookService
           .sendKindle(this.book.book_id, email)
           .then(() => {
+            setTimeout(() => {
+              this._userService.refreshUser()
+                .catch(err => {
+                  console.log(err);
+                });
+            }, 3000);
             this._notificationService.info('Book sent');
           })
           .catch(err => {
@@ -154,13 +162,21 @@ export class BookPageComponent implements OnInit {
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);      })
+        document.body.removeChild(link);
+        setTimeout(() => {
+          this._userService.refreshUser()
+            .catch(err => {
+              console.log(err);
+            });
+        }, 3000);
+      })
       .catch(err => {
         console.log(err);
         this._notificationService.error(err.statusText);
       });
 
   }
+
   /**
    * Methode to download an epub
    */
@@ -175,7 +191,14 @@ export class BookPageComponent implements OnInit {
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);      })
+        document.body.removeChild(link);
+        setTimeout(() => {
+          this._userService.refreshUser()
+            .catch(err => {
+              console.log(err);
+            });
+        }, 3000);
+      })
       .catch(err => {
         console.log(err);
         this._notificationService.error(err.statusText);

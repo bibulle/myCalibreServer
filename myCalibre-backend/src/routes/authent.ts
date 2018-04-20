@@ -46,6 +46,37 @@ function authentRouter(passport): Router {
         })
       })(request, response, next);
     });
+  router.route('/refreshToken')
+  // ====================================
+  // route for gettin a new token (on user update)
+  // ====================================
+  //
+    .get((request: Request, response: Response, next: NextFunction) => {
+      debug("GET /refreshToken");
+      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+        if (err) {
+          return next(err);
+        }
+
+        if (!user) {
+          debug(info);
+          //debug(info.name);
+          //debug(info.message);
+          const msg = info.message || info || 'authentication failed';
+          return response.status(401).send({error: msg});
+        }
+
+        request['login'](user, loginErr => {
+          if (loginErr) {
+            return next(loginErr);
+          }
+          debug("201 : token created(" + user.id + ")");
+          return response.status(201).send({
+            id_token: User.createToken(user)
+          });
+        })
+      })(request, response, next);
+    });
 
   router.route('/signup')
   // ====================================
