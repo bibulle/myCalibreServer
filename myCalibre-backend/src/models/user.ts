@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import {randomBytes, pbkdf2Sync} from "crypto";
+import {pbkdf2Sync, randomBytes} from "crypto";
 import {sign, verify} from "jsonwebtoken";
 
 import DbMyCalibre from "./dbMyCalibre";
@@ -85,12 +85,13 @@ export class User {
 
     // debug(options);
     // TODO : Remove this part when data will be migrated
+    let changed = false;
     if (options['history'] && options['history']['bookDownloaded']) {
       delete options['history']['bookDownloaded'];
-      DbMyCalibre.saveUser(this, false)
-        .catch(err => {
-          debug(err)
-        });
+      changed = true;
+    }
+    if (!options['history']) {
+      changed = true;
     }
     // TODO END : Remove this part when data will be migrated
 
@@ -105,6 +106,15 @@ export class User {
 
 
     _.merge(this, options);
+
+    // TODO : Remove this part when data will be migrated
+    if (changed) {
+      DbMyCalibre.saveUser(this, false)
+        .catch(err => {
+          debug(err)
+        });
+    }
+    // TODO END : Remove this part when data will be migrated
 
     // debug(options);
     if (!this.local.salt) {
@@ -204,6 +214,11 @@ export class User {
       trg.local.salt = src.local.salt;
     }
 
+    // get the older created
+    if (src.created.getTime() < trg.created.getTime()) {
+      trg.created = src.created;
+    }
+
     //debug(src.local);
     //debug(trg.local);
     _.mergeWith(trg.local, src.local, (objValue, srcValue) => {
@@ -241,7 +256,29 @@ export class User {
       } else {
         trg.save(done);
       }
-    })
+    });
+
+    // in history, more complicated
+    // get the most recent connection
+    if (src.history.lastConnection) {
+      if (!trg.history.lastConnection || (src.history.lastConnection > trg.history.lastConnection)) {
+        trg.history.lastConnection = src.history.lastConnection;
+      }
+    }
+    // concat the downloaded books
+    for (let i = 0; i < src.history.downloadedBooks.length; i++) {
+      let srcId = src.history.downloadedBooks[i]['id'];
+      let found = false;
+      for (let j = 0; j < trg.history.downloadedBooks.length; j++) {
+        if (trg.history.downloadedBooks[j]['id'] === srcId) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        trg.history.downloadedBooks.push(src.history.downloadedBooks[i]);
+      }
+    }
 
   }
 
