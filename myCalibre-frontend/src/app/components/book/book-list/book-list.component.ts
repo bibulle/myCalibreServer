@@ -167,6 +167,10 @@ export class BookListComponent implements OnInit, OnDestroy {
                                     v1 = b1.author_sort.toString() + ' ' + v1;
                                     v2 = b2.author_sort.toString() + ' ' + v2;
                                     break;
+                                  case SortType.PublicRating:
+                                    v1 = b1.rating + ' ' + v1;
+                                    v2 = b2.rating + ' ' + v2;
+                                    break;
                                   case SortType.PublishDate:
                                   default:
                                     v1 = b1.book_date + ' ' + v1;

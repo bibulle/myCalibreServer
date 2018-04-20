@@ -33,5 +33,11 @@
       <mat-icon *ngIf="(filter.sort != 2)"></mat-icon>
       <span>{{ 'label.author' | translate }}</span>
     </button>
+    <button mat-menu-item (click)="toggleSort(3)" *ngIf="filter.isAvailable(3)">
+      <mat-icon *ngIf="(filter.sort == 3) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(filter.sort == 3) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(filter.sort != 3)"></mat-icon>
+      <span>{{ 'label.public-rating' | translate }}</span>
+    </button>
   </mat-menu>
 </div>

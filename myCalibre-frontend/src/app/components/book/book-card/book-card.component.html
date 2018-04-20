@@ -9,6 +9,7 @@
     <img mat-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
   </div>
   <div class="text">
+    <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.public-rating' | translate}}"></mat-rating>
     <mat-card-title>
       <span *ngIf="book.series_name">{{book.series_name}} - {{book.book_series_index}} - </span>
       {{book.book_title}} <span class="date" *ngIf="book.book_date>'011'">{{book.book_date | date: 'yyyy'}}</span>

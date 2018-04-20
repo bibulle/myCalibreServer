@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 
 const sqlite3 = require("sqlite3").verbose();
-const squel = require("squel");
+const queryBuilder = require("squel");
 
 class DbCalibre {
 
@@ -22,7 +22,7 @@ class DbCalibre {
     debug("Opening '"+DbCalibre.DB_FILE+"'");
 
     try {
-      this._db = new sqlite3.Database(DbCalibre.DB_FILE)
+      this._db = new sqlite3.Database(DbCalibre.DB_FILE);
       this.getDbDate().then(date => {
         this._dbDate = date;
         debug("New Db : "+date);
@@ -73,7 +73,7 @@ class DbCalibre {
       const where = whereValue[0];
       const value = whereValue[1];
 
-      const query = squel
+      const query = queryBuilder
         .select({ separator: "\n" })
 
         // bookFields
@@ -97,6 +97,10 @@ class DbCalibre {
         // sumTags
         .field(DbCalibre._concat('tag', 'book', 'id'), 'tag_id')
         .field(DbCalibre._concat('tag', 'book', 'name'), 'tag_name')
+
+        // sumRating
+        .field(DbCalibre._concat('rating', 'book', 'id'), 'rating_id')
+        .field(DbCalibre._concat('rating', 'book', 'rating'), 'rating')
 
         // sunSeries
         .field(DbCalibre._concat('series', 'book', 'id'), 'series_id')
@@ -147,7 +151,7 @@ class DbCalibre {
       const where = whereValue[0];
       const value = whereValue[1];
 
-      const query = squel
+      const query = queryBuilder
         .select({ separator: "\n" })
 
         // bookFields

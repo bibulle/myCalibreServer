@@ -37,6 +37,7 @@ import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeEn from '@angular/common/locales/en';
+import {MatRatingModule} from './components/rating/rating.component';
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams) {
@@ -52,7 +53,7 @@ registerLocaleData(localeEn, 'en');
     AppComponent,
     FooterComponent,
     SubheaderComponent,
-    MatInkDirective,
+    MatInkDirective
   ],
   imports: [
     BrowserModule,
@@ -89,7 +90,8 @@ registerLocaleData(localeEn, 'en');
     AuthorModule,
     TagModule,
     AuthentModule,
-    FilterBarModule
+    FilterBarModule,
+    MatRatingModule
   ],
   providers: [
     Media,

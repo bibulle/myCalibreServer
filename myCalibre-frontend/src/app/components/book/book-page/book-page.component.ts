@@ -24,6 +24,7 @@ import {NotificationService} from '../../notification/notification.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
 import {LocalizedDateModule} from '../../../directives/localized-date.pipe';
+import {MatRatingModule} from '../../rating/rating.component';
 
 @Component({
   selector: 'app-book-page',
@@ -200,7 +201,8 @@ export class BookPageComponent implements OnInit {
     MatDialogModule,
     FlexLayoutModule,
     TranslateModule,
-    LocalizedDateModule
+    LocalizedDateModule,
+    MatRatingModule
   ],
   declarations: [
     BookPageComponent,
