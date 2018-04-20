@@ -315,6 +315,13 @@ export class User {
         data: bookDatum,
         date: new Date()
       });
+      this.history.downloadedBooks.sort((a,b) => {
+        if (a['date'].getTime() < b['date'].getTime()) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
       this.save(err => {
         if (err) {
           debug(err);
