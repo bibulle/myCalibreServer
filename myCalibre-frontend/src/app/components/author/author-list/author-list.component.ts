@@ -170,7 +170,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
 
                                   const strToSearch = a.author_name + ' ' + a.author_sort;
 
-                                  return (AuthorListComponent._cleanAccent(strToSearch).includes(AuthorListComponent._cleanAccent(this.filter.search)));
+                                  return (AuthorListComponent._cleanAccent(strToSearch).includes(AuthorListComponent._cleanAccent(this.filter.search.trim())));
                                 })
                                 .sort((b1: Author, b2: Author) => {
                                   // console.log(b1);

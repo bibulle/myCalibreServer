@@ -169,7 +169,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
         const strToSearch = t.tag_name;
 
-        return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search)));
+        return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search.trim())));
       })
       .sort((b1: Tag, b2: Tag) => {
         // console.log(b1);
