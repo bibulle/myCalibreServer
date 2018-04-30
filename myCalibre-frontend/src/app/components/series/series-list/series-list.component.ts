@@ -174,7 +174,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
                                                         return p + c;
                                                       }, ''));
 
-                                 return (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search)));
+                                 return (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search.trim())));
                                })
                                .sort((b1: Series, b2: Series) => {
                                  let v1: string;

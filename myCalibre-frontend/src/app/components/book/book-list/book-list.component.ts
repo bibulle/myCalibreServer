@@ -152,7 +152,7 @@ export class BookListComponent implements OnInit, OnDestroy {
                                                      .concat(b.comment)
                                                      .concat('' + b.author_name);
 
-                                return (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search)));
+                                return (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search.trim())));
                               })
                               // then sort
                               .sort((b1: Book, b2: Book) => {
