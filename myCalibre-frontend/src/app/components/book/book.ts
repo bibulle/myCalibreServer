@@ -6,6 +6,7 @@ export class Book {
   book_sort: string;
   author_sort: string;
   book_has_cover: string;
+  // noinspection JSUnusedGlobalSymbols
   book_path: string;
   book_series_index: number;
   author_id: number[];
@@ -24,8 +25,10 @@ export class Book {
 }
 
 export class BookData {
+  // noinspection JSUnusedGlobalSymbols
   data_id: number;
   data_format: string;
+  // noinspection JSUnusedGlobalSymbols
   data_size: number;
   data_name: string;
 }
