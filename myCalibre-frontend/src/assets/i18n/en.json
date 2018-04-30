@@ -10,6 +10,7 @@
   "label.created": "Created",
 	"label.delete": "Delete",
 	"label.description": "Description",
+  "label.downloaded": "Downloaded count",
   "label.downloaded-books": "Downloaded books",
 	"label.email": "Email address",
 	"label.epub-format": "ePub format",

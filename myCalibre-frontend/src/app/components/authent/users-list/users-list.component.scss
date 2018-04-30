@@ -12,6 +12,12 @@
   .admin, .facebook, .google, .local {
     text-align: center;
   }
+  .last-connection {
+    text-align: right;
+    span {
+      line-height: 20px;
+    }
+  }
 
   .fa:before {
     font-family: FontAwesome, serif;
