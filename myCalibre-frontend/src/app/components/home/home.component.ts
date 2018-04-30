@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
 
   books: Book[];
 
-  BOOKS_LIMIT = 20;
+  BOOKS_LIMIT = 200;
   param = {
     BOOKS_LIMIT: this.BOOKS_LIMIT
   };

@@ -51,7 +51,7 @@ export class CacheDate {
                   promise = DbCalibre.getInstance().getBooks();
                   break;
                 case CacheDateKey.NEW_BOOKS:
-                  promise = DbCalibre.getInstance().getBooks(20, 0);
+                  promise = DbCalibre.getInstance().getBooks(200, 0);
                   break;
                 case CacheDateKey.AUTHORS:
                   promise = Author.getAllAuthors();
