@@ -17,6 +17,8 @@ export class Book {
   author_name: string[];
   tag_id: number[];
   tag_name: string[];
+  rating_id: number;
+  rating: string;
   series_id: string;
   series_name: string;
   series_sort: string;
@@ -102,6 +104,15 @@ export class BookData {
   data_format: string;
   data_size: number;
   data_name: string;
+
+  constructor (options: {}) {
+    _.merge(this, options);
+  }
+}
+
+export class BookRating {
+  id: number;
+  rating: number;
 
   constructor (options: {}) {
     _.merge(this, options);

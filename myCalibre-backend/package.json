@@ -6,6 +6,7 @@
     "start": "node ./src/bin/www",
     "devel": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" \"VIPS_WARNING=0 DEBUG=server:* nodemon --ignore ./data/ ./src/bin/prepareCache.js\" ",
     "devel-www": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" ",
+    "devel-amazon": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/getInfoFromAmazon.js\" ",
     "tsc": "tsc"
   },
   "private": true,
@@ -15,6 +16,7 @@
     "async": "^2.1.4",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.2",
+    "cheerio": "^1.0.0-rc.2",
     "compression": "^1.6.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
@@ -35,6 +37,7 @@
     "passport-jwt": "^2.2.1",
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
+    "request": "latest",
     "serve-static": "^1.11.1",
     "sharp": "^0.17.0",
     "sqlite3": "^3.1.8",
