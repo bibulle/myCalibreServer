@@ -3,7 +3,7 @@ import { Book } from '../book';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
-import { MatCardModule, MatIconModule } from '@angular/material';
+import {MatCardModule, MatIconModule, MatTooltipModule} from '@angular/material';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatRatingModule} from '../../rating/rating.component';
 
@@ -43,6 +43,7 @@ export class BookCardComponent implements OnInit {
     CommonModule,
     MatCardModule,
     MatIconModule,
+    MatTooltipModule,
     TranslateModule,
     MatRatingModule
   ],

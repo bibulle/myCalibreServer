@@ -22,6 +22,12 @@ export class Book {
 
   data: BookData[];
 
+  history: {
+    ratings: ReaderRating[],
+    downloads: Downloader[]
+  };
+
+
 }
 
 export class BookData {
@@ -31,4 +37,16 @@ export class BookData {
   // noinspection JSUnusedGlobalSymbols
   data_size: number;
   data_name: string;
+}
+export class Downloader {
+  date: Date;
+  data_format: number;
+  user_id: string;
+  user_name: string;
+}
+export class ReaderRating {
+  date: Date;
+  rating: number;
+  user_id: string;
+  user_name: string;
 }

@@ -10,6 +10,7 @@ export class BookService {
 
   private booksUrl = environment.serverUrl + 'api/book';
   private sendKindleUrl = '/send/kindle';
+  private updateRatingUrl = '/rating/';
   private getEpubURL = '/epub/url';
   private getMobibURL = '/mobi/url';
 
@@ -87,6 +88,29 @@ export class BookService {
             reject(err);
           });
       }
+    });
+  }
+
+  /**
+   * send vote to backend
+   * @param {number} book_id
+   * @param {number} rating
+   * @returns {Promise<void>}
+   */
+  updateRating(book_id: number, rating: number): Promise<void> {
+
+    return new Promise<void>((resolve, reject) => {
+      let body = JSON.stringify({rating});
+
+      this.httpClient.post(this.booksUrl + '/' + book_id + this.updateRatingUrl, body)
+        .subscribe(
+          () => {
+            resolve();
+          },
+          err => {
+            reject(err);
+          },
+        );
     });
   }
 

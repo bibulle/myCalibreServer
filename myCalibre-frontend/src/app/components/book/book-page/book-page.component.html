@@ -5,7 +5,9 @@
   <div class="book" fxFlex fxLayout="column">
     <mat-card class="authors" fxLayout="column" fxFlex="100">
       <div class="top" fxLayout="row" fxLayoutAlign="end start">
-        <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.public-rating' | translate}}"></mat-rating>
+        <mat-rating [rating]="bookYourRating/2" color="primary" title="{{'label.rating-your' | translate}}" (ratingUpdated)="ratingUpdated($event)"></mat-rating>
+        <mat-rating *ngIf="bookReaderRating" [rating]="bookReaderRating/2" color="primary" disabled="true" title="{{'label.rating-reader' | translate}} ({{book.history.ratings.length}})" [matTooltip]="bookReaderRating/2" matTooltipPosition="above"></mat-rating>
+        <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.rating-public' | translate}}" [matTooltip]="book.rating/2" matTooltipPosition="above"></mat-rating>
         <div class="date">{{book.book_date | localizedDate: 'MMMM yyyy'}}</div>
       </div>
       <mat-card-title>{{'label.authors' | translate}}</mat-card-title>

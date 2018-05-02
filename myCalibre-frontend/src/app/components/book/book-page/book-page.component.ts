@@ -17,7 +17,7 @@ import {
   MatIconModule,
   MatInputModule,
   MatMenuModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule, MatTooltipModule
 } from '@angular/material';
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
@@ -41,6 +41,8 @@ export class BookPageComponent implements OnInit {
 
   bookHasEpub = false;
   bookHasMobi = false;
+  bookReaderRating;
+  bookYourRating;
 
   coverUrlBase = `${environment.serverUrl}api/book/cover`;
 
@@ -74,6 +76,37 @@ export class BookPageComponent implements OnInit {
           }
         });
 
+        // TODO remove MOCK
+        this.book.history = {
+          ratings: [],
+          downloads: []
+        };
+        this.book.history.ratings = [
+          {
+            date: new Date('2018-04-20 17:39:31'),
+            rating: 3,
+            user_name: 'user1',
+            user_id: 'user1'
+          },
+          {
+            date: new Date('2018-01-01 17:39:31'),
+            rating: 2,
+            user_name: 'user2',
+            user_id: 'user2'
+          }];
+        // end TODO
+
+        if (this.book.history.ratings && (this.book.history.ratings.length !== 0)) {
+          this.bookReaderRating = 0;
+          for (let i = 0; i < this.book.history.ratings.length; i++) {
+            this.bookReaderRating += this.book.history.ratings[i].rating / this.book.history.ratings.length;
+            if (this.book.history.ratings[i].user_id === this._userService.getUser().id) {
+              this.bookYourRating = this.book.history.ratings[i].rating;
+            }
+          }
+        }
+        // console.log(book);
+
         this._titleService.forceTitle(this._router.url, book.book_title);
       })
       .catch(err => {
@@ -81,6 +114,25 @@ export class BookPageComponent implements OnInit {
       })
 
 
+  }
+
+  ratingUpdated(rating) {
+    // console.log('RATING : ' + rating);
+    this._bookService
+      .updateRating(this.book.book_id, rating)
+      .then(() => {
+        setTimeout(() => {
+          this._userService.refreshUser()
+            .catch(err => {
+              console.log(err);
+            });
+        }, 3000);
+        this._notificationService.info('Book sent');
+      })
+      .catch(err => {
+        console.log(err);
+        this._notificationService.error(err.statusText);
+      });
   }
 
   /**
@@ -222,6 +274,7 @@ export class BookPageComponent implements OnInit {
     MatMenuModule,
     MatAutocompleteModule,
     MatDialogModule,
+    MatTooltipModule,
     FlexLayoutModule,
     TranslateModule,
     LocalizedDateModule,
