@@ -14,7 +14,7 @@ const debug = require('debug')('server:getInfoFromAmazon');
 debug('Starting.....');
 process.chdir(`${__dirname}/../..`);
 
-const CRON_TAB_GET_INFO = '0 */2  * * * *';
+const CRON_TAB_GET_INFO = '0 *  * * * *';
 debug("CronTab          : '" + CRON_TAB_GET_INFO + "'");
 
 function getInfo () {
@@ -29,12 +29,12 @@ function getInfo () {
           .getBooks()
           .then((books: Book[]) => {
 
-            // only get one with no note
+            // only get one with no rating
             let resultBooks = books.filter(book => {
               return book.rating == null;
             });
 
-            debug(resultBooks.length+" books have no note");
+            debug(resultBooks.length+" books have no rating");
             shuffle(resultBooks);
 
             callback1(null, resultBooks[0])
@@ -91,13 +91,13 @@ function getInfo () {
             authorOK = authorOK || authorReversed.toLowerCase().indexOf(book.author_name[0].toLowerCase()) >= 0;
 
             if (titleOK && authorOK) {
-              let note = $('.a-icon-star span').first().text();
-              if (note) {
-                note = note.split(' ')[0].replace(',', '.') * 2;
-                debug('Note : ' + note + ' (' + book.book_title + ' - ' + book.author_name[0] + ')');
-                callback1(null, book, note);
+              let rating = $('.a-icon-star span').first().text();
+              if (rating) {
+                rating = rating.split(' ')[0].replace(',', '.') * 2;
+                // debug('Rating : ' + rating + ' (' + book.book_title + ' - ' + book.author_name[0] + ')');
+                callback1(null, book, rating);
               } else {
-                callback1("Note not found : " + book.book_title + ' (' + book.author_name[0] + ')');
+                callback1("Rating not found : " + book.book_title + ' (' + book.author_name[0] + ')');
               }
 
 
@@ -109,7 +109,7 @@ function getInfo () {
         //debug(URL);
 
       },
-      (book, note, callback1) => {
+      (book, rating, callback1) => {
         // =================
         // Get Ratings list
         // =================
@@ -119,7 +119,7 @@ function getInfo () {
           .then((ratings: BookRating[]) => {
 
             let filterRatings = ratings.filter(bookRating => {
-              return bookRating.rating === Math.round(note)
+              return bookRating.rating === Math.round(rating)
             });
 
             if (filterRatings.length == 0) {
@@ -135,7 +135,7 @@ function getInfo () {
 
               let bookRating = new BookRating({
                 id: id,
-                rating: Math.round(note)
+                rating: Math.round(rating)
               });
 
               DbCalibre
@@ -209,7 +209,7 @@ function getInfo () {
     (err) => {
       if (err) {
         debug(err);
-        debug("ERROR: " + err);
+        //debug("ERROR: " + err);
       }
       //debug('Done.');
     });

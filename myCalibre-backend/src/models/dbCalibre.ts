@@ -226,7 +226,7 @@ class DbCalibre {
 
         .into('ratings');
 
-      debug(query.toString());
+      //debug(query.toString());
 
       this._db.exec(query.toString(), (err) => {
         if (err) {
