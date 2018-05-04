@@ -166,6 +166,8 @@ export class BookListComponent implements OnInit, OnDestroy {
       .sort((b1: Book, b2: Book) => {
         let v1: string;
         let v2: string;
+        let r1 = '99';
+        let r2 = '99';
         v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : leftPad(b1.book_series_index, 6, 0) + ' ') + b1.book_sort;
         v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : leftPad(b2.book_series_index, 6, 0) + ' ') + b2.book_sort;
         switch (this.filter.sort) {
@@ -176,18 +178,32 @@ export class BookListComponent implements OnInit, OnDestroy {
             v2 = b2.author_sort.toString() + ' ' + v2;
             break;
           case SortType.PublicRating:
-            let r1 = '99';
+            r1 = '99';
             if (b1.rating) {
               r1 = ('0' + (10 - +b1.rating));
               r1 = r1.substr(r1.length - 2);
             }
             v1 = r1 + ' ' + v1;
-            let r2 = '99';
+            r2 = '99';
             if (b2.rating) {
               r2 = ('0' + (10 - +b2.rating));
               r2 = r2.substr(r2.length - 2);
             }
             v2 = r2 + ' ' + v2;
+            break;
+          case SortType.ReaderRating:
+            r1 = '99';
+            if (b1.readerRating) {
+              r1 = ('0' + (10 - +b1.readerRating));
+              r1 = r1.substr(r1.length - 2);
+            }
+            v1 = r1 + ' ' + b1.readerRatingCount + ' ' + v1;
+            r2 = '99';
+            if (b2.readerRating) {
+              r2 = ('0' + (10 - +b2.readerRating));
+              r2 = r2.substr(r2.length - 2);
+            }
+            v2 = r2 + ' ' + b2.readerRatingCount + ' ' + v2;
             break;
           case SortType.PublishDate:
           default:

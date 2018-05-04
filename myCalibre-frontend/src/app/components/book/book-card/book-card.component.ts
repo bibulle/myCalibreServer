@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import {MatCardModule, MatIconModule, MatTooltipModule} from '@angular/material';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatRatingModule} from '../../rating/rating.component';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'app-book-card',
@@ -44,6 +45,7 @@ export class BookCardComponent implements OnInit {
     MatCardModule,
     MatIconModule,
     MatTooltipModule,
+    FlexLayoutModule,
     TranslateModule,
     MatRatingModule
   ],

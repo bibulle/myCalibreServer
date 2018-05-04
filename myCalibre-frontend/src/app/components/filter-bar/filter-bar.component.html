@@ -39,5 +39,11 @@
       <mat-icon *ngIf="(filter.sort != 3)"></mat-icon>
       <span>{{ 'label.rating-public' | translate }}</span>
     </button>
+    <button mat-menu-item (click)="toggleSort(4)" *ngIf="filter.isAvailable(4)">
+      <mat-icon *ngIf="(filter.sort == 4) && (filter.sorting_direction == 0)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(filter.sort == 4) && (filter.sorting_direction == 1)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(filter.sort != 4)"></mat-icon>
+      <span>{{ 'label.rating-reader' | translate }}</span>
+    </button>
   </mat-menu>
 </div>

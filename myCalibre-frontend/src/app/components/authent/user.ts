@@ -103,4 +103,5 @@ export class BookRating {
   rating: number;
   // noinspection JSUnusedGlobalSymbols
   book_id: number;
+  book_name: string;
 }

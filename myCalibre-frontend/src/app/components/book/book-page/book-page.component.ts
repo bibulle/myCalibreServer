@@ -1,12 +1,13 @@
 import {Component, NgModule, OnInit} from '@angular/core';
 import {FilterService} from '../../filter-bar/filter.service';
-import {Book} from '../book';
+import {Book, ReaderRatingTotal} from '../book';
 import {environment} from '../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 import {BookService} from '../book.service';
 import {MatContentModule} from '../../content/content.component';
 import {CommonModule} from '@angular/common';
 import {TitleService} from '../../../app/title.service';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {FormsModule} from '@angular/forms';
 import {
   MatAutocompleteModule,
@@ -17,12 +18,12 @@ import {
   MatIconModule,
   MatInputModule,
   MatMenuModule,
-  MatProgressSpinnerModule, MatTooltipModule
+  MatProgressSpinnerModule,
+  MatTooltipModule
 } from '@angular/material';
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {TranslateModule} from '@ngx-translate/core';
 import {LocalizedDateModule} from '../../../directives/localized-date.pipe';
 import {MatRatingModule} from '../../rating/rating.component';
 import {UserService} from '../../authent/user.service';
@@ -41,8 +42,7 @@ export class BookPageComponent implements OnInit {
 
   bookHasEpub = false;
   bookHasMobi = false;
-  bookReaderRating;
-  bookYourRating;
+  ratings: ReaderRatingTotal;
 
   coverUrlBase = `${environment.serverUrl}api/book/cover`;
 
@@ -53,7 +53,8 @@ export class BookPageComponent implements OnInit {
               private _router: Router,
               private _dialog: MatDialog,
               private _notificationService: NotificationService,
-              private _userService: UserService) {
+              private _userService: UserService,
+              private _translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -76,35 +77,8 @@ export class BookPageComponent implements OnInit {
           }
         });
 
-        // TODO remove MOCK
-        this.book.history = {
-          ratings: [],
-          downloads: []
-        };
-        this.book.history.ratings = [
-          {
-            date: new Date('2018-04-20 17:39:31'),
-            rating: 3,
-            user_name: 'user1',
-            user_id: 'user1'
-          },
-          {
-            date: new Date('2018-01-01 17:39:31'),
-            rating: 2,
-            user_name: 'user2',
-            user_id: 'user2'
-          }];
-        // end TODO
+        this.ratings = Book.updateReaderRating(this.book, this._userService.getUser());
 
-        if (this.book.history.ratings && (this.book.history.ratings.length !== 0)) {
-          this.bookReaderRating = 0;
-          for (let i = 0; i < this.book.history.ratings.length; i++) {
-            this.bookReaderRating += this.book.history.ratings[i].rating / this.book.history.ratings.length;
-            if (this.book.history.ratings[i].user_id === this._userService.getUser().id) {
-              this.bookYourRating = this.book.history.ratings[i].rating;
-            }
-          }
-        }
         // console.log(book);
 
         this._titleService.forceTitle(this._router.url, book.book_title);
@@ -116,18 +90,36 @@ export class BookPageComponent implements OnInit {
 
   }
 
+
   ratingUpdated(rating) {
     // console.log('RATING : ' + rating);
+    this.ratings.yourRating = rating * 2;
+
     this._bookService
-      .updateRating(this.book.book_id, rating)
-      .then(() => {
+      .updateRating(this.book.book_id, rating * 2)
+      .then((result) => {
         setTimeout(() => {
           this._userService.refreshUser()
+            .then(() => {
+              this.ratings = Book.updateReaderRating(this.book, this._userService.getUser());
+            })
             .catch(err => {
               console.log(err);
             });
         }, 3000);
-        this._notificationService.info('Book sent');
+
+        switch (result) {
+          case 'CHANGED':
+            this._notificationService.info(this._translateService.instant('label.rating.changed'));
+            break;
+          case 'NOTHING_TO_DO':
+            this._notificationService.info(this._translateService.instant('label.rating.nothing'));
+            break;
+          default:
+          case 'SAVED':
+            this._notificationService.info(this._translateService.instant('label.rating.saved'));
+            break;
+        }
       })
       .catch(err => {
         console.log(err);

@@ -73,10 +73,12 @@ export class User {
 
   history: {
     lastConnection: Date,
-    downloadedBooks: Object[]
+    downloadedBooks: DownloadedBook[],
+    ratings: BookRating[]
   } = {
     lastConnection: null,
-    downloadedBooks: []
+    downloadedBooks: [],
+    ratings: []
   };
 
   static conf: Configuration;
@@ -267,16 +269,35 @@ export class User {
     }
     // concat the downloaded books
     for (let i = 0; i < src.history.downloadedBooks.length; i++) {
-      let srcId = src.history.downloadedBooks[i]['id'];
+      let srcId = src.history.downloadedBooks[i].id;
       let found = false;
       for (let j = 0; j < trg.history.downloadedBooks.length; j++) {
-        if (trg.history.downloadedBooks[j]['id'] === srcId) {
+        if (trg.history.downloadedBooks[j].id === srcId) {
           found = true;
           break;
         }
       }
       if (!found) {
         trg.history.downloadedBooks.push(src.history.downloadedBooks[i]);
+      }
+    }
+    // concat the rating
+    for (let i = 0; i < src.history.ratings.length; i++) {
+      let srcId = src.history.ratings[i].book_id;
+      let found = false;
+      for (let j = 0; j < trg.history.ratings.length; j++) {
+        if (trg.history.ratings[j].book_id === srcId) {
+          found = true;
+          // get the most recent
+          if (src.history.ratings[i].date > trg.history.ratings[j].date) {
+            trg.history.ratings[j].date = src.history.ratings[i].date;
+            trg.history.ratings[j].rating = src.history.ratings[i].rating;
+          }
+          break;
+        }
+      }
+      if (!found) {
+        trg.history.ratings.push(src.history.ratings[i]);
       }
     }
 
@@ -298,12 +319,60 @@ export class User {
     }, false)
   }
 
+  addRatingBook(book_id: number, bookName: string, rating: number, done: (err: Error, info: string) => any) {
+
+    let found = false;
+    let change = false;
+    for (let i = 0; i < this.history.ratings.length; i++) {
+      let book = this.history.ratings[i];
+      if (book.book_id === book_id) {
+        found = true;
+        if (book.rating !== rating) {
+          change = true;
+          book.rating = rating;
+        }
+        break;
+      }
+    }
+
+    if (!found) {
+      this.history.ratings.push({
+        book_id: book_id,
+        rating: rating,
+        book_name: bookName,
+        date: new Date()
+      });
+      this.history.ratings.sort((a,b) => {
+        if (a.date.getTime() < b.date.getTime()) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+      this.save(
+        err => {
+          done(err, "SAVED")
+        }, true)
+    } else if (change) {
+      this.save(
+        err => {
+          done(err, "CHANGED")
+        }, true)
+    } else {
+      done(null, "NOTHING_TO_DO")
+    }
+
+
+
+
+  }
+
   addDownloadedBook(book_id: number, bookDatum: BookData) {
 
     let found = false;
     for (let i = 0; i < this.history.downloadedBooks.length; i++) {
       let book = this.history.downloadedBooks[i];
-      if (book['id'] === book_id) {
+      if (book.id === book_id) {
         found = true;
         break;
       }
@@ -316,7 +385,7 @@ export class User {
         date: new Date()
       });
       this.history.downloadedBooks.sort((a,b) => {
-        if (a['date'].getTime() < b['date'].getTime()) {
+        if (a.date.getTime() < b.date.getTime()) {
           return -1;
         } else {
           return 1;
@@ -326,7 +395,7 @@ export class User {
         if (err) {
           debug(err);
         }
-      }, false)
+      }, true)
     }
 
 
@@ -418,3 +487,14 @@ export class User {
 
 }
 
+export class DownloadedBook {
+  date: Date;
+  id: number;
+  data: BookData;
+}
+export class BookRating {
+  date: Date;
+  rating: number;
+  book_id: number;
+  book_name: string;
+}

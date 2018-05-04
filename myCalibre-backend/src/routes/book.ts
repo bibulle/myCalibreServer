@@ -4,6 +4,7 @@ import {BookPath, BookData} from "../models/book";
 import DbMyCalibre from "../models/dbMyCalibre";
 import {CacheDate, CacheDateKey} from "../models/cacheDate";
 import {User} from "../models/user";
+import {SendMailOptions} from "nodemailer";
 
 const nodemailer = require('nodemailer');
 const fs = require('fs');
@@ -27,7 +28,7 @@ function bookRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /");
 
-      passport.authenticate('jwt-check', {session: false}, (err, user, info): any => {
+      passport.authenticate('jwt-check', {session: false}, (err, user): any => {
         if (err) {
           return next(err);
         }
@@ -55,7 +56,7 @@ function bookRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /new");
 
-      passport.authenticate('jwt-check', {session: false}, (err, user, info): any => {
+      passport.authenticate('jwt-check', {session: false}, (err, user): any => {
         if (err) {
           return next(err);
         }
@@ -297,6 +298,72 @@ function bookRouter(passport): Router {
       });
 
     });
+  router.route('/:id/rating')
+  // ====================================
+  // route for sending book to kindle
+  // ====================================
+    .post((request: Request, response: Response, next: NextFunction) => {
+
+      const book_id = request.params['id'] || 0;
+
+      debug(`POST /${book_id}/rating`);
+
+      debug(request.body);
+      let rating = request.body['rating'];
+      debug(rating);
+
+      if (!rating) {
+        return response.status(400).send({error: 'Bad Request (rating needed)'});
+      }
+
+      passport.authenticate('jwt-check', {session: false}, (err, user): any => {
+        if (err) {
+          return next(err);
+        }
+
+        if (!user) {
+          const msg = 'Unauthorized';
+          return response.status(401).send({status: 401, message: msg});
+        }
+
+        DbMyCalibre
+          .getConf()
+          .then(() => {
+
+            DbCalibre.getInstance()
+              .getBookPaths(book_id)
+              .then((book: BookPath) => {
+                // debug(book);
+
+                if (book && book.book_path && book.data) {
+                  user.addRatingBook(book_id, book.data[0].data_name, rating,
+                    (error, info) => {
+                      if (error) {
+                        debug(error);
+                        response.status(500).send({error: error});
+                      } else {
+                        debug("OK");
+                        return response.status(200).send({ OK: info });
+                      }
+                    }
+                  );
+
+                } else {
+                  response.status(404).send({error: 'Not found : ' + request.url});
+                }
+              })
+              .catch(err => {
+                debug(err);
+                response.status(404).send({error: 'Not found : ' + request.url});
+              })
+          })
+          .catch(err => {
+            debug(err);
+            response.status(500).send({error: 'System error'});
+          })
+      })(request, response, next);
+
+    });
   router.route('/:id/send/kindle')
   // ====================================
   // route for sending book to kindle
@@ -313,7 +380,7 @@ function bookRouter(passport): Router {
         return response.status(400).send({error: 'Bad Request (mail needed)'});
       }
 
-      passport.authenticate('jwt-check', {session: false}, (err, user, info): any => {
+      passport.authenticate('jwt-check', {session: false}, (err, user): any => {
         if (err) {
           return next(err);
         }
@@ -361,7 +428,7 @@ function bookRouter(passport): Router {
                             filename: `${data[0].data_name}.mobi`,
                             path: `${fullPath}`
                           }]
-                        }, (error, info) => {
+                        } as SendMailOptions, (error, info) => {
                           if (error) {
                             debug(error);
                             response.status(500).send({error: error});
@@ -401,7 +468,7 @@ function bookRouter(passport): Router {
       const book_id = request.params['id'] || 0;
       debug(`GET /${book_id}/epub/url`);
 
-      passport.authenticate('jwt-check', {session: false}, (err, user, info): any => {
+      passport.authenticate('jwt-check', {session: false}, (err, user): any => {
         if (err) {
           return next(err);
         }
@@ -428,7 +495,7 @@ function bookRouter(passport): Router {
       const book_id = request.params['id'] || 0;
       debug(`GET /${book_id}/mobi/url`);
 
-      passport.authenticate('jwt-check', {session: false}, (err, user, info): any => {
+      passport.authenticate('jwt-check', {session: false}, (err, user): any => {
         if (err) {
           return next(err);
         }

@@ -91,6 +91,28 @@ class DbMyCalibre {
   }
 
   /**
+   * get last updated user Date
+   * @returns {Promise<Date>}
+   */
+  public static findUserLastUpdate(): Promise<Date> {
+
+    return new Promise<Date>((resolve, reject) => {
+      DbMyCalibre.getAllUsers()
+        .then(users => {
+          if (users && (users.length > 0)) {
+            resolve(users[0].updated);
+          } else {
+            reject("Not found");
+          }
+        })
+        .catch(error => {
+          reject(error);
+        })
+
+    })
+  }
+
+  /**
    * get a user from Db
    * @param id
    * @returns {Promise<User>}
@@ -136,7 +158,7 @@ class DbMyCalibre {
     return new Promise<User[]>((resolve, reject) => {
 
       if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
-        DbMyCalibre._instance._mongoDb.collection('users').find({}).toArray((err, rows) => {
+        DbMyCalibre._instance._mongoDb.collection('users').find({}).sort({'updated': -1}).toArray((err, rows) => {
           if (err) {
             reject(err);
           } else {
@@ -147,6 +169,7 @@ class DbMyCalibre {
               });
               return new User(options)
             });
+            //debug(users);
             resolve(users);
           }
         })
@@ -270,12 +293,12 @@ class DbMyCalibre {
 
     if (DbMyCalibre._instance && DbMyCalibre._instance._mongoDb) {
       // DbMyCalibre._instance._mongoDb.collection('users').updateOne(filter, {$set: user}, {upsert: tryInsert}, (err, result) => {
-      DbMyCalibre._instance._mongoDb.collection('users').replaceOne(filter, user, {upsert: tryInsert}, (err, result) => {
+      DbMyCalibre._instance._mongoDb.collection('users').replaceOne(filter, user, {upsert: tryInsert}, (err) => {
         if (err) {
           debug(err);
           reject(err);
         } else {
-          debug("user updated " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")");
+          // debug("user updated " + user.local.username + " " + user.local.firstname + " " + user.local.lastname + " (" + result + ")");
 
           resolve();
         }

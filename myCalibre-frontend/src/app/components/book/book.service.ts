@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from '../../../environments/environment';
 import {Book} from './book';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable()
 export class BookService {
@@ -97,20 +97,28 @@ export class BookService {
    * @param {number} rating
    * @returns {Promise<void>}
    */
-  updateRating(book_id: number, rating: number): Promise<void> {
+  updateRating(book_id: number, rating: number): Promise<string> {
 
-    return new Promise<void>((resolve, reject) => {
-      let body = JSON.stringify({rating});
+    return new Promise<string>((resolve, reject) => {
+      let body = JSON.stringify({rating: rating});
 
-      this.httpClient.post(this.booksUrl + '/' + book_id + this.updateRatingUrl, body)
-        .subscribe(
-          () => {
-            resolve();
-          },
-          err => {
-            reject(err);
-          },
-        );
+      this.httpClient.post(
+        this.booksUrl + '/' + book_id + this.updateRatingUrl,
+        body,
+        {
+          headers: new HttpHeaders({
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          })
+        })
+        .toPromise()
+        .then(data => {
+          // console.log(data);
+          resolve(data['OK']);
+        })
+        .catch(error => {
+          reject(error);
+        });
     });
   }
 
@@ -153,6 +161,7 @@ export class BookService {
         );
     });
   }
+
   /**
    * Get URL with temporary token
    * @param {number} book_id
