@@ -17,6 +17,8 @@ process.chdir(`${__dirname}/../..`);
 const CRON_TAB_GET_INFO = '0 *  * * * *';
 debug("CronTab          : '" + CRON_TAB_GET_INFO + "'");
 
+var booksToChange;
+
 function getInfo () {
 
   async.waterfall([
@@ -24,26 +26,49 @@ function getInfo () {
         // =================
         // Get Books list
         // =================
-        DbCalibre
-          .getInstance()
-          .getBooks()
-          .then((books: Book[]) => {
+        if (booksToChange) {
+          callback1(null, booksToChange)
+        } else {
+          DbCalibre
+            .getInstance()
+            .getBooks()
+            .then((books: Book[]) => {
 
-            // only get one with no rating
-            let resultBooks = books.filter(book => {
-              return book.rating == null;
-            });
+              debug("Books loaded");
+              // only get one with no rating
+              let resultBooks = books.filter(book => {
+                return book.rating == null;
+              });
 
-            debug(resultBooks.length+" books have no rating");
-            shuffle(resultBooks);
+              booksToChange = resultBooks;
 
-            callback1(null, resultBooks[0])
-          })
-          .catch(err => {
-            debug("ERROR getBooks !!");
-            debug(err);
-            callback1(err);
-          })
+              callback1(null, booksToChange)
+            })
+            .catch(err => {
+              debug("ERROR getBooks !!");
+              debug(err);
+              callback1(err);
+            })
+        }
+      },
+      (booksToChange, callback1) => {
+        // =================
+        // Get Books list
+        // =================
+
+        debug(booksToChange.length + " books have no rating and have not been try");
+
+        if (booksToChange.length == 0) {
+          return callback1("Done");
+        }
+
+        shuffle(booksToChange);
+
+        let book = booksToChange[0];
+
+        booksToChange.splice(0, 1);
+
+        callback1(null, book)
       },
       (book, callback1) => {
         // =================
@@ -188,7 +213,7 @@ function getInfo () {
               .getInstance()
               .insertBookRatingLink(id, book.book_id, bookRating.id)
               .then(() => {
-                debug("Updated : "+book.book_title + ' (' + book.author_name[0] + ')');
+                debug("Updated : " + book.book_title + ' (' + book.author_name[0] + ')');
                 callback1();
               })
               .catch(err => {
