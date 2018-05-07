@@ -10,6 +10,9 @@
     .date {
       font-size: 0.6em;
     }
+    @media screen and (max-width: $layout-breakpoint-sm) {
+      padding-right: 2.8em;
+    }
   }
 
   mat-card-subtitle {
@@ -66,16 +69,27 @@
   position: absolute;
   top: 1em;
   right: 2em;
-
-  @media screen and (max-width: $layout-breakpoint-sm) {
-    top: initial;
-    bottom: 1.5em;
-  }
-
+  display: flex;
   mat-rating, .empty-rating {
     margin-left: 1em;
     width: 5em;
   }
+
+  @media screen and (max-width: $layout-breakpoint-sm) {
+    top: 1.5em;
+    right: 1em;
+    display: block;
+    transform: rotate(90deg);
+    width: 6em;
+    height: 6em;
+    mat-rating, .empty-rating {
+      display: block;
+      margin-left: 0;
+      margin-bottom: 3px;
+      height: 1.5em;
+    }
+  }
+
 }
 
 
