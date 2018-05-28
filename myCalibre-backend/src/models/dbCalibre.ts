@@ -1,4 +1,4 @@
-import { Book, BookPath } from "./book";
+import { Book, BookPath, BookRating } from "./book";
 const debug = require('debug')('server:dbCalibre');
 
 const fs = require('fs');
@@ -23,7 +23,7 @@ class DbCalibre {
 
     try {
       this._db = new sqlite3.Database(DbCalibre.DB_FILE);
-      this.getDbDate().then(date => {
+      this.getDbDate().then((date:Date) => {
         this._dbDate = date;
         debug("New Db : "+date);
       })
@@ -176,6 +176,113 @@ class DbCalibre {
           reject(err);
         } else {
           resolve(new BookPath(row));
+        }
+      })
+    })
+  }
+
+  public getRatings(): Promise<BookRating[]> {
+
+    return new Promise<BookRating[]>((resolve, reject) => {
+
+      //const whereValue = DbCalibre._makeWhere('rating', ""+id, 'title', '_');
+      //debug(whereValue);
+      //const where = whereValue[0];
+      //const value = whereValue[1];
+
+      const query = queryBuilder
+        .select({ separator: "\n" })
+
+        // bookFields
+        .field('ratings.id', 'id')
+        .field('ratings.rating', 'rating')
+
+        .from('ratings');
+
+      //debug(query.toString());
+
+      this._db.all(query.toString(), (err, row) => {
+        if (err) {
+          reject(err);
+        } else {
+          const ratings = row.map(b => {
+            return new BookRating(b)
+          });
+          resolve(ratings);
+        }
+      })
+    })
+  }
+
+  public insertRating(bookRating:BookRating): Promise<BookRating> {
+
+    return new Promise<BookRating>((resolve, reject) => {
+
+      const query = queryBuilder
+        .insert({ separator: "\n" })
+
+        .set('id', bookRating.id)
+        .set('rating', bookRating.rating)
+
+        .into('ratings');
+
+      //debug(query.toString());
+
+      this._db.exec(query.toString(), (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(bookRating);
+        }
+      })
+    })
+  }
+
+  public getBookRatingLinkIds(): Promise<number[]> {
+
+    return new Promise<number[]>((resolve, reject) => {
+
+      const query = queryBuilder
+        .select({ separator: "\n" })
+
+        .field('id', 'id')
+        .from('books_ratings_link');
+
+      //debug(query.toString());
+
+      this._db.all(query.toString(), (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          const ids = rows.map(b => {
+            return b.id
+          });
+          resolve(ids);
+        }
+      })
+    })
+  }
+
+  public insertBookRatingLink(id: number, book_id: number, rating_id: number): Promise<void> {
+
+    return new Promise<void>((resolve, reject) => {
+
+      const query = queryBuilder
+        .insert({ separator: "\n" })
+
+        .set('id', id)
+        .set('book', book_id)
+        .set('rating', rating_id)
+
+        .into('books_ratings_link');
+
+      // debug(query.toString());
+
+      this._db.exec(query.toString(), (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
         }
       })
     })

@@ -14,11 +14,11 @@ export class MatRatingComponent implements OnInit {
   @Input('rating') private rating: number;
   @Input('starCount') private starCount = 5;
   @Input('color') private color: string;
-  @Input('title') private title: string;
+  @Input('title') title: string;
   @Output() private ratingUpdated = new EventEmitter();
 
   private snackBarDuration = 2000;
-  private ratingArr = [];
+  ratingArr = [];
 
   constructor(private snackBar: MatSnackBar) {
   }
