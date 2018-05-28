@@ -409,7 +409,11 @@ export class User {
    * @returns {string|void}
    */
   static createToken(user): string {
-    return sign(_.pick(user, ['id', 'created', 'updated', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google', 'history']), User.conf.authent_secret, {expiresIn: "7d"});
+    var sendUser = _.pick(user, ['id', 'created', 'updated', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google', 'history']);
+    while (sendUser.history.downloadedBooks.length > 3) {
+      sendUser.history.downloadedBooks.splice(0, 1);
+    }
+    return sign(sendUser, User.conf.authent_secret, {expiresIn: "7d"});
   }
 
   /**
