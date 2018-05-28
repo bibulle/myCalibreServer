@@ -122,6 +122,8 @@ export class UserService {
 
     let jwt = UserService.tokenGetter();
 
+    let oldUser = this.user;
+
     if (!jwt || this.jwtHelper.isTokenExpired(jwt)) {
       this.user = {} as User;
     } else {
@@ -129,12 +131,17 @@ export class UserService {
       ret = true;
     }
 
-    // console.log(this.user);
+    // if it's a new user, refresh it (to complete the token) else recall last complement
+    if (this.user && this.user.id && (this.user.id !== oldUser.id)) {
+      this.refreshUser();
+    } else {
+      if (this.user.history && oldUser.history) {
+        this.user.history.downloadedBooks = oldUser.history.downloadedBooks;
+        this.user.history.ratings = oldUser.history.ratings;
+      }
+    }
 
-    // if only username add to lastname
-    // if (this.user.local && !this.user.local.lastname && !this.user.local.firstname) {
-    //  this.user.local.lastname = this.user.local.username;
-    // }
+    // console.log(this.user);
 
     if (emitEvent) {
       this.userSubject.next(this.user);
@@ -190,7 +197,26 @@ export class UserService {
    * @returns {Promise<void>}
    */
   refreshUser(): Promise<User|string> {
-    return this._doGet(environment.serverUrl + 'authent/refreshToken');
+    return new Promise<User>((resolve, reject) => {
+      this._http
+        .get(environment.serverUrl + 'authent/user')
+        // .map((res: Response) => res.json().data as User[])
+        .subscribe(
+          (data: Object) => {
+            let user = data['data'] as User;
+            if (user.id) {
+              this.user = user;
+              this.userSubject.next(this.user);
+            }
+            resolve(this.user);
+          },
+          err => {
+            reject(err);
+          },
+        );
+    })
+
+    // return this._doGet(environment.serverUrl + 'authent/refreshToken');
   }
 
   /**

@@ -5,7 +5,15 @@ import {UserService} from '../../user.service';
 import {NotificationService} from 'app/components/notification/notification.service';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule, MatTooltipModule} from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatIconModule,
+  MatInputModule,
+  MatProgressSpinnerModule,
+  MatTooltipModule
+} from '@angular/material';
 import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {LocalizedDateModule} from '../../../../directives/localized-date.pipe';
@@ -229,6 +237,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     MatCardModule,
     MatIconModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
     FormsModule,
     MatInputModule,
     MatTooltipModule,
