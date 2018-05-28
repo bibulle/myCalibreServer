@@ -48,7 +48,7 @@ function authentRouter(passport): Router {
     });
   router.route('/refreshToken')
   // ====================================
-  // route for gettin a new token (on user update)
+  // route to get a new token (on user update)
   // ====================================
   //
     .get((request: Request, response: Response, next: NextFunction) => {
@@ -148,7 +148,7 @@ function authentRouter(passport): Router {
   // ====================================
     .post((request: Request, response: Response, next: NextFunction) => {
       debug("POST /save");
-      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+      passport.authenticate(['jwt-check'], {session: false}, (err, user): any => {
 
         if (err) {
           return next(err);
@@ -183,7 +183,7 @@ function authentRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /delete");
-      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+      passport.authenticate(['jwt-check'], {session: false}, (err, user): any => {
 
         if (err) {
           return next(err);
@@ -232,7 +232,7 @@ function authentRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /reset");
-      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+      passport.authenticate(['jwt-check'], {session: false}, (err, user): any => {
 
         if (err) {
           return next(err);
@@ -284,7 +284,7 @@ function authentRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /list");
-      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+      passport.authenticate(['jwt-check'], {session: false}, (err, user): any => {
 
         if (err) {
           return next(err);
@@ -316,7 +316,7 @@ function authentRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /merge");
-      passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
+      passport.authenticate(['jwt-check'], {session: false}, (err, user): any => {
 
         if (err) {
           return next(err);
@@ -392,7 +392,7 @@ function authentRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /facebook");
-      passport.authenticate(['facebook'], {scope: 'email'}, (err, user, info): any => {
+      passport.authenticate(['facebook'], {scope: 'email'}, (err): any => {
         if (err) {
           return next(err);
         }
@@ -411,7 +411,7 @@ function authentRouter(passport): Router {
           return next(err);
         }
 
-        passport.authenticate(['facebook'], {}, (err, newUser: User, info): any => {
+        passport.authenticate(['facebook'], {}, (err, newUser: User): any => {
 
           if (err) {
             return next(err);
@@ -505,7 +505,7 @@ function authentRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /google");
-      passport.authenticate('google', {scope: ['profile', 'email']}, (err, user, info): any => {
+      passport.authenticate('google', {scope: ['profile', 'email']}, (err): any => {
         //console.log(err);
         //console.log(user);
         //console.log(info);
@@ -529,7 +529,7 @@ function authentRouter(passport): Router {
         //debug("----- connected -----");
         //debug(connectedUser);
 
-        passport.authenticate(['google'], {}, (err, newUser: User, info): any => {
+        passport.authenticate(['google'], {}, (err, newUser: User): any => {
 
           if (err) {
             return next(err);
@@ -618,6 +618,7 @@ function authentRouter(passport): Router {
   return router;
 }
 
+// noinspection JSUnusedLocalSymbols
 /**
  * to be sure the user is logged in
  * @param request
@@ -645,13 +646,13 @@ function isLoggedIn(request, response, next) {
 function _getBearerUser(request: Request, callback: (err, user: User) => (any)): User {
   let token: string;
   if (request.headers && request.headers.authorization) {
-    var authorization:string = request.headers.authorization[0];
+    let authorization: string = request.headers.authorization[0];
     if (typeof request.headers.authorization === "string") {
       authorization = request.headers.authorization;
     }
-    console.log(authorization)
+    // console.log(authorization);
     const parts = authorization.split(' ');
-    console.log(parts)
+    // console.log(parts);
     if (parts.length == 2) {
       const scheme = parts[0]
         , credentials = parts[1];
@@ -721,15 +722,15 @@ function _saveAUser(user, request: Request, response: Response, next: NextFuncti
   // debug(options['local']);
 
   // Check if username already exist
-  DbMyCalibre
-    .findUserByUsername(user.local.username)
-    .then((userDb) => {
-      if (userDb && (userDb.id !== user.id)) {
-        response.status(401).send({error: "That username already exists."})
-      } else {
-        user = _saveAndSendBack(user, autoUpdate, response, next);
-      }
-    });
+  //DbMyCalibre
+  //  .findUserByUsername(user.local.username)
+  //  .then((userDb) => {
+  //    if (userDb && (userDb.id !== user.id)) {
+  //      response.status(401).send({error: "That username already exists."})
+  //    } else {
+        _saveAndSendBack(user, autoUpdate, response, next);
+  //    }
+  //  });
 }
 
 

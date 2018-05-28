@@ -1,12 +1,13 @@
 import {Component, NgModule, OnInit} from '@angular/core';
 import {FilterService} from '../../filter-bar/filter.service';
-import {Book} from '../book';
+import {Book, ReaderRatingTotal} from '../book';
 import {environment} from '../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 import {BookService} from '../book.service';
 import {MatContentModule} from '../../content/content.component';
 import {CommonModule} from '@angular/common';
 import {TitleService} from '../../../app/title.service';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {FormsModule} from '@angular/forms';
 import {
   MatAutocompleteModule,
@@ -17,12 +18,12 @@ import {
   MatIconModule,
   MatInputModule,
   MatMenuModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatTooltipModule
 } from '@angular/material';
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {TranslateModule} from '@ngx-translate/core';
 import {LocalizedDateModule} from '../../../directives/localized-date.pipe';
 import {MatRatingModule} from '../../rating/rating.component';
 import {UserService} from '../../authent/user.service';
@@ -41,6 +42,7 @@ export class BookPageComponent implements OnInit {
 
   bookHasEpub = false;
   bookHasMobi = false;
+  ratings: ReaderRatingTotal;
 
   coverUrlBase = `${environment.serverUrl}api/book/cover`;
 
@@ -51,7 +53,8 @@ export class BookPageComponent implements OnInit {
               private _router: Router,
               private _dialog: MatDialog,
               private _notificationService: NotificationService,
-              private _userService: UserService) {
+              private _userService: UserService,
+              private _translateService: TranslateService) {
   }
 
   ngOnInit() {
@@ -74,6 +77,10 @@ export class BookPageComponent implements OnInit {
           }
         });
 
+        this.ratings = Book.updateReaderRating(this.book, this._userService.getUser());
+
+        // console.log(book);
+
         this._titleService.forceTitle(this._router.url, book.book_title);
       })
       .catch(err => {
@@ -81,6 +88,43 @@ export class BookPageComponent implements OnInit {
       })
 
 
+  }
+
+
+  ratingUpdated(rating) {
+    // console.log('RATING : ' + rating);
+    this.ratings.yourRating = rating * 2;
+
+    this._bookService
+      .updateRating(this.book.book_id, rating * 2)
+      .then((result) => {
+        setTimeout(() => {
+          this._userService.refreshUser()
+            .then(() => {
+              this.ratings = Book.updateReaderRating(this.book, this._userService.getUser());
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        }, 3000);
+
+        switch (result) {
+          case 'CHANGED':
+            this._notificationService.info(this._translateService.instant('label.rating.changed'));
+            break;
+          case 'NOTHING_TO_DO':
+            this._notificationService.info(this._translateService.instant('label.rating.nothing'));
+            break;
+          default:
+          case 'SAVED':
+            this._notificationService.info(this._translateService.instant('label.rating.saved'));
+            break;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this._notificationService.error(err.statusText);
+      });
   }
 
   /**
@@ -222,6 +266,7 @@ export class BookPageComponent implements OnInit {
     MatMenuModule,
     MatAutocompleteModule,
     MatDialogModule,
+    MatTooltipModule,
     FlexLayoutModule,
     TranslateModule,
     LocalizedDateModule,

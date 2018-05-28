@@ -1,3 +1,5 @@
+import {BookData} from '../book/book';
+
 export class User {
 
   id: string;
@@ -30,7 +32,8 @@ export class User {
 
   history: {
     lastConnection: Date,
-    downloadedBooks: Object[]
+    downloadedBooks: DownloadedBook[],
+    ratings: BookRating[]
   };
 
 
@@ -81,10 +84,24 @@ export class User {
     if (options && options.history) {
       this.history = {
         lastConnection: options.history.lastConnection,
-        downloadedBooks: options.history.downloadedBooks
+        downloadedBooks: options.history.downloadedBooks,
+        ratings: options.history.ratings
       }
     }
 
   }
 
+}
+
+export class DownloadedBook {
+  date: Date;
+  id: number;
+  data: BookData;
+}
+export class BookRating {
+  date: Date;
+  rating: number;
+  // noinspection JSUnusedGlobalSymbols
+  book_id: number;
+  book_name: string;
 }

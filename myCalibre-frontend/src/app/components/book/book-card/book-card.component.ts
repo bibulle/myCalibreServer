@@ -3,9 +3,10 @@ import { Book } from '../book';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../../environments/environment';
 import { Router } from '@angular/router';
-import { MatCardModule, MatIconModule } from '@angular/material';
+import {MatCardModule, MatIconModule, MatTooltipModule} from '@angular/material';
 import {TranslateModule} from '@ngx-translate/core';
 import {MatRatingModule} from '../../rating/rating.component';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @Component({
   selector: 'app-book-card',
@@ -43,6 +44,8 @@ export class BookCardComponent implements OnInit {
     CommonModule,
     MatCardModule,
     MatIconModule,
+    MatTooltipModule,
+    FlexLayoutModule,
     TranslateModule,
     MatRatingModule
   ],

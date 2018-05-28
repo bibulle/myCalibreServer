@@ -1,17 +1,25 @@
 // <reference path="../../../../../node_modules/@angular/material/core/core.d.ts"/>
 import {Component, OnInit, NgModule, OnDestroy} from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
 
 const leftPad = require('left-pad');
-import { Subscription } from 'rxjs';
+import {Subscription} from 'rxjs';
 
-import { FilterService, Filter, SortType, SortingDirection } from '../../filter-bar/filter.service';
-import { MatContentModule } from '../../content/content.component';
-import { BookCardModule } from '../book-card/book-card.component';
-import { BookService } from '../book.service';
-import { Book } from '../book';
-import { MatCommonModule, MatCardModule, MatButtonModule, MatIconModule, MatInputModule, MatProgressSpinnerModule, MatToolbarModule } from '@angular/material';
+import {FilterService, Filter, SortType, SortingDirection} from '../../filter-bar/filter.service';
+import {MatContentModule} from '../../content/content.component';
+import {BookCardModule} from '../book-card/book-card.component';
+import {BookService} from '../book.service';
+import {Book} from '../book';
+import {
+  MatCommonModule,
+  MatCardModule,
+  MatButtonModule,
+  MatIconModule,
+  MatInputModule,
+  MatProgressSpinnerModule,
+  MatToolbarModule
+} from '@angular/material';
 import {TranslateModule} from '@ngx-translate/core';
 
 @Component({
@@ -38,7 +46,7 @@ export class BookListComponent implements OnInit, OnDestroy {
 
   private _currentFilterSubscription: Subscription;
 
-  static _cleanAccent (str: string): string {
+  static _cleanAccent(str: string): string {
     return str.toLowerCase()
       .replace(/[àâªáäãåā]/g, 'a')
       .replace(/[èéêëęėē]/g, 'e')
@@ -49,13 +57,13 @@ export class BookListComponent implements OnInit, OnDestroy {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor (private _bookService: BookService,
-               private _filterService: FilterService) {
+  constructor(private _bookService: BookService,
+              private _filterService: FilterService) {
 
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnInit () {
+  ngOnInit() {
 
     this._filterService.updateNotDisplayed(false);
     this._filterService.updateLimitTo(null);
@@ -70,19 +78,19 @@ export class BookListComponent implements OnInit, OnDestroy {
     );
 
     this._bookService
-        .getBooks()
-        .then(books => {
-          this.fullBooks = books;
-          this._fillBooks();
+      .getBooks()
+      .then(books => {
+        this.fullBooks = books;
+        this._fillBooks();
 
-        })
-        .catch(err => {
-          console.log(err);
-        })
+      })
+      .catch(err => {
+        console.log(err);
+      })
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnDestroy () {
+  ngOnDestroy() {
     // console.log("ngOnDestroy");
     if (this._currentFilterSubscription) {
       this._currentFilterSubscription.unsubscribe();
@@ -93,7 +101,7 @@ export class BookListComponent implements OnInit, OnDestroy {
    * fill the this.book list (slowly) with the filtered this.fullBooks list
    * @private
    */
-  private _fillBooks () {
+  private _fillBooks() {
     if (!this.fullBooks || !this.filter) {
       return;
     }
@@ -109,8 +117,8 @@ export class BookListComponent implements OnInit, OnDestroy {
       // if books exists already, start from books length
       if (this.books) {
         cpt = Math.min(
-            Math.ceil(this.books.length / STEP),
-            Math.floor(tmpBooks.length / STEP)) + 1;
+          Math.ceil(this.books.length / STEP),
+          Math.floor(tmpBooks.length / STEP)) + 1;
       }
       const initCpt = cpt;
 
@@ -136,7 +144,7 @@ export class BookListComponent implements OnInit, OnDestroy {
    * @returns {Book[]} or null is nothing to do
    * @private
    */
-  _filterAndSortBooks (): Book[] {
+  _filterAndSortBooks(): Book[] {
     const filterJson = JSON.stringify(this.filter);
     if ((this.previousFilterJson === filterJson) && (this.books != null)) {
       return null;
@@ -144,49 +152,75 @@ export class BookListComponent implements OnInit, OnDestroy {
     this.previousFilterJson = filterJson;
 
     const filteredBooks = this.fullBooks
-                              // first filter
-                              .filter((b) => {
+    // first filter
+      .filter((b) => {
 
-                                const strToSearch = b.book_title
-                                                     .concat(b.series_name)
-                                                     .concat(b.comment)
-                                                     .concat('' + b.author_name);
+        const strToSearch = b.book_title
+          .concat(b.series_name)
+          .concat(b.comment)
+          .concat('' + b.author_name);
 
-                                return (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search.trim())));
-                              })
-                              // then sort
-                              .sort((b1: Book, b2: Book) => {
-                                let v1: string;
-                                let v2: string;
-                                v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : leftPad(b1.book_series_index, 6, 0) + ' ') + b1.book_sort;
-                                v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : leftPad(b2.book_series_index, 6, 0) + ' ') + b2.book_sort;
-                                switch (this.filter.sort) {
-                                  case SortType.Name:
-                                    break;
-                                  case SortType.Author:
-                                    v1 = b1.author_sort.toString() + ' ' + v1;
-                                    v2 = b2.author_sort.toString() + ' ' + v2;
-                                    break;
-                                  case SortType.PublicRating:
-                                    v1 = b1.rating + ' ' + v1;
-                                    v2 = b2.rating + ' ' + v2;
-                                    break;
-                                  case SortType.PublishDate:
-                                  default:
-                                    v1 = b1.book_date + ' ' + v1;
-                                    v2 = b2.book_date + ' ' + v2;
-                                    break;
-                                }
+        return (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search.trim())));
+      })
+      // then sort
+      .sort((b1: Book, b2: Book) => {
+        let v1: string;
+        let v2: string;
+        let r1 = '99';
+        let r2 = '99';
+        v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : leftPad(b1.book_series_index, 6, 0) + ' ') + b1.book_sort;
+        v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : leftPad(b2.book_series_index, 6, 0) + ' ') + b2.book_sort;
+        switch (this.filter.sort) {
+          case SortType.Name:
+            break;
+          case SortType.Author:
+            v1 = b1.author_sort.toString() + ' ' + v1;
+            v2 = b2.author_sort.toString() + ' ' + v2;
+            break;
+          case SortType.PublicRating:
+            r1 = '99';
+            if (b1.rating) {
+              r1 = ('0' + (10 - +b1.rating));
+              r1 = r1.substr(r1.length - 2);
+            }
+            v1 = r1 + ' ' + v1;
+            r2 = '99';
+            if (b2.rating) {
+              r2 = ('0' + (10 - +b2.rating));
+              r2 = r2.substr(r2.length - 2);
+            }
+            v2 = r2 + ' ' + v2;
+            break;
+          case SortType.ReaderRating:
+            r1 = '99';
+            if (b1.readerRating) {
+              r1 = ('0' + (10 - +b1.readerRating));
+              r1 = r1.substr(r1.length - 2);
+            }
+            v1 = r1 + ' ' + b1.readerRatingCount + ' ' + v1;
+            r2 = '99';
+            if (b2.readerRating) {
+              r2 = ('0' + (10 - +b2.readerRating));
+              r2 = r2.substr(r2.length - 2);
+            }
+            v2 = r2 + ' ' + b2.readerRatingCount + ' ' + v2;
+            break;
+          case SortType.PublishDate:
+          default:
+            v1 = b1.book_date + ' ' + v1;
+            v2 = b2.book_date + ' ' + v2;
+            break;
+        }
 
-                                switch (this.filter.sorting_direction) {
-                                  case SortingDirection.Asc:
-                                    return v1.localeCompare(v2);
-                                  case SortingDirection.Desc:
-                                  default:
-                                    return v2.localeCompare(v1);
-                                }
+        switch (this.filter.sorting_direction) {
+          case SortingDirection.Asc:
+            return v1.localeCompare(v2);
+          case SortingDirection.Desc:
+          default:
+            return v2.localeCompare(v1);
+        }
 
-                              });
+      });
 
 
     this.totalBooksCount = filteredBooks.length;
@@ -226,4 +260,5 @@ export class BookListComponent implements OnInit, OnDestroy {
     BookListComponent
   ]
 })
-export class BookListModule { }
+export class BookListModule {
+}

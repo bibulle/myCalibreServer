@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import DbCalibre from "./dbCalibre";
 import DbMyCalibre from "./dbMyCalibre";
 const path = require('path');
-const debug = require('debug')('server:models:book');
+// const debug = require('debug')('server:models:book');
 
 export class Book {
 
@@ -27,6 +27,13 @@ export class Book {
 
   data: BookData[];
 
+  history: {
+    ratings: BookRating[],
+    downloads: BookDownloaded[]
+  };
+  readerRating: number;
+  readerRatingCount: number;
+
   constructor (options: {}) {
     _.merge(this, options);
 
@@ -39,6 +46,19 @@ export class Book {
 
     BookPath.createBookData(this);
 
+    if (!this.history) {
+      this.history = {
+        ratings: [],
+        downloads: []
+      }
+    }
+    if (!this.history.ratings) {
+      this.history.ratings = []
+    }
+    if (!this.history.downloads) {
+      this.history.downloads = []
+    }
+
   }
 
   getCoverPath() {
@@ -48,6 +68,27 @@ export class Book {
     return path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
   }
 
+
+  static updateBooksFromUsers(books: Book[], downloadedBooksById: { [id: string] : BookDownloaded[]; }, ratingsById: { [id: string] : BookRating[]; }) {
+    for (let i = 0; i < books.length; i++) {
+      let book = books[i];
+      if (downloadedBooksById[book.book_id]) {
+        for (let j = 0; j < downloadedBooksById[book.book_id].length; j++) {
+          book.history.downloads.push(downloadedBooksById[book.book_id][j]);
+        }
+      }
+      if (ratingsById[book.book_id]) {
+        let sum = 0;
+        book.readerRatingCount = 0;
+        for (let j = 0; j < ratingsById[book.book_id].length; j++) {
+          book.readerRatingCount++;
+          sum+=ratingsById[book.book_id][j].rating;
+          book.history.ratings.push(ratingsById[book.book_id][j]);
+        }
+        book.readerRating = sum / Math.max(book.readerRatingCount, 1);
+      }
+    }
+  }
 
 }
 
@@ -78,7 +119,7 @@ export class BookPath {
   }
 
   /**
-   * Create new abject and delete unused attribut
+   * Create new abject and delete unused attribute
    * @param book
    */
   static createBookData (book: BookPath | Book) {
@@ -111,10 +152,17 @@ export class BookData {
 }
 
 export class BookRating {
-  id: number;
   rating: number;
-
-  constructor (options: {}) {
-    _.merge(this, options);
-  }
+  date: Date;
+  // noinspection JSUnusedGlobalSymbols
+  user_id: string;
+  // noinspection JSUnusedGlobalSymbols
+  user_name: string;
+}
+export class BookDownloaded {
+  date: Date;
+  // noinspection JSUnusedGlobalSymbols
+  user_id: string;
+  // noinspection JSUnusedGlobalSymbols
+  user_name: string;
 }

@@ -9,12 +9,17 @@
     <img mat-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
   </div>
   <div class="text">
-    <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.public-rating' | translate}}"></mat-rating>
+    <div class="top-right">
+      <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.rating-public' | translate}}" [matTooltip]="book.rating/2" matTooltipPosition="left"></mat-rating>
+      <div *ngIf="!book.rating" class="empty-rating">&nbsp;</div>
+      <mat-rating *ngIf="book.readerRating" [rating]="book.readerRating/2" color="primary" disabled="true" title="{{'label.rating-reader' | translate}} ({{book.readerRatingCount}})" [matTooltip]="book.readerRating/2" matTooltipPosition="left"></mat-rating>
+      <div *ngIf="!book.readerRating" class="empty-rating">&nbsp;</div>
+    </div>
     <mat-card-title>
       <span *ngIf="book.series_name">{{book.series_name}} - {{book.book_series_index}} - </span>
       {{book.book_title}} <span class="date" *ngIf="book.book_date>'011'">{{book.book_date | date: 'yyyy'}}</span>
     </mat-card-title>
-    <mat-card-subtitle>{{book.author_name}} <span class="other">{{book.data_format}}</span></mat-card-subtitle>
+    <mat-card-subtitle>{{book.author_name}}</mat-card-subtitle>
   </div>
   <!--</mat-card-title-group>-->
 </mat-card>
