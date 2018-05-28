@@ -46,13 +46,13 @@ function authentRouter(passport): Router {
         })
       })(request, response, next);
     });
-  router.route('/refreshToken')
+  router.route('/user')
   // ====================================
   // route to get a new token (on user update)
   // ====================================
   //
     .get((request: Request, response: Response, next: NextFunction) => {
-      debug("GET /refreshToken");
+      debug("GET /user");
       passport.authenticate(['jwt-check'], {session: false}, (err, user, info): any => {
         if (err) {
           return next(err);
@@ -66,15 +66,18 @@ function authentRouter(passport): Router {
           return response.status(401).send({error: msg});
         }
 
-        request['login'](user, loginErr => {
-          if (loginErr) {
-            return next(loginErr);
+        User.findById(user.id, (err: Error, loadedUser: User) => {
+          if (err) {
+            return next(err);
           }
-          debug("201 : token created(" + user.id + ")");
-          return response.status(201).send({
-            id_token: User.createToken(user)
-          });
-        })
+          let sendUser = _.pick(loadedUser, ['id', 'created', 'updated', 'local.username', 'local.firstname', 'local.lastname', 'local.email', 'local.isAdmin', 'local.amazonEmails', 'facebook', 'twitter', 'google', 'history']);
+
+          delete sendUser.facebook.token;
+          delete sendUser.google.token;
+          delete sendUser.twitter.token;
+
+          response.status(200).send(JSON.stringify({data: sendUser}));
+        });
       })(request, response, next);
     });
 
