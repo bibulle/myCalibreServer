@@ -158,6 +158,10 @@ export class BookRating {
   user_id: string;
   // noinspection JSUnusedGlobalSymbols
   user_name: string;
+
+  constructor (options: {}) {
+    _.merge(this, options);
+  }
 }
 export class BookDownloaded {
   date: Date;
@@ -165,4 +169,8 @@ export class BookDownloaded {
   user_id: string;
   // noinspection JSUnusedGlobalSymbols
   user_name: string;
+
+  constructor (options: {}) {
+    _.merge(this, options);
+  }
 }

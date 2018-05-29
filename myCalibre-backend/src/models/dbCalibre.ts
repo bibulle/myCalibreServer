@@ -221,7 +221,7 @@ class DbCalibre {
       const query = queryBuilder
         .insert({ separator: "\n" })
 
-        .set('id', bookRating.id)
+        .set('id', bookRating['id'])
         .set('rating', bookRating.rating)
 
         .into('ratings');

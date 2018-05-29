@@ -106,6 +106,10 @@ export class User {
     }
     delete options['_id'];
 
+    if (typeof options['created'] === "string") {
+      options['created'] = new Date(options['created']);
+    }
+
 
     _.merge(this, options);
 

@@ -359,6 +359,7 @@ function authentRouter(passport): Router {
 
                 User.mergeAndSave(user1, user2, err => {
                   if (err) {
+                    debug(err);
                     return next(err);
                   }
 
@@ -370,15 +371,18 @@ function authentRouter(passport): Router {
                       response.status(200).send(JSON.stringify({data: users}));
                     })
                     .catch(err => {
+                      debug(err);
                       return next(err);
                     });
                 });
               })
               .catch(err => {
+                debug(err);
                 return next(err);
               });
           })
           .catch(err => {
+            debug(err);
             return next(err);
           });
 

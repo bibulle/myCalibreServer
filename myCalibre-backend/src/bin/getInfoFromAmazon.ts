@@ -150,7 +150,7 @@ function getInfo () {
             if (filterRatings.length == 0) {
 
               let ratingsId: number[] = ratings.map(bookRating => {
-                return bookRating.id;
+                return bookRating['id'];
               });
               // Found a free id
               let id = 1;
