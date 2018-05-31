@@ -108,6 +108,7 @@ export class User {
 
     if (typeof options['created'] === "string") {
       options['created'] = new Date(options['created']);
+      changed = true;
     }
 
 
@@ -389,6 +390,12 @@ export class User {
         date: new Date()
       });
       this.history.downloadedBooks.sort((a,b) => {
+        if (typeof a.date === "string") {
+          a.date = new Date(a.date);
+        }
+        if (typeof b.date === "string") {
+          b.date = new Date(b.date);
+        }
         if (a.date.getTime() < b.date.getTime()) {
           return -1;
         } else {
