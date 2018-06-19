@@ -120,7 +120,7 @@ class DbCalibre {
         .field('comments.text', 'comment')
 
         .from('books')
-        .group('book_title')
+        //.group('book_title')
         .where(where, value)
         .order("timestamp", false)
         .limit(limit)
