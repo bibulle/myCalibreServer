@@ -1,8 +1,9 @@
 import * as _ from "lodash";
 import DbCalibre from "./dbCalibre";
 import DbMyCalibre from "./dbMyCalibre";
+
 const path = require('path');
-// const debug = require('debug')('server:models:book');
+const debug = require('debug')('server:models:book');
 
 export class Book {
 
@@ -24,6 +25,8 @@ export class Book {
   series_sort: string;
   comment: string;
   book_date: Date;
+  timestamp: Date;
+  last_modified: Date;
 
   data: BookData[];
 
@@ -61,20 +64,94 @@ export class Book {
 
   }
 
-  getCoverPath() {
+  getCoverPath () {
     return path.resolve(`${DbCalibre.CALIBRE_DIR}/${this.book_path}/cover.jpg`);
   }
-  getThumbnailPath() {
+
+  getThumbnailPath () {
     return path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
   }
 
+  /**
+   * Add to book object the user things (downloaded, rating, ...)
+   * @param {Object[]} rows
+   * @returns {Promise<Object>}
+   */
+  static updateBooksFromRows (rows: Object[]): Promise<Object> {
+    return new Promise((resolve, reject) => {
 
-  static updateBooksFromUsers(books: Book[], downloadedBooksById: { [id: string] : BookDownloaded[]; }, ratingsById: { [id: string] : BookRating[]; }) {
+      DbMyCalibre.getAllUsers()
+                 .then(users => {
+
+                   // Get lists of all downloaded books/ all ratings
+                   let downloadedBooksById: { [id: string]: BookDownloaded[]; } = {};
+                   let ratingsById: { [id: string]: BookRating[]; } = {};
+                   for (let i = 0; i < users.length; i++) {
+                     let user = users[i];
+                     for (let j = 0; j < user.history.downloadedBooks.length; j++) {
+                       let b = user.history.downloadedBooks[j];
+                       if (!downloadedBooksById[b.id]) {
+                         downloadedBooksById[b.id] = [];
+                       }
+                       downloadedBooksById[b.id].push({
+                         date: b.date,
+                         user_id: user.id,
+                         user_name: ((user.local && (user.local.firstname || user.local.lastname)) ? user.local.firstname + ' ' + user.local.lastname : user.local.username)
+                       });
+                     }
+                     for (let j = 0; j < user.history.ratings.length; j++) {
+                       let b = user.history.ratings[j];
+                       if (!ratingsById[b.book_id]) {
+                         ratingsById[b.book_id] = [];
+                       }
+                       ratingsById[b.book_id].push({
+                         rating: b.rating,
+                         date: b.date,
+                         user_id: user.id,
+                         user_name: ((user.local && (user.local.firstname || user.local.lastname)) ? user.local.firstname + ' ' + user.local.lastname : user.local.username)
+                       });
+                     }
+                   }
+
+                   // Upfdate each books from these data
+                   let lastUpdated = new Date(0);
+                   if ((rows.length > 0) && rows[0]['books']) {
+                     for (let i = 0; i < rows.length; i++) {
+                       let lastUpdatedTmp = Book.updateBooksFromUsers(rows[i]['books'] as Book[], downloadedBooksById, ratingsById);
+                       if (lastUpdated.getTime() < lastUpdatedTmp.getTime()) {
+                         lastUpdated = lastUpdatedTmp;
+                       }
+                     }
+                   } else {
+                     lastUpdated = Book.updateBooksFromUsers(rows as Book[], downloadedBooksById, ratingsById);
+                   }
+
+                   debug(lastUpdated);
+                   resolve({
+                     lastUpdated: lastUpdated,
+                     data: rows
+                   })
+
+                 })
+                 .catch(err => {
+                   reject(err);
+                 })
+
+    });
+  }
+
+  static updateBooksFromUsers (books: Book[], downloadedBooksById: { [id: string]: BookDownloaded[]; }, ratingsById: { [id: string]: BookRating[]; }) {
+    let lastUpdated = new Date(0);
+
     for (let i = 0; i < books.length; i++) {
       let book = books[i];
       if (downloadedBooksById[book.book_id]) {
         for (let j = 0; j < downloadedBooksById[book.book_id].length; j++) {
           book.history.downloads.push(downloadedBooksById[book.book_id][j]);
+          if (book.last_modified.getTime() < downloadedBooksById[book.book_id][j].date.getTime()) {
+            book.last_modified = downloadedBooksById[book.book_id][j].date;
+            //debug(`Change 1 ${book.book_id}`);
+          }
         }
       }
       if (ratingsById[book.book_id]) {
@@ -82,12 +159,22 @@ export class Book {
         book.readerRatingCount = 0;
         for (let j = 0; j < ratingsById[book.book_id].length; j++) {
           book.readerRatingCount++;
-          sum+=ratingsById[book.book_id][j].rating;
+          sum += ratingsById[book.book_id][j].rating;
           book.history.ratings.push(ratingsById[book.book_id][j]);
+          if (book.last_modified.getTime() < ratingsById[book.book_id][j].date.getTime()) {
+            book.last_modified = ratingsById[book.book_id][j].date;
+            //debug(`Change 2 ${book.book_id}`);
+          }
         }
         book.readerRating = sum / Math.max(book.readerRatingCount, 1);
       }
+
+      if (lastUpdated.getTime() < book.last_modified.getTime()) {
+        lastUpdated = book.last_modified;
+      }
     }
+
+    return lastUpdated;
   }
 
 }
@@ -111,10 +198,11 @@ export class BookPath {
 
   }
 
-  getCoverPath() {
+  getCoverPath () {
     return path.resolve(`${DbCalibre.CALIBRE_DIR}/${this.book_path}/cover.jpg`);
   }
-  getThumbnailPath() {
+
+  getThumbnailPath () {
     return path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/thumbnail/${this.book_path}/thumbnail.jpg`);
   }
 
@@ -163,6 +251,7 @@ export class BookRating {
     _.merge(this, options);
   }
 }
+
 export class BookDownloaded {
   date: Date;
   // noinspection JSUnusedGlobalSymbols

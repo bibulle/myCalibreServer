@@ -167,7 +167,25 @@ class DbMyCalibre {
               _.forEach(r, (value, key) => {
                 _.set(options, key, value);
               });
-              return new User(options)
+
+              let user = new User(options);
+              if (user.history && user.history.downloadedBooks) {
+                _.forEach(user.history.downloadedBooks, d => {
+                  if (typeof d.date === "string") {
+                    d.date = new Date(d.date);
+                  }
+                })
+              }
+              if (user.history && user.history.ratings) {
+                _.forEach(user.history.ratings, r => {
+                  if (typeof r.date === "string") {
+                    r.date = new Date(r.date);
+                  }
+                })
+              }
+
+              //debug(options['history']);
+              return user
             });
             //debug(users);
             resolve(users);
@@ -207,7 +225,23 @@ class DbMyCalibre {
           } else {
             if (row) {
 
-              resolve(new User(row));
+              let user = new User(row);
+              if (user.history && user.history.downloadedBooks) {
+                _.forEach(user.history.downloadedBooks, d => {
+                  if (typeof d.date === "string") {
+                    d.date = new Date(d.date);
+                  }
+                })
+              }
+              if (user.history && user.history.ratings) {
+                _.forEach(user.history.ratings, r => {
+                  if (typeof r.date === "string") {
+                    r.date = new Date(r.date);
+                  }
+                })
+              }
+              //debug(user);
+              resolve(user);
             } else {
               resolve(null);
             }
@@ -287,7 +321,23 @@ class DbMyCalibre {
       user.updated = new Date();
     }
 
-    //debug(user);
+    // translate date that where previously in string type
+    if (user.history && user.history.downloadedBooks) {
+      _.forEach(user.history.downloadedBooks, d => {
+        if (typeof d.date === "string") {
+          d.date = new Date(d.date);
+        }
+      })
+    }
+    if (user.history && user.history.ratings) {
+      _.forEach(user.history.ratings, d => {
+        if (typeof d.date === "string") {
+          d.date = new Date(d.date);
+        }
+      })
+    }
+
+    //debug(user.history);
     delete user['_id'];
     //debug(user);
 

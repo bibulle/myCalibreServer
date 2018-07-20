@@ -2,8 +2,8 @@ import DbCalibre from "./dbCalibre";
 import { Author } from "./author";
 import { Series } from "./series";
 import { Tag } from "./tag";
-import DbMyCalibre from "./dbMyCalibre";
-import {Book, BookDownloaded, BookRating} from "./book";
+import { Book } from "./book";
+
 const fs = require('fs');
 const path = require('path');
 const debug = require('debug')('server:models:cache-data');
@@ -70,60 +70,23 @@ export class CacheDate {
                 promise
                   .then(rows => {
 
-                    // TODO add here users loading to feel book (in books attribute, or directly in object)
-                    DbMyCalibre.getAllUsers()
-                      .then(users => {
-
-                        let downloadedBooksById: { [id: string] : BookDownloaded[]; } = {};
-                        let ratingsById: { [id: string] : BookRating[]; } = {};
-                        for (let i = 0; i < users.length; i++) {
-                          let user = users[i];
-                          for (let j = 0; j < user.history.downloadedBooks.length; j++) {
-                            let b = user.history.downloadedBooks[j];
-                            if (!downloadedBooksById[b.id]) {
-                              downloadedBooksById[b.id] = [];
-                            }
-                            downloadedBooksById[b.id].push({
-                              date: b.date,
-                              user_id: user.id,
-                              user_name: ((user.local && (user.local.firstname || user.local.lastname)) ? user.local.firstname + ' ' + user.local.lastname : user.local.username)
+                    // add here users loading to fill book (in books attribute, or directly in object)
+                    Book.updateBooksFromRows(rows)
+                        .then(data => {
+                          fs.writeFile(cachePath, JSON.stringify(data),
+                            err => {
+                              if (err) {
+                                reject(err);
+                              } else {
+                                debug("Cache done : " + cachePath);
+                                resolve(cachePath);
+                              }
                             });
-                          }
-                          for (let j = 0; j < user.history.ratings.length; j++) {
-                            let b = user.history.ratings[j];
-                            if (!ratingsById[b.book_id]) {
-                              ratingsById[b.book_id] = [];
-                            }
-                            ratingsById[b.book_id].push({
-                              rating: b.rating,
-                              date: b.date,
-                              user_id: user.id,
-                              user_name: ((user.local && (user.local.firstname || user.local.lastname)) ? user.local.firstname + ' ' + user.local.lastname : user.local.username)
-                            });
-                          }
-                        }
 
-                        if ((rows.length > 0) && rows[0]['books']) {
-                          for (let i = 0; i < rows.length; i++) {
-                            Book.updateBooksFromUsers(rows[i]['books'], downloadedBooksById, ratingsById);
-                          }
-                        } else {
-                          Book.updateBooksFromUsers(rows, downloadedBooksById, ratingsById);
-                        }
-
-
-                        fs.writeFile(cachePath, JSON.stringify({data: rows}), err => {
-                          if (err) {
-                            reject(err);
-                          } else {
-                            debug("Cache done : " + cachePath);
-                            resolve(cachePath);
-                          }
-                        });
-                      })
-                      .catch(err => {
-                        reject(err);
-                      })
+                        })
+                        .catch(err => {
+                          reject(err);
+                        })
 
                   })
                   .catch(err => {

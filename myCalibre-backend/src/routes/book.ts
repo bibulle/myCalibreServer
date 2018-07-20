@@ -38,13 +38,20 @@ function bookRouter(passport): Router {
           return response.status(401).send({status: 401, message: msg});
         }
 
-        CacheDate.getCachePath(CacheDateKey.BOOKS)
-          .then(path => {
-            response.sendFile(path);
-          })
-          .catch(err => {
-            response.status(500).json({status: 500, message: err});
-          })
+        debug(request.params['last_modified']);
+
+        if (!request.params['last_modified']) {
+          CacheDate.getCachePath(CacheDateKey.BOOKS)
+                   .then(path => {
+                     response.sendFile(path);
+                   })
+                   .catch(err => {
+                     response.status(500).json({status: 500, message: err});
+                   })
+        } else {
+
+        }
+
 
       })(request, response, next);
     });
@@ -313,9 +320,9 @@ function bookRouter(passport): Router {
 
       debug(`POST /${book_id}/rating`);
 
-      debug(request.body);
+      //debug(request.body);
       let rating = request.body['rating'];
-      debug(rating);
+      //debug(rating);
 
       if (!rating) {
         return response.status(400).send({error: 'Bad Request (rating needed)'});
@@ -347,7 +354,7 @@ function bookRouter(passport): Router {
                         debug(error);
                         response.status(500).send({error: error});
                       } else {
-                        debug("OK");
+                        //debug("OK");
                         return response.status(200).send({ OK: info });
                       }
                     }
