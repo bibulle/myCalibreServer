@@ -102,16 +102,21 @@ function bookRouter(passport): Router {
             fullPath = path.resolve(`${DbCalibre.CALIBRE_DIR}/${book.book_path}/cover.jpg`);
             fs.stat(fullPath, (err) => {
               if (err) {
+                debug("No cover found 1");
+                debug(book);
                 response.sendFile(err_cover_path);
               } else {
                 response.sendFile(fullPath);
               }
             })
           } else {
+            debug("No cover found 2");
+            debug(book);
             response.sendFile(err_cover_path);
           }
         })
         .catch(err => {
+          debug("No cover found 3");
           debug(err);
           response.sendFile(err_cover_path);
         })
