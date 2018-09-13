@@ -94,6 +94,10 @@ class DbCalibre {
         .field(DbCalibre._concat('author', 'book', 'name'), 'author_name')
         .field(DbCalibre._concat('author', 'book', 'sort'), 'author_sort')
 
+        // sumLanguage
+        .field(DbCalibre.__concat('languages', 'books', 'books_languages_link', 'id', ['lang_code', 'book'], '|'), 'lang_id')
+        .field(DbCalibre.__concat('languages', 'books', 'books_languages_link', 'lang_code', ['lang_code', 'book'], '|'), 'lang_code')
+
         // sumTags
         .field(DbCalibre._concat('tag', 'book', 'id'), 'tag_id')
         .field(DbCalibre._concat('tag', 'book', 'name'), 'tag_name')
@@ -133,6 +137,7 @@ class DbCalibre {
           reject(err);
         } else {
           const books = row.map(b => {
+            //debug(b);
             return new Book(b)
           });
           resolve(books);

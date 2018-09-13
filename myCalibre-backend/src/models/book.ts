@@ -20,6 +20,8 @@ export class Book {
   tag_name: string[];
   rating_id: number;
   rating: string;
+  lang_id: number;
+  lang_code: string;
   series_id: string;
   series_name: string;
   series_sort: string;
