@@ -13,7 +13,7 @@
   <button mat-button class="mat-icon-button" aria-label="Sort" [matMenuTriggerFor]="sortmenu">
     <mat-icon>sort</mat-icon>
   </button>
-  <div fxLayout="column">
+  <div fxLayout="row">
   <a class="flag-button flag-icon-fr" mat-mini-fab matTooltip="{{'label.french' | translate}}" matTooltipPosition="before" (click)="toggleLang(1)" [ngClass]="{'disabled':!filter.isLangSelected(1)}"></a>
   <a class="flag-button flag-icon-us" mat-mini-fab matTooltip="{{'label.english' | translate}}" matTooltipPosition="before" (click)="toggleLang(2)" [ngClass]="{'disabled':!filter.isLangSelected(2)}"></a>
   </div>
