@@ -62,7 +62,7 @@ mat-spinner {
   padding-top: 1em;
 }
 
-.book [mat-mini-fab] {
+.book button[mat-mini-fab] {
   position: absolute;
   right: 20px;
   top: 3em;
@@ -96,3 +96,21 @@ mat-spinner {
 
   }
 }
+
+.flag-button {
+  width: 15px;
+  height: 15px;
+  line-height: 1.5em;
+  margin-top: 0.3em;
+  margin-right: 1.5em;
+}
+
+.flag-icon-fr {
+  background-size: contain;
+  background-image: url(/assets/flags/1x1/fr.svg);
+}
+.flag-icon-us {
+  background-size: contain;
+  background-image: url(/assets/flags/1x1/us.svg);
+}
+

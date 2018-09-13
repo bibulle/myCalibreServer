@@ -1,11 +1,11 @@
-import {Component, OnInit, NgModule, OnDestroy} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
-import { Subject, Subscription } from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 
-import { FilterService, Filter, SortType, SortingDirection } from './filter.service';
-import { MatIconModule, MatInputModule, MatMenuModule, MatButtonModule } from '@angular/material';
+import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from './filter.service';
+import {MatButtonModule, MatButtonToggleModule, MatIconModule, MatInputModule, MatMenuModule, MatTooltipModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
 
@@ -34,15 +34,15 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     if (!this.subjectFilter) {
       this.subjectFilter = new Subject<Filter>();
       this._userChoiceSubscription = this.subjectFilter
-          .debounceTime(500)
-          .subscribe(
-            filter => {
-              this._filterService.update(filter);
-            },
-            error => {
-              console.log(error);
-            }
-          );
+        .debounceTime(500)
+        .subscribe(
+          filter => {
+            this._filterService.update(filter);
+          },
+          error => {
+            console.log(error);
+          }
+        );
     }
 
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
@@ -53,7 +53,7 @@ export class FilterBarComponent implements OnInit, OnDestroy {
   }
 
   //noinspection JSUnusedGlobalSymbols
-  ngOnDestroy () {
+  ngOnDestroy() {
     // console.log("ngOnDestroy");
     if (this._userChoiceSubscription) {
       this._userChoiceSubscription.unsubscribe();
@@ -70,6 +70,35 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     } else {
       this.filter.sort = sortType;
       this.filter.sorting_direction = SortingDirection.Asc;
+    }
+    this.filterList();
+  }
+
+  toggleLang(lang: LangAvailable) {
+    switch (lang) {
+      case LangAvailable.All:
+        this.filter.lang = LangAvailable.All;
+        break;
+      case LangAvailable.Fra:
+        switch (this.filter.lang) {
+          case LangAvailable.All:
+          case LangAvailable.Fra:
+            this.filter.lang = LangAvailable.Eng;
+            break;
+          case LangAvailable.Eng:
+            this.filter.lang = LangAvailable.All;
+        }
+        break;
+      case LangAvailable.Eng:
+        switch (this.filter.lang) {
+          case LangAvailable.All:
+          case LangAvailable.Eng:
+            this.filter.lang = LangAvailable.Fra;
+            break;
+          case LangAvailable.Fra:
+            this.filter.lang = LangAvailable.All;
+        }
+        break;
     }
     this.filterList();
   }
@@ -91,6 +120,8 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     MatIconModule,
     MatInputModule,
     MatButtonModule,
+    MatButtonToggleModule,
+    MatTooltipModule,
     MatMenuModule,
     FlexLayoutModule,
     TranslateModule

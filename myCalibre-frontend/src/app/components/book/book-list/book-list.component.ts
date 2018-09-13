@@ -1,26 +1,26 @@
 // <reference path="../../../../../node_modules/@angular/material/core/core.d.ts"/>
-import {Component, OnInit, NgModule, OnDestroy} from '@angular/core';
+import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-
-const leftPad = require('left-pad');
 import {Subscription} from 'rxjs';
 
-import {FilterService, Filter, SortType, SortingDirection} from '../../filter-bar/filter.service';
+import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from '../../filter-bar/filter.service';
 import {MatContentModule} from '../../content/content.component';
 import {BookCardModule} from '../book-card/book-card.component';
 import {BookService} from '../book.service';
 import {Book} from '../book';
 import {
-  MatCommonModule,
-  MatCardModule,
   MatButtonModule,
+  MatCardModule,
+  MatCommonModule,
   MatIconModule,
   MatInputModule,
   MatProgressSpinnerModule,
   MatToolbarModule
 } from '@angular/material';
 import {TranslateModule} from '@ngx-translate/core';
+
+const leftPad = require('left-pad');
 
 @Component({
   selector: 'app-book-list',
@@ -69,7 +69,6 @@ export class BookListComponent implements OnInit, OnDestroy {
     this._filterService.updateLimitTo(null);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       (filter: Filter) => {
-        // console.log(filter);
         this.filter = filter;
         if (this.fullBooks) {
           this._fillBooks();
@@ -152,7 +151,7 @@ export class BookListComponent implements OnInit, OnDestroy {
     this.previousFilterJson = filterJson;
 
     const filteredBooks = this.fullBooks
-    // first filter
+    // first filter on tillte, name, comment
       .filter((b) => {
 
         const strToSearch = b.book_title
@@ -161,6 +160,10 @@ export class BookListComponent implements OnInit, OnDestroy {
           .concat('' + b.author_name);
 
         return (BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search.trim())));
+      })
+      // then filter on language
+      .filter((b) => {
+        return (b.lang_code === LangAvailable[this.filter.lang].toLowerCase()) || (this.filter.lang === LangAvailable.All)
       })
       // then sort
       .sort((b1: Book, b2: Book) => {

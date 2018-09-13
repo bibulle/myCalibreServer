@@ -1,5 +1,5 @@
-<div  *ngIf="!filter.not_displayed">
-  <div fxFlex="100" fxLayout="row" fxLayoutAlign="end center">
+<div class="container" *ngIf="!filter.not_displayed">
+  <div class="container" fxFlex="100" fxLayout="row" fxLayoutAlign="end center">
     <mat-icon>search</mat-icon>
     &nbsp;
     <mat-form-field fxFlex="75" color="accent">
@@ -13,6 +13,10 @@
   <button mat-button class="mat-icon-button" aria-label="Sort" [matMenuTriggerFor]="sortmenu">
     <mat-icon>sort</mat-icon>
   </button>
+  <div fxLayout="column">
+  <a class="flag-button flag-icon-fr" mat-mini-fab matTooltip="{{'label.french' | translate}}" matTooltipPosition="before" (click)="toggleLang(1)" [ngClass]="{'disabled':!filter.isLangSelected(1)}"></a>
+  <a class="flag-button flag-icon-us" mat-mini-fab matTooltip="{{'label.english' | translate}}" matTooltipPosition="before" (click)="toggleLang(2)" [ngClass]="{'disabled':!filter.isLangSelected(2)}"></a>
+  </div>
 
   <mat-menu xPosition="before" yPosition="below" #sortmenu="matMenu" class="sort-menu">
     <button mat-menu-item (click)="toggleSort(0)" *ngIf="filter.isAvailable(0)">

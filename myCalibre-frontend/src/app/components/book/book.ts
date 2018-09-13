@@ -14,6 +14,8 @@ export class Book {
   author_name: string[];
   tag_id: number[];
   tag_name: string[];
+  lang_id: number;
+  lang_code: string;
   series_id: string;
   rating: string;
   series_name: string;

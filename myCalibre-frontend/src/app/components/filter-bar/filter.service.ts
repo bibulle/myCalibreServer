@@ -61,6 +61,7 @@ export class Filter {
   search = '';
   not_displayed = false;
   limit_to: SortType[];
+  lang: LangAvailable = LangAvailable.All;
 
   constructor (options = {}) {
     if (options['not_displayed']) {
@@ -74,6 +75,9 @@ export class Filter {
   isAvailable (sortType: SortType): boolean {
     return (this.limit_to == null) || (this.limit_to.some(s => s === sortType));
   }
+  isLangSelected(lang: LangAvailable): boolean {
+    return (this.lang === LangAvailable.All) || (this.lang === lang)
+  }
 
 }
 
@@ -82,6 +86,9 @@ export enum SortType {
 }
 export enum SortingDirection {
   Asc, Desc
+}
+export enum LangAvailable {
+  All, Fra, Eng
 }
 
 

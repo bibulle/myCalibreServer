@@ -4,7 +4,7 @@ import {MatContentModule} from '../../content/content.component';
 import {MatProgressSpinnerModule} from '@angular/material';
 import {CommonModule} from '@angular/common';
 import {Tag} from '../tag';
-import {Filter, SortType, FilterService, SortingDirection} from '../../filter-bar/filter.service';
+import {Filter, SortType, FilterService, SortingDirection, LangAvailable} from '../../filter-bar/filter.service';
 import {TagService} from '../tag.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Subscription} from 'rxjs';
@@ -165,11 +165,25 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // first filter
     const filteredTags = this.fullTags
+    // filter on text
       .filter((t: Tag) => {
 
         const strToSearch = t.tag_name;
 
         return (TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search.trim())));
+      })
+      // filter on language
+      .filter((t: Tag) => {
+
+        if (!t['allBooks']) {
+          t['allBooks'] = t.books;
+        }
+
+        t.books = t['allBooks'].filter(b => {
+          return (b.lang_code === LangAvailable[this.filter.lang].toLowerCase()) || (this.filter.lang === LangAvailable.All)
+        });
+
+        return (t.books.length !== 0);
       })
       .sort((b1: Tag, b2: Tag) => {
         // console.log(b1);

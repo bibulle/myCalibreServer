@@ -8,6 +8,10 @@
         <mat-rating [rating]="ratings.yourRating/2" color="primary" title="{{'label.rating-your' | translate}}" (ratingUpdated)="ratingUpdated($event)"></mat-rating>
         <mat-rating *ngIf="ratings.rating" [rating]="ratings.rating/2" color="primary" disabled="true" title="{{'label.rating-reader' | translate}} ({{ratings.count}})" [matTooltip]="ratings.rating/2" matTooltipPosition="above"></mat-rating>
         <mat-rating *ngIf="book.rating" [rating]="book.rating/2" color="primary" disabled="true" title="{{'label.rating-public' | translate}}" [matTooltip]="book.rating/2" matTooltipPosition="above"></mat-rating>
+        <div class="flag">
+          <a class="flag-button flag-icon-fr" mat-mini-fab matTooltip="{{'label.french' | translate}}" matTooltipPosition="before" *ngIf="book.lang_code==='fra'" disabled></a>
+          <a class="flag-button flag-icon-us" mat-mini-fab matTooltip="{{'label.english' | translate}}" matTooltipPosition="before" *ngIf="book.lang_code==='eng'" disabled></a>
+        </div>
         <div class="date">{{book.book_date | localizedDate: 'MMMM yyyy'}}</div>
       </div>
       <mat-card-title>{{'label.authors' | translate}}</mat-card-title>
