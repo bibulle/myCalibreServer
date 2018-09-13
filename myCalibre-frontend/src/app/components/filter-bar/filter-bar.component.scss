@@ -36,26 +36,8 @@
     }
   }
 
-  .flag-button {
-    //width: 15px;
-    //height: 15px;
-    //line-height: 12px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
-  .flag-icon-fr {
-    background-size: contain;
-    background-image: url(/assets/flags/1x1/fr.svg);
-  }
-  .flag-icon-fr.disabled {
-    background-image: url(/assets/flags/1x1/fr_disabled.svg);
-  }
-  .flag-icon-us {
-    background-size: contain;
-    background-image: url(/assets/flags/1x1/us.svg);
-  }
-  .flag-icon-us.disabled {
-    background-image: url(/assets/flags/1x1/us_disabled.svg);
+  .flags button {
+    margin: 0;
   }
 
 }

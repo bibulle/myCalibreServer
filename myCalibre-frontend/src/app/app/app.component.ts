@@ -3,11 +3,12 @@ import {Router} from '@angular/router';
 import {Media} from '../core/util/media';
 import {FilterService, Filter} from '../components/filter-bar/filter.service';
 import {TitleService, Title, Version} from './title.service';
-import {MatSidenav} from '@angular/material';
+import {MatIconRegistry, MatSidenav} from '@angular/material';
 import {Subscription} from 'rxjs';
 import {UserService} from '../components/authent/user.service';
 import {User} from '../components/authent/user';
 import {TranslateService} from '@ngx-translate/core';
+import {DomSanitizer} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -42,11 +43,19 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
               private _titleService: TitleService,
               private _router: Router,
               private _cdRef: ChangeDetectorRef,
-              private _translate: TranslateService) {
+              private _translate: TranslateService,
+              private _matIconRegistry: MatIconRegistry,
+              private _domSanitizer: DomSanitizer) {
     this._translate.setDefaultLang('en');
 
     // console.log(this._translate.getBrowserLang());
     this._translate.use(this._translate.getBrowserLang());
+
+    this._matIconRegistry
+      .addSvgIcon('flag_fr', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/fr.svg'))
+      .addSvgIcon('flag_us', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/us.svg'))
+      .addSvgIcon('flag_fr_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/fr_disabled.svg'))
+      .addSvgIcon('flag_us_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/us_disabled.svg'))
   }
 
   //noinspection JSUnusedGlobalSymbols

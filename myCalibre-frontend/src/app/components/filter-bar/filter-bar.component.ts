@@ -8,6 +8,7 @@ import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from '
 import {MatButtonModule, MatButtonToggleModule, MatIconModule, MatInputModule, MatMenuModule, MatTooltipModule} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
+import {HttpClientModule} from '@angular/common/http';
 
 @Component({
   selector: 'filter-bar',
@@ -82,6 +83,8 @@ export class FilterBarComponent implements OnInit, OnDestroy {
       case LangAvailable.Fra:
         switch (this.filter.lang) {
           case LangAvailable.All:
+            this.filter.lang = LangAvailable.Fra;
+            break;
           case LangAvailable.Fra:
             this.filter.lang = LangAvailable.Eng;
             break;
@@ -92,6 +95,8 @@ export class FilterBarComponent implements OnInit, OnDestroy {
       case LangAvailable.Eng:
         switch (this.filter.lang) {
           case LangAvailable.All:
+            this.filter.lang = LangAvailable.Eng;
+            break;
           case LangAvailable.Eng:
             this.filter.lang = LangAvailable.Fra;
             break;
@@ -124,7 +129,8 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     MatTooltipModule,
     MatMenuModule,
     FlexLayoutModule,
-    TranslateModule
+    TranslateModule,
+    HttpClientModule
   ],
   declarations: [
     FilterBarComponent
