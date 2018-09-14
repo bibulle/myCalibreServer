@@ -7,6 +7,7 @@
   <!--<mat-card-title-group>-->
   <div class="cover">
     <img mat-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
+    <mat-icon class="flag" svgIcon="flag_us" *ngIf="book.lang_code=='eng'"></mat-icon>
   </div>
   <div class="text">
     <div class="top-right">

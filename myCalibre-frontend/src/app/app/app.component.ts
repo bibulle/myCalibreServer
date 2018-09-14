@@ -52,10 +52,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
     this._translate.use(this._translate.getBrowserLang());
 
     this._matIconRegistry
-      .addSvgIcon('flag_fr', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/fr.svg'))
-      .addSvgIcon('flag_us', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/us.svg'))
-      .addSvgIcon('flag_fr_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/fr_disabled.svg'))
-      .addSvgIcon('flag_us_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/1x1/us_disabled.svg'))
+      .addSvgIcon('flag_fr', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/fr.svg'))
+      .addSvgIcon('flag_us', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/us.svg'))
+      .addSvgIcon('flag_fr_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/fr_disabled.svg'))
+      .addSvgIcon('flag_us_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/us_disabled.svg'))
   }
 
   //noinspection JSUnusedGlobalSymbols
