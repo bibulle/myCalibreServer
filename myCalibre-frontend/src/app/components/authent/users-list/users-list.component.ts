@@ -98,7 +98,6 @@ export class UsersListComponent implements OnInit {
   }
 
   toggleSort(sortType) {
-    console.log(sortType);
     if (this.sort === sortType) {
       this.sort_direction = (this.sort_direction + 1) % 2;
     } else {
@@ -158,7 +157,6 @@ export class UsersListComponent implements OnInit {
             break;
         }
 
-        console.log(v1);
         switch (this.sort_direction) {
           case SortingDirection.Asc:
             return v1.localeCompare(v2);
