@@ -9,13 +9,37 @@
   font-weight: bold;
   line-height: 40px;
 
+  div {
+    display: flex;
+    align-items: center;
+  }
+
   .admin, .facebook, .google, .local {
     text-align: center;
+    justify-content: center;
+    position: relative;
+  }
+  .admin {
+    padding-left: 24px;
+  }
+
+  .facebook mat-icon, .google mat-icon, .local mat-icon {
+    position: absolute;
+    bottom: -5px;
   }
   .last-connection {
-    text-align: right;
+    font-size: 0.8em;
+    justify-content: center;
     span {
       line-height: 20px;
+      display: flex;
+      align-items: center;
+      padding-left: 18px;
+      mat-icon {
+        height: 18px;
+        width: 18px;
+        font-size: 18px;
+      }
     }
   }
 
