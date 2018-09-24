@@ -192,7 +192,7 @@ function checkCache() {
 
                   mkdir_p(path.dirname(thumbnailPath));
 
-                  //debug("calculate series thumbnail : " + series.series_name + " (" + series.books.length + " books)");
+                  debug("calculate series thumbnail : " + series.series_name + " (" + series.books.length + " books)");
 
                   const INITIAL_HEIGHT = 160;
                   const INITIAL_STEP_INCREMENT = 10;
