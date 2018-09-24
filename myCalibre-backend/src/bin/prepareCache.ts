@@ -208,7 +208,7 @@ function checkCache() {
                       step += step_increment;
                       height += step;
 //                  height -= step;
-                      if (fs.exists(book.getCoverPath())) {
+                      if (fs.existsSync(book.getCoverPath())) {
                         if (!theBuffer) {
 
 
