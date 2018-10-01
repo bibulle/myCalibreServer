@@ -210,7 +210,7 @@ function bookRouter(passport): Router {
         })
 
     });
-  router.route('/:id.epub')
+  router.route('/:id/epub')
   // ====================================
   // route for getting book
   // ====================================
@@ -218,9 +218,10 @@ function bookRouter(passport): Router {
 
       const book_id = request.params['id'] || 0;
 
-      debug(`GET /${book_id}.epub`);
+      debug(`GET /${book_id}/epub`);
 
       let token = request.query['token'];
+      //debug(token);
 
       if (!token) {
         return response.status(401).send({error: 'unauthorized'});
@@ -278,7 +279,7 @@ function bookRouter(passport): Router {
 
 
     });
-  router.route('/:id.mobi')
+  router.route('/:id/mobi')
   // ====================================
   // route for getting book
   // ====================================
@@ -286,7 +287,7 @@ function bookRouter(passport): Router {
 
       const book_id = request.params['id'] || 0;
 
-      debug(`GET /${book_id}.mobi`);
+      debug(`GET /${book_id}/mobi`);
 
       let token = request.query['token'];
 
@@ -526,6 +527,7 @@ function bookRouter(passport): Router {
         }
 
         let token = User.createTemporaryToken(user);
+        //debug(token);
 
         return response.status(200).json({token: token});
 

@@ -137,7 +137,7 @@ export class BookService {
       this.httpClient.get(this.booksUrl + '/' + book_id + this.getEpubURL)
         .subscribe(
           (data: Object) => {
-            resolve(this.booksUrl + '/' + book_id + '.epub?token=' + data['token']);
+            resolve(this.booksUrl + '/' + book_id + '/epub?token=' + data['token']);
           },
           err => {
             reject(err);
@@ -156,7 +156,7 @@ export class BookService {
       this.httpClient.get(this.booksUrl + '/' + book_id + this.getMobibURL)
         .subscribe(
           (data: Object) => {
-            resolve(this.booksUrl + '/' + book_id + '.mobi?token=' + data['token']);
+            resolve(this.booksUrl + '/' + book_id + '/mobi?token=' + data['token']);
           },
           err => {
             reject(err);
