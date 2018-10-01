@@ -84,6 +84,41 @@ function bookRouter(passport): Router {
 
     });
 
+  router.route('/:id')
+        // ====================================
+        // route for getting a book
+        // ====================================
+        .get((request: Request, response: Response, next: NextFunction) => {
+
+          const book_id = request.params['id'] || 0;
+
+          debug(`GET /book/${book_id}`);
+
+          passport.authenticate('jwt-check', {session: false}, (err, user): any => {
+            if (err) {
+              return next(err);
+            }
+
+            if (!user) {
+              const msg = 'Unauthorized';
+              return response.status(401).send({status: 401, message: msg});
+            }
+
+            DbCalibre.getInstance()
+                     .getBook(book_id)
+                     .then(book => {
+                       //debug(book);
+                       response.status(200).send(book);
+                     })
+                     .catch(err => {
+                       debug("No cover found 3");
+                       debug(err);
+                       response.status(404).send({status: 404, message: "Book not found"});
+                     })
+
+          })(request, response, next);
+        });
+
   router.route('/cover/:id.jpg')
   // ====================================
   // route for getting books cover
@@ -110,7 +145,7 @@ function bookRouter(passport): Router {
             fs.stat(fullPath, (err) => {
               if (err) {
                 debug("No cover found 1");
-                debug(book);
+                //debug(book);
                 response.sendFile(err_cover_path);
               } else {
                 response.sendFile(fullPath);
