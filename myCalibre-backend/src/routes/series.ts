@@ -23,7 +23,9 @@ seriesRouter.route('/')
 
               //debug(request.query);
 
-              CacheDate.getCachePath(CacheDateKey.SERIES)
+              const page_num = request.query['page_num'] || 1;
+
+              CacheDate.getCachePath(CacheDateKey.SERIES, page_num)
                        .then(path => {
                          response.sendFile(path);
                        })

@@ -128,7 +128,7 @@ export class Book {
                      lastUpdated = Book.updateBooksFromUsers(rows as Book[], downloadedBooksById, ratingsById);
                    }
 
-                   debug(lastUpdated);
+                   //debug(lastUpdated);
                    resolve({
                      lastUpdated: lastUpdated,
                      data: rows

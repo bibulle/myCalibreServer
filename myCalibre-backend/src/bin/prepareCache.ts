@@ -54,7 +54,7 @@ function checkCache() {
                   CacheDate.cacheTables,
                   2,
                   (item, callback) => {
-                    CacheDate.getCachePath(item.key, dbDate)
+                    CacheDate.getCachePath(item.key, 1, dbDate)
                       .then(() => {
                         callback(null);
                       })
@@ -192,7 +192,7 @@ function checkCache() {
 
                   mkdir_p(path.dirname(thumbnailPath));
 
-                  debug("calculate series thumbnail : " + series.series_name + " (" + series.books.length + " books)");
+                  // debug("calculate series thumbnail : " + series.series_name + " (" + series.books.length + " books)");
 
                   const INITIAL_HEIGHT = 160;
                   const INITIAL_STEP_INCREMENT = 10;
@@ -303,6 +303,8 @@ function checkCache() {
                         callback(err);
                       }
                       if (theBuffer) {
+                        debug("calculate series thumbnail : " + series.series_name + " (" + series.books.length + " books)");
+
                         sharp(theBuffer)
                           .toFormat(sharp.format.png)
                           .toFile(thumbnailPath, (err) => {

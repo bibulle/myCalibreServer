@@ -42,6 +42,7 @@ export class BookListComponent implements OnInit, OnDestroy {
 
   filter: Filter;
   private previousFilterJson = '';
+  private previousFullBooksLength = 0;
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription;
@@ -77,15 +78,17 @@ export class BookListComponent implements OnInit, OnDestroy {
     );
 
     this._bookService
-      .getBooks()
-      .then(books => {
-        this.fullBooks = books;
-        this._fillBooks();
-
-      })
-      .catch(err => {
-        console.log(err);
-      })
+      .getBooks(
+        (books, err) => {
+          if (err) {
+            console.log(err)
+          } else {
+            // console.log(books.length);
+            this.fullBooks = books;
+            this._fillBooks();
+          }
+        }
+      )
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -101,6 +104,7 @@ export class BookListComponent implements OnInit, OnDestroy {
    * @private
    */
   private _fillBooks() {
+    // console.log('_fillBooks');
     if (!this.fullBooks || !this.filter) {
       return;
     }
@@ -125,9 +129,11 @@ export class BookListComponent implements OnInit, OnDestroy {
         const _cpt = cpt + 1;
         setTimeout(() => {
             if (_filterCount === this.filterCount) {
+              // console.log('modify books ');
               this.books = tmpBooks.filter((b, i) => {
                 return i < _cpt * STEP;
               });
+              // console.log('modify books ' + this.books.length);
             }
           },
           100 * (cpt - initCpt));
@@ -145,10 +151,11 @@ export class BookListComponent implements OnInit, OnDestroy {
    */
   _filterAndSortBooks(): Book[] {
     const filterJson = JSON.stringify(this.filter);
-    if ((this.previousFilterJson === filterJson) && (this.books != null)) {
+    if ((this.previousFilterJson === filterJson) && (this.books != null) && (this.previousFullBooksLength === this.fullBooks.length)) {
       return null;
     }
     this.previousFilterJson = filterJson;
+    this.previousFullBooksLength = this.fullBooks.length;
 
     const filteredBooks = this.fullBooks
     // first filter on tillte, name, comment

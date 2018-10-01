@@ -78,7 +78,7 @@ export class Author {
                    })
                  });
 
-                 debug("done");
+                 //debug("done");
                  resolve(authors)
                })
                .catch(err => {

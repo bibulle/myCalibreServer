@@ -38,10 +38,13 @@ function bookRouter(passport): Router {
           return response.status(401).send({status: 401, message: msg});
         }
 
-        debug(request.params['last_modified']);
+        // debug(request.params['last_modified']);
+
+        const page_num = request.query['page_num'] || 1;
+        debug("Page "+page_num);
 
         if (!request.params['last_modified']) {
-          CacheDate.getCachePath(CacheDateKey.BOOKS)
+          CacheDate.getCachePath(CacheDateKey.BOOKS, page_num)
                    .then(path => {
                      response.sendFile(path);
                    })
@@ -73,7 +76,9 @@ function bookRouter(passport): Router {
           return response.status(401).send({status: 401, message: msg});
         }
 
-        CacheDate.getCachePath(CacheDateKey.NEW_BOOKS)
+        const page_num = request.query['page_num'] || 1;
+
+        CacheDate.getCachePath(CacheDateKey.NEW_BOOKS, page_num)
           .then(path => {
             response.sendFile(path);
           })

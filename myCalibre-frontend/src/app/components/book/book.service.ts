@@ -21,21 +21,51 @@ export class BookService {
   /**
    * get the books list
    */
-  getBooks(): Promise<Book[]> {
+  getBooks(callback: Function, numPage?: number, maxPage?: number): void {
 
-    return new Promise<Book[]>((resolve, reject) => {
-      this.httpClient.get(this.booksUrl)
-      // .map((res: Response) => res.json().data as Book[])
+    numPage = numPage || 1;
+    maxPage = maxPage || 1;
+
+    if (numPage <= maxPage) {
+      console.log('loading page ' + numPage + ' / ' + maxPage);
+      let url = this.booksUrl + (numPage ? '?page_num=' + numPage : '')
+      this.httpClient.get(url)
         .subscribe(
           (data: Object) => {
-            BookService.booksList = data['data'] as Book[];
-            resolve(BookService.booksList);
+            if (!BookService.booksList || (numPage === 1)) {
+              BookService.booksList = [];
+            }
+            maxPage = data['pageCount'];
+
+            BookService.booksList = BookService.booksList.concat(data['data'] as Book[]);
+            console.log('loaded page ' + numPage + ' / ' + maxPage);
+            callback(BookService.booksList);
+            console.log('displayed page ' + numPage + ' / ' + maxPage);
+
+            setTimeout(() => {
+              this.getBooks(callback, numPage + 1, maxPage);
+            });
           },
           err => {
-            reject(err);
+            callback(null, err);
           },
-        );
-    });
+        )
+    }
+
+    // return new Promise<Book[]>((resolve, reject) => {
+    //   let url = this.booksUrl + (numPage ? '?page_num=' + numPage : '')
+    //   this.httpClient.get(url)
+    //   // .map((res: Response) => res.json().data as Book[])
+    //     .subscribe(
+    //       (data: Object) => {
+    //         BookService.booksList = data['data'] as Book[];
+    //         resolve(BookService.booksList);
+    //       },
+    //       err => {
+    //         reject(err);
+    //       },
+    //     );
+    // });
   }
 
   /**
@@ -72,21 +102,22 @@ export class BookService {
       if (book) {
         resolve(book);
       } else {
-        this.getBooks()
-          .then((books: Book[]) => {
-            book = books.find(b => {
-              return b.book_id.toString() === book_id
-            });
-            if (book) {
-              resolve(book);
+        this.getBooks(
+          (books, err) => {
+            if (err) {
+              reject(err);
             } else {
-              reject('Not found');
+              book = books.find(b => {
+                return b.book_id.toString() === book_id
+              });
+              if (book) {
+                resolve(book);
+              } else {
+                reject('Not found');
+              }
             }
-
-          })
-          .catch(err => {
-            reject(err);
-          });
+          }
+        )
       }
     });
   }

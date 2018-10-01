@@ -23,7 +23,9 @@ tagRouter.route('/')
 
               //debug(request.query);
 
-              CacheDate.getCachePath(CacheDateKey.TAGS)
+              const page_num = request.query['page_num'] || 1;
+
+              CacheDate.getCachePath(CacheDateKey.TAGS, page_num)
                        .then(path => {
                          response.sendFile(path);
                        })

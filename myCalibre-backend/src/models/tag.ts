@@ -53,7 +53,7 @@ export class Tag {
                      return v1.localeCompare(v2);
                    })
                  });
-                 debug("done");
+                 //debug("done");
                  resolve(tags)
                })
                .catch(err => {

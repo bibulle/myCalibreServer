@@ -3,9 +3,9 @@
   "version": "0.6.1",
   "description": "A new calibre server",
   "scripts": {
-    "start": "node ./src/bin/www",
-    "devel": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" \"VIPS_WARNING=0 DEBUG=server:* nodemon --ignore ./data/ ./src/bin/prepareCache.js\" ",
-    "devel-www": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www\" ",
+    "start": "node ./src/bin/www.js",
+    "devel": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www.js\" \"VIPS_WARNING=0 DEBUG=server:* nodemon --ignore ./data/ ./src/bin/prepareCache.js\" ",
+    "devel-www": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/www.js\" ",
     "devel-amazon": "tsc -p ./src && concurrently \"tsc -w -p ./src\" \"DEBUG=server:* nodemon --ignore ./data/ ./src/bin/getInfoFromAmazon.js\" ",
     "tsc": "tsc"
   },
