@@ -63,15 +63,17 @@ class DbCalibre {
     });
   }
 
-  public getBooks(limit?: number, offset?: number): Promise<Book[]> {
+  public getBooks(limit?: number, offset?: number, id?: number): Promise<Book[]> {
     limit = limit || 1000000;
     offset = offset || 0;
+    let locator:any = id ? id : "";
 
     return new Promise<Book[]>((resolve, reject) => {
 
-      const whereValue = DbCalibre._makeWhere('book', "", 'title', '_');
+      const whereValue = DbCalibre._makeWhere('book', locator, 'title', '_');
       const where = whereValue[0];
       const value = whereValue[1];
+
 
       const query = queryBuilder
         .select({ separator: "\n" })
@@ -147,6 +149,24 @@ class DbCalibre {
 
   }
 
+  public getBook(id: number): Promise<Book> {
+
+    return new Promise<Book>((resolve, reject) => {
+
+      this.getBooks(1, 0, id)
+          .then(books => {
+            if (books.length >= 1) {
+              return resolve(books[0]);
+            } else {
+              return reject("Not Found");
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+    })
+
+  }
   public getBookPaths(id: number): Promise<BookPath> {
 
     return new Promise<BookPath>((resolve, reject) => {

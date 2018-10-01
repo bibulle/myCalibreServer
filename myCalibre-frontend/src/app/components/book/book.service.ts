@@ -62,32 +62,16 @@ export class BookService {
    */
   getBook(book_id: string): Promise<Book> {
     return new Promise<Book>((resolve, reject) => {
-      let book: Book;
-      if (BookService.booksList) {
-        book = BookService.booksList.find(b => {
-          return b.book_id.toString() === book_id
-        });
-      }
-
-      if (book) {
-        resolve(book);
-      } else {
-        this.getBooks()
-          .then((books: Book[]) => {
-            book = books.find(b => {
-              return b.book_id.toString() === book_id
-            });
-            if (book) {
-              resolve(book);
-            } else {
-              reject('Not found');
-            }
-
-          })
-          .catch(err => {
+      this.httpClient.get(this.booksUrl + '/' + book_id)
+      // .map((res: Response) => res.json().data as Book[])
+        .subscribe(
+          (data: Object) => {
+            resolve(data as Book);
+          },
+          err => {
             reject(err);
-          });
-      }
+          },
+        );
     });
   }
 

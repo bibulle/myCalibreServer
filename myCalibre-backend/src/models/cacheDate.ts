@@ -7,6 +7,7 @@ import { Book } from "./book";
 const fs = require('fs');
 const path = require('path');
 const debug = require('debug')('server:models:cache-data');
+const leftPad = require('left-pad');
 
 export class CacheDate {
 
@@ -69,10 +70,81 @@ export class CacheDate {
               if (promise) {
                 promise
                   .then(rows => {
+                    // Sort with the default
+                    switch (key) {
+                      case CacheDateKey.BOOKS:
+                        rows = rows.sort((b1: Book, b2: Book) => {
+                          let v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : leftPad(b1.book_series_index, 6, 0) + ' ') + b1.book_sort;
+                          let v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : leftPad(b2.book_series_index, 6, 0) + ' ') + b2.book_sort;
+                          return v1.localeCompare(v2);
+                        });
+                        break;
+                      case CacheDateKey.NEW_BOOKS:
+                        break;
+                      case CacheDateKey.AUTHORS:
+                        rows = rows.sort((b1: Author, b2: Author) => {
+                          let v1 = (b1.author_sort ? b1.author_sort : b1.author_name);
+                          let v2 = (b2.author_sort ? b2.author_sort : b2.author_name);
+                          return v1.localeCompare(v2);
+                        });
+                        break;
+                      case CacheDateKey.SERIES:
+                        rows = rows.sort((b1: Series, b2: Series) => {
+                          let v1 = b1.series_sort;
+                          let v2 = b2.series_sort;
+                          return v1.localeCompare(v2);
+                        });
+                        break;
+                      case CacheDateKey.TAGS:
+                        rows = rows.sort((b1: Tag, b2: Tag) => {
+                          let v1 = b1.tag_name;
+                          let v2 = b2.tag_name;
+                          return v1.localeCompare(v2);
+                        });
+                        break;
+                      default:
+                        reject("No cache found for " + key);
+                    }
+
 
                     // add here users loading to fill book (in books attribute, or directly in object)
                     Book.updateBooksFromRows(rows)
                         .then(data => {
+
+                          // Suppress useless info in the list
+                          data['data'].forEach(r => {
+                            //debug(JSON.stringify(r));
+                            if (r['books']) {
+                              (r['books'] as Book[]).forEach(b => {
+                                delete b['book_path'];
+                                delete b['book_isbn'];
+                                delete b['timestamp'];
+                                delete b['tag_id'];
+                                delete b['tag_name'];
+                                delete b['comment'];
+                                delete b['data'];
+                                delete b['rating_id'];
+                                delete b['book_sort'];
+                                delete b['author_sort'];
+                                delete b['author_id'];
+                                delete b['history'];
+                              });
+                            } else {
+                              delete r['book_path'];
+                              delete r['book_isbn'];
+                              delete r['timestamp'];
+                              delete r['tag_id'];
+                              delete r['tag_name'];
+                              delete r['comment'];
+                              delete r['data'];
+                              delete r['rating_id'];
+                              delete r['series_id'];
+                              delete r['history'];
+                            }
+                            //debug(JSON.stringify(r));
+                          });
+
+
                           fs.writeFile(cachePath, JSON.stringify(data),
                             err => {
                               if (err) {
