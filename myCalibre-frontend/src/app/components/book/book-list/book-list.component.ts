@@ -29,13 +29,13 @@ const leftPad = require('left-pad');
 })
 export class BookListComponent implements OnInit, OnDestroy {
 
-  MAX_BOOK = 500;
+  MAX_BOOK = 200;
   param = {
     max: this.MAX_BOOK,
     totalCount: this.MAX_BOOK
   };
 
-  books: Book[];
+  books: Book[] = [];
   fullBooks: Book[];
 
   totalBooksCount = 0;
@@ -59,7 +59,9 @@ export class BookListComponent implements OnInit, OnDestroy {
 
   constructor(private _bookService: BookService,
               private _filterService: FilterService) {
-
+    while (this.books.length < this.MAX_BOOK) {
+      this.books.push(new Book());
+    }
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -125,9 +127,9 @@ export class BookListComponent implements OnInit, OnDestroy {
         const _cpt = cpt + 1;
         setTimeout(() => {
             if (_filterCount === this.filterCount) {
-              this.books = tmpBooks.filter((b, i) => {
+              this._realyFillBook(tmpBooks.filter((b, i) => {
                 return i < _cpt * STEP;
-              });
+              }));
             }
           },
           100 * (cpt - initCpt));
@@ -137,6 +139,81 @@ export class BookListComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  /**
+   * Move the books to the this.books
+   * @param books
+   * @private
+   */
+
+  private _realyFillBook(books: Book[]) {
+
+    // Old version
+    // this.books = books;
+
+    // A try
+    // this.books[i] = books[i];
+
+    // The fastest ?
+        for (let i = 0; i < Math.min(this.books.length, books.length); i++) {
+          if (this.books[i] && this.books[i].book_id) {
+            let book_title = this.books[i].book_title;
+            this.books[i].book_title = books[i].book_title;
+            books[i].book_title = book_title;
+
+            let book_id = this.books[i].book_id;
+            this.books[i].book_id = books[i].book_id;
+            books[i].book_id = book_id;
+
+            let book_sort = this.books[i].book_sort;
+            this.books[i].book_sort = books[i].book_sort;
+            books[i].book_sort = book_sort;
+
+            let book_has_cover = this.books[i].book_has_cover;
+            this.books[i].book_has_cover = books[i].book_has_cover;
+            books[i].book_has_cover = book_has_cover;
+
+            let lang_code = this.books[i].lang_code;
+            this.books[i].lang_code = books[i].lang_code;
+            books[i].lang_code = lang_code;
+
+            let rating = this.books[i].rating;
+            this.books[i].rating = books[i].rating;
+            books[i].rating = rating;
+
+            let readerRating = this.books[i].readerRating;
+            this.books[i].readerRating = books[i].readerRating;
+            books[i].readerRating = readerRating;
+
+            let readerRatingCount = this.books[i].readerRatingCount;
+            this.books[i].readerRatingCount = books[i].readerRatingCount;
+            books[i].readerRatingCount = readerRatingCount;
+
+            let series_name = this.books[i].series_name;
+            this.books[i].series_name = books[i].series_name;
+            books[i].series_name = series_name;
+
+            let book_series_index = this.books[i].book_series_index;
+            this.books[i].book_series_index = books[i].book_series_index;
+            books[i].book_series_index = book_series_index;
+
+            let book_date = this.books[i].book_date;
+            this.books[i].book_date = books[i].book_date;
+            books[i].book_date = book_date;
+
+            let author_name = this.books[i].author_name;
+            this.books[i].author_name = books[i].author_name;
+            books[i].author_name = author_name;
+          } else {
+            this.books[i] = books[i];
+          }
+        }
+
+     setTimeout(() => {
+       console.log('done ' + (Date.now() - timetime) + ' ms');
+     })
+  }
+
 
   /**
    * Filter and sort the this.fullBooks list with the this.filter
@@ -230,13 +307,20 @@ export class BookListComponent implements OnInit, OnDestroy {
     this.param.totalCount = this.totalBooksCount;
 
     // then limit size
-    return filteredBooks
+    let result = filteredBooks
       .filter((b, i) => {
         return i < this.MAX_BOOK;
       });
+
+    timetime = Date.now();
+
+    return result;
   }
 
 }
+
+let timetime = Date.now();
+
 
 @NgModule({
   imports: [
