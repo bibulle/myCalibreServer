@@ -155,63 +155,67 @@ export class BookListComponent implements OnInit, OnDestroy {
     // this.books[i] = books[i];
 
     // The fastest ?
-        for (let i = 0; i < Math.min(this.books.length, books.length); i++) {
-          if (this.books[i] && this.books[i].book_id) {
-            let book_title = this.books[i].book_title;
-            this.books[i].book_title = books[i].book_title;
-            books[i].book_title = book_title;
+    for (let i = 0; i < books.length; i++) {
+      if (this.books[i] && this.books[i].book_id) {
+        let book_title = this.books[i].book_title;
+        this.books[i].book_title = books[i].book_title;
+        books[i].book_title = book_title;
 
-            let book_id = this.books[i].book_id;
-            this.books[i].book_id = books[i].book_id;
-            books[i].book_id = book_id;
+        let book_id = this.books[i].book_id;
+        this.books[i].book_id = books[i].book_id;
+        books[i].book_id = book_id;
 
-            let book_sort = this.books[i].book_sort;
-            this.books[i].book_sort = books[i].book_sort;
-            books[i].book_sort = book_sort;
+        let book_sort = this.books[i].book_sort;
+        this.books[i].book_sort = books[i].book_sort;
+        books[i].book_sort = book_sort;
 
-            let book_has_cover = this.books[i].book_has_cover;
-            this.books[i].book_has_cover = books[i].book_has_cover;
-            books[i].book_has_cover = book_has_cover;
+        let book_has_cover = this.books[i].book_has_cover;
+        this.books[i].book_has_cover = books[i].book_has_cover;
+        books[i].book_has_cover = book_has_cover;
 
-            let lang_code = this.books[i].lang_code;
-            this.books[i].lang_code = books[i].lang_code;
-            books[i].lang_code = lang_code;
+        let lang_code = this.books[i].lang_code;
+        this.books[i].lang_code = books[i].lang_code;
+        books[i].lang_code = lang_code;
 
-            let rating = this.books[i].rating;
-            this.books[i].rating = books[i].rating;
-            books[i].rating = rating;
+        let rating = this.books[i].rating;
+        this.books[i].rating = books[i].rating;
+        books[i].rating = rating;
 
-            let readerRating = this.books[i].readerRating;
-            this.books[i].readerRating = books[i].readerRating;
-            books[i].readerRating = readerRating;
+        let readerRating = this.books[i].readerRating;
+        this.books[i].readerRating = books[i].readerRating;
+        books[i].readerRating = readerRating;
 
-            let readerRatingCount = this.books[i].readerRatingCount;
-            this.books[i].readerRatingCount = books[i].readerRatingCount;
-            books[i].readerRatingCount = readerRatingCount;
+        let readerRatingCount = this.books[i].readerRatingCount;
+        this.books[i].readerRatingCount = books[i].readerRatingCount;
+        books[i].readerRatingCount = readerRatingCount;
 
-            let series_name = this.books[i].series_name;
-            this.books[i].series_name = books[i].series_name;
-            books[i].series_name = series_name;
+        let series_name = this.books[i].series_name;
+        this.books[i].series_name = books[i].series_name;
+        books[i].series_name = series_name;
 
-            let book_series_index = this.books[i].book_series_index;
-            this.books[i].book_series_index = books[i].book_series_index;
-            books[i].book_series_index = book_series_index;
+        let book_series_index = this.books[i].book_series_index;
+        this.books[i].book_series_index = books[i].book_series_index;
+        books[i].book_series_index = book_series_index;
 
-            let book_date = this.books[i].book_date;
-            this.books[i].book_date = books[i].book_date;
-            books[i].book_date = book_date;
+        let book_date = this.books[i].book_date;
+        this.books[i].book_date = books[i].book_date;
+        books[i].book_date = book_date;
 
-            let author_name = this.books[i].author_name;
-            this.books[i].author_name = books[i].author_name;
-            books[i].author_name = author_name;
-          } else {
-            this.books[i] = books[i];
-          }
-        }
+        let author_name = this.books[i].author_name;
+        this.books[i].author_name = books[i].author_name;
+        books[i].author_name = author_name;
+      } else {
+        this.books[i] = books[i];
+      }
+    }
 
-     setTimeout(() => {
-       console.log('done ' + (Date.now() - timetime) + ' ms');
-     })
+    while (this.books.length > books.length) {
+      this.books.splice(-1, 1);
+    }
+
+    setTimeout(() => {
+      console.log('done ' + (Date.now() - timetime) + ' ms (' + this.books.length + ')');
+    })
   }
 
 
