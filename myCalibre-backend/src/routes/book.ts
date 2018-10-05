@@ -172,7 +172,7 @@ function bookRouter(passport): Router {
 
       const book_id = request.params['id'] || 0;
 
-      debug(`GET /thumbnail/${book_id}.png`);
+      //debug(`GET /thumbnail/${book_id}.png`);
 
       //debug(request);
 
