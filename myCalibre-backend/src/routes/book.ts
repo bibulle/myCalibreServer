@@ -172,7 +172,7 @@ function bookRouter(passport): Router {
 
       const book_id = request.params['id'] || 0;
 
-      //debug(`GET /thumbnail/${book_id}.png`);
+      debug(`GET /thumbnail/${book_id}.png`);
 
       //debug(request);
 
@@ -191,22 +191,22 @@ function bookRouter(passport): Router {
               if (err) {
                 fs.stat(coverPath, (err) => {
                   if (err) {
-                    response.sendFile(err_cover_path);
+                    response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
                   } else {
-                    response.sendFile(coverPath);
+                    response.sendFile(coverPath, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
                   }
                 })
               } else {
-                response.sendFile(thumbnailPath);
+                response.sendFile(thumbnailPath, { headers: {'Cache-Control': 'public, max-age=864000' }, lastModified: false, etag: false });
               }
             })
           } else {
-            response.sendFile(err_cover_path);
+            response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
           }
         })
         .catch(err => {
           debug(err);
-          response.sendFile(err_cover_path);
+          response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
         })
 
     });
