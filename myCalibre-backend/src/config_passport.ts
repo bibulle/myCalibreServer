@@ -219,6 +219,8 @@ module.exports = function (passport) {
       // =========================================================================
       // FACEBOOK ================================================================
       // =========================================================================
+      config.authent_facebook_callbackURL = 'https://bib.bibulle.fr/assets/logged.html';
+      // TODO : Edit in database
       passport.use(new FacebookStrategy({
           clientID: config.authent_facebook_clientID,
           clientSecret: config.authent_facebook_clientSecret,

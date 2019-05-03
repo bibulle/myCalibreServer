@@ -421,6 +421,7 @@ function authentRouter(passport): Router {
         passport.authenticate(['facebook'], {}, (err, newUser: User): any => {
 
           if (err) {
+            console.log(err);
             return next(err);
           }
 
