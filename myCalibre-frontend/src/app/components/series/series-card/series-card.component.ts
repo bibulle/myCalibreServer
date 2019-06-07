@@ -2,7 +2,8 @@ import { Component, OnInit, NgModule, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Series } from '../series';
 import { BookCardModule } from '../../book/book-card/book-card.component';
-import { MatCardModule, MatIconModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../../../environments/environment';
 
 @Component({

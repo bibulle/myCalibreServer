@@ -1,7 +1,7 @@
 import {Component, OnInit, NgModule, OnDestroy, AfterViewInit} from '@angular/core';
 import {TagCardModule} from '../tag-card/tag-card.component';
 import {MatContentModule} from '../../content/content.component';
-import {MatProgressSpinnerModule} from '@angular/material';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {CommonModule} from '@angular/common';
 import {Tag} from '../tag';
 import {Filter, SortType, FilterService, SortingDirection, LangAvailable} from '../../filter-bar/filter.service';

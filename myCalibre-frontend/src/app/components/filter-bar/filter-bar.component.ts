@@ -5,7 +5,12 @@ import {FormsModule} from '@angular/forms';
 import {Subject, Subscription} from 'rxjs';
 
 import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from './filter.service';
-import {MatButtonModule, MatButtonToggleModule, MatIconModule, MatInputModule, MatMenuModule, MatTooltipModule} from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';

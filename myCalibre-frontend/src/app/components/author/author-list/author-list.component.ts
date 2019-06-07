@@ -1,6 +1,6 @@
 import {Component, OnInit, NgModule, AfterViewInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {MatProgressSpinnerModule} from '@angular/material';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {MatContentModule} from '../../content/content.component';
 import {Author} from '../author';
 import {Filter, FilterService, SortType, SortingDirection, LangAvailable} from '../../filter-bar/filter.service';

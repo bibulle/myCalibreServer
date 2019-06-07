@@ -1,5 +1,8 @@
 import {Component, EventEmitter, Input, NgModule, OnInit, Output, ViewEncapsulation} from '@angular/core';
-import {MatButtonModule, MatIconModule, MatSnackBar, MatTooltipModule} from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {BrowserModule} from '@angular/platform-browser';
 
 @Component({

@@ -2,12 +2,12 @@
   <mat-card fxFlex="60">
     <form role="form" (submit)="login($event, username.value, password.value)">
       <mat-card-content>
-        <mat-input-container>
+        <mat-form-field>
           <input matInput placeholder="{{'label.username' | translate}}" required                 #username autocorrect="off" autocapitalize="off" spellcheck="false">
-        </mat-input-container>
-        <mat-input-container>
+        </mat-form-field>
+        <mat-form-field>
           <input matInput placeholder="{{'label.password' | translate}}" required type="password" #password>
-        </mat-input-container>
+        </mat-form-field>
       </mat-card-content>
       <mat-card-actions align="end">
         <a mat-raised-button (click)="startLoginGoogle()" class="fa fa-google"> {{'label.google' | translate}}</a>

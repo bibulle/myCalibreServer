@@ -1,15 +1,13 @@
 import {NgModule} from '@angular/core';
 
-import {
-  // MatButtonModule,
-  // MatMenuModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatListModule,
-  MatSidenavModule,
-  MatSnackBarModule,
-  // MatCardModule
-} from '@angular/material';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { 
+// MatButtonModule,
+// MatMenuModule,
+MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   imports: [

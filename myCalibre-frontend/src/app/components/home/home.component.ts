@@ -5,7 +5,8 @@ import { Book } from '../book/book';
 import { CommonModule } from '@angular/common';
 import { BookCardModule } from '../book/book-card/book-card.component';
 import { MatContentModule } from '../content/content.component';
-import { MatProgressSpinnerModule, MatCardModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {NotificationService} from '../notification/notification.service';
 import {TranslateModule} from '@ngx-translate/core';
 

@@ -3,9 +3,9 @@
   <form (ngSubmit)="send()">
     <mat-card-content>
       <h4>{{'label.kindle.enter-email' | translate}}</h4>
-      <mat-input-container>
-        <input matInput placeholder="{{'label.email' | translate}}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
-      </mat-input-container>
+      <mat-form-field>
+        <input placeholder="{{'label.email' | translate}}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
+      </mat-form-field>
 
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let mail of filteredMails" [value]="mail">

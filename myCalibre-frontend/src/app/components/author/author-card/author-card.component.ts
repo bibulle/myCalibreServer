@@ -1,7 +1,9 @@
 import { Component, OnInit, Input, NgModule } from '@angular/core';
 import { Author } from '../author';
 import { CommonModule } from '@angular/common';
-import { MatCardModule, MatIconModule, MatButtonModule } from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { BookCardModule } from '../../book/book-card/book-card.component';
 
 @Component({

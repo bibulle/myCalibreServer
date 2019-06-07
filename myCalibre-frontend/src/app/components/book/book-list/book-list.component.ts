@@ -9,15 +9,13 @@ import {MatContentModule} from '../../content/content.component';
 import {BookCardModule} from '../book-card/book-card.component';
 import {BookService} from '../book.service';
 import {Book} from '../book';
-import {
-  MatButtonModule,
-  MatCardModule,
-  MatCommonModule,
-  MatIconModule,
-  MatInputModule,
-  MatProgressSpinnerModule,
-  MatToolbarModule
-} from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCommonModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import {TranslateModule} from '@ngx-translate/core';
 
 const leftPad = require('left-pad');

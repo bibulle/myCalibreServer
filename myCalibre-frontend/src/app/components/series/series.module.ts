@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SeriesService } from './series.service';
 import { SeriesListComponent, SeriesListModule } from './series-list/series-list.component';
-import { MatCardModule, MatIconModule } from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   imports: [

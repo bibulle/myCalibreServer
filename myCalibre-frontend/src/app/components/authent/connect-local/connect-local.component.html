@@ -2,12 +2,12 @@
   <mat-card fxFlex="60">
     <form role="form" (submit)="connect($event, username.value, password.value)">
       <mat-card-content>
-        <mat-input-container>
+        <mat-form-field>
           <input matInput placeholder="{{'label.username' | translate}}"  required                 #username>
-        </mat-input-container>
-        <mat-input-container>
+        </mat-form-field>
+        <mat-form-field>
           <input matInput placeholder="{{'label.password' | translate}}"  required type="password" #password>
-        </mat-input-container>
+        </mat-form-field>
       </mat-card-content>
       <mat-card-actions align="end">
         <button mat-raised-button color="primary" type="submit">Add/connect a local account</button>

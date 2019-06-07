@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import {UserService} from '../authent/user.service';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class NotificationService {
 
     let config = new MatSnackBarConfig();
     config.duration = duration;
-    config.extraClasses = extraClasses;
+    config.panelClass = extraClasses;
 
     this._snackBar.open(message, null, config);
   }

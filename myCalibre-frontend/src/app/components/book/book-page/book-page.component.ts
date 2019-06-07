@@ -9,18 +9,15 @@ import {CommonModule} from '@angular/common';
 import {TitleService} from '../../../app/title.service';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {FormsModule} from '@angular/forms';
-import {
-  MatAutocompleteModule,
-  MatButtonModule,
-  MatCardModule,
-  MatDialog,
-  MatDialogModule,
-  MatIconModule,
-  MatInputModule,
-  MatMenuModule,
-  MatProgressSpinnerModule,
-  MatTooltipModule
-} from '@angular/material';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {KindleDialogComponent} from './kindle-dialog/kindle-dialog.component';
 import {NotificationService} from '../../notification/notification.service';
 import {FlexLayoutModule} from '@angular/flex-layout';

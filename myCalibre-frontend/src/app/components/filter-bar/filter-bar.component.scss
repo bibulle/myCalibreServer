@@ -30,7 +30,7 @@
   }
 
   @media screen and (max-width: $layout-breakpoint-md) {
-    .mat-input-container {
+    .mat-form-field {
       width: $layout-breakpoint-md/8;
       font-size: $display-2-font-size-base/4;
     }

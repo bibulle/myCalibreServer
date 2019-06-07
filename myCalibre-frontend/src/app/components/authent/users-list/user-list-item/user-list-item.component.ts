@@ -1,7 +1,12 @@
 import {Component, EventEmitter, Input, NgModule, OnInit, Output} from '@angular/core';
 import {User} from '../../user';
 import {CommonModule} from '@angular/common';
-import {MatButtonModule, MatCardModule, MatCheckboxModule, MatIconModule, MatInputModule, MatSlideToggleModule} from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {FormsModule} from '@angular/forms';
 import {UserProfileModule} from '../../profile/user-profile/user-profile.component';
 import {NotificationService} from 'app/components/notification/notification.service';

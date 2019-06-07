@@ -1,5 +1,5 @@
 import { Component, OnInit, Optional } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
+import { MatDialogRef } from '@angular/material/dialog';
 import {UserService} from '../../../authent/user.service';
 import {User} from '../../../authent/user';
 
