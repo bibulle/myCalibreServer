@@ -1,7 +1,6 @@
 import {Injectable, NgZone} from '@angular/core';
 import {ViewportHelper} from './viewport';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {Observable} from 'rxjs/Observable';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 
 /**
