@@ -189,3 +189,12 @@ snack-bar-container.error {
     }
   }
 }
+
+filter-bar {
+  mat-form-field label {
+    top: 1.7em !important;
+  }
+  .mat-input-element {
+    caret-color: currentColor !important;
+  }
+}

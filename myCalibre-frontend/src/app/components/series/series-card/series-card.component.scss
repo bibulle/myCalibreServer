@@ -39,7 +39,7 @@ mat-card-subtitle .author:not(:last-child):after {
 }
 
 .series-card.books-closed app-book-card {
-  display: none;
+  display: none !important;
 }
 
 .series-card {

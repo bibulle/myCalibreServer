@@ -97,7 +97,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
     // if it's only an author, scroll to top
     if (this.selectedId) {
       setTimeout(() => {
-        document.querySelector('#scrollView').parentElement.scrollTop = 0;
+        MatPeekabooDirective.scrollTop = 0;
       })
     }
   }

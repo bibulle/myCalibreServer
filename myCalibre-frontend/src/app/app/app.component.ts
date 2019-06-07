@@ -1,28 +1,28 @@
-import {Component, OnInit, OnDestroy, AfterViewInit, ViewChild, Input, AfterViewChecked, ChangeDetectorRef} from '@angular/core';
+import {AfterViewChecked, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
-import {Media} from '../core/util/media';
-import {FilterService, Filter} from '../components/filter-bar/filter.service';
-import {TitleService, Title, Version} from './title.service';
-import { MatIconRegistry } from '@angular/material/icon';
-import { MatSidenav } from '@angular/material/sidenav';
+import {Filter, FilterService} from '../components/filter-bar/filter.service';
+import {Title, TitleService, Version} from './title.service';
+import {MatIconRegistry} from '@angular/material/icon';
+import {MatSidenav} from '@angular/material/sidenav';
 import {Subscription} from 'rxjs';
 import {UserService} from '../components/authent/user.service';
 import {User} from '../components/authent/user';
 import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer} from '@angular/platform-browser';
+import {BreakpointObserver, BreakpointState} from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
+export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
 
-  static SIDE_MENU_BREAKPOINT = 'gt-md';
+  static SIDE_MENU_BREAKPOINT = '(min-width: 1280px)';
 
-  @ViewChild(MatSidenav) private menu: MatSidenav;
+  @ViewChild(MatSidenav, {static: true}) private menu: MatSidenav;
 
-  @Input() fullPage: boolean = this.media.hasMedia(AppComponent.SIDE_MENU_BREAKPOINT);
+  @Input() fullPage: boolean = this._breakpointObserver.isMatched(AppComponent.SIDE_MENU_BREAKPOINT);
 
   version: Version = new Version({});
   links: { path: string, label: string }[] = [];
@@ -38,15 +38,15 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
 
   private _scrollWidth = -1;
 
-  constructor(private media: Media,
-              private _userService: UserService,
+  constructor(private _userService: UserService,
               private _filterService: FilterService,
               private _titleService: TitleService,
               private _router: Router,
               private _cdRef: ChangeDetectorRef,
               private _translate: TranslateService,
               private _matIconRegistry: MatIconRegistry,
-              private _domSanitizer: DomSanitizer) {
+              private _domSanitizer: DomSanitizer,
+              public _breakpointObserver: BreakpointObserver) {
     this._translate.setDefaultLang('en');
 
     // console.log(this._translate.getBrowserLang());
@@ -57,17 +57,6 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
       .addSvgIcon('flag_us', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/us.svg'))
       .addSvgIcon('flag_fr_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/fr_disabled.svg'))
       .addSvgIcon('flag_us_disabled', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/us_disabled.svg'))
-  }
-
-  //noinspection JSUnusedGlobalSymbols
-  ngAfterViewInit(): any {
-    let query = Media.getQuery(AppComponent.SIDE_MENU_BREAKPOINT);
-    this._mediaSubscription = this.media.listen(query).onMatched.subscribe((mql: MediaQueryList) => {
-      setTimeout(() => {
-        this.menu.mode = mql.matches ? 'side' : 'over';
-        this.menu.toggle(mql.matches).catch(() => undefined);
-      })
-    });
   }
 
   ngAfterViewChecked() {
@@ -172,6 +161,14 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewInit, AfterView
         });
         this.links = newLinks;
       });
+
+    this._breakpointObserver
+      .observe([AppComponent.SIDE_MENU_BREAKPOINT])
+      .subscribe((state: BreakpointState) => {
+        this.menu.mode = state.matches ? 'side' : 'over';
+        this.menu.toggle(state.matches).catch(() => undefined);
+      });
+
   }
 
 

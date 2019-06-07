@@ -32,5 +32,5 @@ mat-card-title mat-icon {
 }
 
 .tag-card.books-closed app-book-card {
-  display: none;
+  display: none !important;
 }

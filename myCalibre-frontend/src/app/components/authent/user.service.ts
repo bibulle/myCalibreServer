@@ -4,9 +4,10 @@ import {JwtHelperService} from '@auth0/angular-jwt';
 
 import {environment} from '../../../environments/environment';
 import {User} from './user';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, timer} from 'rxjs';
 import {WindowService} from '../../core/util/window.service';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {distinctUntilChanged} from 'rxjs/operators';
 
 
 enum LoginProvider { FACEBOOK, GOOGLE }
@@ -34,7 +35,7 @@ export class UserService {
    * Get token from local storage
    * @returns {string | null}
    */
-  public static  tokenGetter() {
+  public static tokenGetter() {
     return localStorage.getItem(UserService.KEY_TOKEN_LOCAL_STORAGE);
   }
 
@@ -42,14 +43,14 @@ export class UserService {
    * Set token to local storage
    * @param {string | null} token
    */
-  public static  tokenSetter(token: (string | null)) {
+  public static tokenSetter(token: (string | null)) {
     localStorage.setItem(UserService.KEY_TOKEN_LOCAL_STORAGE, token);
   }
 
   /**
    * Remove token from local storage
    */
-  public static  tokenRemove() {
+  public static tokenRemove() {
     localStorage.removeItem(UserService.KEY_TOKEN_LOCAL_STORAGE);
   }
 
@@ -89,8 +90,8 @@ export class UserService {
 
     this.userSubject = new BehaviorSubject<User>(this.user);
 
-    let timer = Observable.timer(3 * 1000, 3 * 1000);
-    timer.subscribe(() => {
+    let timer1 = timer(3 * 1000, 3 * 1000);
+    timer1.subscribe(() => {
       this.checkAuthent();
     });
 
@@ -101,15 +102,14 @@ export class UserService {
    * @returns {Observable<User>}
    */
   userObservable(): Observable<User> {
-    return this.userSubject
-      // .debounceTime(200)
-      .distinctUntilChanged(
-        (a, b) => {
+    return this.userSubject.pipe(
+      distinctUntilChanged((a, b) => {
           // console.log(JSON.stringify(a.local));
           // console.log(JSON.stringify(b.local));
           return JSON.stringify(a) === JSON.stringify(b)
         }
-      );
+      ))
+      ;
   }
 
   /**
@@ -196,7 +196,7 @@ export class UserService {
    * Refresh the JWT token (if user is updated)
    * @returns {Promise<void>}
    */
-  refreshUser(): Promise<User|string> {
+  refreshUser(): Promise<User | string> {
     return new Promise<User>((resolve, reject) => {
       this._http
         .get(environment.serverUrl + 'authent/user')
@@ -265,7 +265,7 @@ export class UserService {
    * @param user
    * @returns {Promise<User>}
    */
-  remove(user: User): Promise<User|string> {
+  remove(user: User): Promise<User | string> {
     return this._doGet(environment.serverUrl + 'authent/delete?userId=' + user.id);
   }
 
@@ -274,7 +274,7 @@ export class UserService {
    * @param user
    * @returns {Promise<string>}
    */
-  resetPassword(user: User): Promise<User|string> {
+  resetPassword(user: User): Promise<User | string> {
     return this._doGet(environment.serverUrl + 'authent/reset?userId=' + user.id);
   }
 
@@ -353,7 +353,7 @@ export class UserService {
    * @param parsed
    * @returns {Promise<void>}
    */
-  loginFacebook(parsed): Promise<User|string> {
+  loginFacebook(parsed): Promise<User | string> {
     // console.log("loginFacebook "+code);
     return this._doGet(environment.serverUrl + 'authent/facebook/login?code=' + parsed.code);
   }
@@ -363,7 +363,7 @@ export class UserService {
    * @param parsed
    * @returns {Promise<void>}
    */
-  loginGoogle(parsed): Promise<User|string> {
+  loginGoogle(parsed): Promise<User | string> {
     // console.log("loginGoogle "+code);
     return this._doGet(environment.serverUrl + 'authent/google/login?code=' + parsed.code);
   }
@@ -373,7 +373,7 @@ export class UserService {
    * @param userId
    * @returns {Promise<void>}
    */
-  unlinkFacebook(userId: string): Promise<User|string> {
+  unlinkFacebook(userId: string): Promise<User | string> {
     // console.log("unlinkFacebook ");
     return this._doGet(environment.serverUrl + 'authent/facebook/unlink?userId=' + userId);
   }
@@ -383,7 +383,7 @@ export class UserService {
    * @param userId
    * @returns {Promise<void>}
    */
-  unlinkGoogle(userId: string): Promise<User|string> {
+  unlinkGoogle(userId: string): Promise<User | string> {
     // console.log("unlinkGoogle ");
     return this._doGet(environment.serverUrl + 'authent/google/unlink?userId=' + userId);
   }
@@ -543,7 +543,7 @@ export class UserService {
    * @private
    */
   private _doGet(authentUrl: string) {
-    return new Promise<User|string>((resolve, reject) => {
+    return new Promise<User | string>((resolve, reject) => {
       this._http
         .get(
           authentUrl,

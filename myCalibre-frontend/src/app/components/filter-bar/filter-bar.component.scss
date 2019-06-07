@@ -21,11 +21,11 @@
     border-radius: 50%;
   }
 
-  /deep/ label {
+  ::ng-deep label { // deprecated ? moved to style
     top: 1.7em;
   }
 
-  /deep/ .mat-input-element {
+  ::ng-deep .mat-input-element { // deprecated ? moved to style
     caret-color: currentColor;
   }
 

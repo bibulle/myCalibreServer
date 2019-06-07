@@ -1,11 +1,11 @@
-import {Component, OnInit, NgModule, OnDestroy, AfterViewInit} from '@angular/core';
+import {AfterViewInit, Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {Series} from '../series';
-import {Filter, FilterService, SortType, SortingDirection, LangAvailable} from '../../filter-bar/filter.service';
+import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from '../../filter-bar/filter.service';
 import {SeriesService} from '../series.service';
 import {CommonModule} from '@angular/common';
 import {MatContentModule} from '../../content/content.component';
 import {SeriesCardModule} from '../series-card/series-card.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {TranslateModule} from '@ngx-translate/core';

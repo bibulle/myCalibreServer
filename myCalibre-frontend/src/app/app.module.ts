@@ -9,8 +9,6 @@ import {TitleService} from './app/title.service';
 
 import {MdPeekabooModule} from './directives/peekaboo.directive';
 import {MatInkDirective} from './directives/link.directive';
-import {Media} from './core/util/media';
-import {BrowserViewportHelper, ViewportHelper} from './core/util/viewport';
 
 import {MatContentModule} from './components/content/content.component';
 import {FooterComponent} from './components/footer/footer.component';
@@ -94,11 +92,9 @@ registerLocaleData(localeEn, 'en');
     MatRatingModule
   ],
   providers: [
-    Media,
     TitleService,
     NotificationService,
     WindowService,
-    {provide: ViewportHelper, useClass: BrowserViewportHelper},
     AuthGuard,
     AuthGuardAdmin
   ],

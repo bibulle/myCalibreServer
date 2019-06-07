@@ -16,6 +16,7 @@ import {FormsModule} from '@angular/forms';
 import {TranslateModule} from '@ngx-translate/core';
 import {LocalizedDateModule} from '../../../../directives/localized-date.pipe';
 import {FlexLayoutModule} from '@angular/flex-layout';
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-profile',
@@ -49,9 +50,9 @@ export class UserProfileComponent implements OnInit, OnChanges {
     // ----------
     if (!this.subjectUser) {
       this.subjectUser = new Subject<User>();
-      this.subjectUser
-        .debounceTime(500)
-        .subscribe(
+      this.subjectUser.pipe(
+        debounceTime(500)
+      ).subscribe(
           user => {
             // console.log(user);
             return this._userService.save(user)

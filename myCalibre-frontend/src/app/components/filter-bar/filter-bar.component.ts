@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {TranslateModule} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
+import {debounceTime} from 'rxjs/operators';
 
 @Component({
   selector: 'filter-bar',
@@ -40,7 +41,7 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     if (!this.subjectFilter) {
       this.subjectFilter = new Subject<Filter>();
       this._userChoiceSubscription = this.subjectFilter
-        .debounceTime(500)
+        .pipe(debounceTime(500))
         .subscribe(
           filter => {
             this._filterService.update(filter);
