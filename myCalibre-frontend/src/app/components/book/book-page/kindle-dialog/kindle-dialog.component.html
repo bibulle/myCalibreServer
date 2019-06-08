@@ -4,7 +4,7 @@
     <mat-card-content>
       <h4>{{'label.kindle.enter-email' | translate}}</h4>
       <mat-form-field>
-        <input placeholder="{{'label.email' | translate}}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
+        <input matInput placeholder="{{'label.email' | translate}}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
       </mat-form-field>
 
       <mat-autocomplete #auto="matAutocomplete">
