@@ -19,6 +19,11 @@ debug("CronTab          : '" + CRON_TAB_GET_INFO + "'");
 
 var booksToChange;
 
+var countNotFoundBook = 0;
+var countNotFoundRating = 0;
+var countUpdated = 0;
+var countInserted = 0;
+
 function getInfo () {
 
   async.waterfall([
@@ -56,7 +61,7 @@ function getInfo () {
         // Get Books list
         // =================
 
-        debug(booksToChange.length + " books have no rating and have not been try");
+        debug(booksToChange.length + " books have no rating and have not been try ("+(countUpdated+countInserted)+'/'+(countNotFoundBook+countNotFoundRating+countUpdated+countInserted)+')');
 
         if (booksToChange.length == 0) {
           return callback1("Done");
@@ -81,19 +86,21 @@ function getInfo () {
 
         let URL = `https://www.amazon.fr/s/?unfiltered=1&sort=relevancerank&field-title=${title}&search-alias=stripbooks&field-author=${author}`;
         //let URL = 'https://www.amazon.fr/s/?unfiltered=1&sort=relevancerank&field-title=Le%20Secret%20des%20runes&search-alias=stripbooks&field-author=Michael%20Moorcock'
-        //debug(URL);
+        debug(URL);
 
         request(URL, (error, response, body) => {
             if (error) {
               return callback1(error);
             }
-            // debug(response);
-            // debug(body);
+            //debug(response);
+            //debug(body);
 
             let $ = cheerio.load(body);
 
-            let title = $('.s-access-title').first().text();
-            // debug(title)
+            //let title = $('.s-access-title').first().text();
+            let title = $('.s-result-list span.a-size-medium').first().text();
+
+            //debug('title : ' + title)
 
             // debug("---------1")
             // debug($('.a-col-right .a-spacing-none').next().html());
@@ -105,28 +112,30 @@ function getInfo () {
 
             //let author = $('.a-col-right .a-spacing-none').next().find('span a').html();
             //if (!author) {
-            let author = $('.a-col-right .a-spacing-none').first().next().children().text();
+            let author = $('.s-result-list .sg-col-inner .a-row span.a-size-base').first().next().text().trim();
             //}
-            // debug(author);
+            //debug('author : '+author);
             let authorReversed = author.split(' ').reverse().join(' ');
-            // debug(authorReversed);
+            //debug(authorReversed);
 
-            let titleOK = title.toLowerCase().indexOf(book.book_title.toLowerCase()) >= 0;
-            let authorOK = author.toLowerCase().indexOf(book.author_name[0].toLowerCase()) >= 0;
-            authorOK = authorOK || authorReversed.toLowerCase().indexOf(book.author_name[0].toLowerCase()) >= 0;
+            let titleOK = removeAccent(title).indexOf(removeAccent(book.book_title)) >= 0;
+            let authorOK = removeAccent(author).indexOf(removeAccent(book.author_name[0])) >= 0;
+            authorOK = authorOK || removeAccent(authorReversed).indexOf(removeAccent(book.author_name[0])) >= 0;
 
             if (titleOK && authorOK) {
-              let rating = $('.a-icon-star span').first().text();
+              let rating = $('.a-icon-star-small span').first().text();
               if (rating) {
                 rating = rating.split(' ')[0].replace(',', '.') * 2;
                 // debug('Rating : ' + rating + ' (' + book.book_title + ' - ' + book.author_name[0] + ')');
                 callback1(null, book, rating);
               } else {
-                callback1("Rating not found : " + book.book_title + ' (' + book.author_name[0] + ')');
+                countNotFoundRating++,
+                  callback1("Rating not found : " + book.book_title + ' (' + book.author_name[0] + ')');
               }
 
 
             } else {
+              countNotFoundBook++;
               callback1("Book not found : " + book.book_title + ' (' + book.author_name[0] + ')');
             }
           }
@@ -167,6 +176,7 @@ function getInfo () {
                 .getInstance()
                 .insertRating(bookRating)
                 .then(br => {
+                  countInserted++;
                   debug("inserted : " + bookRating);
                   callback1(null, book, br);
                 })
@@ -213,6 +223,7 @@ function getInfo () {
               .getInstance()
               .insertBookRatingLink(id, book.book_id, bookRating.id)
               .then(() => {
+                countUpdated++;
                 debug("Updated : " + book.book_title + ' (' + book.author_name[0] + ')');
                 callback1();
               })
@@ -240,6 +251,16 @@ function getInfo () {
     });
 }
 
+function removeAccent(s:string) {
+  let ret = s.toLocaleLowerCase();
+  ret = ret.replace(/[éèêëęėē]/g, 'e');
+  ret = ret.replace(/[àâªæáäãåā]/g, 'a');
+  ret = ret.replace(/[ôœºöòóõøō]/g, 'o');
+  ret = ret.replace(/[ûùüúū]/g, 'u');
+  ret = ret.replace(/[îïìíįī]/g, 'i');
+  ret = ret.replace(/[,']/g, '');
+  return ret;
+}
 
 /**
  * Shuffles array in place.
