@@ -50,14 +50,14 @@
 <mat-card-content>
   <div class="provider">{{'label.downloaded-books' | translate}} :</div>
   <div class="spinner" *ngIf="!user.history.downloadedBooks"><mat-spinner color="accent" diameter="20"></mat-spinner></div>
-  <div class="info book" *ngFor="let book of user.history.downloadedBooks" fxLayout="row" fxLayoutAlign="start stretch" >
-    <div class="date" fxFlex="30">{{book.date | localizedDate: 'medium'}}</div><div class="title" title="Id: {{book.id}}">{{book.data.data_name}}</div>
+  <div class="info book" *ngFor="let book of user.history.downloadedBooks" fxLayout="row" fxLayoutAlign="start stretch" (click)="openBook(book.id)">
+    <div class="date" fxFlex="30">{{book.date | localizedDate: 'medium'}}</div><a><div class="title" title="Id: {{book.id}}">{{book.data.data_name}}</div></a>
   </div>
 </mat-card-content>
 <mat-card-content>
   <div class="provider">{{'label.rating-books' | translate}} :</div>
   <div class="spinner" *ngIf="!user.history.ratings"><mat-spinner color="accent" diameter="20"></mat-spinner></div>
-  <div class="info book" *ngFor="let rating of user.history.ratings" fxLayout="row" fxLayoutAlign="start stretch" >
+  <div class="info book" *ngFor="let rating of user.history.ratings" fxLayout="row" fxLayoutAlign="start stretch" (click)="openBook(rating.book_id)">
     <div class="date" fxFlex="22">{{rating.date | localizedDate: 'medium'}}</div><div class="date" fxFlex="8">{{rating.rating}}/10</div><div class="title" title="Id: {{rating.book_id}}">{{rating.book_name}}</div>
   </div>
 </mat-card-content>

@@ -227,6 +227,15 @@ export class UserProfileComponent implements OnInit, OnChanges {
       });
   }
 
+  /**
+   * A book has been clicked
+   * @param bookId
+   */
+  openBook(bookId) {
+    this._router.navigate(['/book', bookId]);
+  }
+
+
 }
 
 @NgModule({
