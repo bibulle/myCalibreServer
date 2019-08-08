@@ -146,21 +146,21 @@ function bookRouter(passport): Router {
               if (err) {
                 debug("No cover found 1");
                 //debug(book);
-                response.sendFile(err_cover_path);
+                response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=60' }, lastModified: false, etag: false });
               } else {
-                response.sendFile(fullPath);
+                response.sendFile(fullPath, { headers: {'Cache-Control': 'public, max-age=864000' }, lastModified: false, etag: false });
               }
             })
           } else {
             debug("No cover found 2");
             debug(book);
-            response.sendFile(err_cover_path);
+            response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=60' }, lastModified: false, etag: false });
           }
         })
         .catch(err => {
           debug("No cover found 3");
           debug(err);
-          response.sendFile(err_cover_path);
+          response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=60' }, lastModified: false, etag: false });
         })
 
     });
@@ -191,9 +191,9 @@ function bookRouter(passport): Router {
               if (err) {
                 fs.stat(coverPath, (err) => {
                   if (err) {
-                    response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
+                    response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=60' }, lastModified: false, etag: false });
                   } else {
-                    response.sendFile(coverPath, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
+                    response.sendFile(coverPath, { headers: {'Cache-Control': 'public, max-age=3600' }, lastModified: false, etag: false });
                   }
                 })
               } else {
@@ -201,12 +201,12 @@ function bookRouter(passport): Router {
               }
             })
           } else {
-            response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
+            response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=60' }, lastModified: false, etag: false });
           }
         })
         .catch(err => {
           debug(err);
-          response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=86400' }, lastModified: false, etag: false });
+          response.sendFile(err_cover_path, { headers: {'Cache-Control': 'public, max-age=600' }, lastModified: false, etag: false });
         })
 
     });
