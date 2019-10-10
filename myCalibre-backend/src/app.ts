@@ -13,6 +13,7 @@ import { seriesRouter } from "./routes/series";
 import { authorRouter } from "./routes/author";
 import { tagRouter } from "./routes/tag";
 import { authentRouter } from "./routes/authent";
+import {healthRouter} from "./routes/health";
 
 const debug = require('debug')('server:server');
 const warn = require('debug')('server:warn');
@@ -34,6 +35,7 @@ let originsWhiteList = ['http://localhost:4200', 'http://r2d2', 'http://192.168.
 if (process.env['frontend']) {
   originsWhiteList = JSON.parse(process.env['frontend']);
 }
+// noinspection JSUnusedGlobalSymbols
 const corsOptions = {
   origin: function (origin, callback) {
     const isWhiteListed = originsWhiteList.indexOf(origin) !== -1;
@@ -55,6 +57,7 @@ app.use(session({
   saveUninitialized: true
 }));
 app.use(passport.initialize());
+// noinspection TypeScriptValidateJSTypes
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
@@ -66,10 +69,12 @@ app.use("/api/series", seriesRouter);
 app.use("/api/author", authorRouter);
 app.use("/api/tag", tagRouter);
 app.use("/authent", authentRouter(passport));
+app.use("/health", healthRouter);
 
 //--------------
 // define the 404 error
 //--------------
+// noinspection JSUnusedLocalSymbols
 app.use(function (req: express.Request, res: express.Response, next) {
   res.status(404);
 
@@ -94,6 +99,7 @@ if (app.get("env") === "development") {
 
   app.use(express.static(join(__dirname, '../../node_modules')));
 
+  // noinspection JSUnusedLocalSymbols
   app.use(function (err, req: express.Request, res: express.Response, next) {
     res.status(err.status || 500);
     res.json({
