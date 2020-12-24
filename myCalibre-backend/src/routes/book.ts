@@ -90,7 +90,7 @@ function bookRouter(passport): Router {
         // ====================================
         .get((request: Request, response: Response, next: NextFunction) => {
 
-          const book_id = request.params['id'] || 0;
+          const book_id = +request.params['id'] || 0;
 
           debug(`GET /book/${book_id}`);
 
@@ -125,7 +125,7 @@ function bookRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response) => {
 
-      const book_id = request.params['id'] || 0;
+      const book_id = +request.params['id'] || 0;
 
       //debug(`GET /cover/${book_id}.png`);
 
@@ -170,7 +170,7 @@ function bookRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response) => {
 
-      const book_id = request.params['id'] || 0;
+      const book_id = +request.params['id'] || 0;
 
       //debug(`GET /thumbnail/${book_id}.png`);
 
@@ -216,7 +216,7 @@ function bookRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
 
-      const book_id = request.params['id'] || 0;
+      const book_id = +request.params['id'] || 0;
 
       debug(`GET /${book_id}/epub`);
 
@@ -285,7 +285,7 @@ function bookRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
 
-      const book_id = request.params['id'] || 0;
+      const book_id = +request.params['id'] || 0;
 
       debug(`GET /${book_id}/mobi`);
 
@@ -352,12 +352,12 @@ function bookRouter(passport): Router {
   // ====================================
     .post((request: Request, response: Response, next: NextFunction) => {
 
-      const book_id = request.params['id'] || 0;
+      const book_id = +request.params['id'] || 0;
 
       debug(`POST /${book_id}/rating`);
 
       //debug(request.body);
-      let rating = request.body['rating'];
+      let rating = +request.body['rating'];
       //debug(rating);
 
       if (!rating) {
@@ -418,7 +418,7 @@ function bookRouter(passport): Router {
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
 
-      const book_id = request.params['id'] || 0;
+      const book_id = +request.params['id'] || 0;
 
       debug(`GET /${book_id}/send/kindle`);
 

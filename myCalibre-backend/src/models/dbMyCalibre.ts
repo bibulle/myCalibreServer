@@ -36,7 +36,7 @@ class DbMyCalibre {
     DbMyCalibre._instance = this;
 
     // Connect to MongoDb
-    MongoClient.connect(DbMyCalibre.MONGO_URL, function (err, mongoClient) {
+    MongoClient.connect(DbMyCalibre.MONGO_URL, {useUnifiedTopology: true}, function (err, mongoClient) {
       // There is no error
       if (err) {
         throw(err);
