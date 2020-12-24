@@ -24,7 +24,7 @@ healthRouter.route('/')
                                 callback(null, "Config OK")
                             } else {
                                 debug("Config KO");
-                                callback("Config KO")
+                                callback(Error("Config KO"))
                             }
                         })
                         .catch(reason => {
@@ -38,7 +38,7 @@ healthRouter.route('/')
                                 callback(null, "Calibre date OK ("+date.toLocaleDateString()+" "+date.toLocaleTimeString()+")")
                             } else {
                                 debug("Calibre date KO");
-                                callback("Calibre date KO")
+                                callback(Error("Calibre date KO"))
                             }
                         })
                         .catch(reason => {
@@ -53,7 +53,7 @@ healthRouter.route('/')
                                 callback(null, "Calibre Db OK")
                             } else {
                                 debug("Calibre Db KO");
-                                callback("Calibre Db KO")
+                                callback(Error("Calibre Db KO"))
                             }
                         })
                         .catch(reason => {
@@ -69,7 +69,7 @@ healthRouter.route('/')
                         })
                         .catch(err => {
                             debug(err);
-                            callback("Cached authors KO");
+                            callback(Error("Cached authors KO"));
                         })
                 },
                 (callback) => {
@@ -80,7 +80,7 @@ healthRouter.route('/')
                         })
                         .catch(err => {
                             debug(err);
-                            callback("Cached books KO");
+                            callback(Error("Cached books KO"));
                         })
                 },
                 (callback) => {
@@ -91,7 +91,7 @@ healthRouter.route('/')
                         })
                         .catch(err => {
                             debug(err);
-                            callback("Cached new books KO");
+                            callback(Error("Cached new books KO"));
                         })
                 },
                 (callback) => {
@@ -102,7 +102,7 @@ healthRouter.route('/')
                         })
                         .catch(err => {
                             debug(err);
-                            callback("Cached series KO");
+                            callback(Error("Cached series KO"));
                         })
                 },
                 (callback) => {
@@ -113,7 +113,7 @@ healthRouter.route('/')
                         })
                         .catch(err => {
                             debug(err);
-                            callback("Cached tags KO");
+                            callback(Error("Cached tags KO"));
                         })
                 },
 

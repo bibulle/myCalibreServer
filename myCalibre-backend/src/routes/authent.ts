@@ -193,11 +193,11 @@ function authentRouter(passport): Router {
         }
 
         // get the parameter
-        let deletedUserId: string = request.query['userId'];
-        if (!deletedUserId) {
+        let deletedUserId = request.query['userId'];
+        if (!deletedUserId || (deletedUserId.length === 0)) {
           return response.status(400).send({error: "Bad request"});
         }
-        deletedUserId = deletedUserId.replace(/ /g, "+");
+        deletedUserId = deletedUserId[0].replace(/ /g, "+");
 
         // user must be an admin
         if (!user.local || !user.local.isAdmin) {
@@ -210,7 +210,7 @@ function authentRouter(passport): Router {
         }
 
         // Do the job
-        User.findById(deletedUserId, (err: Error, deletedUser: User) => {
+        User.findById(deletedUserId[0], (err: Error, deletedUser: User) => {
           if (err) {
             return next(err);
           }
@@ -242,11 +242,11 @@ function authentRouter(passport): Router {
         }
 
         // get the parameter
-        let modifiedUserId: string = request.query['userId'];
-        if (!modifiedUserId) {
+        let modifiedUserId = request.query['userId'];
+        if (!modifiedUserId || (modifiedUserId.length === 0)) {
           return response.status(400).send({error: "Bad request"});
         }
-        modifiedUserId = modifiedUserId.replace(/ /g, "+");
+        modifiedUserId = modifiedUserId[0].replace(/ /g, "+");
 
         // user must be an admin
         if (!user.local || !user.local.isAdmin) {
@@ -255,7 +255,7 @@ function authentRouter(passport): Router {
 
 
         // Do the job
-        User.findById(modifiedUserId, (err: Error, modifiedUser: User) => {
+        User.findById(modifiedUserId[0], (err: Error, modifiedUser: User) => {
           if (err) {
             return next(err);
           }
@@ -331,18 +331,18 @@ function authentRouter(passport): Router {
         }
 
         // Get the users id
-        let modifiedUserId1: string = request.query['userId1'];
-        let modifiedUserId2: string = request.query['userId2'];
-        if (!modifiedUserId1 || !modifiedUserId2) {
+        let modifiedUserId1 = request.query['userId1'];
+        let modifiedUserId2 = request.query['userId2'];
+        if (!modifiedUserId1 || !modifiedUserId2 || (modifiedUserId1.length === 0) || (modifiedUserId2.length === 0)) {
           return response.status(400).send({error: "Bad request"});
         }
 
-        modifiedUserId1 = modifiedUserId1.replace(/ /g, "+");
-        modifiedUserId2 = modifiedUserId2.replace(/ /g, "+");
+        modifiedUserId1 = modifiedUserId1[0].replace(/ /g, "+");
+        modifiedUserId2 = modifiedUserId2[0].replace(/ /g, "+");
 
         // Get the Users
         DbMyCalibre
-          .findUserById(modifiedUserId1)
+          .findUserById(modifiedUserId1[0])
           .then((user1) => {
 
             if (!user1) {
@@ -350,7 +350,7 @@ function authentRouter(passport): Router {
             }
 
             DbMyCalibre
-              .findUserById(modifiedUserId2)
+              .findUserById(modifiedUserId2[0])
               .then((user2) => {
 
                 if (!user2) {
@@ -455,12 +455,12 @@ function authentRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /facebook/unlink");
 
-      let modifiedUserId: string = request.query['userId'];
-      if (!modifiedUserId) {
+      let modifiedUserId = request.query['userId'];
+      if (!modifiedUserId ||  (modifiedUserId.length === 0)) {
         return response.status(400).send({error: "Bad request"});
       }
 
-      modifiedUserId = modifiedUserId.replace(/ /g, "+");
+      modifiedUserId = modifiedUserId[0].replace(/ /g, "+");
 
       _getBearerUser(request, (err, user) => {
         if (err) {
@@ -478,7 +478,7 @@ function authentRouter(passport): Router {
           if (!user.local.isAdmin) {
             return response.status(403).send({error: "Not authorized"});
           } else {
-            User.findById(modifiedUserId, (err: Error, modifiedUser: User) => {
+            User.findById(modifiedUserId as string, (err: Error, modifiedUser: User) => {
               if (err) {
                 return next(err);
               }
@@ -575,12 +575,12 @@ function authentRouter(passport): Router {
     .get((request: Request, response: Response, next: NextFunction) => {
       debug("GET /google/unlink");
 
-      let modifiedUserId: string = request.query['userId'];
-      if (!modifiedUserId) {
+      let modifiedUserId = request.query['userId'];
+      if (!modifiedUserId || (modifiedUserId.length === 0)) {
         return response.status(400).send({error: "Bad request"});
       }
 
-      modifiedUserId = modifiedUserId.replace(/ /g, "+");
+      modifiedUserId = modifiedUserId[0].replace(/ /g, "+");
 
       _getBearerUser(request, (err, user) => {
         if (err) {
@@ -596,7 +596,7 @@ function authentRouter(passport): Router {
           if (!user.local.isAdmin) {
             return response.status(403).send({error: "Not authorized"});
           } else {
-            User.findById(modifiedUserId, (err: Error, modifiedUser: User) => {
+            User.findById(modifiedUserId as string, (err: Error, modifiedUser: User) => {
               if (err) {
                 return next(err);
               }
