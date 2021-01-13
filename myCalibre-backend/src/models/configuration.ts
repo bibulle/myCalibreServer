@@ -24,6 +24,9 @@ export class Configuration {
   authent_google_clientSecret: string;
   authent_google_callbackURL: string;
 
+  authent_google_android_clientID: string;
+  authent_google_android_clientSecret: string;
+
   constructor (options: {}) {
     _.merge(this, options);
 

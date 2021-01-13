@@ -5,6 +5,7 @@ import DbMyCalibre from "./models/dbMyCalibre";
 const BearerStrategy = require('passport-http-bearer').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GoogleIdTokenStrategy = require('passport-google-id-token');
 
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -280,72 +281,139 @@ module.exports = function (passport) {
         }));
 
       // =========================================================================
-      // GOOGLE ==================================================================
+      // GOOGLE (through HTTP and redirect) ======================================
       // =========================================================================
       passport.use(new GoogleStrategy({
-          clientID: config.authent_google_clientID,
-          clientSecret: config.authent_google_clientSecret,
-          callbackURL: config.authent_google_callbackURL
-        },
-        function (token, tokenSecret, profile, done) {
-          //console.log(token);
-          //console.log(tokenSecret);
-          //console.log(profile);
+        clientID: config.authent_google_clientID,
+        clientSecret: config.authent_google_clientSecret,
+        callbackURL: config.authent_google_callbackURL
+      },
+      function (token, tokenSecret, profile, done) {
+        //console.log(token);
+        //console.log(tokenSecret);
+        //console.log(profile);
 
-          // make the code asynchronous
-          process.nextTick(function () {
+        // make the code asynchronous
+        process.nextTick(function () {
 
-            User.findByGoogleId(profile.id, function (err, user) {
+          User.findByGoogleId(profile.id, function (err, user) {
 
-              // if there is an error, stop everything and return that
-              // ie an error connecting to the database
-              if (err)
-                return done(err);
+            // if there is an error, stop everything and return that
+            // ie an error connecting to the database
+            if (err)
+              return done(err);
 
-              // if the user is found then log them in
-              if (user) {
-                return done(null, user); // user found, return that user
-              } else {
-                //debug(user);
-                // if there is no user, create them
-                const firstName = profile.name.givenName || profile.displayName.replace(/ [^ ]*$/, '');
-                const lastName = profile.name.familyName || profile.displayName.replace(/^.* /, '');
-                let email = null;
-                if (profile.emails) {
-                  email = profile.emails[0].value;
-                }
-
-                const newUser = new User({
-                  local: {
-                    username: profile.username,
-                    firstname: firstName,
-                    lastname: lastName,
-                    email: email
-                  },
-                  google: {
-                    id: profile.id, // set the users facebook id
-                    token: token, // we will save the token that facebook provides to the user
-                    name: profile.displayName,
-                    email: email
-                  }
-                });
-
-                //debug(user);
-
-                // save our user into the database
-                newUser.save(function (err) {
-                  if (err)
-                    throw err;
-                  return done(null, newUser);
-                });
+            // if the user is found then log them in
+            if (user) {
+              return done(null, user); // user found, return that user
+            } else {
+              //debug(user);
+              // if there is no user, create them
+              const firstName = profile.name.givenName || profile.displayName.replace(/ [^ ]*$/, '');
+              const lastName = profile.name.familyName || profile.displayName.replace(/^.* /, '');
+              let email = null;
+              if (profile.emails) {
+                email = profile.emails[0].value;
               }
 
-            });
+              const newUser = new User({
+                local: {
+                  username: profile.username,
+                  firstname: firstName,
+                  lastname: lastName,
+                  email: email
+                },
+                google: {
+                  id: profile.id, // set the users facebook id
+                  token: token, // we will save the token that facebook provides to the user
+                  name: profile.displayName,
+                  email: email
+                }
+              });
+
+              //debug(user);
+
+              // save our user into the database
+              newUser.save(function (err) {
+                if (err)
+                  throw err;
+                return done(null, newUser);
+              });
+            }
 
           });
 
-        }));
-      User.init();
+        });
+
+      }));
+
+      // =========================================================================
+      // GOOGLE (with android idToken) ===========================================
+      // =========================================================================
+      passport.use(new GoogleIdTokenStrategy({
+        clientID: config.authent_google_android_clientID,
+        clientSecret: config.authent_google_android_clientSecret,
+        // clientID: "725701605591-rr2dqeabon4kjpfevoruru65eo3rukmv.apps.googleusercontent.com",
+        // clientSecret: "SsLd5OpwpWbTcyUoakBYvTDm",
+        callbackURL: config.authent_google_callbackURL
+      },
+      function (decoded, tokenId, done) { 
+        // console.log(decoded);
+        // console.log(tokenId);
+
+        let profile = decoded.payload;
+
+        // make the code asynchronous
+        process.nextTick(function () {
+
+          User.findByGoogleId(tokenId, function (err, user) {
+
+            // if there is an error, stop everything and return that
+            // ie an error connecting to the database
+            if (err)
+              return done(err);
+
+            // if the user is found then log them in
+            if (user) {
+              return done(null, user); // user found, return that user
+            } else {
+              //debug(user);
+              // if there is no user, create them
+              const firstName = profile.given_name || profile.name.replace(/ [^ ]*$/, '');
+              const lastName = profile.family_name || profile.name.replace(/^.* /, '');
+              let email = profile.email;
+
+              const newUser = new User({
+                local: {
+                  username: profile.username,
+                  firstname: firstName,
+                  lastname: lastName,
+                  email: email
+                },
+                google: {
+                  id: profile.sub, // set the users google id
+                  //token: token, // we will save the token that google provides to the user
+                  name: profile.name,
+                  email: email
+                }
+              });
+
+              //debug(user);
+
+              // save our user into the database
+              newUser.save(function (err) {
+                if (err)
+                  throw err;
+                return done(null, newUser);
+              });
+            }
+
+          });
+
+        });
+
+      }));
+  User.init();
 
     })
     .catch(err => {

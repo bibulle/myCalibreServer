@@ -507,22 +507,60 @@ function authentRouter(passport): Router {
 // GOOGLE ROUTES ======================
 // =====================================
 
-  router.route('/google')
+router.route('/google')
+// ====================================
+// route for sending our user to Google to authenticate
+// ====================================
+  .get((request: Request, response: Response, next: NextFunction) => {
+    debug("GET /google");
+
+    let callbackURL = request.query['callbackURL'];
+    let options = {scope: ['profile', 'email'], callbackURL: undefined};
+    if (callbackURL) {
+      options.callbackURL = callbackURL;
+    }
+    
+    passport.authenticate('google', options, (err): any => {
+      //console.log(err);
+      //console.log(user);
+      //console.log(info);
+      if (err) {
+        return next(err);
+      }
+    })(request, response, next);
+  });
+  router.route('/google-id-token')
   // ====================================
-  // route for sending our user to Google to authenticate
+  // route authenticate with a google-id
   // ====================================
     .get((request: Request, response: Response, next: NextFunction) => {
-      debug("GET /google");
-      passport.authenticate('google', {scope: ['profile', 'email']}, (err): any => {
-        //console.log(err);
-        //console.log(user);
-        //console.log(info);
-        if (err) {
-          return next(err);
+      debug("GET /google-id-token");
+
+      let id_token = request.query['id_token'];
+
+      let callbackURL = request.query['callbackURL'];
+      let options = {scope: ['profile', 'email'], callbackURL: undefined};
+      if (callbackURL) {
+        options.callbackURL = callbackURL;
+      }
+      
+      passport.authenticate('google-id-token', options, (err, newUser, info): any => {
+        // console.log('-------');
+        // console.log(err);
+        // console.log(newUser);
+        // console.log(info);
+        if (info) {
+          return next(info);
         }
+
+        debug("201 : token created(" + newUser.id + ")");
+        return response.status(201).send({
+          id_token: User.createToken(newUser)
+        });
+
       })(request, response, next);
     });
-  router.route('/google/login')
+router.route('/google/login')
   // ====================================
   // route to get a jwt token for a google authenticate user
   // ====================================
