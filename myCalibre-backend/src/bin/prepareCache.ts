@@ -186,7 +186,6 @@ function checkCache() {
                   }
                 });
 
-//            if (series.series_id == 1) {
                 if (coversDate.getTime() > thumbnailDate.getTime()) {
                   // let's calculate the thumbnail
 
@@ -207,23 +206,19 @@ function checkCache() {
                     (book, callback) => {
                       step += step_increment;
                       height += step;
-//                  height -= step;
                       if (fs.existsSync(book.getCoverPath())) {
                         if (!theBuffer) {
-
-
                           sharp(book.getCoverPath())
-                            .resize(null, height)
-                            .background({r: 0, g: 0, b: 0, alpha: 0})
-                            .embed()
+                            .resize({
+                              height: height,
+                              fit: 'contain',
+                              background: {r: 0, g: 0, b: 0, alpha: 0} 
+                            })
                             .toFormat(sharp.format.png)
                             .toBuffer((err, buffer, info) => {
                               if (err) {
                                 callback(err);
                               } else {
-//                          console.log('========');
-//                          debug(info);
-//                          console.log('========');
                                 width = info.width;
                                 theBuffer = buffer;
                                 callback();
@@ -231,38 +226,34 @@ function checkCache() {
                             });
                         } else {
                           sharp(book.getCoverPath())
-                            .resize(null, height)
-                            .background({r: 0, g: 0, b: 0, alpha: 0})
-                            .embed()
+                            .resize({
+                              height: height,
+                              fit: 'contain',
+                              background: {r: 0, g: 0, b: 0, alpha: 0} 
+                            })
                             .toFormat(sharp.format.png)
                             .toBuffer((err, buffer, info) => {
                               if (err) {
                                 return callback(err)
                               }
-//                          console.log(info);
-//                          debug(step);
-//                          debug({
-//                            top: step / 2,
-//                            bottom: step / 2,
-//                            left: 0,
-//                            right: Math.max(0, step + info.width - width)
-//                          });
                               sharp(theBuffer)
-                                .background({r: 0, g: 0, b: 0, alpha: 0})
                                 .extend({
                                   top: step / 2,
                                   bottom: step / 2,
                                   left: 0,
-                                  right: Math.max(0, step + info.width - width)
+                                  right: Math.max(0, step + info.width - width),
+                                  background: {r: 0, g: 0, b: 0, alpha: 0}
                                 })
-                                .overlayWith(buffer, {top: 0, left: step})
-                                //.extend({top: 0, bottom: 0, left: 0, right: Math.max(0, step + info.width - width)})
-                                //.overlayWith(buffer, {top: step / 2, left: step})
+                                .composite([{
+                                  input: buffer,
+                                  blend: 'overlay',
+                                  top: 0,
+                                  left: step
+                                }])
                                 .toBuffer((err, buffer, info) => {
                                   if (err) {
                                     callback(err);
                                   } else {
-//                              debug(info);
                                     if (info.height > 10 * INITIAL_HEIGHT) {
                                       //debug("height to big, resize " + info.height + " " + height);
                                       height = Math.round(height / 10);
