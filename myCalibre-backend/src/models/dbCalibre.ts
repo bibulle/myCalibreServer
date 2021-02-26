@@ -9,7 +9,7 @@ const queryBuilder = require("squel");
 
 class DbCalibre {
 
-  public static CALIBRE_DIR = path.resolve(`${__dirname}/../../data/calibre`);
+  public static CALIBRE_DIR = process.env.PATH_BOOKS || path.resolve(`${__dirname}/../../data/calibre`);
   private static DB_FILE = `${DbCalibre.CALIBRE_DIR}/metadata.db`;
 
   private static _instance: DbCalibre = new DbCalibre();

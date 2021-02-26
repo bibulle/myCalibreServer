@@ -22,8 +22,8 @@ const path = require('path');
 
 class DbMyCalibre {
 
-  public static MY_CALIBRE_DIR = path.resolve(`${__dirname}/../../data/my-calibre`);
-  private static MONGO_URL = 'mongodb://localhost:27017';
+  public static MY_CALIBRE_DIR = process.env.PATH_CACHE || path.resolve(`${__dirname}/../../data/my-calibre`);
+  private static MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
   private static MONGO_DB_NMAE = 'myCalibreDb';
 
 

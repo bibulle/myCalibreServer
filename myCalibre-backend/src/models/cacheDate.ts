@@ -1,4 +1,5 @@
 import DbCalibre from "./dbCalibre";
+import DbMyCalibre from "./dbMyCalibre";
 import { Author } from "./author";
 import { Series } from "./series";
 import { Tag } from "./tag";
@@ -14,9 +15,11 @@ export class CacheDate {
   key: CacheDateKey;
   cachePath: string;
 
+
+
   constructor (key: CacheDateKey) {
     this.key = key;
-    this.cachePath = path.resolve(`${__dirname}/../../data/my-calibre/cache/${CacheDateKey[key]}.json`);
+    this.cachePath = path.resolve(`${DbMyCalibre.MY_CALIBRE_DIR}/cache/${CacheDateKey[key]}.json`);
   }
 
 
