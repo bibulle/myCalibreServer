@@ -1,1 +1,0 @@
-ALTER TABLE user ADD local_amazon_emails TEXT NULL;

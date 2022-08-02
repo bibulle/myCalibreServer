@@ -1,0 +1,6 @@
+<mat-card class="new-book" *ngIf="books">
+  <mat-card-title class="title">{{ 'label.news' | translate:param }}</mat-card-title>
+  <my-calibre-server-book-card *ngFor="let book of books" [book]="book">
+  </my-calibre-server-book-card>
+</mat-card>
+<mat-spinner *ngIf="!books"></mat-spinner>

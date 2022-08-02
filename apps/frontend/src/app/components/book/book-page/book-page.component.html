@@ -1,0 +1,63 @@
+<mat-content *ngIf="book" fxFlex="100">
+  <div class="cover" fxFlex>
+    <img src="{{coverUrlBase}}/{{book.book_id}}.jpg">
+  </div>
+  <div class="book" fxFlex fxLayout="column">
+    <mat-card class="authors" fxLayout="column" fxFlex="100">
+      <div class="top" fxLayout="row" fxLayoutAlign="end start">
+        <my-calibre-server-mat-rating [rating]="ratings.yourRating/2" color="primary" title="{{'label.rating-your' | translate}}" (ratingUpdated)="ratingUpdated($event)"></my-calibre-server-mat-rating>
+        <my-calibre-server-mat-rating *ngIf="ratings.rating" [rating]="ratings.rating/2" color="primary" [disabled]="true" title="{{'label.rating-reader' | translate}} ({{ratings.count}})" [matTooltip]="''+ratings.rating/2" matTooltipPosition="above"></my-calibre-server-mat-rating>
+        <my-calibre-server-mat-rating *ngIf="book.rating" [rating]="+book.rating/2" color="primary" [disabled]="true" title="{{'label.rating-public' | translate}}" [matTooltip]="''++book.rating/2" matTooltipPosition="above"></my-calibre-server-mat-rating>
+        <div class="flag">
+          <mat-icon svgIcon="flag_fr" matTooltip="{{'label.french' | translate}}" matTooltipPosition="before" *ngIf="book.lang_code==='fra'"></mat-icon>
+          <mat-icon svgIcon="flag_us" matTooltip="{{'label.english' | translate}}" matTooltipPosition="before" *ngIf="book.lang_code==='eng'"></mat-icon>
+        </div>
+        <div class="date">{{book.book_date | localizedDate: 'MMMM yyyy'}}</div>
+      </div>
+      <mat-card-title>{{'label.authors' | translate}}</mat-card-title>
+      <button mat-button class="author" *ngFor="let name of book.author_name; let i = index"
+              (click)="openAuthor($event, book.author_id[i], name)">
+        {{name}}
+      </button>
+      <mat-card-title class="series" *ngIf="book.series_id">{{'label.series' | translate}}</mat-card-title>
+      <button mat-button class="series" *ngIf="book.series_id" (click)="openSeries($event, book.series_id, book.series_name)">
+        {{book.series_name}}
+      </button>
+      <mat-card-title class="description">{{'label.description' | translate}}</mat-card-title>
+      <div *ngIf="book.comment" class="description-content" [innerHTML]="book.comment"></div>
+      <div *ngIf="!book.comment" class="description-content">{{'label.none' | translate}}</div>
+      <mat-card-title class="tags">{{'label.tags' | translate}}</mat-card-title>
+      <div class="tags-content">
+        <button mat-button *ngFor="let name of book.tag_name; let i = index" (click)="openTag($event, book.tag_id[i], name)">
+          {{name}}
+        </button>
+      </div>
+
+      <button mat-mini-fab aria-label="Sort" [matMenuTriggerFor]="downloadmenu" *ngIf="bookHasMobi || bookHasEpub">
+        <mat-icon>file_download</mat-icon>
+      </button>
+      <mat-menu xPosition="before" yPosition="below" #downloadmenu="matMenu" class="download-menu">
+        <button mat-menu-item *ngIf="bookHasEpub" (click)="downloadEpub()">
+          <mat-icon>file_download</mat-icon>
+          <span>{{'label.epub-format' | translate}}</span>
+        </button>
+        <button mat-menu-item *ngIf="bookHasMobi" (click)="downloadMobi()">
+          <mat-icon>file_download</mat-icon>
+          <span>{{'label.mobi-format' | translate}}</span>
+        </button>
+        <button mat-menu-item (click)="openDialog()" *ngIf="bookHasMobi">
+          <mat-icon>send</mat-icon>
+          <span>{{'label.kindle.send-to' | translate}}</span>
+        </button>
+      </mat-menu>
+      <!--<mat-menu x-position="before" y-position="below" #kindledmenu="matMenu" class="download-menu">-->
+      <!--<mat-form-field>-->
+      <!--<input matInput placeholder="Search" fxFlex="75">-->
+      <!--</mat-form-field>-->
+      <!--</mat-menu>-->
+    </mat-card>
+
+  </div>
+
+</mat-content>
+<mat-spinner *ngIf="!book"></mat-spinner>

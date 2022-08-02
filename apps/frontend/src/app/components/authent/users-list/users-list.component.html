@@ -1,0 +1,55 @@
+<mat-content *ngIf="users">
+  <div fxLayout="row" class="user-list-header">
+    <div                         fxFlex="5"></div>
+    <div class="username"        fxFlex="15" (click)="toggleSort(SortType.UserName)">{{'label.username' | translate}}
+      <mat-icon *ngIf="(sort === SortType.UserName) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.UserName) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.UserName)"></mat-icon>
+    </div>
+    <div class="firstname"       fxFlex="15" (click)="toggleSort(SortType.FirstName)">{{'label.first-name' | translate}}
+      <mat-icon *ngIf="(sort === SortType.FirstName) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.FirstName) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.FirstName)"></mat-icon>
+    </div>
+    <div class="lastname"        fxFlex="15" (click)="toggleSort(SortType.LastName)">{{'label.last-name' | translate}}
+      <mat-icon *ngIf="(sort === SortType.LastName) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.LastName) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.LastName)"></mat-icon>
+    </div>
+    <div class="email"           fxFlex="20" (click)="toggleSort(SortType.Mail)">{{'label.email' | translate}}
+      <mat-icon *ngIf="(sort === SortType.Mail) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.Mail) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.Mail)"></mat-icon>
+    </div>
+    <div class="last-connection" fxFlex="10" fxLayout="column"><span (click)="toggleSort(SortType.LastActionDate)">{{'label.last-connection' | translate}} /
+      <mat-icon *ngIf="(sort === SortType.LastActionDate) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.LastActionDate) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.LastActionDate)"></mat-icon>
+    </span><span (click)="toggleSort(SortType.DownloadCount)">{{'label.downloaded' | translate}}
+      <mat-icon *ngIf="(sort === SortType.DownloadCount) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.DownloadCount) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.DownloadCount)"></mat-icon>
+    </span></div>
+    <div class="admin"           fxFlex="10" (click)="toggleSort(SortType.IsAdmin)">{{'label.admin' | translate}} ?
+      <mat-icon *ngIf="(sort === SortType.IsAdmin) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.IsAdmin) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.IsAdmin)"></mat-icon>
+    </div>
+    <div class="local"           fxFlex="5"><button class="fa fa-home" mat-mini-fab  (click)="toggleSort(SortType.LoginLocal)"></button>
+      <mat-icon *ngIf="(sort === SortType.LoginLocal) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.LoginLocal) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.LoginLocal)"></mat-icon>
+    </div>
+    <div class="facebook"        fxFlex="5"><button class="fa fa-facebook" mat-mini-fab (click)="toggleSort(SortType.LoginFacebook)"></button>
+      <mat-icon *ngIf="(sort === SortType.LoginFacebook) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.LoginFacebook) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.LoginFacebook)"></mat-icon>
+    </div>
+    <div class="google"          fxFlex="5"><button class="fa fa-google" mat-mini-fab (click)="toggleSort(SortType.LoginGoogle)"></button>
+      <mat-icon *ngIf="(sort === SortType.LoginGoogle) && (sort_direction === SortingDirection.Asc)">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="(sort === SortType.LoginGoogle) && (sort_direction === SortingDirection.Desc)">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="(sort !== SortType.LoginGoogle)"></mat-icon>
+    </div>
+  </div>
+  <my-calibre-server-user-list-item *ngFor="let user of users" [user]="user" (listChanged)="loadUsers()" (mergeUser)="mergeUsers(user)" [selectedMergeUser]="selectedMergeUser"></my-calibre-server-user-list-item>
+</mat-content>

@@ -1,0 +1,36 @@
+mat-card-title .date {
+  font-size: 0.6em;
+}
+
+mat-card-title button {
+  float: right;
+}
+
+//mat-card-title mat-icon {
+  //margin-top: 10px;
+//}
+
+.author-card {
+  margin: 6px 0;
+  padding-bottom: 12px;
+}
+
+.author-card mat-card-subtitle, .author-card .date {
+  display: none;
+}
+
+.author-card.books-closed {
+  margin: 0;
+}
+
+.author-card.books-closed mat-card-subtitle {
+  display: block;
+}
+
+.author-card.books-closed .date {
+  display: inline;
+}
+
+.author-card.books-closed my-calibre-server-book-card {
+  display: none !important;
+}

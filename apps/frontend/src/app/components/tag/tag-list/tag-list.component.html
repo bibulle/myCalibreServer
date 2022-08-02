@@ -1,0 +1,10 @@
+<mat-content *ngIf="tags">
+  <my-calibre-server-tag-card *ngFor="let tag of tags" [tag]="tag" [booksClosed]="tag.tag_id !== selectedId">
+  </my-calibre-server-tag-card>
+  <div class="max-reached" *ngIf="tags.length === MAX_TAGS">
+    <span>{{ 'label.limited' | translate:param }}</span>
+  </div>
+</mat-content>
+<mat-content *ngIf="!tags" class="spinner">
+  <mat-spinner></mat-spinner>
+</mat-content>

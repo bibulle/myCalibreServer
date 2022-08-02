@@ -1,0 +1,159 @@
+@import "shared/styles";
+@import "shared/layout";
+
+:host {
+
+  display: block;
+
+  > mat-sidenav-container {
+    mat-sidenav {
+      width: $app-sidenav-width;
+    }
+    > .mat-sidenav-content {
+      width: 100%;
+    }
+  }
+
+  .mat-icon-button {
+    margin: 0 6px;
+    height: 40px;
+    min-width: 0;
+    line-height: 24px;
+    padding: 8px;
+    width: 40px;
+    border-radius: 50%;
+  }
+
+  main {
+    background-color: whitesmoke;
+    mat-content {
+      margin-left: auto;
+      margin-right: auto;
+      &.examples {
+        overflow: hidden;
+      }
+    }
+  }
+  .app-menu {
+    border-right: 1px solid;
+
+    [mat-list-item] {
+      font-size: ($subheader-font-size+2);
+      font-weight: $subheader-font-weight;
+
+    }
+    mat-toolbar {
+      border-bottom: 1px solid;
+      position: relative;
+      overflow: hidden;
+      h3 {
+        font-size: 1.17em;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .beta {
+        -webkit-transform: rotate(45deg);
+        transform: rotate(45deg);
+        position: absolute;
+        right: -34px;
+        top: 10px;
+        width: 100px;
+        text-align: center;
+        font-size: 13px;
+        line-height: 15px;
+      }
+    }
+    .version {
+      text-decoration: none;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+  }
+
+  .fixed-toolbar, .shadow-toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: $z-index-toolbar;
+    width: auto;
+    transition: opacity 0.1s ease-in;
+    will-change: opacity;
+    opacity: 1;
+    &.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+  .verbose-title.book-title, .verbose-title.app-title {
+    @media screen and (max-width: $layout-breakpoint-sm) {
+      display: none;
+    }
+  }
+
+  mat-toolbar.hero {
+    height: $toolbar-hero-height;
+    min-height: $toolbar-hero-height;
+    max-height: $toolbar-hero-height;
+    padding: 135px 16px 0;
+    h1 {
+      font-size: 56px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin: 0 auto;
+      overflow: visible;
+      width: 1160px;
+      white-space: nowrap;
+
+    }
+    @media screen and (min-width: ($layout-breakpoint-md + 1)) {
+      h1 {
+        width: $app-content-lg - 32px;
+      }
+    }
+    @media screen and (max-width: $layout-breakpoint-md) {
+      h1 {
+        width: $app-content-md - 32px;
+        font-size: $display-2-font-size-base;
+      }
+    }
+    @media screen and (max-width: $layout-breakpoint-sm) {
+      //height: 128px;
+      padding-top: 72px;
+      height: $toolbar-tall-height;
+      min-height: $toolbar-tall-height;
+      max-height: $toolbar-tall-height;
+      h1 {
+        font-size: $title-font-size-base;
+        width: $app-content-sm - 80px;
+        margin-left: 0;
+      }
+    }
+  }
+
+  mat-content {
+    display: block;
+    font-size: 14px;
+    @media screen and (max-width: $layout-breakpoint-md) {
+      font-size: 12px;
+    }
+    @media screen and (max-width: $layout-breakpoint-sm) {
+      font-size: 10px;
+    }
+    > h1 {
+      margin-top: 60px;
+      margin-bottom: 60px;
+      font-weight: 300;
+    }
+    > mat-divider {
+      margin-top: 60px;
+    }
+  }
+
+  .contents {
+    width: 100%;
+    min-height: 640px;
+    padding: 0;
+  }
+}

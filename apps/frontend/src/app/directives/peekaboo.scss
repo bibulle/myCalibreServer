@@ -1,0 +1,14 @@
+[mycalibreservermatpeekaboo] {
+  &[breakAction=show] {
+    //display: inherit;
+    &.mat-peekaboo-inactive {
+      display: none;
+    }
+  }
+  &[breakAction=hide] {
+    //display: inherit;
+    &.mat-peekaboo-active {
+      display: none;
+    }
+  }
+}

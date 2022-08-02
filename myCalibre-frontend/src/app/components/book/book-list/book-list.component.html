@@ -1,8 +1,0 @@
-<mat-content *ngIf="books">
-  <app-book-card *ngFor="let book of books" [book]="book" class="has-shadow">
-  </app-book-card>
-  <div class="max-reached" *ngIf="books.length == MAX_BOOK">
-    <span>{{ 'label.limited' | translate:param }}</span>
-  </div>
-</mat-content>
-<mat-spinner *ngIf="!books"></mat-spinner>

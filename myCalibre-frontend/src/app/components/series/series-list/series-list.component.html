@@ -1,8 +1,0 @@
-<mat-content *ngIf="series">
-  <app-series-card *ngFor="let serie of series" [series]="serie" [booksClosed]="serie.series_id != selectedId">
-  </app-series-card>
-  <div class="max-reached" *ngIf="series.length == MAX_SERIES">
-    <span>{{ 'label.limited' | translate:param }}</span>
-  </div>
-</mat-content>
-<mat-spinner *ngIf="!series"></mat-spinner>

@@ -1,2 +1,2 @@
-# myCalibreServer
+# MyCalibreServer
 my own calibre server

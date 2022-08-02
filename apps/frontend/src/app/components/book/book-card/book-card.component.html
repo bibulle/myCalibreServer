@@ -1,0 +1,27 @@
+<mat-card class="book-card" fxFlex="100" *ngIf="book.book_title" (click)="openBook($event)" >
+  <!--<mat-card-header>-->
+  <!--<img mat-card-avatar *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.png">-->
+  <!--<mat-card-title>{{book.book_title}} (<span class="date">{{book.book_date | date: 'yyyy'}}</span>)</mat-card-title>-->
+  <!--<mat-card-subtitle>{{book.author_name}} <span class="other">({{book.data_format}})</span></mat-card-subtitle>-->
+  <!--</mat-card-header>-->
+  <!--<mat-card-title-group>-->
+  <div class="cover">
+    <img mat-card-sm-image *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.jpg">
+    <mat-icon class="flag" svgIcon="flag_us" *ngIf="book.lang_code==='eng'"></mat-icon>
+  </div>
+  <div class="text">
+    <div class="top-right">
+      <my-calibre-server-mat-rating *ngIf="book.rating" [rating]="+book.rating/2" color="primary" [disabled]="true" title="{{'label.rating-public' | translate}}" [matTooltip]="(+book.rating/2).toString()" matTooltipPosition="left"></my-calibre-server-mat-rating>
+      <div *ngIf="!book.rating" class="empty-rating">&nbsp;</div>
+      <my-calibre-server-mat-rating *ngIf="book.readerRating" [rating]="book.readerRating/2" color="primary" [disabled]="true" title="{{'label.rating-reader' | translate}} ({{book.readerRatingCount}})" [matTooltip]="(+book.readerRating/2).toString()" matTooltipPosition="left"></my-calibre-server-mat-rating>
+      <div *ngIf="!book.readerRating" class="empty-rating">&nbsp;</div>
+    </div>
+    <mat-card-title>
+      <span *ngIf="book.series_name">{{book.series_name}} - {{book.book_series_index}} - </span>
+      <!-- ({{index}}) -->
+      {{book.book_title}} <span class="date" *ngIf="book.book_date && book.book_date.getFullYear()>1850">{{book.book_date | date: 'yyyy'}}</span>
+    </mat-card-title>
+    <mat-card-subtitle>{{book.author_name}}</mat-card-subtitle>
+  </div>
+  <!--</mat-card-title-group>-->
+</mat-card>
