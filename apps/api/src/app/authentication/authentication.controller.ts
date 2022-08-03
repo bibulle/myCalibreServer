@@ -58,6 +58,25 @@ export class AuthenticationController {
     }
   }
 
+  @Get('google-id-token')
+  @UseGuards(AuthGuard(['google-id-token']))
+  async googleIdTokenLogin(@Req() req): Promise<ApiReturn> {
+    // this.logger.debug('googleIdTokenLogin');
+
+    const user: User = req.user as User;
+    // this.logger.debug(user);
+    if (user) {
+      const ret: ApiReturn = {};
+
+      this._userService.updateLastConnection(user);
+      ret.id_token = this._userService.createToken(user);
+
+      return ret;
+    } else {
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @Get('google/unlink')
   @UseGuards(AuthGuard(['jwt']))
   googleUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {

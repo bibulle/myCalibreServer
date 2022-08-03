@@ -16,7 +16,7 @@
     "build": "nx build",
     "test": "nx test",
     "models": "sequelize-auto -o ./models -e=sqlite -d data/calibre/metadata.db",
-    "prebuild": "json -I -f libs/api-interfaces/src/lib/version.json -e \"this.version='$npm_package_version'; this.github_url='`cat package.json | npx json repository.url`'; this.name='$npm_package_name'; this.copyright='2016-`date|cut -f4 -d' '` `cat package.json | npx json author.name`'\""
+    "preinstall": "json -I -f libs/api-interfaces/src/lib/version.json -e \"this.version='$npm_package_version'; this.github_url='`cat package.json | npx json repository.url`'; this.name='$npm_package_name'; this.copyright='2016-`date +%Y` `cat package.json | npx json author.name`'\""
   },
   "private": true,
   "dependencies": {
@@ -50,6 +50,7 @@
     "nodemailer": "^6.7.7",
     "passport": "^0.6.0",
     "passport-facebook": "^3.0.0",
+    "passport-google-id-token": "^0.4.7",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
