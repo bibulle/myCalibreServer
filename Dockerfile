@@ -8,12 +8,11 @@ COPY decorate-angular-cli.js ./
 COPY angular.json ./
 COPY nx.json ./
 COPY tsconfig.base.json ./
+COPY libs libs
 
 RUN npm install
 
-COPY libs libs
 RUN mkdir apps
-
 COPY apps/frontend apps/frontend
 COPY apps/api apps/api
 
