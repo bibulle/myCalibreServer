@@ -27,23 +27,23 @@
       <div class="label">{{'label.created' | translate}} : </div><div class="date">{{user.created | localizedDate: 'medium'}}</div>
     </div>
     <div fxLayout="row" fxFlex="100" fxLayoutAlign="end start">
-      <div class="last-connection">{{'label.last-connection' | translate}} :  </div><div class="date">{{user.history?.lastConnection | localizedDate: 'medium'}}</div>
+      <div class="last-connection">{{'label.last-connection' | translate}} :  </div><div class="date">{{user.history.lastConnection | localizedDate: 'medium'}}</div>
     </div>
   </div>
 </mat-card-content>
 <mat-card-content>
   <div class="provider">{{'label.facebook' | translate}} :</div>
-  <div class="info name" *ngIf="user?.facebook?.name">{{user?.facebook?.name}}</div>
+  <div class="info name" *ngIf="user?.facebook?.name">{{user.facebook.name}}</div>
   <div class="info name" *ngIf="!user?.facebook?.name">{{'label.none' | translate}}</div>
-  <div class="info email" *ngIf="user?.facebook?.name">{{user?.facebook?.email}}</div>
+  <div class="info email" *ngIf="user?.facebook?.name">{{user.facebook.email}}</div>
   <a class="connect fa fa-facebook" mat-mini-fab (click)="connectFacebook()" *ngIf="!user?.facebook?.name" matTooltip="{{'label.facebook-connect' | translate}}" matTooltipPosition="before"></a>
   <a class="unlink fa fa-facebook" mat-mini-fab (click)="unlinkFacebook()" *ngIf="user?.facebook?.name" matTooltip="{{'label.facebook-unlink' | translate}}" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
 </mat-card-content>
 <mat-card-content>
   <div class="provider">{{'label.google' | translate}} :</div>
-  <div class="info name" *ngIf="user?.google?.name">{{user?.google?.name}}</div>
+  <div class="info name" *ngIf="user?.google?.name">{{user.google.name}}</div>
   <div class="info name" *ngIf="!user?.google?.name">{{'label.none' | translate}}</div>
-  <div class="info email" *ngIf="user?.google?.name">{{user?.google?.email}}</div>
+  <div class="info email" *ngIf="user?.google?.name">{{user.google.email}}</div>
   <a class="connect fa fa-google" mat-mini-fab (click)="connectGoogle()" *ngIf="!user?.google?.name" matTooltip="{{'label.google-connect' | translate}}" matTooltipPosition="before"></a>
   <a class="unlink fa fa-google" mat-mini-fab (click)="unlinkGoogle()" *ngIf="user?.google?.name" matTooltip="{{'label.google-unlink' | translate}}" matTooltipPosition="before"><mat-icon>clear</mat-icon></a>
 </mat-card-content>
