@@ -80,6 +80,9 @@ export class MyCalibreDbService {
   public findUserByFacebookId(userId: string): Promise<mongoDB.Document> {
     return this._findUserBy({ 'facebook.id': userId });
   }
+  public findByTemporaryToken(token: string): Promise<mongoDB.Document> {
+    return this._findUserBy({ 'temporary_token': token });
+  }
 
   /**
    * get a user from Db

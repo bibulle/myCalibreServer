@@ -81,8 +81,8 @@ export class UserListItemComponent {
   resetPassword() {
     if (this.user) {
       this._userService.resetPassword(this.user)
-      .then((newPassword) => {
-        this._notificationService.info('Password change to ' + newPassword);
+      .then((message) => {
+        this._notificationService.info(message);
       })
       .catch(err => {
         console.log(err);

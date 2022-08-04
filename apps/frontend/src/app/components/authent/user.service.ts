@@ -333,10 +333,10 @@ export class UserService {
         })
         .subscribe({
           next: (ret) => {
-            if (ret.newPassword) {
-              resolve(ret.newPassword);
+            if (ret.ok) {
+              resolve(ret.ok);
             } else {
-              reject("no new password");
+              reject("something go wrong");
             }
           },
           error: (err) => {
@@ -357,6 +357,19 @@ export class UserService {
       });
   
       return this._doPost(body, '/api/users/changepw');
+    }
+
+    /**
+     * Check a token and if ok, save the jwt
+     * @param token 
+     */
+    checkTemporaryToken(token: string): Promise<User> {
+        const body = JSON.stringify({
+          token,
+        });
+  
+        return this._doPost(body, '/api/authent/checktoken');
+  
     }
 
   /**

@@ -274,11 +274,30 @@ export class AuthenticationController {
   // ====================================
   // route for processing the local signup form
   // ====================================
-  //
   @Post('/signup')
   @HttpCode(201)
   @UseGuards(AuthGuard('local-signup'))
   async signup(@Req() req): Promise<ApiReturn> {
+    const user: User = req.user as User;
+    if (user) {
+      this._userService.updateLastConnection(user);
+
+      const ret: ApiReturn = {};
+      ret.id_token = this._userService.createToken(user);
+
+      return ret;
+    } else {
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // ====================================
+  // route for processing temporary token
+  // ====================================
+  @Post('checktoken')
+  @UseGuards(AuthGuard('temporary-token'))
+  async checkToken(@Req() req): Promise<ApiReturn> {
+    
     const user: User = req.user as User;
     if (user) {
       this._userService.updateLastConnection(user);

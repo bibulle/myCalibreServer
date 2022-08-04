@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { AuthGuard } from './components/authent/auth.guard';
 import { AuthGuardAdmin } from './components/authent/auth.guard.admin';
+import { AuthGuardToken } from './components/authent/auth.guard.token';
 import { ChangePasswordComponent } from './components/authent/change-password/change-password.component';
 import { ConnectLocalComponent } from './components/authent/connect-local/connect-local.component';
 import { LoginComponent } from './components/authent/login/login.component';
@@ -24,7 +25,7 @@ const routes: Routes = [
   { path: 'profile',        component: ProfileComponent              , canActivate: [AuthGuard],      data: {label: 'route.profile' , menu: false}},
   { path: 'users',          component: UsersListComponent            , canActivate: [AuthGuardAdmin], data: {label: 'route.users'   , menu: true  , admin: true}},
   { path: 'connect/local',  component: ConnectLocalComponent         , canActivate: [AuthGuard],      data: {label: 'route.connect' , menu: false}},
-  { path: 'changepassword', component: ChangePasswordComponent       , canActivate: [AuthGuard],      data: {label: 'route.changepw', menu: false}},
+  { path: 'changepassword', component: ChangePasswordComponent       , canActivate: [AuthGuardToken, AuthGuard],      data: {label: 'route.changepw', menu: false}},
   { path: 'home',           component: HomeComponent                 , canActivate: [AuthGuard],      data: {label: 'route.news'    , menu: true}},
   { path: 'books',          component: BookListComponent             , canActivate: [AuthGuard],      data: {label: 'route.books'   , menu: true}},
   { path: 'series',         component: SeriesListComponent           , canActivate: [AuthGuard],      data: {label: 'route.series'  , menu: true}},

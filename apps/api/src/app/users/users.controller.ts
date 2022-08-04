@@ -1,13 +1,14 @@
 import { ApiReturn, User } from '@my-calibre-server/api-interfaces';
 import { Body, Controller, Get, HttpException, HttpStatus, InternalServerErrorException, Logger, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { MailService } from '../utils/mail.service';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   readonly logger = new Logger(UsersController.name);
 
-  constructor(private _userService: UsersService) {}
+  constructor(private _userService: UsersService, private _mailService: MailService) {}
 
   // =====================================
   // route to gat all user
@@ -133,32 +134,31 @@ export class UsersController {
   @Post('/reset')
   @UseGuards(AuthGuard('jwt-admin'))
   async resetpassword(@Req() req, @Body() body): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      const connectedUser = this._userService.createUser(req.user);
+    // return new Promise<ApiReturn>((resolve) => {
 
-      if (!body?.userId) {
-        throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
-      }
+    const connectedUser = this._userService.createUser(req.user);
 
-      const userId = body.userId;
+    if (!body?.userId) {
+      throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+    }
 
-      // i'm an admin, delete it (else Not authorized)
-      if (connectedUser.local.isAdmin !== true) {
-        throw new HttpException('Not authorize to modify this user', HttpStatus.UNAUTHORIZED);
-      }
+    const userId = body.userId;
 
-      this.logger.debug(`Reset password fo user ${userId}`);
+    // i'm an admin, delete it (else Not authorized)
+    if (connectedUser.local.isAdmin !== true) {
+      throw new HttpException('Not authorize to modify this user', HttpStatus.UNAUTHORIZED);
+    }
 
-      this._userService
-        .resetUserPassword(userId)
-        .then((newPassword) => {
-          resolve({ newPassword: newPassword });
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+    this.logger.debug(`Reset password fo user ${connectedUser.local.firstname} ${connectedUser.local.lastname}`);
+
+    try {
+      await this._userService.resetUserPassword(userId);
+      return { ok: 'mail sent' };
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException(typeof err === 'string' ? err : 'Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    // });
   }
   // =====================================
   // route to change password of a user ===
@@ -181,8 +181,8 @@ export class UsersController {
         .changeUserPassword(connectedUser.id, password)
         .then((user) => {
           // this.logger.debug(user);
-          resolve({ ok: "Password changed", user: user});
-        }) 
+          resolve({ ok: 'Password changed', user: user });
+        })
         .catch((err) => {
           this.logger.error(err);
           throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);

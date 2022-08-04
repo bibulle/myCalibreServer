@@ -5,6 +5,7 @@ import { pbkdf2Sync, randomBytes } from 'crypto';
 import { sign, verify } from 'jsonwebtoken';
 import * as _ from 'lodash';
 import { MyCalibreDbService } from '../database/my-calibre-db.service';
+import { MailService } from '../utils/mail.service';
 
 // import { Provider } from '../authentication/authentication.service';
 
@@ -14,7 +15,7 @@ export class UsersService {
 
   users: { [id: string]: User } = {};
 
-  constructor(private configService: ConfigService, private myCalibreService: MyCalibreDbService) {}
+  constructor(private configService: ConfigService, private myCalibreService: MyCalibreDbService, private _mailService: MailService) {}
 
   async getAll(): Promise<User[]> {
     return new Promise<User[]>((resolve, reject) => {
@@ -103,6 +104,23 @@ export class UsersService {
         });
     });
   }
+  async findByTemporaryToken(token: string): Promise<User> {
+    return new Promise<User>((resolve, reject) => {
+      this.myCalibreService
+        .findByTemporaryToken(token)
+        .then((doc) => {
+          if (!doc) {
+            return resolve(null);
+          } else {
+            return resolve(this.createUser(doc));
+          }
+        })
+        .catch((err) => {
+          this.logger.error(err);
+          return reject(err);
+        });
+    });
+  }
   async saveUser(user: User, changeUpdateDate = true): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       this.myCalibreService
@@ -139,23 +157,46 @@ export class UsersService {
         });
     });
   }
-  async resetUserPassword(userId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
+  async resetUserPassword(userId: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       this.findById(userId)
         .then((modifiedUser) => {
           if (!modifiedUser) {
             return reject('User not found');
           }
-          // generate a password
-          let newPassword = (Math.random() * 100000).toFixed(0) + '';
-          while (newPassword.length < 5) newPassword = '0' + newPassword;
 
-          modifiedUser.local['password'] = newPassword;
+          const email = modifiedUser.local.email || modifiedUser.google.email || modifiedUser.facebook.email;
+          if (!email) {
+            return reject('User has no email');
+          }
+          // generate a temporary token
+          const token = this.generateSalt();
+          modifiedUser.temporary_token = token;
+          modifiedUser.temporary_token_date = new Date();
+
           const newUser = this.createUser(modifiedUser);
 
           this.saveUser(newUser, true)
-            .then(() => {
-              resolve(newPassword);
+            .then(async () => {
+              const url = `https://bib.bibulle.fr/changepassword?token=${token}`;
+              const title = 'Reset your password on Bibulle shared library';
+              const content = `
+<p>Please use this <a href="${url}">URL</a> to reset your password</p>
+<p>This url will be ok for 10 hours</p>
+<br>
+<hr>
+<small>${url}</small>
+<hr>
+`;
+              this._mailService
+                .sendMail(email, title, content)
+                .then(() => {
+                  resolve();
+                })
+                .catch((err) => {
+                  this.logger.error(err);
+                  return reject(err);
+                });
             })
             .catch((err) => {
               this.logger.error(err);
@@ -198,7 +239,7 @@ export class UsersService {
     return new Promise<void>((resolve, reject) => {
       Promise.all([this.findById(userSrcId), this.findById(userTrgId)])
         .then((users) => {
-          if ((!users && users.length !== 2 && !users[0]) || !users[1]) {
+          if ((!users || users.length !== 2 || !users[0]) || !users[1]) {
             return reject('User not found');
           }
 
@@ -224,7 +265,7 @@ export class UsersService {
   async mergeAndSaveUsers(userSrc: User, userTrg: User): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       // the salt must be transferred sometime
-      if (!userTrg.local.hashedPassword && userSrc.local.hashedPassword) {
+      if (!userTrg.local.hashedPassword || userSrc.local.hashedPassword) {
         userTrg.local.salt = userSrc.local.salt;
       }
 
@@ -361,6 +402,18 @@ export class UsersService {
   createTemporaryToken(user): string {
     return sign(_.pick(user, ['id']), this.configService.get('AUTHENT_JWT_SECRET'), { expiresIn: '5s' });
   }
+  validTemporaryToken(user, token): boolean {
+    if (!user || !token || user.temporary_token !== token) {
+      return false;
+    }
+
+    if (!user.temporary_token_date || user.temporary_token_date.getTime() < new Date().getTime()- 1000*3600*10) {
+      return false
+    }
+
+    return true;
+
+  }
   /**
    * Check tocken
    * @param token
@@ -412,7 +465,7 @@ export class UsersService {
   }
 
   private generateHash(user: User, password: string): string {
-    this.logger.debug(`pbkdf2Sync '${+this.configService.get('AUTHENT_LENGTH')}' '${this.configService.get('AUTHENT_DIGEST')}'`)
+    // this.logger.debug(`pbkdf2Sync '${+this.configService.get('AUTHENT_LENGTH')}' '${this.configService.get('AUTHENT_DIGEST')}'`);
     return pbkdf2Sync(password, user.local.salt, 10000, +this.configService.get('AUTHENT_LENGTH'), this.configService.get('AUTHENT_DIGEST')).toString('hex');
   }
   private generateSalt(): string {
@@ -467,6 +520,7 @@ export class UsersService {
         }
       });
     }
+
     if (user.history && user.history.ratings) {
       user.history.ratings.forEach((d) => {
         if (typeof d.date === 'string') {
@@ -506,45 +560,52 @@ export class UsersService {
       }
     });
   }
-  addDownloadedBook(userIn: User, book_id: number, bookData: BookData) {
+  addDownloadedBook(userIn: User, book_id: number, bookData: BookData): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.findById(userIn.id)
+        .then((user) => {
+          if (!user.history.downloadedBooks) {
+            user.history.downloadedBooks = [];
+          }
 
-    this.findByUsername(userIn.id)
-    .then(user => {
-      if (!user.history.downloadedBooks) {
-        user.history.downloadedBooks = [];
-      }
-  
-      const bookDownloaded = user.history.downloadedBooks.find((bd) => {
-        return bd.id === book_id;
-      });
-  
-      if (!bookDownloaded) {
-        user.history.downloadedBooks.push({
-          id: book_id,
-          data: bookData,
-          date: new Date(),
-        });
-        user.history.downloadedBooks.sort((a, b) => {
-          if (typeof a.date === 'string') {
-            a.date = new Date(a.date);
+          const bookDownloaded = user.history.downloadedBooks.find((bd) => {
+            return bd.id === book_id;
+          });
+
+          if (!bookDownloaded) {
+            user.history.downloadedBooks.push({
+              id: book_id,
+              data: bookData,
+              date: new Date(),
+            });
           }
-          if (typeof b.date === 'string') {
-            b.date = new Date(b.date);
-          }
-          if (a.date.getTime() < b.date.getTime()) {
-            return -1;
-          } else {
-            return 1;
-          }
-        });
-        this.saveUser(user).catch((reason) => {
+          user.history.downloadedBooks.sort((a, b) => {
+            if (typeof a.date === 'string') {
+              a.date = new Date(a.date);
+            }
+            if (typeof b.date === 'string') {
+              b.date = new Date(b.date);
+            }
+            if (a.date.getTime() < b.date.getTime()) {
+              return -1;
+            } else {
+              return 1;
+            }
+          });
+          this.saveUser(user)
+            .then(() => {
+              resolve();
+            })
+            .catch((reason) => {
+              this.logger.error(reason);
+              reject();
+            });
+        })
+        .catch((reason) => {
           this.logger.error(reason);
+          reject();
         });
-      }
-    })
-    .catch(reason => {
-      this.logger.error(reason);
-    })
+    });
   }
   async addRatingBook(user: User, book_id: number, bookName: string, rating: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
@@ -604,7 +665,7 @@ export class UsersService {
   async getBearerUser(request: Request): Promise<User> {
     return new Promise<User>((resolve, reject) => {
       let token: string;
-      if (request.headers && request.headers['authorization']) {
+      if (request.headers || request.headers['authorization']) {
         const authorization: string = request.headers['authorization'];
         // if (typeof request.headers.authorization === "string") {
         //   authorization = request.headers.authorization;

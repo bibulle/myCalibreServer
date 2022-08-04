@@ -3,19 +3,25 @@ import { Body, Controller, Get, Header, HttpException, HttpStatus, Logger, Param
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, promises as fsPromises } from 'fs';
-import { SendMailOptions } from 'nodemailer';
 import { CacheDateKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { UsersService } from '../users/users.service';
 import { BooksService } from './books.service';
 import path = require('path');
-import nodemailer = require('nodemailer');
+import { MailService } from '../utils/mail.service';
 
 @Controller('book')
 export class BooksController {
   readonly logger = new Logger(BooksController.name);
 
-  constructor(private _booksService: BooksService, private _cacheService: CacheService, private _calibreDb: CalibreDb1Service, private _usersService: UsersService, private _configService: ConfigService) {}
+  constructor(
+    private _booksService: BooksService,
+    private _cacheService: CacheService,
+    private _calibreDb: CalibreDb1Service,
+    private _usersService: UsersService,
+    private _configService: ConfigService,
+    private _mailService: MailService
+  ) {}
 
   // ====================================
   // route for getting books
@@ -268,7 +274,7 @@ export class BooksController {
   @Get(':id/send/kindle')
   @UseGuards(AuthGuard('jwt'))
   async sendKindle(@Param('id') book_id: number, @Query('mail') mail, @Req() req): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
+    try {
       const user: User = req.user as User;
       if (!user) {
         throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
@@ -276,69 +282,41 @@ export class BooksController {
       if (!mail || !book_id) {
         throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
       }
-      this._calibreDb
-        .getBookPaths(book_id)
-        .then((book: BookPath) => {
-          let fullPath = null;
+      const book = await this._calibreDb.getBookPaths(book_id);
+      let fullPath = null;
 
-          if (book && book.book_path && book.data) {
-            const data = book.data.filter((bd: BookData) => {
-              return bd.data_format == 'EPUB';
-            });
-            if (data && data.length != 0) {
-              fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.epub`);
-              fsPromises
-                .stat(fullPath)
-                .then(async () => {
-                  await this._usersService.addDownloadedBook(user, book_id, data[0]);
-                  // Send mail
-                  //var urlSmtp = `smtp${config.smtp_encryption == "SSL" ? 's' : ''}://${config.smtp_user_name}:${config.smtp_password}@${config.smtp_server_name}:${config.smtp_port}`;
-                  const urlSmtp = `smtp${this._configService.get('SMTP_ENCRYPTION') == 'SSL' ? 's' : ''}://${this._configService.get('SMTP_USER_NAME').replace('@', '%40')}:${this._configService.get(
-                    'SMTP_PASSWORD'
-                  )}@${this._configService.get('SMTP_SERVER_NAME')}`;
-                  const transporter = nodemailer.createTransport(urlSmtp);
-
-                  transporter.sendMail(
-                    {
-                      from: `<${this._configService.get('SMTP_USER_NAME')}>`,
-                      to: `${mail}`,
-                      subject: 'My books',
-                      text: 'This book was sent to you by myCalibre.',
-                      attachments: [
-                        {
-                          filename: `${data[0].data_name}.epub`,
-                          path: `${fullPath}`,
-                        },
-                      ],
-                    } as SendMailOptions,
-                    (error) => {
-                      if (error) {
-                        this.logger.error(error);
-                        throw new HttpException(error, HttpStatus.INTERNAL_SERVER_ERROR);
-                      } else {
-                        resolve({ ok: 'Book sent' });
-                      }
-                    }
-                  );
-                })
-                .catch((reason) => {
-                  this.logger.error(`${reason}`);
-                  throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-                });
-            } else {
-              throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-            }
+      if (book && book.book_path && book.data) {
+        const data = book.data.filter((bd: BookData) => {
+          return bd.data_format == 'EPUB';
+        });
+        if (data && data.length != 0) {
+          fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.epub`);
+          const stats = await fsPromises.stat(fullPath);
+          if (stats) {
+            await this._usersService.addDownloadedBook(user, book_id, data[0]);
+            await this._mailService.sendMail(mail, 'My books', 'This book was sent to you by myCalibre.', `${data[0].data_name}.epub`, `${fullPath}`);
+            return { ok: 'Book sent' };
           } else {
             throw new HttpException('Not found', HttpStatus.NOT_FOUND);
           }
-        })
-        .catch((err) => {
-          this.logger.error(err);
+        } else {
           throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-        });
-    }).catch((err) => {
+        }
+      } else {
+        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      }
+    } catch (err) {
+      let mes = 'Something go wrong';
+      let status = HttpStatus.INTERNAL_SERVER_ERROR;
+      if (err && err.code === 'ENOENT') {
+        mes = 'Not found'
+        status = HttpStatus.NOT_FOUND;
+      } else if (err && err.status) {
+        status = err.status;
+      }
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-    });
+      this.logger.error(JSON.stringify(err, null,2));
+      throw new HttpException(mes, status);
+    }
   }
 }

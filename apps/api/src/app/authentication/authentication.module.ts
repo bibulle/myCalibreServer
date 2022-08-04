@@ -10,6 +10,7 @@ import { JwtAdminStrategy } from './jwt-admin.strategy';
 import { JwtStrategy } from './jwt.strategy';
 import { LocalSignupStrategy } from './local-signup.strategy';
 import { LocalStrategy } from './local.strategy';
+import { TemporaryTokenStrategy } from './temporary-token.strategy';
 
 @Module({
   controllers: [AuthenticationController],
@@ -23,7 +24,7 @@ import { LocalStrategy } from './local.strategy';
     ConfigModule,
     UsersModule,
   ],
-  providers: [FacebookStrategy, GoogleStrategy, GoogleIdTokenStrategy, JwtStrategy, JwtAdminStrategy, LocalStrategy, LocalSignupStrategy],
+  providers: [FacebookStrategy, GoogleStrategy, GoogleIdTokenStrategy, JwtStrategy, JwtAdminStrategy, LocalStrategy, LocalSignupStrategy, TemporaryTokenStrategy],
   exports: [],
 })
 export class AuthenticationModule {}

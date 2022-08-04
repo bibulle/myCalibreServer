@@ -50,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
               public _breakpointObserver: BreakpointObserver) {
     this._translate.setDefaultLang('en');
 
-    console.log(this._translate.getBrowserLang());
+    // console.log(this._translate.getBrowserLang());
     if (this._translate.getBrowserLang()) {
       this._translate.use(this._translate.getBrowserLang() as string);
     }

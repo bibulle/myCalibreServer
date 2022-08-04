@@ -35,6 +35,7 @@ import { MatRatingModule } from './components/rating/rating.component';
 import { SeriesModule } from './components/series/series.module';
 import { TagModule } from './components/tag/tag.module';
 import { WindowService } from './core/util/window.service';
+import { AuthGuardToken } from './components/authent/auth.guard.token';
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams) {
@@ -95,6 +96,7 @@ registerLocaleData(localeEn, 'en');
     NotificationService,
     WindowService,
     AuthGuard,
+    AuthGuardToken,
     AuthGuardAdmin
   ],
   bootstrap: [AppComponent]

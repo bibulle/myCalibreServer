@@ -4,6 +4,8 @@ export class User {
   id?: string;
   created?: Date;
   updated?: Date;
+  temporary_token?: string;
+  temporary_token_date?: Date;
 
   local: {
     username?: string;

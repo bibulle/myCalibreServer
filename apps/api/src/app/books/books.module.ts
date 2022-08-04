@@ -4,11 +4,12 @@ import { CacheModule } from '../cache/cache.module';
 import { DatabaseModule } from '../database/database.module';
 import { SeriesModule } from '../series/series.module';
 import { UsersModule } from '../users/users.module';
+import { UtilsModule } from '../utils/utils.module';
 import { BooksController } from './books.controller';
 import { BooksService } from './books.service';
 
 @Module({
-  imports:[DatabaseModule, UsersModule, ConfigModule, CacheModule, SeriesModule], 
+  imports:[DatabaseModule, UsersModule, ConfigModule, CacheModule, SeriesModule, UtilsModule], 
   providers: [BooksService],
   exports: [BooksService],
   controllers: [BooksController],
