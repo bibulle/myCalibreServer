@@ -346,6 +346,18 @@ export class UserService {
         });
     });
   }
+   /**
+   * ChangePassword
+   * @param password
+   * @returns {Promise<void>}
+   */
+    changePassword(password: string): Promise<User> {
+      const body = JSON.stringify({
+        password,
+      });
+  
+      return this._doPost(body, '/api/users/changepw');
+    }
 
   /**
    * Get all users

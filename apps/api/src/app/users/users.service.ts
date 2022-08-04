@@ -168,6 +168,32 @@ export class UsersService {
         });
     });
   }
+  async changeUserPassword(userId: string, newPassword: string): Promise<UserAPI> {
+    return new Promise<UserAPI>((resolve, reject) => {
+      this.findById(userId)
+        .then((modifiedUser) => {
+          if (!modifiedUser) {
+            return reject('User not found');
+          }
+
+          modifiedUser.local['password'] = newPassword;
+          const newUser = this.createUser(modifiedUser);
+
+          this.saveUser(newUser, true)
+            .then(() => {
+              resolve(this.user2API(newUser));
+            })
+            .catch((err) => {
+              this.logger.error(err);
+              return reject(err);
+            });
+        })
+        .catch((err) => {
+          this.logger.error(err);
+          return reject(err);
+        });
+    });
+  }
   async mergeUsers(userSrcId: string, userTrgId: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       Promise.all([this.findById(userSrcId), this.findById(userTrgId)])

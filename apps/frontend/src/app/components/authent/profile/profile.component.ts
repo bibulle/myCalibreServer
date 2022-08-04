@@ -38,9 +38,16 @@ export class ProfileComponent implements OnInit {
   /**
    * Logout
    */
-  logout() {
+   logout() {
     this._userService.logout();
     this._router.navigate(['/home'])
+  }
+
+  /**
+   * Change pawwsord
+   */
+   changepw() {
+    this._router.navigate(['/changepassword'])
   }
 
 }

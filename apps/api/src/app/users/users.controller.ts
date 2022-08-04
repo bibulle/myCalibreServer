@@ -161,7 +161,36 @@ export class UsersController {
     });
   }
   // =====================================
-  // route to reset password of a user ===
+  // route to change password of a user ===
+  // =====================================
+  @Post('/changepw')
+  @UseGuards(AuthGuard('jwt'))
+  async changepassword(@Req() req, @Body() body): Promise<ApiReturn> {
+    return new Promise<ApiReturn>((resolve) => {
+      const connectedUser = this._userService.createUser(req.user);
+
+      if (!body?.password) {
+        throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      }
+
+      const password = body.password;
+
+      this.logger.debug(`Change password fo user ${connectedUser.local.username}`);
+
+      this._userService
+        .changeUserPassword(connectedUser.id, password)
+        .then((user) => {
+          // this.logger.debug(user);
+          resolve({ ok: "Password changed", user: user});
+        }) 
+        .catch((err) => {
+          this.logger.error(err);
+          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+        });
+    });
+  }
+  // =====================================
+  // route to merge users              ===
   // =====================================
   @Post('/merge')
   @UseGuards(AuthGuard('jwt-admin'))
