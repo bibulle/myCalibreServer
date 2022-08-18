@@ -1,7 +1,12 @@
 import { Component, OnInit, Optional } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import {UserService} from '../../../authent/user.service';
-import {User} from '@my-calibre-server/api-interfaces';
+import { UserService } from '../../../authent/user.service';
+import { User } from '@my-calibre-server/api-interfaces';
+
+export class KindleDialogReturn {
+  mail = '';
+  format = '';
+}
 
 @Component({
   selector: 'my-calibre-server-kindle-dialog',
@@ -9,16 +14,13 @@ import {User} from '@my-calibre-server/api-interfaces';
   styleUrls: ['./kindle-dialog.component.scss'],
 })
 export class KindleDialogComponent implements OnInit {
-
-
   user: User = {} as User;
   filteredMails: string[] = [];
 
   mail = '';
+  format = 'epub';
 
-
-  constructor(@Optional() public dialogRef: MatDialogRef<KindleDialogComponent>,
-              private _userService: UserService) { }
+  constructor(@Optional() public dialogRef: MatDialogRef<KindleDialogComponent>, private _userService: UserService) {}
 
   ngOnInit() {
     this.user = this._userService.getUser();
@@ -30,7 +32,7 @@ export class KindleDialogComponent implements OnInit {
     if (!this.user.local.amazonEmails) {
       this.user.local.amazonEmails = [];
     }
-    const found = this.user.local.amazonEmails.filter(el => {
+    const found = this.user.local.amazonEmails.filter((el) => {
       return el.trim() === this.mail;
     });
     if (found.length === 0) {
@@ -38,23 +40,26 @@ export class KindleDialogComponent implements OnInit {
       //noinspection JSIgnoredPromiseFromCall
       await this._userService.save(this.user);
     }
+    const ret : KindleDialogReturn = {
+      mail: this.mail, 
+      format: this.format
+    } 
 
-    this.dialogRef.close(this.mail);
+    this.dialogRef.close(ret);
   }
 
   cancel() {
     this.dialogRef.close();
   }
 
-
   mailFilter() {
     if (!this.user || !this.user.local || !this.user.local.amazonEmails) {
       return;
     }
     if (this.mail) {
-      this.filteredMails = this.user.local.amazonEmails.filter(s => new RegExp(`^${this.mail}`, 'gi').test(s))
+      this.filteredMails = this.user.local.amazonEmails.filter((s) => new RegExp(`^${this.mail}`, 'gi').test(s));
     } else {
-      this.filteredMails = this.user.local.amazonEmails
+      this.filteredMails = this.user.local.amazonEmails;
     }
   }
 }

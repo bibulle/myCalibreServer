@@ -273,13 +273,15 @@ export class BooksController {
 
   @Get(':id/send/kindle')
   @UseGuards(AuthGuard('jwt'))
-  async sendKindle(@Param('id') book_id: number, @Query('mail') mail, @Req() req): Promise<ApiReturn> {
+  async sendKindle(@Param('id') book_id: number, @Query('mail') mail:string, @Query('format') format:string, @Req() req): Promise<ApiReturn> {
     try {
       const user: User = req.user as User;
       if (!user) {
         throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
       }
-      if (!mail || !book_id) {
+      if (!mail || !format || !book_id) {
+        throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      }if (format.toUpperCase() !== 'EPUB' &&  format.toUpperCase() !== 'MOBI') {
         throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
       }
       const book = await this._calibreDb.getBookPaths(book_id);
@@ -287,14 +289,14 @@ export class BooksController {
 
       if (book && book.book_path && book.data) {
         const data = book.data.filter((bd: BookData) => {
-          return bd.data_format == 'EPUB';
+          return bd.data_format == format.toUpperCase();
         });
         if (data && data.length != 0) {
-          fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.epub`);
+          fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
           const stats = await fsPromises.stat(fullPath);
           if (stats) {
             await this._usersService.addDownloadedBook(user, book_id, data[0]);
-            await this._mailService.sendMail(mail, 'My books', 'This book was sent to you by myCalibre.', `${data[0].data_name}.epub`, `${fullPath}`);
+            await this._mailService.sendMail(mail, 'My books', 'This book was sent to you by myCalibre.', `${data[0].data_name}.${format.toLowerCase()}`, `${fullPath}`);
             return { ok: 'Book sent' };
           } else {
             throw new HttpException('Not found', HttpStatus.NOT_FOUND);

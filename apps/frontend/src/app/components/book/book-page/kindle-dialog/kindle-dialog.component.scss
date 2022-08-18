@@ -5,6 +5,13 @@ mat-card.kindle-card {
 h4 {
   margin-bottom: 5px;
 }
+.mat-radio-button {
+  margin-top: 1em;
+}
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 2em;
+}
+
 mat-form-field {
   width: 99%;
 }

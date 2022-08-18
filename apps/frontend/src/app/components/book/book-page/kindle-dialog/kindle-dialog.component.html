@@ -1,25 +1,28 @@
 <mat-card class="kindle-card">
-  <mat-card-title>{{'label.kindle.send-to' | translate}}</mat-card-title>
+  <mat-card-title>{{ 'label.kindle.send-to' | translate }}</mat-card-title>
   <form (ngSubmit)="send()">
     <mat-card-content>
-      <h4>{{'label.kindle.enter-email' | translate}}</h4>
+      <h4>{{ 'label.kindle.enter-email' | translate }}</h4>
       <mat-form-field>
-        <input matInput placeholder="{{'label.email' | translate}}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()">
+        <input matInput placeholder="{{ 'label.email' | translate }}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()" />
       </mat-form-field>
-
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let mail of filteredMails" [value]="mail">
           {{ mail }}
         </mat-option>
       </mat-autocomplete>
+      <mat-radio-group aria-label="Select an option" [(ngModel)]="format" name="format">
+        <mat-radio-button value="epub">Epub</mat-radio-button>
+        <mat-radio-button value="mobi">Mobi</mat-radio-button>
+      </mat-radio-group>
       <div class="message" [innerHTML]="'label.kindle.warning' | translate"></div>
     </mat-card-content>
     <mat-card-actions align="end">
       <button mat-button type="submit">
-        {{'label.send-now' | translate}}
+        {{ 'label.send-now' | translate }}
       </button>
       <button mat-button type="button" (click)="cancel()">
-        {{'label.cancel' | translate}}
+        {{ 'label.cancel' | translate }}
       </button>
     </mat-card-actions>
   </form>
