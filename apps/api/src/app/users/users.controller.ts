@@ -84,10 +84,25 @@ export class UsersController {
 
       this.logger.debug(`Saving user ${savedUser.local.username} : ${savedUser.local.firstname} ${savedUser.local.lastname}`);
 
+      // try to get users (pasword and hash should be retrieve)
       this._userService
-        .saveUser(savedUser, true)
-        .then((user) => {
-          resolve({ user: this._userService.user2API(user) });
+        .findById(savedUser.id)
+        .then((alreadySAveduser) => {
+          savedUser.local.salt = alreadySAveduser.local.salt;
+          savedUser.local.hashedPassword = alreadySAveduser.local.hashedPassword;
+
+          // this.logger.debug(JSON.stringify(savedUser));
+          // this.logger.debug(JSON.stringify(connectedUser));
+
+          this._userService
+            .saveUser(savedUser, true)
+            .then((user) => {
+              resolve({ user: this._userService.user2API(user) });
+            })
+            .catch((err) => {
+              this.logger.error(err);
+              throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+            });
         })
         .catch((err) => {
           this.logger.error(err);
