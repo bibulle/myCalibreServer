@@ -39,7 +39,7 @@
     "@nestjs/schedule": "^2.0.1",
     "@ngx-translate/core": "^14.0.0",
     "@ngx-translate/http-loader": "^7.0.0",
-    "@nrwl/angular": "14.4.0",
+    "@nrwl/angular": "14.8.6",
     "@rechat/squel": "^5.15.1",
     "async": "^3.2.4",
     "cron": "^2.1.0",
