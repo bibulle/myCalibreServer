@@ -16,8 +16,9 @@ RUN mkdir apps
 COPY apps/frontend apps/frontend
 COPY apps/api apps/api
 
-RUN npm run ng build frontend -- --prod
-RUN npm run ng build api -- --prod
+RUN npx nx run-many --parallel --target=build --configuration=production --projects=frontend,api 
+#RUN npm run ng build frontend -- --prod
+#RUN npm run ng build api -- --prod
 
 # -------------
 FROM node:16
