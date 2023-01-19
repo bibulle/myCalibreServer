@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRatingModule } from '../rating/rating.component';
@@ -15,7 +14,6 @@ import { BookService } from './book.service';
     MatCardModule,
     BookPageModule,
     MatIconModule,
-    FlexLayoutModule,
     MatRatingModule
   ],
   providers: [

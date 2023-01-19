@@ -1,54 +1,53 @@
-@import '~@angular/material/theming';
 
 // mixin name will be used in main style.scss
 @mixin app-component-theme($theme) {
 
   // retrieve variables from theme
   // (all possible variables, use only what you really need)
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+  $primary: mat.get-color-from-palette($theme, primary);
+  $accent: mat.get-color-from-palette($theme, accent);
+  $warn: mat.get-color-from-palette($theme, warn);
+  $foreground: mat.get-color-from-palette($theme, foreground);
+  $background: mat.get-color-from-palette($theme, background);
 
   // all of these variables contain many additional variables
 
   my-calibre-server-root {
     //background-color: mat-color($primary, app-bar);
-    background-color: mat-color($primary, default);
+    background-color: mat.get-color-from-palette($primary, default);
 
 
     .app-menu {
-      border-right-color: mat-color($foreground, divider);
+      border-right-color: mat.get-color-from-palette($foreground, divider);
 
       [mat-list-item] {
         &.active {
-          color: mat-color($primary, default);
+          color: mat.get-color-from-palette($primary, default);
         }
       }
       mat-toolbar {
-        color: mat-color($foreground, secondary-text);
-        border-bottom-color: mat-color($foreground, divider);
+        color: mat.get-color-from-palette($foreground, secondary-text);
+        border-bottom-color: mat.get-color-from-palette($foreground, divider);
 
         .beta {
-          background-color: mat-color($warn, 100);
+          background-color: mat.get-color-from-palette($warn, 100);
         }
       }
       .version {
-        color: mat-color($foreground, hint-text);
+        color: mat.get-color-from-palette($foreground, hint-text);
       }
     }
     mat-toolbar.hero {
       h1 {
-        color: mat-color($primary, default-contrast);
+        color: mat.get-color-from-palette($primary, default-contrast);
       }
     }
     mat-content {
       > h1 {
-        color: mat-color($primary, default);
+        color: mat.get-color-from-palette($primary, default);
       }
       .card-media {
-        background-color: mat-color($background, app-bar);
+        background-color: mat.get-color-from-palette($background, app-bar);
       }
     }
 

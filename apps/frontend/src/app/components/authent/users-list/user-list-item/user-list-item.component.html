@@ -1,42 +1,46 @@
-<mat-card class="user-card" fxFlex="100" [class.user-closed]="userClosed && !(selectedMergeUser === user)" [class.user-selected]="(selectedMergeUser === user)" [class.anotheruser-selected]="selectedMergeUser && (selectedMergeUser !== user)">
-  <div fxLayout="column" class="row">
-    <div fxLayout="row" class="title">
-      <div fxFlex="5">
-        <button mat-icon-button class="mat-icon-button open-close" (click)="toggleUserClosed()">
-          <mat-icon *ngIf="userClosed">keyboard_arrow_down</mat-icon>
-          <mat-icon *ngIf="!userClosed">keyboard_arrow_up</mat-icon>
+<mat-card
+  class="user-card"
+  [class.user-closed]="userClosed && !(selectedMergeUser === user)"
+  [class.user-selected]="selectedMergeUser === user"
+  [class.anotheruser-selected]="selectedMergeUser && selectedMergeUser !== user"
+>
+  <div class="row">
+    <div class="title">
+      <div class="marge">
+        <button mat-icon-button class="open-close" (click)="toggleUserClosed()">
+          <mat-icon>{{ userClosed ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon>
         </button>
       </div>
 
-      <div class="username" fxFlex="15">{{user.local.username}}</div>
-      <div class="firstname" fxFlex="15">{{user.local.firstname}}</div>
-      <div class="lastname" fxFlex="15">{{user.local.lastname}}</div>
-      <div class="email" fxFlex="20">{{user.local.email}}</div>
-      <div class="last-connection" fxFlex="10" fxLayout="column">
-        <span>{{user.history?.lastConnection | localizedDate}} {{user.history?.lastConnection | localizedDate: 'shortTime'}}</span>
-        <span>{{'label.downloaded' | translate}} : {{user.history?.downloadedBooks?.length}}</span>
+      <div class="username">{{ user.local.username }}</div>
+      <div class="firstname">{{ user.local.firstname }}</div>
+      <div class="lastname">{{ user.local.lastname }}</div>
+      <div class="email">{{ user.local.email }}</div>
+      <div class="last-connection">
+        <span>{{ user.history.lastConnection | localizedDate }} {{ user.history.lastConnection | localizedDate: 'shortTime' }}</span>
+        <span>{{ 'label.downloaded' | translate }} : {{ user.history.downloadedBooks?.length }}</span>
       </div>
-      <div class="admin" fxFlex="10">
+      <div class="admin">
         <mat-slide-toggle [checked]="user.local.isAdmin" (change)="adminChanged($event)" color="primary"></mat-slide-toggle>
       </div>
-      <div class="local" fxFlex="5">
+      <div class="local">
         <mat-checkbox [checked]="user.local.username" disabled="true"></mat-checkbox>
       </div>
-      <div class="facebook" fxFlex="5">
-        <mat-checkbox [checked]="user.facebook?.name" disabled="true"></mat-checkbox>
+      <div class="facebook">
+        <mat-checkbox [checked]="user.facebook.name" disabled="true"></mat-checkbox>
       </div>
-      <div class="google" fxFlex="5">
-        <mat-checkbox [checked]="user.google?.name" disabled="true"></mat-checkbox>
+      <div class="google">
+        <mat-checkbox [checked]="user.google.name" disabled="true"></mat-checkbox>
       </div>
     </div>
-    <div class="content" fxFlex="100">
+    <div class="content">
       <my-calibre-server-user-profile [user]="user" urlToRedirect="/users"></my-calibre-server-user-profile>
       <mat-card-actions>
-        <a class="delete" mat-raised-button (click)="remove()">{{'label.delete' | translate}}</a>
-        <a class="merge-select" mat-raised-button (click)="merge()">{{'label.merge.select' | translate}}</a>
-        <a class="merge-unselect" mat-raised-button (click)="merge()">{{'label.merge.unselect' | translate}}</a>
-        <a class="merge-launch" mat-raised-button (click)="merge()">{{'label.merge.launch' | translate}}</a>
-        <a class="resetPassword" mat-raised-button (click)="resetPassword()">{{'label.reset-password' | translate}}</a>
+        <a class="delete" mat-raised-button (click)="remove()">{{ 'label.delete' | translate }}</a>
+        <a class="merge-select" mat-raised-button (click)="merge()">{{ 'label.merge.select' | translate }}</a>
+        <a class="merge-unselect" mat-raised-button (click)="merge()">{{ 'label.merge.unselect' | translate }}</a>
+        <a class="merge-launch" mat-raised-button (click)="merge()">{{ 'label.merge.launch' | translate }}</a>
+        <a class="resetPassword" mat-raised-button (click)="resetPassword()">{{ 'label.reset-password' | translate }}</a>
       </mat-card-actions>
     </div>
   </div>

@@ -1,13 +1,12 @@
-<mat-card class="tag-card" fxFlex="100" *ngIf="tag?.tag_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
+<mat-card class="tag-card" *ngIf="tag?.tag_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
   <mat-card-title class="tag-name">
-    {{tag?.tag_name}}
-    <span class="count" >{{tag?.books?.length}} book<span *ngIf="((tag && tag.books && tag.books.length) ? tag.books.length : 0) > 1">s</span></span>
+    {{ tag?.tag_name }}
+    <span class="count">{{ tag?.books?.length }} book<span *ngIf="(tag && tag.books && tag.books.length ? tag.books.length : 0) > 1">s</span></span>
     <button mat-icon-button class="mat-icon-button">
       <mat-icon *ngIf="booksClosed">keyboard_arrow_down</mat-icon>
       <mat-icon *ngIf="!booksClosed">keyboard_arrow_up</mat-icon>
     </button>
   </mat-card-title>
 
-  <my-calibre-server-book-card *ngFor="let book of tag?.books" [book]="book">
-  </my-calibre-server-book-card>
+  <my-calibre-server-book-card *ngFor="let book of tag?.books" [book]="book"> </my-calibre-server-book-card>
 </mat-card>

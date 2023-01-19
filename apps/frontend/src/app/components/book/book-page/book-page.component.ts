@@ -9,21 +9,20 @@ import { TitleService } from '../../../app/title.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
+import { KindleDialogComponent, KindleDialogReturn } from './kindle-dialog/kindle-dialog.component';
+import { NotificationService } from '../../notification/notification.service';
+import { LocalizedDateModule } from '../../../directives/localized-date.pipe';
+import { MatRatingModule } from '../../rating/rating.component';
+import { UserService } from '../../authent/user.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { KindleDialogComponent, KindleDialogReturn } from './kindle-dialog/kindle-dialog.component';
-import { NotificationService } from '../../notification/notification.service';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { LocalizedDateModule } from '../../../directives/localized-date.pipe';
-import { MatRatingModule } from '../../rating/rating.component';
-import { UserService } from '../../authent/user.service';
 
 @Component({
   selector: 'my-calibre-server-book-page',
@@ -252,7 +251,6 @@ export class BookPageComponent implements OnInit {
     MatAutocompleteModule,
     MatDialogModule,
     MatTooltipModule,
-    FlexLayoutModule,
     TranslateModule,
     LocalizedDateModule,
     MatRatingModule,

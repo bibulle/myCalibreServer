@@ -1,21 +1,21 @@
-<div class="mat-content" fxFlex="100" fxLayoutAlign="center center" fxLayout="row">
-  <mat-card fxFlex="60">
+<div class="mat-content">
+  <mat-card>
     <form role="form" (submit)="signup($event, username.value, password.value, firstname.value, lastname.value, email.value)">
       <mat-card-content>
         <mat-form-field>
-          <input matInput placeholder="Username"  required                 #username>
+          <input matInput placeholder="Username" required #username />
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="Password"  required type="password" #password>
+          <input matInput placeholder="Password" required type="password" #password />
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="Firstname" #firstname>
+          <input matInput placeholder="Firstname" #firstname />
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="Lastname"  #lastname>
+          <input matInput placeholder="Lastname" #lastname />
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="email"     type="email" #email>
+          <input matInput placeholder="email" type="email" #email />
         </mat-form-field>
       </mat-card-content>
       <mat-card-actions align="end">

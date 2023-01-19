@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, NgModule, OnInit } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -184,7 +183,6 @@ export class UsersListComponent implements OnInit {
     MatContentModule,
     MatToolbarModule,
     UserListItemModule,
-    FlexLayoutModule,
     TranslateModule,
     // MatInputModule,
     // FlexModule,

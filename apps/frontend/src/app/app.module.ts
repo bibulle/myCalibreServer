@@ -16,7 +16,6 @@ import { registerLocaleData } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from '@auth0/angular-jwt';
 import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -36,6 +35,7 @@ import { SeriesModule } from './components/series/series.module';
 import { TagModule } from './components/tag/tag.module';
 import { WindowService } from './core/util/window.service';
 import { AuthGuardToken } from './components/authent/auth.guard.token';
+import { MatButtonModule } from '@angular/material/button';
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams) {
@@ -64,7 +64,6 @@ registerLocaleData(localeEn, 'en');
 //        whitelistedDomains: new Array(new RegExp('^null$'))
       }
     }),
-    FlexLayoutModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -89,7 +88,8 @@ registerLocaleData(localeEn, 'en');
     TagModule,
     AuthentModule,
     FilterBarModule,
-    MatRatingModule
+    MatRatingModule,
+    MatButtonModule
   ],
   providers: [
     TitleService,

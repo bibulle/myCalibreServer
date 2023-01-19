@@ -1,14 +1,20 @@
 mat-card.kindle-card {
   box-shadow: none;
-  padding: 0;
+  padding: 16px;
+
+  mat-card-title {
+    font-size: 1.5em;
+    font-weight: 500;
+  }
 }
 h4 {
   margin-bottom: 5px;
+  margin-top: 0;
 }
-.mat-radio-button {
+.mat-mdc-radio-button {
   margin-top: 1em;
 }
-.mat-radio-button ~ .mat-radio-button {
+.mat-mdc-radio-button ~ .mat-mdc-radio-button {
   margin-left: 2em;
 }
 
@@ -23,5 +29,8 @@ mat-form-field {
 }
 
 mat-card-actions {
-  margin-bottom: 0;
+  margin-top: 16px;
+  button {
+    margin-right: 16px;
+  }
 }

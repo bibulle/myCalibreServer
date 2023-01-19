@@ -1,62 +1,61 @@
 <div class="container" *ngIf="!filter.not_displayed">
-  <div class="container" fxFlex="100" fxLayout="row" fxLayoutAlign="end center">
+  <div class="container">
     <mat-icon>search</mat-icon>
     &nbsp;
-    <mat-form-field fxFlex="75" color="accent">
-      <input matInput placeholder="{{ 'label.search' | translate }}" #cataloguesearch [(ngModel)]="filter.search"
-                (ngModelChange)="filterList()">
+    <mat-form-field color="accent">
+      <input matInput placeholder="{{ 'label.search' | translate }}" #cataloguesearch [(ngModel)]="filter.search" (ngModelChange)="filterList()" />
     </mat-form-field>
   </div>
   <!--<button mat-button class="mat-icon-button" aria-label="Favorite">-->
   <!--<mat-icon mat-icon>favorite</mat-icon>-->
   <!--</button>-->
-  <button mat-button class="mat-icon-button" aria-label="Sort" [matMenuTriggerFor]="sortmenu">
+  <button mat-button aria-label="Sort" [matMenuTriggerFor]="sortmenu">
     <mat-icon>sort</mat-icon>
   </button>
-  <div fxLayout="row" class="flags">
-    <button mat-button class="mat-icon-button" matTooltip="{{'label.french' | translate}}" matTooltipPosition="below" (click)="toggleLang(1)" *ngIf="filter.isLangSelected(1)">
+  <div class="flags">
+    <button mat-button matTooltip="{{ 'label.french' | translate }}" matTooltipPosition="below" (click)="toggleLang(1)" *ngIf="filter.isLangSelected(1)">
       <mat-icon svgIcon="flag_fr"></mat-icon>
     </button>
-    <button mat-button class="mat-icon-button" matTooltip="{{'label.french' | translate}}" matTooltipPosition="below" (click)="toggleLang(1)" *ngIf="!filter.isLangSelected(1)">
+    <button mat-button matTooltip="{{ 'label.french' | translate }}" matTooltipPosition="below" (click)="toggleLang(1)" *ngIf="!filter.isLangSelected(1)">
       <mat-icon svgIcon="flag_fr_disabled"></mat-icon>
     </button>
-    <button mat-button class="mat-icon-button" matTooltip="{{'label.english' | translate}}" matTooltipPosition="below" (click)="toggleLang(2)" *ngIf="filter.isLangSelected(2)">
+    <button mat-button matTooltip="{{ 'label.english' | translate }}" matTooltipPosition="below" (click)="toggleLang(2)" *ngIf="filter.isLangSelected(2)">
       <mat-icon svgIcon="flag_us"></mat-icon>
     </button>
-    <button mat-button class="mat-icon-button" matTooltip="{{'label.english' | translate}}" matTooltipPosition="below" (click)="toggleLang(2)" *ngIf="!filter.isLangSelected(2)">
+    <button mat-button matTooltip="{{ 'label.english' | translate }}" matTooltipPosition="below" (click)="toggleLang(2)" *ngIf="!filter.isLangSelected(2)">
       <mat-icon svgIcon="flag_us_disabled"></mat-icon>
     </button>
   </div>
 
   <mat-menu xPosition="before" yPosition="below" #sortmenu="matMenu" class="sort-menu">
     <button mat-menu-item (click)="toggleSort(0)" *ngIf="filter.isAvailable(0)">
-      <mat-icon *ngIf="(filter.sort === 0) && (filter.sorting_direction === 0)">keyboard_arrow_up</mat-icon>
-      <mat-icon *ngIf="(filter.sort === 0) && (filter.sorting_direction === 1)">keyboard_arrow_down</mat-icon>
-      <mat-icon *ngIf="(filter.sort !== 0)"></mat-icon>
+      <mat-icon *ngIf="filter.sort === 0 && filter.sorting_direction === 0">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="filter.sort === 0 && filter.sorting_direction === 1">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="filter.sort !== 0"></mat-icon>
       <span>{{ 'label.name' | translate }}</span>
     </button>
     <button mat-menu-item (click)="toggleSort(1)" *ngIf="filter.isAvailable(1)">
-      <mat-icon *ngIf="(filter.sort === 1) && (filter.sorting_direction === 0)">keyboard_arrow_up</mat-icon>
-      <mat-icon *ngIf="(filter.sort === 1) && (filter.sorting_direction === 1)">keyboard_arrow_down</mat-icon>
-      <mat-icon *ngIf="(filter.sort !== 1)"></mat-icon>
+      <mat-icon *ngIf="filter.sort === 1 && filter.sorting_direction === 0">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="filter.sort === 1 && filter.sorting_direction === 1">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="filter.sort !== 1"></mat-icon>
       <span>{{ 'label.publish_date' | translate }}</span>
     </button>
     <button mat-menu-item (click)="toggleSort(2)" *ngIf="filter.isAvailable(2)">
-      <mat-icon *ngIf="(filter.sort === 2) && (filter.sorting_direction === 0)">keyboard_arrow_up</mat-icon>
-      <mat-icon *ngIf="(filter.sort === 2) && (filter.sorting_direction === 1)">keyboard_arrow_down</mat-icon>
-      <mat-icon *ngIf="(filter.sort !== 2)"></mat-icon>
+      <mat-icon *ngIf="filter.sort === 2 && filter.sorting_direction === 0">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="filter.sort === 2 && filter.sorting_direction === 1">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="filter.sort !== 2"></mat-icon>
       <span>{{ 'label.author' | translate }}</span>
     </button>
     <button mat-menu-item (click)="toggleSort(3)" *ngIf="filter.isAvailable(3)">
-      <mat-icon *ngIf="(filter.sort === 3) && (filter.sorting_direction === 0)">keyboard_arrow_up</mat-icon>
-      <mat-icon *ngIf="(filter.sort === 3) && (filter.sorting_direction === 1)">keyboard_arrow_down</mat-icon>
-      <mat-icon *ngIf="(filter.sort !== 3)"></mat-icon>
+      <mat-icon *ngIf="filter.sort === 3 && filter.sorting_direction === 0">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="filter.sort === 3 && filter.sorting_direction === 1">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="filter.sort !== 3"></mat-icon>
       <span>{{ 'label.rating-public' | translate }}</span>
     </button>
     <button mat-menu-item (click)="toggleSort(4)" *ngIf="filter.isAvailable(4)">
-      <mat-icon *ngIf="(filter.sort === 4) && (filter.sorting_direction === 0)">keyboard_arrow_up</mat-icon>
-      <mat-icon *ngIf="(filter.sort === 4) && (filter.sorting_direction === 1)">keyboard_arrow_down</mat-icon>
-      <mat-icon *ngIf="(filter.sort !== 4)"></mat-icon>
+      <mat-icon *ngIf="filter.sort === 4 && filter.sorting_direction === 0">keyboard_arrow_up</mat-icon>
+      <mat-icon *ngIf="filter.sort === 4 && filter.sorting_direction === 1">keyboard_arrow_down</mat-icon>
+      <mat-icon *ngIf="filter.sort !== 4"></mat-icon>
       <span>{{ 'label.rating-reader' | translate }}</span>
     </button>
   </mat-menu>

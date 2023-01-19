@@ -1,7 +1,7 @@
 import { Component, OnInit, Optional } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
 import { UserService } from '../../../authent/user.service';
 import { User } from '@my-calibre-server/api-interfaces';
+import { MatDialogRef } from '@angular/material/dialog';
 
 export class KindleDialogReturn {
   mail = '';

@@ -1,17 +1,33 @@
 button {
+  background: transparent;
   height: 1.5em;
-  width: 1.0em;
+  width: 1em;
   line-height: 1.5em;
 
-  font-size: 1.0em;
+  font-size: 1em;
 
   .material-icons {
-    font-size: 1.0em
+    font-size: 1em;
   }
   .mat-icon {
-    height: 1.0em;
-    width: 1.0em;
-    line-height: 1.0em;
+    height: 1em;
+    width: 1em;
+    line-height: 1em;
+  }
+  
+}
+
+button.mat-mdc-icon-button.mat-mdc-button-base {
+  width: auto;
+  padding: 0;
+  
+  .mat-mdc-button-touch-target {
+    position: absolute;
+    top: auto;
+    height: auto;
+    left: auto;
+    width: auto;
+    transform: none;
   }
 }
 

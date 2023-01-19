@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -51,7 +50,6 @@ export class BookCardComponent {
     MatCardModule,
     MatIconModule,
     MatTooltipModule,
-    FlexLayoutModule,
     TranslateModule,
     MatRatingModule
   ],

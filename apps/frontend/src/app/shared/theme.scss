@@ -1,17 +1,21 @@
 // define 3 theme color
 // mat-palette accepts $palette-name, main, lighter and darker variants
-
+ 
 //$my-theme-primary: mat-palette($mat-indigo, 700, 300, 900);
 //$my-theme-accent: mat-palette($mat-light-blue);
 //$my-theme-warn: mat-palette($mat-deep-orange, A200);
 
-$my-theme-primary: mat-palette($mat-green, 600, 300, 900);
-$my-theme-accent: mat-palette($mat-light-blue);
-$my-theme-warn: mat-palette($mat-deep-orange, A200);
+$primary: mat.define-palette(mat.$green-palette, 600, 300, 900);
+$accent: mat.define-palette(mat.$light-blue-palette);
+$warn: mat.define-palette(mat.$deep-orange-palette, A200);
 
 // create theme (use mat-dark-theme for themes with dark backgrounds)
-$my-theme: mat-light-theme(
-    $my-theme-primary,
-    $my-theme-accent,
-    $my-theme-warn
+$theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $primary,
+      accent: $accent,
+      warn: $warn,
+    ),
+  )
 );

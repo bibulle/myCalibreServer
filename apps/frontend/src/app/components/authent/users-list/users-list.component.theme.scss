@@ -1,25 +1,27 @@
-@import '~@angular/material/theming';
 
 // mixin name will be used in main style.scss
 @mixin users-list-component-theme($theme) {
 
   // retrieve variables from theme
   // (all possible variables, use only what you really need)
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+  $primary: mat.get-color-from-palette($theme, primary);
+  $accent: mat.get-color-from-palette($theme, accent);
+  $warn: mat.get-color-from-palette($theme, warn);
+  $foreground: mat.get-color-from-palette($theme, foreground);
+  $background: mat.get-color-from-palette($theme, background);
 
   // all of these variables contain many additional variables
 
   .user-list-header {
 
     .fa-home[disabled] {
-      background-color: mat-color($primary, 500);
-      color: mat-color($primary, default-contrast);
+      background-color: mat.get-color-from-palette($primary, 500);
+      color: mat.get-color-from-palette($primary, default-contrast);
     }
 
+    .fa-home {
+      color: white;
+    }
     .fa-facebook {
       background-color: #3b5998;
       color: white;

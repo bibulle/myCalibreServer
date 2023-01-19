@@ -162,7 +162,7 @@ export class MatPeekabooDirective implements OnInit {
    */
   evaluate(): number {
     const top = this._scroller
-      ? MatPeekabooDirective.scrollTop
+      ? this._scroller.scrollTop
       : MatPeekabooDirective.scrollTop();
     let bp: number = this.break;
     switch (this._breakpoint) {
