@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/bibulle/myCalibreServer/compare/v0.7.3...v0.8.0) (2023-01-19)
+
+
+### Features
+
+* automate CI/CD (Fixes [#100](https://github.com/bibulle/myCalibreServer/issues/100)) ([42bdfc8](https://github.com/bibulle/myCalibreServer/commit/42bdfc83a1d7371eb7cb360047137bd5ae72aad3)), closes [#101](https://github.com/bibulle/myCalibreServer/issues/101)
+
+
+### Bug Fixes
+
+* build everything at once to not have memory problem ([79d3684](https://github.com/bibulle/myCalibreServer/commit/79d36849c617c79cab4e243f6885fad74830a64a))
+
 ### [0.7.3](https://github.com/bibulle/myCalibreServer/compare/v0.5.0...v0.7.3) (2023-01-17)
 
 
