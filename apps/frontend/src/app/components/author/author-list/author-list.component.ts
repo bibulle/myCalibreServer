@@ -1,6 +1,5 @@
 import { Component, OnInit, NgModule, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatContentModule } from '../../content/content.component';
 import { Filter, FilterService, SortType, SortingDirection, LangAvailable } from '../../filter-bar/filter.service';
 import { AuthorService } from '../author.service';
@@ -9,6 +8,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { Author } from '@my-calibre-server/api-interfaces';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'my-calibre-server-author-list',

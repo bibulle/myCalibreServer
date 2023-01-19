@@ -1,7 +1,8 @@
-@import "../../../shared/styles";
+@import '../../../shared/styles';
 //@import "../../../shared/layout";
 
 .user-list-header {
+  display: flex;
   padding-right: 24px;
   padding-left: 24px;
   padding-top: 10px;
@@ -12,29 +13,51 @@
   div {
     display: flex;
     align-items: center;
+    flex: 1 1 100%;
+    position: relative;
+
+    mat-icon {
+      // position: absolute;
+      // right: -3px;
+      height: 18px;
+      width: 18px;
+      font-size: 18px;
+    }
   }
 
-  .admin, .facebook, .google, .local {
+  .marge,
+  .local,
+  .facebook,
+  .google {
+    max-width: 5%;
+  }
+  .admin {
+    max-width: 10%;
+  }
+  .username,
+  .firstname,
+  .lastname {
+    max-width: 15%;
+  }
+  .email,
+  .last-connection {
+    max-width: 20%;
+  }
+
+  .admin,
+  .facebook,
+  .google,
+  .local {
     text-align: center;
     justify-content: center;
     position: relative;
   }
-  .admin {
-    padding-left: 24px;
-  }
-
-  .facebook mat-icon, .google mat-icon, .local mat-icon {
-    position: absolute;
-    bottom: -5px;
-  }
   .last-connection {
+    flex-direction: column;
     font-size: 0.8em;
     justify-content: center;
     span {
       line-height: 20px;
-      display: flex;
-      align-items: center;
-      padding-left: 18px;
       mat-icon {
         height: 18px;
         width: 18px;
@@ -42,14 +65,25 @@
       }
     }
   }
+  button {
+    font-size: 18px;
+    line-height: 40px;
+  }
 
   .fa:before {
     font-family: FontAwesome, serif;
   }
-
-  .fa.mat-mini-fab {
-    font-size: 18px;
+  .fa-facebook:before {
+    // font-family: FontAwesome, serif;
+    content: '\f09a';
   }
+  .fa-google:before {
+    // font-family: FontAwesome, serif;
+    content: '\f1a0';
+  }
+  .fa-home:before {
+    // font-family: FontAwesome, serif;
+    content: '\f015';
+  } 
 
 }
-

@@ -1,8 +1,7 @@
-@import "shared/styles";
-@import "shared/layout";
+@import 'shared/styles';
+@import 'shared/layout';
 
 :host {
-
   display: block;
 
   > mat-sidenav-container {
@@ -14,15 +13,15 @@
     }
   }
 
-  .mat-icon-button {
-    margin: 0 6px;
-    height: 40px;
-    min-width: 0;
-    line-height: 24px;
-    padding: 8px;
-    width: 40px;
-    border-radius: 50%;
-  }
+  // .mat-icon-button {
+  //   margin: 0 6px;
+  //   height: 40px;
+  //   min-width: 0;
+  //   line-height: 24px;
+  //   padding: 8px;
+  //   width: 40px;
+  //   border-radius: 50%;
+  // }
 
   main {
     background-color: whitesmoke;
@@ -38,16 +37,15 @@
     border-right: 1px solid;
 
     [mat-list-item] {
-      font-size: ($subheader-font-size+2);
+      font-size: ($subheader-font-size + 2);
       font-weight: $subheader-font-weight;
-
     }
     mat-toolbar {
       border-bottom: 1px solid;
       position: relative;
       overflow: hidden;
       h3 {
-        font-size: 1.17em;
+        font-size: 1.5em;
         font-weight: 500;
         cursor: pointer;
       }
@@ -68,10 +66,12 @@
       position: absolute;
       bottom: 0;
       right: 0;
+      font-size: 0.8em;
     }
   }
 
-  .fixed-toolbar, .shadow-toolbar {
+  .fixed-toolbar,
+  .shadow-toolbar {
     position: fixed;
     top: 0;
     left: 0;
@@ -86,10 +86,28 @@
       pointer-events: none;
     }
   }
-  .verbose-title.book-title, .verbose-title.app-title {
+  .fixed-toolbar button {
+    box-shadow: none;
+  }
+  .fixed-toolbar .verbose-title {
+    font-size: 2em;
+    font-weight: 400;
+    // padding-left: 1em;
+    // @media screen and (max-width: $layout-breakpoint-md) {
+    //   font-size: $display-2-font-size-base;
+    // }
+    // @media screen and (max-width: $layout-breakpoint-sm) {
+    //   font-size: $title-font-size-base;
+    // }
+  }
+  .verbose-title.book-title,
+  .verbose-title.app-title {
     @media screen and (max-width: $layout-breakpoint-sm) {
       display: none;
     }
+  }
+  .filler {
+    flex-grow: 1;
   }
 
   mat-toolbar.hero {
@@ -105,7 +123,6 @@
       overflow: visible;
       width: 1160px;
       white-space: nowrap;
-
     }
     @media screen and (min-width: ($layout-breakpoint-md + 1)) {
       h1 {
@@ -115,7 +132,7 @@
     @media screen and (max-width: $layout-breakpoint-md) {
       h1 {
         width: $app-content-md - 32px;
-        font-size: $display-2-font-size-base;
+        // font-size: $display-2-font-size-base;
       }
     }
     @media screen and (max-width: $layout-breakpoint-sm) {
@@ -125,7 +142,7 @@
       min-height: $toolbar-tall-height;
       max-height: $toolbar-tall-height;
       h1 {
-        font-size: $title-font-size-base;
+        font-size: 3em;
         width: $app-content-sm - 80px;
         margin-left: 0;
       }
@@ -151,9 +168,29 @@
     }
   }
 
+  .fixed-toolbar .filter {
+    @media screen and (max-width: $layout-breakpoint-md) {
+      display: none;
+    }
+  }
+  mat-toolbar.filter {
+    @media screen and (max-width: $layout-breakpoint-md) {
+      display: flex !important;
+    }
+  }
+
   .contents {
     width: 100%;
     min-height: 640px;
     padding: 0;
+  }
+
+  .filter {
+    display: flex;
+    > span,
+    > div {
+      flex-grow: 1;
+      display: flex;
+    }
   }
 }

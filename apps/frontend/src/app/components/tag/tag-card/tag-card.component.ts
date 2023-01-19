@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, NgModule } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { Tag } from '@my-calibre-server/api-interfaces';
@@ -32,7 +33,8 @@ export class TagCardComponent {
     CommonModule,
     MatCardModule,
     MatIconModule,
-    BookCardModule
+    BookCardModule,
+    MatButtonModule
   ],
   declarations: [
     TagCardComponent

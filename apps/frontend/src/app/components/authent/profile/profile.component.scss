@@ -1,20 +1,36 @@
-@import "../../../shared/styles";
+@import '../../../shared/styles';
 //@import "../../../shared/layout";
 
 :host {
+  display: flex;
+
   .md-content {
+    display: flex;
+    place-content: center;
+    align-items: center;
+    flex: 1 1 100%;
+    max-width: 100%;
 
     mat-card {
+      flex: 1 1 100%;
+      max-width: 60%;
+
       margin-top: 2em;
 
       mat-card-actions {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
-
+        gap: 1em;
+        a,
+        button {
+          font-family: Roboto, Helvetica Neue, sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+        }
       }
     }
-    mat-card[flex="60"] {
+    mat-card[flex='60'] {
       @media screen and (max-width: $layout-breakpoint-sm) {
         max-width: 100%;
       }
@@ -30,5 +46,4 @@
   //.connect, .unlink {
   //  float: right;
   //}
-
 }

@@ -1,6 +1,11 @@
-//@import "../../../shared/styles";
-//@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
-
+mat-card {
+  display: flex;
+  flex-direction: row;  
+}
+mat-card-title {
+  font-size: 24px;
+  font-weight: 500;
+}
 mat-card-title .date {
   font-size: 0.6em;
 }
@@ -9,17 +14,13 @@ mat-card-title button {
   float: right;
 }
 
-mat-card-title mat-icon {
-  margin-top: 10px;
-}
-
 mat-card-subtitle .author:not(:last-child):after {
   content: ", ";
 }
 
 .series-card {
   margin: 6px 0;
-  padding-bottom: 12px;
+  padding: 16px 16px 12px 16px;
 }
 
 .series-card mat-card-subtitle, .series-card .date {

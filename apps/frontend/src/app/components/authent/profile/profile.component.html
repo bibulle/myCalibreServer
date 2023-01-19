@@ -1,12 +1,11 @@
-<div class="md-content" fxFlex="100" fxLayoutAlign="center center" fxLayout="row">
-  <mat-card fxFlex="60">
+<div class="md-content">
+  <mat-card>
     <my-calibre-server-user-profile [user]="user" urlToRedirect="/profile"></my-calibre-server-user-profile>
     <mat-card-actions>
-      <a class="change-pw" mat-raised-button (click)="changepw()">{{'label.changepw' | translate}}</a>
-      <a class="logout" mat-raised-button (click)="logout()">{{'label.logout' | translate}}</a>
+      <button class="change-pw" mat-raised-button (click)="changepw()">{{ 'label.changepw' | translate }}</button>
+      <button class="logout" mat-raised-button (click)="logout()">{{ 'label.logout' | translate }}</button>
       <!--<a class="connect" md-raised-button (click)="connectLocal()" *ngIf="!user?.local?.username">Connect local</a>-->
       <!--<a class="unlink" md-raised-button (click)="unlinkLocal()" *ngIf="user?.local?.username">Unlink local</a>-->
-
     </mat-card-actions>
   </mat-card>
 </div>

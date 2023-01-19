@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, NgModule, Output } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCommonModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -108,9 +108,9 @@ export class UserListItemComponent {
     FormsModule,
     MatInputModule,
     UserProfileModule,
-    FlexLayoutModule,
     TranslateModule,
-    LocalizedDateModule
+    LocalizedDateModule,
+    MatCommonModule
   ],
   declarations: [
     UserListItemComponent

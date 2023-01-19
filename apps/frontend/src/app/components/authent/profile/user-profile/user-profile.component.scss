@@ -1,21 +1,33 @@
 :host {
   mat-card-content {
     position: relative;
+    margin-bottom: 16px;
+    display: block;
+
     mat-form-field {
       width: 95%;
     }
     .provider {
       font-size: 1.5em;
-      padding-bottom: 0.2em;
+      padding-bottom: 0.5em;
     }
     .info {
       margin-left: 4%;
       margin-right: 2%;
+  } 
+    .info.book {
+      display:flex;
+      .date {
+        width: 12em;
+      }
+      .rating {
+        width: 4em;
+      }
     }
     a.add_email {
       position: absolute;
-      right: 0;
-      margin-top: -3.5em;
+      right: 16px;
+      margin-top: -4.8em;
       z-index: 10;
     }
     a.del_email {
@@ -23,29 +35,28 @@
       right: 0;
       z-index: 10;
       line-height: 30px;
-      &.mat-mini-fab {
+      &.mat-mdc-mini-fab {
         width: 24px;
         height: 24px;
-        margin-right: 8px;
-        margin-top: 4px;
-        mat-icon {
-          padding-top: 1px;
-          font-size: 20px;
-          margin-top: -13px;
-        }
+        margin-right: 24px;
+        // margin-top: 4px;
+        // mat-icon {
+        //   padding-top: 1px;
+        //   font-size: 20px;
+        //   margin-top: -13px;
+        // }
       }
     }
     .emails {
-      margin-left: 4em;
+      margin-left: 6%;
       margin-top: -1em;
       font-size: 0.8em;
       line-height: 26px;
-
     }
-    .fa.mat-mini-fab {
+    .fa.mat-mdc-mini-fab {
       position: absolute;
       top: 3px;
-      right: 0;
+      right: 16px;
       font-size: 18px;
       line-height: 40px;
       mat-icon {
@@ -58,18 +69,28 @@
     }
     .fa:before {
       font-family: FontAwesome, serif;
+      left: 12px;
     }
 
     .fa-facebook {
       background-color: #3b5998;
       color: white;
     }
+    .fa-facebook:before {
+      content: '\f09a';
+    }
 
     .fa-google {
       background-color: #3079ed;
       color: white;
     }
+    .fa-google:before {
+      content: '\f1a0';
+    }
     .dates {
+      flex-direction: column;
+      display: flex;
+      align-items: flex-end;
       position: absolute;
       top: 0;
       right: 0;
@@ -77,11 +98,15 @@
       font-size: 0.8em;
       text-align: right;
       line-height: 1em;
-      margin-top: 10px;
+      margin-top: 5px;
       padding-left: 10em;
-    }
-    .dates .date {
-      width: 12em;
+
+      div {
+        display: flex;
+      }
+      .date {
+        width: 12em;
+      }
     }
 
     .book {

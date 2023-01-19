@@ -1,20 +1,18 @@
-@import '~@angular/material/theming';
-
 // mixin name will be used in main style.scss
 @mixin user-list-item-component-theme($theme) {
 
   // retrieve variables from theme
   // (all possible variables, use only what you really need)
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+  $primary: mat.get-color-from-palette($theme, primary);
+  $accent: mat.get-color-from-palette($theme, accent);
+  $warn: mat.get-color-from-palette($theme, warn);
+  $foreground: mat.get-color-from-palette($theme, foreground);
+  $background: mat.get-color-from-palette($theme, background);
 
   // all of these variables contain many additional variables
 
-  .user-selected {
-    background-color: mat-color($primary, 300);
+  .user-selected, .user-selected.mat-mdc-card {
+    background-color: mat.get-color-from-palette($primary, 300);
   }
 
 

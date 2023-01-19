@@ -1,19 +1,18 @@
-@import '~@angular/material/theming';
 
 // mixin name will be used in main style.scss
 @mixin user-profile-component-theme($theme) {
 
   // retrieve variables from theme
   // (all possible variables, use only what you really need)
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $foreground: map-get($theme, foreground);
-  $background: map-get($theme, background);
+  $primary: mat.get-color-from-palette($theme, primary);
+  $accent: mat.get-color-from-palette($theme, accent);
+  $warn: mat.get-color-from-palette($theme, warn);
+  $foreground: mat.get-color-from-palette($theme, foreground);
+  $background: mat.get-color-from-palette($theme, background);
 
   // all of these variables contain many additional variables
 
   my-calibre-server-user-profile .book div {
-    border-bottom-color: mat-color($foreground, divider);
+    border-bottom-color: mat.get-color-from-palette($foreground, divider);
   }
 }

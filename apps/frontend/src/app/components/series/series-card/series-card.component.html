@@ -1,15 +1,14 @@
-<mat-card class="series-card" fxFlex="100" *ngIf="series && series.series_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
+<mat-card class="series-card" *ngIf="series && series.series_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
   <div class="cover">
     <img mat-card-sm-image src="{{ thumbnailUrlBase }}/{{ series.series_id }}.png" />
   </div>
   <div class="text">
     <mat-card-title class="series-name">
-      {{ series?.series_name }}
-      <span class="date" *ngIf="series.book_date[1]">{{ series.book_date[0] | date: 'yyyy' }}-</span
-      ><span class="date" *ngIf="series.book_date[series.book_date.length - 1]">{{ series.book_date[series.book_date.length - 1] | date: 'yyyy' }}</span>
-      <button mat-icon-button class="mat-icon-button">
-        <mat-icon *ngIf="booksClosed">keyboard_arrow_down</mat-icon>
-        <mat-icon *ngIf="!booksClosed">keyboard_arrow_up</mat-icon>
+      {{ series.series_name }}
+      <span class="date" *ngIf="series.book_date[1]">{{ series.book_date[0] | date : 'yyyy' }}-</span
+      ><span class="date" *ngIf="series.book_date[series.book_date.length - 1]">{{ series.book_date[series.book_date.length - 1] | date : 'yyyy' }}</span>
+      <button mat-icon-button>
+        <mat-icon>{{ booksClosed ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</mat-icon>
       </button>
     </mat-card-title>
     <mat-card-subtitle>

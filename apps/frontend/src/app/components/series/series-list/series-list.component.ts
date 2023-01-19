@@ -4,11 +4,11 @@ import {SeriesService} from '../series.service';
 import {CommonModule} from '@angular/common';
 import {MatContentModule} from '../../content/content.component';
 import {SeriesCardModule} from '../series-card/series-card.component';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {ActivatedRoute, Params} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {TranslateModule} from '@ngx-translate/core';
 import { Series } from '@my-calibre-server/api-interfaces';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'my-calibre-server-series-list',

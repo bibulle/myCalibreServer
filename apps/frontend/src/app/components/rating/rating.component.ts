@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -58,7 +58,7 @@ export class MatRatingComponent implements OnInit {
 }
 
 @NgModule({
-  imports: [MatIconModule, MatButtonModule, MatTooltipModule, BrowserModule],
+  imports: [MatIconModule, MatButtonModule, MatTooltipModule, MatSnackBarModule, BrowserModule],
   declarations: [MatRatingComponent],
   exports: [MatRatingComponent],
 })

@@ -1,4 +1,4 @@
-@import "../../../shared/styles";
+@import '../../../shared/styles';
 //@import "../../../shared/layout";
 
 mat-spinner {
@@ -7,29 +7,49 @@ mat-spinner {
   margin-right: auto;
 }
 
-.cover img {
-  width: 100%;
-  //height:100%;
+.cover {
+  flex: 1 1 0%;
+
+  img {
+    width: 100%;
+  }
 }
 
-// .book {
-  //padding: 1.5em;
-// }
-
-.book h3 {
-  font-size: 18px;
+.book {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  mat-card {
+    height: 100%;
+    box-shadow: none;
+  }
+  mat-card-title {
+    margin-bottom: 10px;
+    font-size: 2em;
+    font-weight: 500;
+  }
+  h3 {
+    font-size: 18px;
+  }
+  .authors {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    .top {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: flex-start;
+    }
+    .author, .serie, .tag {
+      font-size: 1.8em;
+      margin-right: 5px;
+      margin-left: 5px;
+    }
+  }
 }
 
-.book mat-card {
-  height: 100%;
-  box-shadow: none;
-}
 
-.book mat-card-title {
-  //font-size: 2em;
-  margin-bottom: 10px;
-  font-size: 2em;
-}
 
 .book .authors [mat-button].author {
   font-size: 2em;
@@ -47,7 +67,6 @@ mat-spinner {
     margin-top: -3px;
     padding-right: 2em;
   }
-
 }
 
 .book mat-card-title.series {
@@ -66,6 +85,7 @@ mat-spinner {
   position: absolute;
   right: 20px;
   top: 3em;
+  color: white;
 }
 
 .title {
@@ -93,12 +113,9 @@ mat-spinner {
     .cover {
       max-width: 40%;
     }
-
   }
 }
 
 .flag {
   margin-right: 1.5em;
 }
-
-
