@@ -1,6 +1,7 @@
 # ignore the data content that will content your own calibre export
 /data
 /.env
+sprites_*.png
 
 # compiled output
 /dist

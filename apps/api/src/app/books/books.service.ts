@@ -12,13 +12,17 @@ import { CacheService } from '../cache/cache.service';
 import { CronJob } from 'cron';
 import * as sharp from 'sharp';
 import { SeriesService } from '../series/series.service';
+import { OutputInfo, OverlayOptions } from 'sharp';
 
 @Injectable()
 export class BooksService {
   private static readonly logger = new Logger(BooksService.name);
 
-  private static readonly CRON_THUMBNAIL_RECURRING_DEFAULT = CronExpression.EVERY_MINUTE; //EVERY_10_MINUTES;
+  private static readonly CRON_THUMBNAIL_RECURRING_DEFAULT = CronExpression.EVERY_10_MINUTES; //EVERY_10_MINUTES EVERY_MINUTE
   private static cronThumbnailRecurrent = BooksService.CRON_THUMBNAIL_RECURRING_DEFAULT;
+
+  private static readonly SPRITES_SIZE = 50;
+  private static readonly THUMBNAIL_HEIGHT = 160;
 
   constructor(
     private readonly _configService: ConfigService,
@@ -32,7 +36,8 @@ export class BooksService {
 
     const job1 = new CronJob(BooksService.cronThumbnailRecurrent, async () => {
       await this.calculateMissingBookThumbnail();
-      await this.calculateMissingSerieThumbnail();
+      await this.calculateMissingSeriesThumbnail();
+      await this.calculateSpritesBookThumbnail();
     });
     this._schedulerRegistry.addCronJob('cronThumbnailRecurrent', job1);
     job1.start();
@@ -177,25 +182,25 @@ export class BooksService {
       this._calibreDbService
         .getBooks()
         .then(async (books) => {
-          for (const book of  books.filter((b) => b.book_has_cover)) {
-              const coverPath = this.getCoverPath(book);
-              const coverStat = statSync(coverPath, { throwIfNoEntry: false });
-              const coverDate = coverStat ? coverStat.mtime : null;
+          for (const book of books.filter((b) => b.book_has_cover)) {
+            const coverPath = this.getCoverPath(book);
+            const coverStat = statSync(coverPath, { throwIfNoEntry: false });
+            const coverDate = coverStat ? coverStat.mtime : null;
 
-              const thumbnailPath = this.getThumbnailPath(book);
-              const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
-              const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(0);
+            const thumbnailPath = this.getThumbnailPath(book);
+            const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
+            const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(0);
 
-              if (coverDate && coverDate.getTime() >= thumbnailDate.getTime()) {
-                BooksService.logger.debug(`Calculate thumbnail : ${book.book_title}`);
-                // BooksService.logger.debug(`${coverDate} ${coverPath}`);
-                // BooksService.logger.debug(`${thumbnailDate} ${thumbnailPath}`);
+            if (coverDate && coverDate.getTime() >= thumbnailDate.getTime()) {
+              BooksService.logger.debug(`Calculate thumbnail : ${book.book_title}`);
+              // BooksService.logger.debug(`${coverDate} ${coverPath}`);
+              // BooksService.logger.debug(`${thumbnailDate} ${thumbnailPath}`);
 
-                mkdirSync(path.dirname(thumbnailPath), { recursive: true });
+              mkdirSync(path.dirname(thumbnailPath), { recursive: true });
 
-                await this.resizeImage(coverPath, thumbnailPath);
-              }
-            };
+              await this.resizeImage(coverPath, thumbnailPath);
+            }
+          }
           process.nextTick(resolve);
         })
         .catch((reason) => {
@@ -205,7 +210,7 @@ export class BooksService {
     });
   }
 
-  calculateMissingSerieThumbnail(): Promise<void> {
+  calculateMissingSeriesThumbnail(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this._calibreDbService
         .getAllSeries()
@@ -244,21 +249,54 @@ export class BooksService {
                     BooksService.logger.error(reason);
                   });
                 }
-              };
+              }
 
               if (calculation.theBuffer) {
                 mkdirSync(path.dirname(thumbnailPath), { recursive: true });
 
                 BooksService.logger.debug(`calculate series thumbnail [end]  : ${series.series_name} (${series.books.length} books)`);
-                await this.saveSeriesThumbnail(calculation.theBuffer, thumbnailPath).catch((reason) => {
+                await this.saveBufferToPng(calculation.theBuffer, thumbnailPath).catch((reason) => {
                   BooksService.logger.error('Error while saving series');
                   BooksService.logger.error(reason);
                 });
               }
             }
-          };
+          }
 
           process.nextTick(resolve);
+        })
+        .catch((reason) => {
+          BooksService.logger.error(reason);
+          reject(reason);
+        });
+    });
+  }
+
+  calculateSpritesBookThumbnail(): Promise<void> {
+    BooksService.logger.debug('calculateSpritesBookThumbnail()');
+
+    return new Promise<void>((resolve, reject) => {
+      // const spriteList = {};
+      this._calibreDbService
+        .getBooks()
+        .then(async (books) => {
+          // const spriteList: number[] = Array.from(
+          //   [...new Set<number>(books.map((b) => BooksService.SPRITES_SIZE * Math.floor(b.book_id / BooksService.SPRITES_SIZE)))].sort((n1, n2) => n1 - n2).values()
+          // );
+          const spriteList: number[] = 
+            [...new Set<number>(books.map((b) => BooksService.SPRITES_SIZE * Math.floor(b.book_id / BooksService.SPRITES_SIZE)))].sort((n1, n2) => n1 - n2);
+          // BooksService.logger.debug(spriteList);
+
+          for (const i of spriteList) {
+            BooksService.logger.debug(`${i} start`);
+
+            await this.createSprites(i);
+
+            BooksService.logger.debug(`${i} done`);
+          }
+
+          BooksService.logger.debug('calculateSpritesBookThumbnail done');
+          resolve();
         })
         .catch((reason) => {
           BooksService.logger.error(reason);
@@ -270,7 +308,7 @@ export class BooksService {
   resizeImage(srcPath: string, trgPath: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       sharp(srcPath)
-        .resize(null, 160)
+        .resize(null, BooksService.THUMBNAIL_HEIGHT)
         .toFile(trgPath, (err) => {
           if (err) {
             BooksService.logger.error(err);
@@ -370,7 +408,7 @@ export class BooksService {
     });
   }
 
-  saveSeriesThumbnail(theBuffer: Buffer, trgPath: string): Promise<void> {
+  saveBufferToPng(theBuffer: Buffer, trgPath: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       sharp(theBuffer)
         .toFormat(sharp.format.png)
@@ -383,6 +421,73 @@ export class BooksService {
             process.nextTick(resolve);
             //debug(info);
           }
+        });
+    });
+  }
+
+  maxWidth = 0;
+  getThumbnailInfo(path: string): Promise<OutputInfo> {
+    return new Promise<OutputInfo>((resolve, reject) => {
+      sharp(path)
+        .resize(null, BooksService.THUMBNAIL_HEIGHT)
+        .toFormat(sharp.format.png)
+        .toBuffer((err, buffer, info) => {
+          if (err) {
+            reject(err);
+          } else {
+            if (info.width > this.maxWidth) {
+              this.maxWidth = info.width;
+              BooksService.logger.debug(`${path} : ${this.maxWidth}`);
+            }
+            if (info.width > BooksService.THUMBNAIL_HEIGHT) {
+              BooksService.logger.debug(`${path} : ${info.width}`);
+            }
+
+            resolve(info);
+          }
+        });
+    });
+  }
+
+  createSprites(index: number): Promise<void> {
+    const err_cover_path = path.resolve(`${__dirname}/assets//err_cover.svg`);
+
+    return new Promise<void>((resolve, reject) => {
+      const indexStr = index.toString().padStart(6, '0');
+
+      this._calibreDbService
+        .getBooks()
+        .then((books) => {
+          const overlay: OverlayOptions[] = books
+            .filter((b) => index <= b.book_id && b.book_id < index + BooksService.SPRITES_SIZE)
+            .map((b) => {
+              return {
+                input: b.book_has_cover ? this.getThumbnailPath(b) : err_cover_path,
+                top: 0,
+                left: BooksService.THUMBNAIL_HEIGHT * (b.book_id % BooksService.SPRITES_SIZE),
+              };
+            });
+
+          // create empty image (and add overlay)
+          sharp({ create: { width: BooksService.SPRITES_SIZE * 160, height: BooksService.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+            .composite(overlay)
+            .png({ palette: true, compressionLevel: 9 })
+            .toBuffer()
+            .then((buffer) => {
+              sharp(buffer).toFile(`sprites_${indexStr}.png`, (err, info) => {
+                if (err) {
+                  BooksService.logger.error(err);
+                  reject(err);
+                } else {
+                  // BooksService.logger.debug(info);
+                  resolve();
+                }
+              });
+            });
+        })
+        .catch((reason) => {
+          BooksService.logger.error(reason);
+          reject(reason);
         });
     });
   }

@@ -19,7 +19,6 @@
     "release-patch": "standard-version --no-verify --commit-all --release-as patch",
     "release-minor": "standard-version --no-verify --commit-all --release-as minor",
     "release-major": "standard-version --no-verify --commit-all --release-as major",
-    "preinstall": "json -I -f libs/api-interfaces/src/lib/version.json -e \"this.version='$npm_package_version'; this.github_url='`cat package.json | npx json repository.url`'; this.name='$npm_package_name'; this.copyright='2016-`date +%Y` `cat package.json | npx json author.name`'\"",
     "replace:version": "json -I -f libs/api-interfaces/src/lib/version.json -e \"this.version='`cat package.json | json version`'; this.github_url='`cat package.json | npx json repository.url`'; this.name='$npm_package_name'; this.copyright='2016-`date +%Y` `cat package.json | npx json author.name`'\" && git add libs/api-interfaces/src/lib/version.json"
   },
   "standard-version": {
