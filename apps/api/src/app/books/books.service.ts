@@ -1,4 +1,4 @@
-import { Book, BookData, BookPath } from '@my-calibre-server/api-interfaces';
+import { Book, BookData, BookPath, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
 import { HttpException, HttpStatus, Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
 import { createReadStream, promises as fsPromises, mkdirSync, statSync, existsSync } from 'fs';
@@ -22,8 +22,7 @@ export class BooksService {
   private static readonly CRON_THUMBNAIL_RECURRING_DEFAULT = CronExpression.EVERY_10_MINUTES; //EVERY_10_MINUTES EVERY_MINUTE
   private static cronThumbnailRecurrent = BooksService.CRON_THUMBNAIL_RECURRING_DEFAULT;
 
-  private static readonly SPRITES_SIZE = 50;
-  private static readonly THUMBNAIL_HEIGHT = 160;
+
 
   constructor(
     private readonly _configService: ConfigService,
@@ -125,9 +124,7 @@ export class BooksService {
     const indexStr = index.toString().padStart(6, '0');
     return path.resolve(`${CacheService.SPRITE_DIR}/sprites_${indexStr}.png`);
   }
-  getSpritesIndex(book_id: number): number {
-    return BooksService.SPRITES_SIZE * Math.floor(book_id / BooksService.SPRITES_SIZE);
-  }
+
 
   async getBookToDownload(token: string, book_id: number, res: Response, format: 'EPUB' | 'MOBI', contentType: 'application/epub+zip' | 'application/x-mobipocket-ebook') {
     return new Promise<StreamableFile>((resolve) => {
@@ -293,7 +290,7 @@ export class BooksService {
           // const spriteList: number[] = Array.from(
           //   [...new Set<number>(books.map((b) => BooksService.SPRITES_SIZE * Math.floor(b.book_id / BooksService.SPRITES_SIZE)))].sort((n1, n2) => n1 - n2).values()
           // );
-          const spriteList: number[] = [...new Set<number>(books.map((b) => this.getSpritesIndex(b.book_id)))].sort((n1, n2) => n1 - n2);
+          const spriteList: number[] = [...new Set<number>(books.map((b) => ThumbnailUtils.getSpritesIndex(b.book_id)))].sort((n1, n2) => n1 - n2);
           // BooksService.logger.debug(spriteList);
 
           for (const i of spriteList) {
@@ -319,7 +316,7 @@ export class BooksService {
     return new Promise<void>((resolve, reject) => {
       mkdirSync(dirname(trgPath), { recursive: true });
       sharp(srcPath)
-        .resize(null, BooksService.THUMBNAIL_HEIGHT)
+        .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
         .toFile(trgPath, (err) => {
           if (err) {
             BooksService.logger.error(err);
@@ -440,7 +437,7 @@ export class BooksService {
   getThumbnailInfo(path: string): Promise<OutputInfo> {
     return new Promise<OutputInfo>((resolve, reject) => {
       sharp(path)
-        .resize(null, BooksService.THUMBNAIL_HEIGHT)
+        .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
         .toFormat(sharp.format.png)
         .toBuffer((err, buffer, info) => {
           if (err) {
@@ -450,7 +447,7 @@ export class BooksService {
               this.maxWidth = info.width;
               BooksService.logger.debug(`${path} : ${this.maxWidth}`);
             }
-            if (info.width > BooksService.THUMBNAIL_HEIGHT) {
+            if (info.width > ThumbnailUtils.THUMBNAIL_HEIGHT) {
               BooksService.logger.debug(`${path} : ${info.width}`);
             }
 
@@ -466,7 +463,7 @@ export class BooksService {
       this.getSpritesOverlay(index)
         .then((overlay) => {
           // create empty image (and add overlay)
-          sharp({ create: { width: BooksService.SPRITES_SIZE * 160, height: BooksService.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+          sharp({ create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
             .composite(overlay)
             .png({ palette: true, compressionLevel: 9 })
             .toBuffer()
@@ -495,7 +492,7 @@ export class BooksService {
         .then((err_info) => {
           this._calibreDbService.getBooks().then((books) => {
             const overlay: Promise<OverlayOptions>[] = books
-              .filter((b) => this.getSpritesIndex(b.book_id) === index)
+              .filter((b) => ThumbnailUtils.getSpritesIndex(b.book_id) === index)
               .map(async (b) => {
                 let info = err_info;
                 let path = CacheService.ERR_COVER_THUMBNAIL;
@@ -512,7 +509,7 @@ export class BooksService {
                 return {
                   input: path,
                   top: 0,
-                  left: BooksService.THUMBNAIL_HEIGHT * (b.book_id % BooksService.SPRITES_SIZE) + Math.round((160-info.width)/2),
+                  left: ThumbnailUtils.THUMBNAIL_HEIGHT * ThumbnailUtils.getIndexInSprites(b.book_id) + Math.round((ThumbnailUtils.THUMBNAIL_HEIGHT-info.width)/2),
                 };
               });
             Promise.all(overlay)
@@ -532,7 +529,7 @@ export class BooksService {
 }
 
 class SeriesThumbnailCalculation {
-  static INITIAL_HEIGHT = 160;
+  static INITIAL_HEIGHT = ThumbnailUtils.THUMBNAIL_HEIGHT;
   static INITIAL_STEP_INCREMENT = 10;
   theBuffer: Buffer;
   width: number;
