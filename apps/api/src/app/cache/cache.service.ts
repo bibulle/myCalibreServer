@@ -16,6 +16,10 @@ export class CacheService {
   private static CACHE_DIR: string;
   public static THUMBNAIL_DIR: string;
   public static THUMBNAIL_SERIES_DIR: string; 
+  public static SPRITE_DIR: string; 
+
+  public static ERR_COVER:string;
+  public static ERR_COVER_THUMBNAIL:string;
 
   private static cacheTables: { [key: string]: CacheDate } = {};
 
@@ -34,9 +38,14 @@ export class CacheService {
     CacheService.CACHE_DIR = `${CacheService.MY_CALIBRE_DIR}/cache`;
     CacheService.THUMBNAIL_DIR = `${CacheService.MY_CALIBRE_DIR}/thumbnail`;
     CacheService.THUMBNAIL_SERIES_DIR = `${CacheService.MY_CALIBRE_DIR}/thumbnail_series`;
+    CacheService.SPRITE_DIR = `${CacheService.MY_CALIBRE_DIR}/sprites`;
+    CacheService.ERR_COVER = path.resolve(`${__dirname}/assets//err_cover.svg`);
+    CacheService.ERR_COVER_THUMBNAIL = path.resolve(`${CacheService.THUMBNAIL_DIR}/err/thumbnail.png`);
+
     this.logger.debug(`Cache            dir : ${CacheService.CACHE_DIR}`);
     this.logger.debug(`Thumbnail        dir : ${CacheService.THUMBNAIL_DIR}`);
     this.logger.debug(`Thumbnail series dir : ${CacheService.THUMBNAIL_SERIES_DIR}`);
+    this.logger.debug(`Sprites          dir : ${CacheService.SPRITE_DIR}`);
 
     CacheService.cronCacheForce = this._configService.get('CRON_CACHE_FORCE', CacheService.CRON_CACHE_FORCE_DEFAULT);
     CacheService.cronCacheRecurrent = this._configService.get('CRON_CACHE_RECURRING', CacheService.CRON_CACHE_RECURRING_DEFAULT);

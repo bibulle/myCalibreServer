@@ -1,12 +1,6 @@
 <mat-card class="book-card" *ngIf="book.book_title" (click)="openBook($event)">
-  <!--<mat-card-header>-->
-  <!--<img mat-card-avatar *ngIf="book.book_has_cover" src="{{thumbnailUrlBase}}/{{book.book_id}}.png">-->
-  <!--<mat-card-title>{{book.book_title}} (<span class="date">{{book.book_date | date: 'yyyy'}}</span>)</mat-card-title>-->
-  <!--<mat-card-subtitle>{{book.author_name}} <span class="other">({{book.data_format}})</span></mat-card-subtitle>-->
-  <!--</mat-card-header>-->
-  <!--<mat-card-title-group>-->
   <div class="cover">
-    <img mat-card-sm-image *ngIf="book.book_has_cover" src="{{ thumbnailUrlBase }}/{{ book.book_id }}.jpg" />
+    <my-calibre-server-image-sprites [book_id]="book.book_id"></my-calibre-server-image-sprites>
     <mat-icon class="flag" svgIcon="flag_us" *ngIf="book.lang_code === 'eng'"></mat-icon>
   </div>
   <div class="text">
@@ -39,5 +33,4 @@
     </mat-card-title>
     <mat-card-subtitle>{{ book.author_name }}</mat-card-subtitle>
   </div>
-  <!--</mat-card-title-group>-->
 </mat-card>

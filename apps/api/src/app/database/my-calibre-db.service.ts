@@ -16,7 +16,7 @@ export class MyCalibreDbService {
   private collections: { users?: mongoDB.Collection } = {};
 
   constructor(private readonly _configService: ConfigService) {
-    MyCalibreDbService.MONGO_URL = this._configService.get('MONGO_URL') || 'mongodb://127.0.0.1:27017';
+    MyCalibreDbService.MONGO_URL = this._configService.get('MONGO_URL') || 'mongodb://192.168.0.126:30994';
     MyCalibreDbService.MONGO_DB_NAME = this._configService.get('MONGO_DB_NAME') || 'myCalibreDb';
     MyCalibreDbService.MONGO_USERS_COL_NAME = this._configService.get('MONGO_USERS_COL_NAME') || 'users';
 

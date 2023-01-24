@@ -6,6 +6,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { Book } from '@my-calibre-server/api-interfaces';
 import { TranslateModule } from '@ngx-translate/core';
+import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 import { MatRatingModule } from '../../rating/rating.component';
 
 @Component({
@@ -51,7 +52,8 @@ export class BookCardComponent {
     MatIconModule,
     MatTooltipModule,
     TranslateModule,
-    MatRatingModule
+    MatRatingModule,
+    ImageSpritesModule
   ],
   declarations: [
     BookCardComponent
