@@ -19,10 +19,8 @@ import { dirname } from 'path';
 export class BooksService {
   private static readonly logger = new Logger(BooksService.name);
 
-  private static readonly CRON_THUMBNAIL_RECURRING_DEFAULT = CronExpression.EVERY_10_MINUTES; //EVERY_10_MINUTES EVERY_MINUTE
+  private static readonly CRON_THUMBNAIL_RECURRING_DEFAULT = CronExpression.EVERY_MINUTE; //EVERY_10_MINUTES EVERY_MINUTE
   private static cronThumbnailRecurrent = BooksService.CRON_THUMBNAIL_RECURRING_DEFAULT;
-
-
 
   constructor(
     private readonly _configService: ConfigService,
@@ -35,7 +33,9 @@ export class BooksService {
     BooksService.logger.debug(`cronThumbnailRecurrent   : ${BooksService.cronThumbnailRecurrent}`);
 
     const job1 = new CronJob(BooksService.cronThumbnailRecurrent, async () => {
-      await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
+      if (!existsSync(CacheService.ERR_COVER_THUMBNAIL)) {
+        await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
+      }
       await this.calculateMissingBookThumbnail();
       await this.calculateMissingSeriesThumbnail();
       await this.calculateSpritesBookThumbnail();
@@ -124,7 +124,6 @@ export class BooksService {
     const indexStr = index.toString().padStart(6, '0');
     return path.resolve(`${CacheService.SPRITE_DIR}/sprites_${indexStr}.png`);
   }
-
 
   async getBookToDownload(token: string, book_id: number, res: Response, format: 'EPUB' | 'MOBI', contentType: 'application/epub+zip' | 'application/x-mobipocket-ebook') {
     return new Promise<StreamableFile>((resolve) => {
@@ -280,28 +279,42 @@ export class BooksService {
   }
 
   calculateSpritesBookThumbnail(): Promise<void> {
-    BooksService.logger.debug('calculateSpritesBookThumbnail()');
+    // BooksService.logger.debug('calculateSpritesBookThumbnail()');
 
     return new Promise<void>((resolve, reject) => {
       // const spriteList = {};
       this._calibreDbService
         .getBooks()
         .then(async (books) => {
-          // const spriteList: number[] = Array.from(
-          //   [...new Set<number>(books.map((b) => BooksService.SPRITES_SIZE * Math.floor(b.book_id / BooksService.SPRITES_SIZE)))].sort((n1, n2) => n1 - n2).values()
-          // );
-          const spriteList: number[] = [...new Set<number>(books.map((b) => ThumbnailUtils.getSpritesIndex(b.book_id)))].sort((n1, n2) => n1 - n2);
+          const spriteList: Sprite[] = [
+            ...new Set<Sprite>(
+              books
+                .map((b) => {
+                  return { id: ThumbnailUtils.getSpritesIndex(b.book_id), spriteTime: this.getSpriteDate(b), thumbnailTime: this.getThumbnailDate(b) };
+                })
+                .reduce((accumulator, current) => {
+                  const found = accumulator.find(s => s.id === current.id);
+                  if (found) {
+                    found.thumbnailTime = current.thumbnailTime > found.thumbnailTime ? current.thumbnailTime : found.thumbnailTime;
+                  } else {
+                    accumulator.push(current);
+                  }
+                  return accumulator;
+                }, [] as Sprite[])
+                .filter(s => s.thumbnailTime >= s.spriteTime)
+            ),
+          ].sort((s1, s2) => s1.id - s2.id);
           // BooksService.logger.debug(spriteList);
 
           for (const i of spriteList) {
-            BooksService.logger.debug(`${i} start`);
+            BooksService.logger.debug(`sprite ${i.id} start`);
 
-            await this.createSprites(i);
+            await this.createSprites(i.id);
 
-            BooksService.logger.debug(`${i} done`);
+            BooksService.logger.debug(`sprite ${i.id} done`);
           }
 
-          BooksService.logger.debug('calculateSpritesBookThumbnail done');
+          // BooksService.logger.debug('calculateSpritesBookThumbnail done');
 
           process.nextTick(resolve);
         })
@@ -445,16 +458,28 @@ export class BooksService {
           } else {
             if (info.width > this.maxWidth) {
               this.maxWidth = info.width;
-              BooksService.logger.debug(`${path} : ${this.maxWidth}`);
+              // BooksService.logger.debug(`${path} : ${this.maxWidth}`);
             }
             if (info.width > ThumbnailUtils.THUMBNAIL_HEIGHT) {
-              BooksService.logger.debug(`${path} : ${info.width}`);
+              BooksService.logger.warn(`TOO BIG ${path} : ${info.width}`);
             }
 
             resolve(info);
           }
         });
     });
+  }
+
+  getSpriteDate(book: Book): number {
+    const spriteId = ThumbnailUtils.getSpritesIndex(book.book_id);
+    const spritePath = this.getSpritesPath(spriteId);
+    const stat = statSync(spritePath, { throwIfNoEntry: false });
+    return stat ? stat.mtimeMs : 0;
+  }
+  getThumbnailDate(book: Book): number {
+    const thumbnailPath = this.getThumbnailPath(book);
+    const stat = statSync(thumbnailPath, { throwIfNoEntry: false });
+    return stat ? stat.mtimeMs : 0;
   }
 
   createSprites(index: number): Promise<void> {
@@ -468,7 +493,7 @@ export class BooksService {
             .png({ palette: true, compressionLevel: 9 })
             .toBuffer()
             .then((buffer) => {
-              sharp(buffer).toFile(this.getSpritesPath(index), (err, info) => {
+              sharp(buffer).toFile(this.getSpritesPath(index), (err) => {
                 if (err) {
                   BooksService.logger.error(err);
                   reject(err);
@@ -509,7 +534,7 @@ export class BooksService {
                 return {
                   input: path,
                   top: 0,
-                  left: ThumbnailUtils.THUMBNAIL_HEIGHT * ThumbnailUtils.getIndexInSprites(b.book_id) + Math.round((ThumbnailUtils.THUMBNAIL_HEIGHT-info.width)/2),
+                  left: ThumbnailUtils.THUMBNAIL_HEIGHT * ThumbnailUtils.getIndexInSprites(b.book_id) + Math.round((ThumbnailUtils.THUMBNAIL_HEIGHT - info.width) / 2),
                 };
               });
             Promise.all(overlay)
@@ -536,4 +561,10 @@ class SeriesThumbnailCalculation {
   height: number;
   step_increment: number;
   step: number;
+}
+
+class Sprite {
+  id: number;
+  spriteTime: number;
+  thumbnailTime: number;
 }
