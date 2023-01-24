@@ -1,14 +1,14 @@
 import { ApiReturn, BookData, BookPath, User } from '@my-calibre-server/api-interfaces';
-import { Body, Controller, Get, Header, HttpException, HttpStatus, Logger, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, HttpException, HttpStatus, Logger, NotFoundException, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import { createReadStream, promises as fsPromises } from 'fs';
+import { createReadStream, existsSync, promises as fsPromises, statSync } from 'fs';
 import { CacheDateKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { UsersService } from '../users/users.service';
+import { MailService } from '../utils/mail.service';
 import { BooksService } from './books.service';
 import path = require('path');
-import { MailService } from '../utils/mail.service';
 
 @Controller('book')
 export class BooksController {
@@ -91,7 +91,7 @@ export class BooksController {
   // ====================================
   @Get('/cover/:id.jpg')
   async getCover(@Param('id') book_id: number, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    const err_cover_path = path.resolve(`${__dirname}/assets//err_cover.svg`);
+    const err_cover_path = CacheService.ERR_COVER;
 
     return new Promise<StreamableFile>((resolve) => {
       this._calibreDb
@@ -140,7 +140,7 @@ export class BooksController {
   // ====================================
   @Get('/thumbnail/:id.jpg')
   async getThumbnail(@Param('id') book_id: number, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    const err_cover_path = path.resolve(`${__dirname}/assets//err_cover.svg`);
+    const err_cover_path = CacheService.ERR_COVER;
 
     return new Promise<StreamableFile>((resolve) => {
       this._calibreDb
@@ -194,6 +194,33 @@ export class BooksController {
           });
           resolve(new StreamableFile(createReadStream(err_cover_path)));
         });
+    });
+  }
+
+// ====================================
+  // route for getting books thumbnail sprites
+  // ====================================
+  @Get('/sprite/:id.png')
+  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record < string, string >, @Res({ passthrough: true }) res): Promise<StreamableFile> {
+
+    return new Promise<StreamableFile>((resolve) => {
+      const spritePath = this._booksService.getSpritesPath(sprite_id);
+
+      if (!existsSync(spritePath)) {
+        throw new NotFoundException();
+      }
+      const stats = statSync(spritePath);
+      const etag = stats.mtimeMs.toString();
+      if (headers["if-none-match"] === etag) {
+        return res.status(304).send("No change");
+      }
+
+      res.set({
+        'Content-Type': 'image/png',
+        'ETag': etag,
+      });
+
+      resolve(new StreamableFile(createReadStream(spritePath)));
     });
   }
 

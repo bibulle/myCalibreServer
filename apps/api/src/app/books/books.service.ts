@@ -13,6 +13,7 @@ import { CronJob } from 'cron';
 import * as sharp from 'sharp';
 import { SeriesService } from '../series/series.service';
 import { OutputInfo, OverlayOptions } from 'sharp';
+import { dirname } from 'path';
 
 @Injectable()
 export class BooksService {
@@ -35,6 +36,7 @@ export class BooksService {
     BooksService.logger.debug(`cronThumbnailRecurrent   : ${BooksService.cronThumbnailRecurrent}`);
 
     const job1 = new CronJob(BooksService.cronThumbnailRecurrent, async () => {
+      await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
       await this.calculateMissingBookThumbnail();
       await this.calculateMissingSeriesThumbnail();
       await this.calculateSpritesBookThumbnail();
@@ -117,6 +119,14 @@ export class BooksService {
 
   getThumbnailPath(book: BookPath) {
     return path.resolve(`${CacheService.THUMBNAIL_DIR}/${book.book_path}/thumbnail.jpg`);
+  }
+
+  getSpritesPath(index: number) {
+    const indexStr = index.toString().padStart(6, '0');
+    return path.resolve(`${CacheService.SPRITE_DIR}/sprites_${indexStr}.png`);
+  }
+  getSpritesIndex(book_id: number): number {
+    return BooksService.SPRITES_SIZE * Math.floor(book_id / BooksService.SPRITES_SIZE);
   }
 
   async getBookToDownload(token: string, book_id: number, res: Response, format: 'EPUB' | 'MOBI', contentType: 'application/epub+zip' | 'application/x-mobipocket-ebook') {
@@ -283,8 +293,7 @@ export class BooksService {
           // const spriteList: number[] = Array.from(
           //   [...new Set<number>(books.map((b) => BooksService.SPRITES_SIZE * Math.floor(b.book_id / BooksService.SPRITES_SIZE)))].sort((n1, n2) => n1 - n2).values()
           // );
-          const spriteList: number[] = 
-            [...new Set<number>(books.map((b) => BooksService.SPRITES_SIZE * Math.floor(b.book_id / BooksService.SPRITES_SIZE)))].sort((n1, n2) => n1 - n2);
+          const spriteList: number[] = [...new Set<number>(books.map((b) => this.getSpritesIndex(b.book_id)))].sort((n1, n2) => n1 - n2);
           // BooksService.logger.debug(spriteList);
 
           for (const i of spriteList) {
@@ -296,7 +305,8 @@ export class BooksService {
           }
 
           BooksService.logger.debug('calculateSpritesBookThumbnail done');
-          resolve();
+
+          process.nextTick(resolve);
         })
         .catch((reason) => {
           BooksService.logger.error(reason);
@@ -307,6 +317,7 @@ export class BooksService {
 
   resizeImage(srcPath: string, trgPath: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
+      mkdirSync(dirname(trgPath), { recursive: true });
       sharp(srcPath)
         .resize(null, BooksService.THUMBNAIL_HEIGHT)
         .toFile(trgPath, (err) => {
@@ -450,43 +461,70 @@ export class BooksService {
   }
 
   createSprites(index: number): Promise<void> {
-    const err_cover_path = path.resolve(`${__dirname}/assets//err_cover.svg`);
-
     return new Promise<void>((resolve, reject) => {
-      const indexStr = index.toString().padStart(6, '0');
-
-      this._calibreDbService
-        .getBooks()
-        .then((books) => {
-          const overlay: OverlayOptions[] = books
-            .filter((b) => index <= b.book_id && b.book_id < index + BooksService.SPRITES_SIZE)
-            .map((b) => {
-              return {
-                input: b.book_has_cover ? this.getThumbnailPath(b) : err_cover_path,
-                top: 0,
-                left: BooksService.THUMBNAIL_HEIGHT * (b.book_id % BooksService.SPRITES_SIZE),
-              };
-            });
-
+      mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
+      this.getSpritesOverlay(index)
+        .then((overlay) => {
           // create empty image (and add overlay)
           sharp({ create: { width: BooksService.SPRITES_SIZE * 160, height: BooksService.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
             .composite(overlay)
             .png({ palette: true, compressionLevel: 9 })
             .toBuffer()
             .then((buffer) => {
-              sharp(buffer).toFile(`sprites_${indexStr}.png`, (err, info) => {
+              sharp(buffer).toFile(this.getSpritesPath(index), (err, info) => {
                 if (err) {
                   BooksService.logger.error(err);
                   reject(err);
                 } else {
                   // BooksService.logger.debug(info);
-                  resolve();
+                  process.nextTick(resolve);
                 }
               });
             });
         })
         .catch((reason) => {
           BooksService.logger.error(reason);
+          reject(reason);
+        });
+    });
+  }
+
+  getSpritesOverlay(index: number): Promise<OverlayOptions[]> {
+    return new Promise<OverlayOptions[]>((resolve, reject) => {
+      this.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL)
+        .then((err_info) => {
+          this._calibreDbService.getBooks().then((books) => {
+            const overlay: Promise<OverlayOptions>[] = books
+              .filter((b) => this.getSpritesIndex(b.book_id) === index)
+              .map(async (b) => {
+                let info = err_info;
+                let path = CacheService.ERR_COVER_THUMBNAIL;
+                if (existsSync(this.getThumbnailPath(b))) {
+                  path = this.getThumbnailPath(b);
+                  const my_info = await this.getThumbnailInfo(path).catch((err) => {
+                    BooksService.logger.debug(err);
+                  });
+                  if (my_info) {
+                    info = my_info;
+                  }
+                  // BooksService.logger.debug(path);
+                }
+                return {
+                  input: path,
+                  top: 0,
+                  left: BooksService.THUMBNAIL_HEIGHT * (b.book_id % BooksService.SPRITES_SIZE) + Math.round((160-info.width)/2),
+                };
+              });
+            Promise.all(overlay)
+              .then((r) => {
+                resolve(r);
+              })
+              .catch((reason) => {
+                reject(reason);
+              });
+          });
+        })
+        .catch((reason) => {
           reject(reason);
         });
     });

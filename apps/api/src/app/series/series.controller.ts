@@ -37,7 +37,7 @@ export class SeriesController {
   // ====================================
   @Get('/thumbnail/:id.png')
   async getThumbnail(@Param('id') series_id: number, @Response({ passthrough: true }) res): Promise<StreamableFile> {
-    const err_cover_path = path.resolve(`${__dirname}/assets//err_cover.svg`);
+    const err_cover_path = CacheService.ERR_COVER;
 
     return new Promise<StreamableFile>((resolve) => {
       const thumbnailPath = this._serviesService.getThumbnailPath(series_id);

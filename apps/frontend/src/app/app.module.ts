@@ -51,7 +51,7 @@ registerLocaleData(localeEn, 'en');
     AppComponent,
     FooterComponent,
     // SubheaderComponent,
-    MatInkDirective
+    MatInkDirective,
   ],
   imports: [
     BrowserModule,
@@ -60,18 +60,18 @@ registerLocaleData(localeEn, 'en');
     JwtModule.forRoot({
       config: {
         tokenGetter: UserService.tokenGetter,
-        allowedDomains: ['localhost:4000' as (string | RegExp), 'bib.bibulle.fr', new RegExp('^null$')]
-//        whitelistedDomains: new Array(new RegExp('^null$'))
-      }
+        allowedDomains: ['localhost:4000' as string | RegExp, 'bib.bibulle.fr', new RegExp('^null$')],
+        //        whitelistedDomains: new Array(new RegExp('^null$'))
+      },
     }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
         useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
+        deps: [HttpClient],
       },
-      missingTranslationHandler: {provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler},
-//       // useDefaultLang: false
+      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler },
+      //       // useDefaultLang: false
     }),
 
     MaterialModule,
@@ -89,20 +89,12 @@ registerLocaleData(localeEn, 'en');
     AuthentModule,
     FilterBarModule,
     MatRatingModule,
-    MatButtonModule
+    MatButtonModule,
   ],
-  providers: [
-    TitleService,
-    NotificationService,
-    WindowService,
-    AuthGuard,
-    AuthGuardToken,
-    AuthGuardAdmin
-  ],
-  bootstrap: [AppComponent]
+  providers: [TitleService, NotificationService, WindowService, AuthGuard, AuthGuardToken, AuthGuardAdmin],
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
