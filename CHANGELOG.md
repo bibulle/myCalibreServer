@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.1](https://github.com/bibulle/myCalibreServer/compare/v0.8.0...v0.9.1) (2023-01-28)
+
+
+### Features
+
+* add controller to get sprites (fixes [#104](https://github.com/bibulle/myCalibreServer/issues/104)) ([8f01644](https://github.com/bibulle/myCalibreServer/commit/8f01644cd4893cf60ce12c52f550d57a771a8844))
+* add sprites to series ([6a934bc](https://github.com/bibulle/myCalibreServer/commit/6a934bc68a088d02fad10ed9c4a251b6a8e2ff3e))
+* replace thumbnail image with sprite in frontend ([4f66c83](https://github.com/bibulle/myCalibreServer/commit/4f66c835218539e1e2afebe46b87dd8afbdabded))
+
+
+### Bug Fixes
+
+* add some new vocabulary ([7f7596d](https://github.com/bibulle/myCalibreServer/commit/7f7596d10366dc252c20d150140059d9ce7396ea))
+* create sprites only if needed ([f0254ea](https://github.com/bibulle/myCalibreServer/commit/f0254ea3ce30bd0e78ec340d3c39071e5a810063))
+
 ## [0.9.0](https://github.com/bibulle/myCalibreServer/compare/v0.8.0...v0.9.0) (2023-01-24)
 
 
