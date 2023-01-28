@@ -1,4 +1,4 @@
-import { Book, BookData, BookPath, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
+import { Book, BookData, BookPath, Sprite, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
 import { HttpException, HttpStatus, Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
 import { createReadStream, promises as fsPromises, mkdirSync, statSync, existsSync } from 'fs';
@@ -22,6 +22,8 @@ export class BooksService {
   private static readonly CRON_THUMBNAIL_RECURRING_DEFAULT = CronExpression.EVERY_MINUTE; //EVERY_10_MINUTES EVERY_MINUTE
   private static cronThumbnailRecurrent = BooksService.CRON_THUMBNAIL_RECURRING_DEFAULT;
 
+  private static jobAlreadyRunning = false;
+
   constructor(
     private readonly _configService: ConfigService,
     private _calibreDbService: CalibreDb1Service,
@@ -33,12 +35,23 @@ export class BooksService {
     BooksService.logger.debug(`cronThumbnailRecurrent   : ${BooksService.cronThumbnailRecurrent}`);
 
     const job1 = new CronJob(BooksService.cronThumbnailRecurrent, async () => {
-      if (!existsSync(CacheService.ERR_COVER_THUMBNAIL)) {
-        await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
+      if (BooksService.jobAlreadyRunning) {
+        return;
       }
-      await this.calculateMissingBookThumbnail();
-      await this.calculateMissingSeriesThumbnail();
-      await this.calculateSpritesBookThumbnail();
+      try {
+        BooksService.jobAlreadyRunning = true;
+        if (!existsSync(CacheService.ERR_COVER_THUMBNAIL)) {
+          await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
+        }
+        await this.calculateMissingBookThumbnail();
+        await this.calculateMissingSeriesThumbnail();
+        await this.calculateSpritesBookThumbnail();
+        await this._seriesService.calculateSpritesSeriesThumbnail();
+      } catch (error) {
+        BooksService.logger.error(error);
+      } finally {
+        BooksService.jobAlreadyRunning = false;
+      }
     });
     this._schedulerRegistry.addCronJob('cronThumbnailRecurrent', job1);
     job1.start();
@@ -231,6 +244,7 @@ export class BooksService {
               const coverPath = this.getCoverPath(book);
               const coverStat = statSync(coverPath, { throwIfNoEntry: false });
               coversDate = coverStat && coverStat.mtime.getTime() >= coversDate.getTime() ? coverStat.mtime : coversDate;
+  
             });
 
             // BooksService.logger.debug(`${coverDate} ${thumbnailDate}`);
@@ -293,7 +307,7 @@ export class BooksService {
                   return { id: ThumbnailUtils.getSpritesIndex(b.book_id), spriteTime: this.getSpriteDate(b), thumbnailTime: this.getThumbnailDate(b) };
                 })
                 .reduce((accumulator, current) => {
-                  const found = accumulator.find(s => s.id === current.id);
+                  const found = accumulator.find((s) => s.id === current.id);
                   if (found) {
                     found.thumbnailTime = current.thumbnailTime > found.thumbnailTime ? current.thumbnailTime : found.thumbnailTime;
                   } else {
@@ -301,7 +315,7 @@ export class BooksService {
                   }
                   return accumulator;
                 }, [] as Sprite[])
-                .filter(s => s.thumbnailTime >= s.spriteTime)
+                .filter((s) => s.thumbnailTime >= s.spriteTime)
             ),
           ].sort((s1, s2) => s1.id - s2.id);
           // BooksService.logger.debug(spriteList);
@@ -309,7 +323,7 @@ export class BooksService {
           for (const i of spriteList) {
             BooksService.logger.debug(`sprite ${i.id} start`);
 
-            await this.createSprites(i.id);
+            await this.createSpritesBooks(i.id);
 
             BooksService.logger.debug(`sprite ${i.id} done`);
           }
@@ -360,7 +374,7 @@ export class BooksService {
               calculation.width = info.width;
               calculation.theBuffer = buffer;
 
-              resolve();
+              process.nextTick(resolve);
             }
           });
       } else {
@@ -414,13 +428,13 @@ export class BooksService {
                           //debug(info);
                           calculation.width = info.width;
                           calculation.theBuffer = buffer;
-                          resolve();
+                          process.nextTick(resolve);
                         }
                       });
                   } else {
                     calculation.width = info.width;
                     calculation.theBuffer = buffer;
-                    resolve();
+                    process.nextTick(resolve);
                   }
                 }
               });
@@ -432,6 +446,7 @@ export class BooksService {
   saveBufferToPng(theBuffer: Buffer, trgPath: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       sharp(theBuffer)
+        .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
         .toFormat(sharp.format.png)
         .toFile(trgPath, (err) => {
           if (err) {
@@ -446,8 +461,8 @@ export class BooksService {
     });
   }
 
-  maxWidth = 0;
-  getThumbnailInfo(path: string): Promise<OutputInfo> {
+  static maxWidth = 0;
+  static getThumbnailInfo(path: string): Promise<OutputInfo> {
     return new Promise<OutputInfo>((resolve, reject) => {
       sharp(path)
         .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
@@ -482,10 +497,10 @@ export class BooksService {
     return stat ? stat.mtimeMs : 0;
   }
 
-  createSprites(index: number): Promise<void> {
+  createSpritesBooks(index: number): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
-      this.getSpritesOverlay(index)
+      this.getSpritesBooksOverlay(index)
         .then((overlay) => {
           // create empty image (and add overlay)
           sharp({ create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
@@ -511,9 +526,9 @@ export class BooksService {
     });
   }
 
-  getSpritesOverlay(index: number): Promise<OverlayOptions[]> {
+  getSpritesBooksOverlay(index: number): Promise<OverlayOptions[]> {
     return new Promise<OverlayOptions[]>((resolve, reject) => {
-      this.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL)
+      BooksService.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL)
         .then((err_info) => {
           this._calibreDbService.getBooks().then((books) => {
             const overlay: Promise<OverlayOptions>[] = books
@@ -523,7 +538,7 @@ export class BooksService {
                 let path = CacheService.ERR_COVER_THUMBNAIL;
                 if (existsSync(this.getThumbnailPath(b))) {
                   path = this.getThumbnailPath(b);
-                  const my_info = await this.getThumbnailInfo(path).catch((err) => {
+                  const my_info = await BooksService.getThumbnailInfo(path).catch((err) => {
                     BooksService.logger.debug(err);
                   });
                   if (my_info) {
@@ -539,7 +554,9 @@ export class BooksService {
               });
             Promise.all(overlay)
               .then((r) => {
-                resolve(r);
+                process.nextTick(() => {
+                  resolve(r);
+                });
               })
               .catch((reason) => {
                 reject(reason);
@@ -561,10 +578,4 @@ class SeriesThumbnailCalculation {
   height: number;
   step_increment: number;
   step: number;
-}
-
-class Sprite {
-  id: number;
-  spriteTime: number;
-  thumbnailTime: number;
 }

@@ -47,7 +47,7 @@ export class CacheService {
     this.logger.debug(`Thumbnail series dir : ${CacheService.THUMBNAIL_SERIES_DIR}`);
     this.logger.debug(`Sprites          dir : ${CacheService.SPRITE_DIR}`);
 
-    CacheService.cronCacheForce = this._configService.get('CRON_CACHE_FORCE', CacheService.CRON_CACHE_FORCE_DEFAULT);
+    // CacheService.cronCacheForce = this._configService.get('CRON_CACHE_FORCE', CacheService.CRON_CACHE_FORCE_DEFAULT);
     CacheService.cronCacheRecurrent = this._configService.get('CRON_CACHE_RECURRING', CacheService.CRON_CACHE_RECURRING_DEFAULT);
     this.logger.debug(`cronCacheRecurrent   : ${CacheService.cronCacheRecurrent}`);
     this.logger.debug(`cronCacheForce       : ${CacheService.cronCacheForce}`);
@@ -57,11 +57,11 @@ export class CacheService {
     });
     this._schedulerRegistry.addCronJob('cronCacheRecurrent', job1);
     job1.start();
-    const job2 = new CronJob(CacheService.cronCacheForce, () => {
-      this.renewCacheForced();
-    });
-    this._schedulerRegistry.addCronJob('cronCacheForce', job2);
-    job2.start();
+    // const job2 = new CronJob(CacheService.cronCacheForce, () => {
+    //   this.renewCacheForced();
+    // });
+    // this._schedulerRegistry.addCronJob('cronCacheForce', job2);
+    // job2.start();
 
     CacheService.cacheTables[CacheDateKey.AUTHORS.toString()] = new CacheDate(CacheDateKey.AUTHORS, CacheService.CACHE_DIR);
     CacheService.cacheTables[CacheDateKey.BOOKS.toString()] = new CacheDate(CacheDateKey.BOOKS, CacheService.CACHE_DIR);
@@ -78,27 +78,27 @@ export class CacheService {
 
       Promise.all(promises)
         .then(() => {
-          this.logger.debug('cache renewed (if nedeed)');
+          this.logger.debug('cache renewed (if needed)');
         })
         .catch((reason) => {
           this.logger.error(reason);
         });
     });
   }
-  renewCacheForced() {
-    const dbDate = new Date(2100, 0, 1);
-    const promises: Promise<void | string>[] = [CacheDateKey.AUTHORS, CacheDateKey.BOOKS, CacheDateKey.NEW_BOOKS, CacheDateKey.SERIES, CacheDateKey.TAGS].map((key: CacheDateKey) => {
-      return this.getCachePath(key, dbDate);
-    });
+  // renewCacheForced() {
+  //   const dbDate = new Date(2100, 0, 1);
+  //   const promises: Promise<void | string>[] = [CacheDateKey.AUTHORS, CacheDateKey.BOOKS, CacheDateKey.NEW_BOOKS, CacheDateKey.SERIES, CacheDateKey.TAGS].map((key: CacheDateKey) => {
+  //     return this.getCachePath(key, dbDate);
+  //   });
 
-    Promise.all(promises)
-      .then(() => {
-        this.logger.debug('cache renewed (forced)');
-      })
-      .catch((reason) => {
-        this.logger.error(reason);
-      });
-  }
+  //   Promise.all(promises)
+  //     .then(() => {
+  //       this.logger.debug('cache renewed (forced)');
+  //     })
+  //     .catch((reason) => {
+  //       this.logger.error(reason);
+  //     });
+  // }
 
   getCacheDate(key: CacheDateKey): Promise<Date> {
     return new Promise<Date>((resolve, reject) => {
@@ -237,6 +237,9 @@ export class CacheService {
                             reject(err);
                           } else {
                             this.logger.debug('Cache done : ' + cachePath);
+
+                            fs.utimesSync(cachePath, dbDate, dbDate);
+
                             resolve(cachePath);
                           }
                         });

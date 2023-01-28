@@ -28,11 +28,21 @@ export class BooksController {
   // ====================================
   @Get('')
   @UseGuards(AuthGuard('jwt'))
-  async getBooks(): Promise<StreamableFile> {
+  async getBooks(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
         .getCachePath(CacheDateKey.BOOKS)
         .then((path) => {
+          const stats = statSync(path);
+          const etag = stats.mtimeMs.toString();
+          if (headers['if-none-match'] === etag) {
+            return res.status(304).send('No change');
+          }
+
+          res.set({
+            ETag: etag,
+          });
+
           const file = createReadStream(path);
           resolve(new StreamableFile(file));
         })
@@ -48,11 +58,21 @@ export class BooksController {
   // ====================================
   @Get('/new')
   @UseGuards(AuthGuard('jwt'))
-  async new(): Promise<StreamableFile> {
+  async new(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
         .getCachePath(CacheDateKey.NEW_BOOKS)
         .then((path) => {
+          const stats = statSync(path);
+          const etag = stats.mtimeMs.toString();
+          if (headers['if-none-match'] === etag) {
+            return res.status(304).send('No change');
+          }
+
+          res.set({
+            ETag: etag,
+          });
+
           const file = createReadStream(path);
           resolve(new StreamableFile(file));
         })
@@ -197,12 +217,11 @@ export class BooksController {
     });
   }
 
-// ====================================
+  // ====================================
   // route for getting books thumbnail sprites
   // ====================================
   @Get('/sprite/:id.png')
-  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record < string, string >, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-
+  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       const spritePath = this._booksService.getSpritesPath(sprite_id);
 
@@ -211,13 +230,13 @@ export class BooksController {
       }
       const stats = statSync(spritePath);
       const etag = stats.mtimeMs.toString();
-      if (headers["if-none-match"] === etag) {
-        return res.status(304).send("No change");
+      if (headers['if-none-match'] === etag) {
+        return res.status(304).send('No change');
       }
 
       res.set({
         'Content-Type': 'image/png',
-        'ETag': etag,
+        ETag: etag,
       });
 
       resolve(new StreamableFile(createReadStream(spritePath)));
@@ -300,7 +319,7 @@ export class BooksController {
 
   @Get(':id/send/kindle')
   @UseGuards(AuthGuard('jwt'))
-  async sendKindle(@Param('id') book_id: number, @Query('mail') mail:string, @Query('format') format:string, @Req() req): Promise<ApiReturn> {
+  async sendKindle(@Param('id') book_id: number, @Query('mail') mail: string, @Query('format') format: string, @Req() req): Promise<ApiReturn> {
     try {
       const user: User = req.user as User;
       if (!user) {
@@ -308,7 +327,8 @@ export class BooksController {
       }
       if (!mail || !format || !book_id) {
         throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
-      }if (format.toUpperCase() !== 'EPUB' &&  format.toUpperCase() !== 'MOBI') {
+      }
+      if (format.toUpperCase() !== 'EPUB' && format.toUpperCase() !== 'MOBI') {
         throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
       }
       const book = await this._calibreDb.getBookPaths(book_id);
@@ -338,13 +358,13 @@ export class BooksController {
       let mes = 'Something go wrong';
       let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (err && err.code === 'ENOENT') {
-        mes = 'Not found'
+        mes = 'Not found';
         status = HttpStatus.NOT_FOUND;
       } else if (err && err.status) {
         status = err.status;
       }
       this.logger.error(err);
-      this.logger.error(JSON.stringify(err, null,2));
+      this.logger.error(JSON.stringify(err, null, 2));
       throw new HttpException(mes, status);
     }
   }

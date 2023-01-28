@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { BookCardModule } from '../../book/book-card/book-card.component';
+import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 
 @Component({
   selector: 'my-calibre-server-series-card',
@@ -27,7 +28,7 @@ export class SeriesCardComponent {
 }
 
 @NgModule({
-  imports: [CommonModule, MatCardModule, MatIconModule, BookCardModule, MatButtonModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, BookCardModule, MatButtonModule, ImageSpritesModule],
   declarations: [SeriesCardComponent],
   exports: [SeriesCardComponent],
 })

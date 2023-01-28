@@ -10,3 +10,9 @@ export class ThumbnailUtils {
   }
 
 }
+
+export class Sprite {
+  id = 0;
+  spriteTime = 0;
+  thumbnailTime = 0;
+}

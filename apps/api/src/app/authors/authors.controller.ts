@@ -1,6 +1,6 @@
-import { Controller, Get, HttpException, HttpStatus, Logger, StreamableFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Headers, Res, Logger, StreamableFile, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { createReadStream } from 'fs';
+import { createReadStream, statSync } from 'fs';
 import { CacheDateKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 
@@ -15,11 +15,21 @@ export class AuthorsController {
   // ====================================
   @Get('')
   @UseGuards(AuthGuard('jwt'))
-  async getAuthors(): Promise<StreamableFile> {
+  async getAuthors(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
         .getCachePath(CacheDateKey.AUTHORS)
         .then((path) => {
+          const stats = statSync(path);
+          const etag = stats.mtimeMs.toString();
+          if (headers['if-none-match'] === etag) {
+            return res.status(304).send('No change');
+          }
+
+          res.set({
+            ETag: etag,
+          });
+
           const file = createReadStream(path);
           resolve(new StreamableFile(file));
         })
@@ -29,5 +39,4 @@ export class AuthorsController {
         });
     });
   }
-
 }

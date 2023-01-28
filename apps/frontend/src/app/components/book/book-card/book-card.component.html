@@ -1,6 +1,6 @@
 <mat-card class="book-card" *ngIf="book.book_title" (click)="openBook($event)">
   <div class="cover">
-    <my-calibre-server-image-sprites [book_id]="book.book_id"></my-calibre-server-image-sprites>
+    <my-calibre-server-image-sprites [type]="0" [id]="book.book_id"></my-calibre-server-image-sprites>
     <mat-icon class="flag" svgIcon="flag_us" *ngIf="book.lang_code === 'eng'"></mat-icon>
   </div>
   <div class="text">

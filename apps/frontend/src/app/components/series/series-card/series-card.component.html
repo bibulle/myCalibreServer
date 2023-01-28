@@ -1,6 +1,7 @@
 <mat-card class="series-card" *ngIf="series && series.series_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
   <div class="cover">
-    <img mat-card-sm-image src="{{ thumbnailUrlBase }}/{{ series.series_id }}.png" />
+    <!-- <img mat-card-sm-image src="{{ thumbnailUrlBase }}/{{ series.series_id }}.png" /> -->
+    <my-calibre-server-image-sprites [type]="1" [id]="series.series_id"></my-calibre-server-image-sprites>
   </div>
   <div class="text">
     <mat-card-title class="series-name">

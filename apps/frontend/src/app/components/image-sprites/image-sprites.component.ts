@@ -8,14 +8,23 @@ import { ThumbnailUtils } from '@my-calibre-server/api-interfaces';
 })
 export class ImageSpritesComponent {
 
+  TYPE_BOOK=0;
+  TYPE_SERIES=1;
+
   @Input()
-  book_id = 0;
+  type = this.TYPE_BOOK;
+
+  @Input()
+  id = 0;
 
   @HostBinding('style.background-image') get image() {
-    return `url(/api/book/sprite/${ThumbnailUtils.getSpritesIndex(this.book_id)}.png`;
+    if (this.type === this.TYPE_SERIES) {
+      return `url(/api/series/sprite/${ThumbnailUtils.getSpritesIndex(this.id)}.png`;
+    }
+    return `url(/api/book/sprite/${ThumbnailUtils.getSpritesIndex(this.id)}.png`;
   }
   @HostBinding('style.background-position-x') get positionX() {
-    return `${-1 * 80 * ThumbnailUtils.getIndexInSprites(this.book_id)}px`;
+    return `${-1 * 80 * ThumbnailUtils.getIndexInSprites(this.id)}px`;
   }
 
 }
