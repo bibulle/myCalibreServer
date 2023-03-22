@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.2](https://github.com/bibulle/myCalibreServer/compare/v0.9.1...v0.9.2) (2023-03-22)
+
+
+### Bug Fixes
+
+* change icon background color ([e63e803](https://github.com/bibulle/myCalibreServer/commit/e63e8039e43b590db35ed0dd859f52d19210151b))
+
 ### [0.9.1](https://github.com/bibulle/myCalibreServer/compare/v0.8.0...v0.9.1) (2023-01-28)
 
 
