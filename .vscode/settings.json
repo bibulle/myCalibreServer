@@ -1,9 +1,21 @@
 {
   "cSpell.words": [
+    "commitlint",
+    "devkit",
     "EPUB",
+    "firstname",
+    "isbn",
+    "lastname",
     "MOBI",
     "mobipocket",
     "nestjs",
+    "ngcc",
+    "nrwl",
+    "postbump",
+    "pubdate",
+    "rechat",
+    "sqlite",
+    "squel",
     "Streamable"
   ]
 }

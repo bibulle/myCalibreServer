@@ -167,7 +167,7 @@ export class CalibreDb1Service {
         } else {
           const books: number[] = row.map((b) => {
             // this.logger.debug(b);
-            return b.count;
+            return b['count'];
           });
           resolve(books[0]);
         }
