@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.4](https://github.com/bibulle/myCalibreServer/compare/v0.9.3...v0.9.4) (2023-03-23)
+
+
+### Features
+
+* add service worker ([f84ba6f](https://github.com/bibulle/myCalibreServer/commit/f84ba6f712f0cabd8d3be8a35bb6f1953efc729f))
+
+
+### Bug Fixes
+
+* rechange favicon ([9aa2b7d](https://github.com/bibulle/myCalibreServer/commit/9aa2b7def99d1b1922ecba3d5a6bbaf609ddddca))
+* try another manifest ([273dd0e](https://github.com/bibulle/myCalibreServer/commit/273dd0efaf828c6b19ed4b735fb3446439a36865))
+
 ### [0.9.3](https://github.com/bibulle/myCalibreServer/compare/v0.9.2...v0.9.3) (2023-03-23)
 
 
