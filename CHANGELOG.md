@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.3](https://github.com/bibulle/myCalibreServer/compare/v0.9.2...v0.9.3) (2023-03-23)
+
+
+### Features
+
+* change bib icon ([c6c4425](https://github.com/bibulle/myCalibreServer/commit/c6c442514cc961adbc7708871e008cbd625d48c4))
+
 ### [0.9.2](https://github.com/bibulle/myCalibreServer/compare/v0.9.1...v0.9.2) (2023-03-22)
 
 
