@@ -5,11 +5,13 @@
   "name": "Shared library",
   "icons": [
     {
-      "src": "assets/Bib_Icon.svg",
+      "src": "/assets/Bib_Icon.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256",
       "type": "image/svg+xml",
-      "sizes": "512x512"
+      "purpose": "any maskable"
     }
   ],
+  "id": "/home",
   "start_url": "/home",
   "display": "standalone"
 }
