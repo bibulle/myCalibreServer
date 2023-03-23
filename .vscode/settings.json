@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+    "anotheruser",
     "commitlint",
     "devkit",
     "EPUB",
@@ -10,6 +11,7 @@
     "mobipocket",
     "nestjs",
     "ngcc",
+    "ngsw",
     "nrwl",
     "postbump",
     "pubdate",

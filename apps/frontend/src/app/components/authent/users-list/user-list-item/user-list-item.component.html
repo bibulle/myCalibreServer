@@ -18,7 +18,7 @@
       <div class="email">{{ user.local.email }}</div>
       <div class="last-connection">
         <span>{{ user.history.lastConnection | localizedDate }} {{ user.history.lastConnection | localizedDate: 'shortTime' }}</span>
-        <span>{{ 'label.downloaded' | translate }} : {{ user.history.downloadedBooks?.length }}</span>
+        <span>{{ 'label.downloaded' | translate }} : {{ user.history.downloadedBooks.length }}</span>
       </div>
       <div class="admin">
         <mat-slide-toggle [checked]="user.local.isAdmin" (change)="adminChanged($event)" color="primary"></mat-slide-toggle>
