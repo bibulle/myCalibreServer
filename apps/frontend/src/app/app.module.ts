@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { MaterialModule } from './material.module';
@@ -36,6 +36,7 @@ import { TagModule } from './components/tag/tag.module';
 import { WindowService } from './core/util/window.service';
 import { AuthGuardToken } from './components/authent/auth.guard.token';
 import { MatButtonModule } from '@angular/material/button';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
   handle(params: MissingTranslationHandlerParams) {
@@ -90,6 +91,12 @@ registerLocaleData(localeEn, 'en');
     FilterBarModule,
     MatRatingModule,
     MatButtonModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [TitleService, NotificationService, WindowService, AuthGuard, AuthGuardToken, AuthGuardAdmin],
   bootstrap: [AppComponent],

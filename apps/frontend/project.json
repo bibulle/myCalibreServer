@@ -6,7 +6,9 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/apps/frontend",
         "index": "apps/frontend/src/index.html",
@@ -20,10 +22,15 @@
           "apps/frontend/src/version.json",
           "apps/frontend/src/manifest.json",
           "apps/frontend/src/manifest.webmanifest",
-          "apps/frontend/src/assets"
+          "apps/frontend/src/assets",
+          "apps/frontend/src/manifest.webmanifest"
         ],
-        "styles": ["apps/frontend/src/styles.scss"],
-        "scripts": []
+        "styles": [
+          "apps/frontend/src/styles.scss"
+        ],
+        "scripts": [],
+        "serviceWorker": true,
+        "ngswConfigPath": "apps/frontend/ngsw-config.json"
       },
       "configurations": {
         "production": {
@@ -83,12 +90,17 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": ["apps/frontend/**/*.ts", "apps/frontend/**/*.html"]
+        "lintFilePatterns": [
+          "apps/frontend/**/*.ts",
+          "apps/frontend/**/*.html"
+        ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/frontend"],
+      "outputs": [
+        "{workspaceRoot}/coverage/apps/frontend"
+      ],
       "options": {
         "jestConfig": "apps/frontend/jest.config.ts",
         "passWithNoTests": true

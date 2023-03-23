@@ -1,17 +1,17 @@
 {
+  "name": "SharedLib",
   "short_name": "SharedLib",
-  "background_color": "#4caf50",
   "theme_color": "#4caf50",
-  "name": "Shared library",
+  "background_color": "#4caf50",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./home",
   "icons": [
     {
-      "src": "/assets/Bib_Icon.svg",
-      "sizes": "48x48 72x72 96x96 128x128 256x256",
+      "src": "assets/Bib_Icon.svg",
+      "sizes": "72x72 96x96 128x128 512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "maskable any"
     }
-  ],
-  "id": "/home",
-  "start_url": "/home",
-  "display": "standalone"
+  ]
 }
