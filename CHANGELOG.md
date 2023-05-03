@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.5](https://github.com/bibulle/myCalibreServer/compare/v0.9.4...v0.9.5) (2023-05-03)
+
+
+### Bug Fixes
+
+* correct some warnings ([8bddd28](https://github.com/bibulle/myCalibreServer/commit/8bddd2878a19b0be00d00266ea79969fb8d21e9e))
+* pwa disabled for authentification ([8c47705](https://github.com/bibulle/myCalibreServer/commit/8c47705d50ed89bb0b428031f47a2990d1c5039c))
+
 ### [0.9.4](https://github.com/bibulle/myCalibreServer/compare/v0.9.3...v0.9.4) (2023-03-23)
 
 
