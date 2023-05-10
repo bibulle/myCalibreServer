@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.7](https://github.com/bibulle/myCalibreServer/compare/v0.9.6...v0.9.7) (2023-05-10)
+
+
+### Features
+
+* add auto complete on login form ([27eff34](https://github.com/bibulle/myCalibreServer/commit/27eff34cd7a5306cba08a66d6e149bb3b3a0051f))
+
+
+### Bug Fixes
+
+* downloaded book list cannot be undefined ([6c00718](https://github.com/bibulle/myCalibreServer/commit/6c00718cea1822825cf5229487b8df8c3742b018))
+* reenable worker ([39362c9](https://github.com/bibulle/myCalibreServer/commit/39362c91322809e8e52c638a8de170a88a2ed26f))
+
 ### [0.9.6](https://github.com/bibulle/myCalibreServer/compare/v0.9.5...v0.9.6) (2023-05-10)
 
 
