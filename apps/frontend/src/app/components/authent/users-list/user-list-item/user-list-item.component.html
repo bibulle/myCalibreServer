@@ -17,7 +17,7 @@
       <div class="lastname">{{ user.local.lastname }}</div>
       <div class="email">{{ user.local.email }}</div>
       <div class="last-connection">
-        <span>{{ user.history.lastConnection | localizedDate }} {{ user.history.lastConnection | localizedDate: 'shortTime' }}</span>
+        <span>{{ user.history.lastConnection | localizedDate }} {{ user.history.lastConnection | localizedDate : 'shortTime' }}</span>
         <span>{{ 'label.downloaded' | translate }} : {{ user.history.downloadedBooks.length }}</span>
       </div>
       <div class="admin">

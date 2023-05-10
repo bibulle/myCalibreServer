@@ -457,9 +457,20 @@ export class UsersService {
       'history',
     ]);
 
+    if (sentUser.local.username == "toto2") {
+      delete sentUser.history.downloadedBooks;
+    }
+
     delete sentUser.facebook.token;
     delete sentUser.google.token;
     delete sentUser.twitter.token;
+
+    if (sentUser.history && ! sentUser.history.downloadedBooks) {
+      sentUser.history.downloadedBooks = [];
+    }
+    if (sentUser.history && ! sentUser.history.ratings) {
+      sentUser.history.ratings = [];
+    }
 
     return sentUser as UserAPI;
   }
