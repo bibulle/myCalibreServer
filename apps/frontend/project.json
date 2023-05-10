@@ -29,7 +29,7 @@
           "apps/frontend/src/styles.scss"
         ],
         "scripts": [],
-        "serviceWorker": true,
+        "serviceWorker": false,
         "ngswConfigPath": "apps/frontend/ngsw-config.json"
       },
       "configurations": {
