@@ -91,17 +91,23 @@ registerLocaleData(localeEn, 'en');
     FilterBarModule,
     MatRatingModule,
     MatButtonModule,
-    // ServiceWorkerModule.register('ngsw-worker.js', {
-    //   enabled: !isDevMode(),
-    //   // Register the ServiceWorker as soon as the application is stable
-    //   // or after 30 seconds (whichever comes first).
-    //   registrationStrategy: 'registerWhenStable:30000'
-    // }),
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: AppModule.isWorkerEnable(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [TitleService, NotificationService, WindowService, AuthGuard, AuthGuardToken, AuthGuardAdmin],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  static isWorkerEnable() : boolean {
+    // return !isDevMode();
+    return true;
+    // return false;
+  }
+}
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
