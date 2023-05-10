@@ -3,10 +3,10 @@
     <form role="form" (submit)="login($event, username.value, password.value)">
       <mat-card-content>
         <mat-form-field>
-          <input matInput placeholder="{{ 'label.username' | translate }}" required #username autocorrect="off" autocapitalize="off" spellcheck="false" />
+          <input matInput placeholder="{{ 'label.username' | translate }}" required #username autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="username"/>
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="{{ 'label.password' | translate }}" required type="password" #password />
+          <input matInput placeholder="{{ 'label.password' | translate }}" required type="password" #password autocomplete="current-password"/>
         </mat-form-field>
       </mat-card-content>
       <mat-card-actions align="end">
