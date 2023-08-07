@@ -27,5 +27,5 @@
       }
     }
   ],
-  "navigationUrls": ["!/api/authent/**"]
+  "navigationUrls": ["!/api/authent/**", "!/api/book/new", "!/api/book/book", "!/api/book/series", "!/api/book/author", "!/api/book/tags"]
 }
