@@ -65,13 +65,16 @@ export class BooksController {
         .then((path) => {
           const stats = statSync(path);
           const etag = stats.mtimeMs.toString();
-          if (headers['if-none-match'] === etag) {
-            return res.status(304).send('No change');
-          }
 
           res.set({
             ETag: etag,
           });
+
+          if (headers['if-none-match'] === etag) {
+            this.logger.log("  Done : BooksController new 304");
+            return res.status(304).send('No change');
+          }
+
 
           const file = createReadStream(path);
           resolve(new StreamableFile(file));
