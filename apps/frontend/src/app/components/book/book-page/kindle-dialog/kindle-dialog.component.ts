@@ -5,7 +5,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 
 export class KindleDialogReturn {
   mail = '';
-  format = '';
 }
 
 @Component({
@@ -18,7 +17,6 @@ export class KindleDialogComponent implements OnInit {
   filteredMails: string[] = [];
 
   mail = '';
-  format = 'epub';
 
   constructor(@Optional() public dialogRef: MatDialogRef<KindleDialogComponent>, private _userService: UserService) {}
 
@@ -41,8 +39,7 @@ export class KindleDialogComponent implements OnInit {
       await this._userService.save(this.user);
     }
     const ret : KindleDialogReturn = {
-      mail: this.mail, 
-      format: this.format
+      mail: this.mail
     } 
 
     this.dialogRef.close(ret);

@@ -162,9 +162,9 @@ export class BookPageComponent implements OnInit {
     dialogRef.afterClosed().subscribe((ret: KindleDialogReturn) => {
       // console.log(`Book page '${ret.mail}' '${ret.format}'`);
       // if there is an email
-      if (ret.mail && ret.format) {
+      if (ret.mail) {
         this._bookService
-          .sendKindle(this.book.book_id, ret.mail, ret.format)
+          .sendKindle(this.book.book_id, ret.mail)
           .then(() => {
             setTimeout(() => {
               this._userService.refreshUser().catch((err) => {
