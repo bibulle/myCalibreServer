@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/bibulle/myCalibreServer/compare/v0.9.7...v0.10.0) (2023-10-31)
+
+
+### Bug Fixes
+
+* npm audit ([38651bc](https://github.com/bibulle/myCalibreServer/commit/38651bc8bfe11e33327fc3bf8ee290fb84220a0e))
+* try to not cache the APIs in the worker ([6ff4906](https://github.com/bibulle/myCalibreServer/commit/6ff490658fbce732e48054a72c5a24d009c0c9ea))
+* try to remove ngsw for some api ([80d2a2d](https://github.com/bibulle/myCalibreServer/commit/80d2a2d7327b3be9a6738b5c4d1529dbb9b47085))
+
 ### [0.9.7](https://github.com/bibulle/myCalibreServer/compare/v0.9.6...v0.9.7) (2023-05-10)
 
 
