@@ -175,10 +175,10 @@ export class BookService {
    * @param {string} email
    * @returns {Promise<void>}
    */
-  sendKindle(book_id: number, email: string, format: string): Promise<void> {
+  sendKindle(book_id: number, email: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.httpClient
-        .get<ApiReturn>(`${this.booksUrl}/${book_id}${this.sendKindleUrl}?mail=${email}&format=${format}`) //
+        .get<ApiReturn>(`${this.booksUrl}/${book_id}${this.sendKindleUrl}?mail=${email}`) //
         .subscribe({
           next: () => {
             resolve();

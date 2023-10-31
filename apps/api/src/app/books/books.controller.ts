@@ -322,16 +322,15 @@ export class BooksController {
 
   @Get(':id/send/kindle')
   @UseGuards(AuthGuard('jwt'))
-  async sendKindle(@Param('id') book_id: number, @Query('mail') mail: string, @Query('format') format: string, @Req() req): Promise<ApiReturn> {
+  async sendKindle(@Param('id') book_id: number, @Query('mail') mail: string, @Req() req): Promise<ApiReturn> {
+
+    const format = "EPUB" // Only epub can be send to kindle now
     try {
       const user: User = req.user as User;
       if (!user) {
         throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
       }
-      if (!mail || !format || !book_id) {
-        throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
-      }
-      if (format.toUpperCase() !== 'EPUB' && format.toUpperCase() !== 'MOBI') {
+      if (!mail || !book_id) {
         throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
       }
       const book = await this._calibreDb.getBookPaths(book_id);
