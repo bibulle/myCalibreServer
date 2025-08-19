@@ -1,13 +1,11 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Database } from 'sqlite3';
 import * as path from 'path';
 import * as fs from 'fs';
-import { Book, BookPath, User, Series, Author, Tag, CacheContent, Downloader, ReaderRating } from "@my-calibre-server/api-interfaces";
-import { BooksService } from "../books/books.service";
+import { Book, BookPath, User, Series, Author, Tag, CacheContent, Downloader, ReaderRating } from '@my-calibre-server/api-interfaces';
+import { BooksService } from '../books/books.service';
 import * as queryBuilder from '@rechat/squel';
-
-
 
 @Injectable()
 export class CalibreDb1Service {
@@ -37,7 +35,6 @@ export class CalibreDb1Service {
         this.logger.error(reason);
         this.logger.error(`Cannot open calibre Db : '${CalibreDb1Service.DB_FILE}'`);
       });
-
   }
 
   private _getDb(): Database {
@@ -59,8 +56,10 @@ export class CalibreDb1Service {
             this._db = null;
             this._db = this._getDb();
 
+            this.logger.debug(stats.mtime);
             resolve(stats.mtime);
           } else {
+            this.logger.debug(stats.mtime);
             resolve(stats.mtime);
           }
         }
@@ -169,6 +168,7 @@ export class CalibreDb1Service {
             // this.logger.debug(b);
             return b['count'];
           });
+          this.logger.debug(books[0]);
           resolve(books[0]);
         }
       });

@@ -15,11 +15,11 @@ export class CacheService {
   private static MY_CALIBRE_DIR: string;
   private static CACHE_DIR: string;
   public static THUMBNAIL_DIR: string;
-  public static THUMBNAIL_SERIES_DIR: string; 
-  public static SPRITE_DIR: string; 
+  public static THUMBNAIL_SERIES_DIR: string;
+  public static SPRITE_DIR: string;
 
-  public static ERR_COVER:string;
-  public static ERR_COVER_THUMBNAIL:string;
+  public static ERR_COVER: string;
+  public static ERR_COVER_THUMBNAIL: string;
 
   private static cacheTables: { [key: string]: CacheDate } = {};
 
@@ -115,6 +115,7 @@ export class CacheService {
             reject(err);
           } else {
             if (stats) {
+              this.logger.debug(`${stats.mtime}`);
               resolve(stats.mtime);
             } else {
               reject(`One cache not found : '${key}'`);
@@ -281,4 +282,3 @@ export enum CacheDateKey {
   TAGS,
   values,
 }
-
