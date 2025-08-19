@@ -23,6 +23,7 @@ export class HealthService {
         .then((results) => {
           const ret = new Status();
           results.forEach((r, index) => {
+            this.logger.debug(JSON.stringify(r));
             if (r.status === 'fulfilled') {
               switch (index) {
                 case 0:
