@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.4](https://github.com/bibulle/myCalibreServer/compare/v0.10.3...v0.10.4) (2025-08-19)
+
+
+### Bug Fixes
+
+* Add cache for books count ([3567d18](https://github.com/bibulle/myCalibreServer/commit/3567d18253e40de799774b5b9fade485afd3e6d3))
+
 ### [0.10.3](https://github.com/bibulle/myCalibreServer/compare/v0.10.2...v0.10.3) (2025-08-19)
 
 ### [0.10.2](https://github.com/bibulle/myCalibreServer/compare/v0.10.1...v0.10.2) (2025-08-19)
