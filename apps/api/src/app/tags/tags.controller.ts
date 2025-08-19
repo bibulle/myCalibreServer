@@ -1,7 +1,7 @@
 import { Controller, Get, Headers, HttpException, HttpStatus, Logger, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, statSync } from 'fs';
-import { CacheDateKey, CacheService } from '../cache/cache.service';
+import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 
 @Controller('tags')
@@ -18,7 +18,7 @@ export class TagsController {
   async getSeries(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
-        .getCachePath(CacheDateKey.TAGS)
+        .getCachePath(CacheKey.TAGS)
         .then((path) => {
           const stats = statSync(path);
           const etag = stats.mtimeMs.toString();

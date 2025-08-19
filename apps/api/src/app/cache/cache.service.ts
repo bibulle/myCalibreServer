@@ -21,7 +21,7 @@ export class CacheService {
   public static ERR_COVER: string;
   public static ERR_COVER_THUMBNAIL: string;
 
-  private static cacheTables: { [key: string]: CacheDate } = {};
+  private static cacheTables: { [key: string]: CacheValue } = {};
 
   private static readonly CRON_CACHE_FORCE_DEFAULT = CronExpression.EVERY_DAY_AT_4AM;
   private static readonly CRON_CACHE_RECURRING_DEFAULT = CronExpression.EVERY_10_MINUTES;
@@ -57,22 +57,25 @@ export class CacheService {
     });
     this._schedulerRegistry.addCronJob('cronCacheRecurrent', job1);
     job1.start();
+
+    // Force cache renewal
     // const job2 = new CronJob(CacheService.cronCacheForce, () => {
     //   this.renewCacheForced();
     // });
     // this._schedulerRegistry.addCronJob('cronCacheForce', job2);
     // job2.start();
 
-    CacheService.cacheTables[CacheDateKey.AUTHORS.toString()] = new CacheDate(CacheDateKey.AUTHORS, CacheService.CACHE_DIR);
-    CacheService.cacheTables[CacheDateKey.BOOKS.toString()] = new CacheDate(CacheDateKey.BOOKS, CacheService.CACHE_DIR);
-    CacheService.cacheTables[CacheDateKey.NEW_BOOKS.toString()] = new CacheDate(CacheDateKey.NEW_BOOKS, CacheService.CACHE_DIR);
-    CacheService.cacheTables[CacheDateKey.SERIES.toString()] = new CacheDate(CacheDateKey.SERIES, CacheService.CACHE_DIR);
-    CacheService.cacheTables[CacheDateKey.TAGS.toString()] = new CacheDate(CacheDateKey.TAGS, CacheService.CACHE_DIR);
+    CacheService.cacheTables[CacheKey.AUTHORS.toString()] = new CacheValue(CacheKey.AUTHORS, CacheService.CACHE_DIR);
+    CacheService.cacheTables[CacheKey.BOOKS.toString()] = new CacheValue(CacheKey.BOOKS, CacheService.CACHE_DIR);
+    CacheService.cacheTables[CacheKey.NEW_BOOKS.toString()] = new CacheValue(CacheKey.NEW_BOOKS, CacheService.CACHE_DIR);
+    CacheService.cacheTables[CacheKey.SERIES.toString()] = new CacheValue(CacheKey.SERIES, CacheService.CACHE_DIR);
+    CacheService.cacheTables[CacheKey.TAGS.toString()] = new CacheValue(CacheKey.TAGS, CacheService.CACHE_DIR);
+    CacheService.cacheTables[CacheKey.COUNT.toString()] = new CacheValue(CacheKey.COUNT, CacheService.CACHE_DIR);
   }
 
   renewCacheIfNeeded() {
     this._calibreDbService.getDbDate().then((dbDate) => {
-      const promises: Promise<void | string>[] = [CacheDateKey.AUTHORS, CacheDateKey.BOOKS, CacheDateKey.NEW_BOOKS, CacheDateKey.SERIES, CacheDateKey.TAGS].map((key: CacheDateKey) => {
+      const promises: Promise<void | string>[] = [CacheKey.AUTHORS, CacheKey.BOOKS, CacheKey.NEW_BOOKS, CacheKey.SERIES, CacheKey.TAGS, CacheKey.COUNT].map((key: CacheKey) => {
         return this.getCachePath(key, dbDate);
       });
 
@@ -85,22 +88,22 @@ export class CacheService {
         });
     });
   }
-  // renewCacheForced() {
-  //   const dbDate = new Date(2100, 0, 1);
-  //   const promises: Promise<void | string>[] = [CacheDateKey.AUTHORS, CacheDateKey.BOOKS, CacheDateKey.NEW_BOOKS, CacheDateKey.SERIES, CacheDateKey.TAGS].map((key: CacheDateKey) => {
-  //     return this.getCachePath(key, dbDate);
-  //   });
+  renewCacheForced() {
+    const dbDate = new Date(2100, 0, 1);
+    const promises: Promise<void | string>[] = [CacheKey.AUTHORS, CacheKey.BOOKS, CacheKey.NEW_BOOKS, CacheKey.SERIES, CacheKey.TAGS, CacheKey.COUNT].map((key: CacheKey) => {
+      return this.getCachePath(key, dbDate);
+    });
 
-  //   Promise.all(promises)
-  //     .then(() => {
-  //       this.logger.debug('cache renewed (forced)');
-  //     })
-  //     .catch((reason) => {
-  //       this.logger.error(reason);
-  //     });
-  // }
+    Promise.all(promises)
+      .then(() => {
+        this.logger.debug('cache renewed (forced)');
+      })
+      .catch((reason) => {
+        this.logger.error(reason);
+      });
+  }
 
-  getCacheDate(key: CacheDateKey): Promise<Date> {
+  getCacheDate(key: CacheKey): Promise<Date> {
     return new Promise<Date>((resolve, reject) => {
       if (!CacheService.cacheTables[key]) {
         console.log(`Cache not found : '${key}'`);
@@ -125,7 +128,32 @@ export class CacheService {
       }
     });
   }
-  getCachePath(key: CacheDateKey, dbDate?: Date): Promise<string> {
+  getCacheNumber(key: CacheKey): Promise<Number> {
+    return new Promise<Number>((resolve, reject) => {
+      if (!CacheService.cacheTables[key]) {
+        console.log(`Cache not found : '${key}'`);
+        reject(`Cache not found : '${key}'`);
+      } else {
+        const cache = CacheService.cacheTables[key];
+        const cachePath = cache.cachePath;
+
+        fs.readFile(cachePath, (err, buffer) => {
+          if (err && err.code != 'ENOENT') {
+            console.log(err);
+            reject(err);
+          } else {
+            if (buffer) {
+              this.logger.debug(`${buffer.toString()}`);
+              resolve(+buffer.toString());
+            } else {
+              reject(`One cache not found : '${key}'`);
+            }
+          }
+        });
+      }
+    });
+  }
+  getCachePath(key: CacheKey, dbDate?: Date): Promise<string> {
     dbDate = dbDate || new Date(1);
 
     return new Promise<string>((resolve, reject) => {
@@ -150,23 +178,26 @@ export class CacheService {
             }
             // if dbDate newer, recalculate
             if (dbDate.getTime() > fileDate.getTime()) {
-              let promise: Promise<CacheContent[]>;
+              let promise: Promise<CacheContent[] | Number>;
               //should be recalculate
               switch (key) {
-                case CacheDateKey.BOOKS:
+                case CacheKey.BOOKS:
                   promise = this._calibreDbService.getBooks();
                   break;
-                case CacheDateKey.NEW_BOOKS:
+                case CacheKey.NEW_BOOKS:
                   promise = this._calibreDbService.getBooks(200, 0);
                   break;
-                case CacheDateKey.AUTHORS:
+                case CacheKey.AUTHORS:
                   promise = this._calibreDbService.getAllAuthors();
                   break;
-                case CacheDateKey.SERIES:
+                case CacheKey.SERIES:
                   promise = this._calibreDbService.getAllSeries();
                   break;
-                case CacheDateKey.TAGS:
+                case CacheKey.TAGS:
                   promise = this._calibreDbService.getAllTags();
+                  break;
+                case CacheKey.COUNT:
+                  promise = this._calibreDbService.getBooksCount();
                   break;
                 default:
                   reject('No cache found for ' + key);
@@ -177,77 +208,92 @@ export class CacheService {
                     // this.logger.debug(JSON.stringify(rows[0], null, 2));
 
                     // Sort with the default
-                    switch (key) {
-                      case CacheDateKey.BOOKS:
-                        rows = rows.sort((b1: Book, b2: Book) => {
-                          const v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : (b1.book_series_index + '').padStart(6, '0') + ' ') + b1.book_sort;
-                          const v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : (b2.book_series_index + '').padStart(6, '0') + ' ') + b2.book_sort;
-                          return v1.localeCompare(v2);
-                        });
-                        break;
-                      case CacheDateKey.NEW_BOOKS:
-                        break;
-                      case CacheDateKey.AUTHORS:
-                        rows = rows.sort((b1: Author, b2: Author) => {
-                          const v1 = b1.author_sort ? b1.author_sort : b1.author_name;
-                          const v2 = b2.author_sort ? b2.author_sort : b2.author_name;
-                          return v1.localeCompare(v2);
-                        });
-                        break;
-                      case CacheDateKey.SERIES:
-                        rows = rows.sort((b1: Series, b2: Series) => {
-                          const v1 = b1.series_sort;
-                          const v2 = b2.series_sort;
-                          return v1.localeCompare(v2);
-                        });
-                        break;
-                      case CacheDateKey.TAGS:
-                        rows = rows.sort((b1: Tag, b2: Tag) => {
-                          const v1 = b1.tag_name;
-                          const v2 = b2.tag_name;
-                          return v1.localeCompare(v2);
-                        });
-                        break;
-                      default:
-                        reject('No cache found for ' + key);
-                    }
+                    if (rows && Array.isArray(rows)) {
+                      switch (key) {
+                        case CacheKey.BOOKS:
+                          rows = rows.sort((b1: Book, b2: Book) => {
+                            const v1 = (b1.series_name == null ? '' : b1.series_sort + ' ') + (b1.series_name == null ? '' : (b1.book_series_index + '').padStart(6, '0') + ' ') + b1.book_sort;
+                            const v2 = (b2.series_name == null ? '' : b2.series_sort + ' ') + (b2.series_name == null ? '' : (b2.book_series_index + '').padStart(6, '0') + ' ') + b2.book_sort;
+                            return v1.localeCompare(v2);
+                          });
+                          break;
+                        case CacheKey.NEW_BOOKS:
+                          break;
+                        case CacheKey.AUTHORS:
+                          rows = rows.sort((b1: Author, b2: Author) => {
+                            const v1 = b1.author_sort ? b1.author_sort : b1.author_name;
+                            const v2 = b2.author_sort ? b2.author_sort : b2.author_name;
+                            return v1.localeCompare(v2);
+                          });
+                          break;
+                        case CacheKey.SERIES:
+                          rows = rows.sort((b1: Series, b2: Series) => {
+                            const v1 = b1.series_sort;
+                            const v2 = b2.series_sort;
+                            return v1.localeCompare(v2);
+                          });
+                          break;
+                        case CacheKey.TAGS:
+                          rows = rows.sort((b1: Tag, b2: Tag) => {
+                            const v1 = b1.tag_name;
+                            const v2 = b2.tag_name;
+                            return v1.localeCompare(v2);
+                          });
+                          break;
+                        default:
+                          reject('No cache found for ' + key);
+                      }
 
-                    // add here users loading to fill book (in books attribute, or directly in object)
-                    this._calibreDbService
-                      .fillBooksFromUser(rows, this._usersService.getAll(), true)
-                      .then((objects: CacheContent[]) => {
-                        const apiReturn: ApiReturn = {};
+                      // add here users loading to fill book (in books attribute, or directly in object)
+                      this._calibreDbService
+                        .fillBooksFromUser(rows, this._usersService.getAll(), true)
+                        .then((objects: CacheContent[]) => {
+                          const apiReturn: ApiReturn = {};
 
-                        switch (key) {
-                          case CacheDateKey.BOOKS:
-                          case CacheDateKey.NEW_BOOKS:
-                            apiReturn.books = objects as Book[];
-                            break;
-                          case CacheDateKey.AUTHORS:
-                            apiReturn.authors = objects as Author[];
-                            break;
-                          case CacheDateKey.SERIES:
-                            apiReturn.series = objects as Series[];
-                            break;
-                          case CacheDateKey.TAGS:
-                            apiReturn.tags = objects as Tag[];
-                            break;
-                        }
-                        fs.writeFile(cachePath, JSON.stringify(apiReturn), (err) => {
-                          if (err) {
-                            reject(err);
-                          } else {
-                            this.logger.debug('Cache done : ' + cachePath);
-
-                            fs.utimesSync(cachePath, dbDate, dbDate);
-
-                            resolve(cachePath);
+                          switch (key) {
+                            case CacheKey.BOOKS:
+                            case CacheKey.NEW_BOOKS:
+                              apiReturn.books = objects as Book[];
+                              break;
+                            case CacheKey.AUTHORS:
+                              apiReturn.authors = objects as Author[];
+                              break;
+                            case CacheKey.SERIES:
+                              apiReturn.series = objects as Series[];
+                              break;
+                            case CacheKey.TAGS:
+                              apiReturn.tags = objects as Tag[];
+                              break;
                           }
+                          fs.writeFile(cachePath, JSON.stringify(apiReturn), (err) => {
+                            if (err) {
+                              reject(err);
+                            } else {
+                              this.logger.debug('Cache done : ' + cachePath);
+
+                              fs.utimesSync(cachePath, dbDate, dbDate);
+
+                              resolve(cachePath);
+                            }
+                          });
+                        })
+                        .catch((err) => {
+                          reject(err);
                         });
-                      })
-                      .catch((err) => {
-                        reject(err);
+                    } else {
+                      // if not an array, it is a number
+                      fs.writeFile(cachePath, rows.toString(), (err) => {
+                        if (err) {
+                          reject(err);
+                        } else {
+                          this.logger.debug('Cache done : ' + cachePath);
+
+                          fs.utimesSync(cachePath, dbDate, dbDate);
+
+                          resolve(cachePath);
+                        }
                       });
+                    }
                   })
                   .catch((err) => {
                     reject(err);
@@ -264,21 +310,22 @@ export class CacheService {
   }
 }
 
-class CacheDate {
-  key: CacheDateKey;
+class CacheValue {
+  key: CacheKey;
   cachePath: string;
 
-  constructor(key: CacheDateKey, cache_dir: string) {
+  constructor(key: CacheKey, cache_dir: string) {
     this.key = key;
-    this.cachePath = path.resolve(`${cache_dir}/${CacheDateKey[key]}.json`);
+    this.cachePath = path.resolve(`${cache_dir}/${CacheKey[key]}.json`);
   }
 }
 
-export enum CacheDateKey {
+export enum CacheKey {
   NEW_BOOKS,
   BOOKS,
   AUTHORS,
   SERIES,
   TAGS,
+  COUNT,
   values,
 }

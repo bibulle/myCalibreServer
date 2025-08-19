@@ -3,7 +3,7 @@ import { Body, Controller, Get, Header, Headers, HttpException, HttpStatus, Logg
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, existsSync, promises as fsPromises, statSync } from 'fs';
-import { CacheDateKey, CacheService } from '../cache/cache.service';
+import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../utils/mail.service';
@@ -31,7 +31,7 @@ export class BooksController {
   async getBooks(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
-        .getCachePath(CacheDateKey.BOOKS)
+        .getCachePath(CacheKey.BOOKS)
         .then((path) => {
           const stats = statSync(path);
           const etag = stats.mtimeMs.toString();
@@ -61,7 +61,7 @@ export class BooksController {
   async new(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
-        .getCachePath(CacheDateKey.NEW_BOOKS)
+        .getCachePath(CacheKey.NEW_BOOKS)
         .then((path) => {
           const stats = statSync(path);
           const etag = stats.mtimeMs.toString();
@@ -71,10 +71,9 @@ export class BooksController {
           });
 
           if (headers['if-none-match'] === etag) {
-            this.logger.log("  Done : BooksController new 304");
+            this.logger.log('  Done : BooksController new 304');
             return res.status(304).send('No change');
           }
-
 
           const file = createReadStream(path);
           resolve(new StreamableFile(file));
@@ -323,8 +322,7 @@ export class BooksController {
   @Get(':id/send/kindle')
   @UseGuards(AuthGuard('jwt'))
   async sendKindle(@Param('id') book_id: number, @Query('mail') mail: string, @Req() req): Promise<ApiReturn> {
-
-    const format = "EPUB" // Only epub can be send to kindle now
+    const format = 'EPUB'; // Only epub can be send to kindle now
     try {
       const user: User = req.user as User;
       if (!user) {

@@ -1,6 +1,6 @@
 import { ApiReturn, Status } from '@my-calibre-server/api-interfaces';
 import { Controller, Get, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { CacheDateKey } from '../cache/cache.service';
+import { CacheKey } from '../cache/cache.service';
 import { HealthService } from './health.service';
 
 @Controller('health')

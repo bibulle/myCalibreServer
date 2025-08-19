@@ -1,7 +1,7 @@
 import { Controller, Get, Headers, HttpException, HttpStatus, Logger, NotFoundException, Param, Res, Response, StreamableFile, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, existsSync, promises as fsPromises, statSync } from 'fs';
-import { CacheDateKey, CacheService } from '../cache/cache.service';
+import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { SeriesService } from './series.service';
 
@@ -19,7 +19,7 @@ export class SeriesController {
   async getSeries(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     return new Promise<StreamableFile>((resolve) => {
       this._cacheService
-        .getCachePath(CacheDateKey.SERIES)
+        .getCachePath(CacheKey.SERIES)
         .then((path) => {
           const stats = statSync(path);
           const etag = stats.mtimeMs.toString();
@@ -95,5 +95,4 @@ export class SeriesController {
       resolve(new StreamableFile(createReadStream(spritePath)));
     });
   }
-
 }

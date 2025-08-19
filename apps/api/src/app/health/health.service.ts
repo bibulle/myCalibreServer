@@ -1,6 +1,6 @@
 import { Status } from '@my-calibre-server/api-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
-import { CacheDateKey, CacheService } from '../cache/cache.service';
+import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 
 @Injectable()
@@ -13,12 +13,13 @@ export class HealthService {
     return new Promise<Status>((resolve, reject) => {
       Promise.allSettled([
         this._calibreDb.getDbDate(),
-        this._calibreDb.getBooksCount(),
-        this._cacheService.getCacheDate(CacheDateKey.NEW_BOOKS),
-        this._cacheService.getCacheDate(CacheDateKey.BOOKS),
-        this._cacheService.getCacheDate(CacheDateKey.SERIES),
-        this._cacheService.getCacheDate(CacheDateKey.AUTHORS),
-        this._cacheService.getCacheDate(CacheDateKey.TAGS),
+        //this._calibreDb.getBooksCount(),
+        this._cacheService.getCacheNumber(CacheKey.COUNT),
+        this._cacheService.getCacheDate(CacheKey.NEW_BOOKS),
+        this._cacheService.getCacheDate(CacheKey.BOOKS),
+        this._cacheService.getCacheDate(CacheKey.SERIES),
+        this._cacheService.getCacheDate(CacheKey.AUTHORS),
+        this._cacheService.getCacheDate(CacheKey.TAGS),
       ])
         .then((results) => {
           const ret = new Status();
