@@ -18,15 +18,12 @@ export class HealthService {
    * Wraps a promise with a timeout
    */
   private withTimeout<T>(promise: Promise<T>, timeoutMs: number, defaultValue: T): Promise<T> {
-    return Promise.race([
-      promise,
-      new Promise<T>((resolve) => setTimeout(() => resolve(defaultValue), timeoutMs))
-    ]);
+    return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(defaultValue), timeoutMs))]);
   }
 
   async getHealthSattus(): Promise<Status> {
     const startTime = Date.now();
-    
+
     try {
       // Vérifier le cache
       const now = Date.now();
@@ -87,7 +84,7 @@ export class HealthService {
       // Mettre en cache le résultat
       this.healthCache = {
         status: ret,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       return ret;

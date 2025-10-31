@@ -46,9 +46,7 @@ describe('HealthController (e2e)', () => {
 
   describe('/health (GET)', () => {
     it('should return health status with HTTP 200', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.OK);
+      const response = await request(app.getHttpServer()).get('/health').expect(HttpStatus.OK);
 
       expect(response.body).toHaveProperty('status');
       // Les dates sont sérialisées en strings dans la réponse JSON
@@ -63,38 +61,27 @@ describe('HealthController (e2e)', () => {
 
     it('should return health status quickly (< 1s)', async () => {
       const startTime = Date.now();
-      
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.OK);
+
+      await request(app.getHttpServer()).get('/health').expect(HttpStatus.OK);
 
       const duration = Date.now() - startTime;
       expect(duration).toBeLessThan(1000);
     });
 
     it('should call HealthService.getHealthSattus', async () => {
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.OK);
+      await request(app.getHttpServer()).get('/health').expect(HttpStatus.OK);
 
       expect(mockHealthService.getHealthSattus).toHaveBeenCalled();
     });
 
     it('should handle service errors gracefully', async () => {
-      mockHealthService.getHealthSattus.mockRejectedValueOnce(
-        new Error('Database connection failed')
-      );
+      mockHealthService.getHealthSattus.mockRejectedValueOnce(new Error('Database connection failed'));
 
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+      await request(app.getHttpServer()).get('/health').expect(HttpStatus.INTERNAL_SERVER_ERROR);
     });
 
     it('should return valid JSON structure', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.OK)
-        .expect('Content-Type', /json/);
+      const response = await request(app.getHttpServer()).get('/health').expect(HttpStatus.OK).expect('Content-Type', /json/);
 
       expect(response.body).toHaveProperty('status');
       expect(response.body.status).toHaveProperty('calibreDate');
@@ -103,14 +90,10 @@ describe('HealthController (e2e)', () => {
 
     it('should use cache on repeated calls', async () => {
       // First call
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.OK);
+      await request(app.getHttpServer()).get('/health').expect(HttpStatus.OK);
 
       // Second call (should use cache)
-      await request(app.getHttpServer())
-        .get('/health')
-        .expect(HttpStatus.OK);
+      await request(app.getHttpServer()).get('/health').expect(HttpStatus.OK);
 
       // Service should be called at least once
       expect(mockHealthService.getHealthSattus).toHaveBeenCalled();

@@ -92,12 +92,8 @@ describe('HealthService', () => {
 
     it('should complete in less than 6 seconds with timeouts', async () => {
       // Simuler des promesses qui ne se résolvent jamais (timeout)
-      mockCalibreDbService.getDbDate.mockImplementation(
-        () => new Promise(() => {})
-      );
-      mockCacheService.getCacheDate.mockImplementation(
-        () => new Promise(() => {})
-      );
+      mockCalibreDbService.getDbDate.mockImplementation(() => new Promise(() => {}));
+      mockCacheService.getCacheDate.mockImplementation(() => new Promise(() => {}));
 
       const startTime = Date.now();
       await service.getHealthSattus();
@@ -117,7 +113,7 @@ describe('HealthService', () => {
 
       // First call
       const result1 = await service.getHealthSattus();
-      
+
       // Second call (should use cache)
       const result2 = await service.getHealthSattus();
 
@@ -127,9 +123,7 @@ describe('HealthService', () => {
     });
 
     it('should handle database errors', async () => {
-      mockCalibreDbService.getDbDate.mockRejectedValue(
-        new Error('Database connection failed')
-      );
+      mockCalibreDbService.getDbDate.mockRejectedValue(new Error('Database connection failed'));
       mockCacheService.getCacheDate.mockResolvedValue(new Date());
 
       const result = await service.getHealthSattus();
@@ -149,9 +143,7 @@ describe('HealthService', () => {
 
       await service.getHealthSattus();
 
-      expect(logSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Health check completed in')
-      );
+      expect(logSpy).toHaveBeenCalledWith(expect.stringContaining('Health check completed in'));
     });
   });
 });
