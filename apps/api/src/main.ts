@@ -41,7 +41,7 @@ async function bootstrap() {
     Logger.error('   Example: SESSION_SECRET=your-random-secret-here');
     process.exit(1);
   }
-  
+
   app.use(
     expressSession({
       secret: sessionSecret,
