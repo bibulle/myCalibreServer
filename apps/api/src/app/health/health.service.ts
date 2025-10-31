@@ -7,69 +7,94 @@ import { CalibreDb1Service } from '../database/calibre-db1.service';
 export class HealthService {
   readonly logger = new Logger(HealthService.name);
 
+  // Cache pour éviter de surcharger le système
+  private healthCache: { status: Status; timestamp: number } | null = null;
+  private readonly CACHE_TTL = 30000; // 30 secondes
+  private readonly CHECK_TIMEOUT = 5000; // 5 secondes max par vérification
+
   constructor(private _cacheService: CacheService, private _calibreDb: CalibreDb1Service) {}
 
-  getHealthSattus(): Promise<Status> {
-    return new Promise<Status>((resolve, reject) => {
-      Promise.allSettled([
-        this._calibreDb.getDbDate(),
-        //this._calibreDb.getBooksCount(),
-        this._cacheService.getCacheNumber(CacheKey.COUNT),
-        this._cacheService.getCacheDate(CacheKey.NEW_BOOKS),
-        this._cacheService.getCacheDate(CacheKey.BOOKS),
-        this._cacheService.getCacheDate(CacheKey.SERIES),
-        this._cacheService.getCacheDate(CacheKey.AUTHORS),
-        this._cacheService.getCacheDate(CacheKey.TAGS),
-      ])
-        .then((results) => {
-          const ret = new Status();
-          results.forEach((r, index) => {
-            this.logger.debug(JSON.stringify(r));
-            if (r.status === 'fulfilled') {
-              switch (index) {
-                case 0:
-                  ret.calibreDate = r.value as Date;
-                  break;
-                case 1:
-                  ret.calibreSize = +r.value;
-                  break;
-                case 2:
-                  ret.cacheNewBooks = r.value as Date;
-                  break;
-                case 3:
-                  ret.cacheBooks = r.value as Date;
-                  break;
-                case 4:
-                  ret.cacheSeries = r.value as Date;
-                  break;
-                case 5:
-                  ret.cacheAuthor = r.value as Date;
-                  break;
-                case 6:
-                  ret.cacheTags = r.value as Date;
-                  break;
+  /**
+   * Wraps a promise with a timeout
+   */
+  private withTimeout<T>(promise: Promise<T>, timeoutMs: number, defaultValue: T): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<T>((resolve) => setTimeout(() => resolve(defaultValue), timeoutMs))
+    ]);
+  }
+
+  async getHealthSattus(): Promise<Status> {
+    const startTime = Date.now();
+    
+    try {
+      // Vérifier le cache
+      const now = Date.now();
+      if (this.healthCache && now - this.healthCache.timestamp < this.CACHE_TTL) {
+        this.logger.debug(`Health check returned from cache (${now - this.healthCache.timestamp}ms old)`);
+        return this.healthCache.status;
+      }
+
+      // Effectuer les vérifications essentielles avec timeout
+      // On vérifie uniquement l'accès à la DB et l'existence du cache principal
+      const results = await Promise.allSettled([
+        this.withTimeout(this._calibreDb.getDbDate(), this.CHECK_TIMEOUT, null),
+        // Suppression de COUNT qui fait une requête SQL gourmande
+        // this.withTimeout(this._cacheService.getCacheNumber(CacheKey.COUNT), this.CHECK_TIMEOUT, 0),
+        this.withTimeout(this._cacheService.getCacheDate(CacheKey.BOOKS), this.CHECK_TIMEOUT, null),
+        // On simplifie en ne vérifiant que BOOKS au lieu de tous les caches
+        // this.withTimeout(this._cacheService.getCacheDate(CacheKey.NEW_BOOKS), this.CHECK_TIMEOUT, null),
+        // this.withTimeout(this._cacheService.getCacheDate(CacheKey.SERIES), this.CHECK_TIMEOUT, null),
+        // this.withTimeout(this._cacheService.getCacheDate(CacheKey.AUTHORS), this.CHECK_TIMEOUT, null),
+        // this.withTimeout(this._cacheService.getCacheDate(CacheKey.TAGS), this.CHECK_TIMEOUT, null),
+      ]);
+
+      const ret = new Status();
+      results.forEach((r, index) => {
+        this.logger.debug(JSON.stringify(r));
+        if (r.status === 'fulfilled' && r.value !== null) {
+          switch (index) {
+            case 0:
+              ret.calibreDate = r.value as Date;
+              break;
+            case 1:
+              ret.cacheBooks = r.value as Date;
+              break;
+          }
+        } else {
+          switch (index) {
+            case 0:
+              if (r.status === 'rejected') {
+                ret.calibreStatus = `KO : ${r.reason}`;
+              } else if (r.value === null) {
+                ret.calibreStatus = 'KO : Timeout or unavailable';
               }
-            } else {
-              switch (index) {
-                case 0:
-                case 1:
-                  ret.calibreStatus = `KO : ${r.reason}`;
-                  break;
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                  ret.cacheStatus = `KO : ${r.reason}`;
-                  break;
+              break;
+            case 1:
+              if (r.status === 'rejected') {
+                ret.cacheStatus = `KO : ${r.reason}`;
+              } else if (r.value === null) {
+                ret.cacheStatus = 'KO : Timeout or unavailable';
               }
-            }
-          });
-          resolve(ret);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+              break;
+          }
+        }
+      });
+
+      const duration = Date.now() - startTime;
+      this.logger.log(`Health check completed in ${duration}ms`);
+
+      // Mettre en cache le résultat
+      this.healthCache = {
+        status: ret,
+        timestamp: Date.now()
+      };
+
+      return ret;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      this.logger.error(`Health check failed after ${duration}ms`, error);
+      throw error;
+    }
   }
 }

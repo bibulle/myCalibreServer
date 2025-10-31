@@ -11,16 +11,12 @@ export class HealthController {
 
   @Get('')
   async getBStatus(): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      this._healthService
-        .getHealthSattus()
-        .then((status) => {
-          resolve({ status: status });
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+    try {
+      const status = await this._healthService.getHealthSattus();
+      return { status };
+    } catch (err) {
+      this.logger.error('Health check failed', err);
+      throw new HttpException('Health check failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
