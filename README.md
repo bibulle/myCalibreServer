@@ -74,3 +74,57 @@ npm start
 - Use different secrets for development and production environments
 - Store production secrets securely (e.g., using secret management tools)
 
+## 🧪 Testing
+
+### Unit Tests
+
+Run backend unit tests (using Jest):
+
+```bash
+# Run all tests
+npx nx test api
+
+# Run specific test file
+npx nx test api --testPathPattern=health
+
+# Run tests in watch mode
+npx nx test api --watch
+```
+
+### E2E Tests (Cypress)
+
+Full-stack integration tests that run in a real browser:
+
+```bash
+# Run E2E tests (headless mode)
+npx nx e2e frontend-e2e
+
+# Run E2E tests with Cypress UI (interactive mode)
+npx nx e2e frontend-e2e --watch
+
+# Run specific test file
+npx nx e2e frontend-e2e --spec="apps/frontend-e2e/src/integration/app.spec.ts"
+```
+
+**What E2E tests cover:**
+
+- ✅ Application loading and rendering
+- ✅ Backend API health checks (`/api/health`, `/api/version`)
+- ✅ Responsive design (mobile, tablet, desktop)
+- ✅ Full-stack integration (frontend + backend)
+
+**Test artifacts:**
+
+- Screenshots: `dist/cypress/apps/frontend-e2e/screenshots/`
+- Videos: `dist/cypress/apps/frontend-e2e/videos/`
+
+### Running Tests in CI/CD
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests with coverage
+npx nx test api --coverage
+```
+
