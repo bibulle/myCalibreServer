@@ -34,9 +34,17 @@ async function bootstrap() {
   // app.useGlobalFilters(new HttpExceptionFilter());
 
   // configure passport (for authentication)
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret) {
+    Logger.error('❌ SESSION_SECRET environment variable is not set!');
+    Logger.error('   Please set SESSION_SECRET in your environment or .env file');
+    Logger.error('   Example: SESSION_SECRET=your-random-secret-here');
+    process.exit(1);
+  }
+  
   app.use(
     expressSession({
-      secret: 'SECRET_SESSION',
+      secret: sessionSecret,
       resave: true,
       saveUninitialized: true,
     })
