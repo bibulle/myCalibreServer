@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.1](https://github.com/bibulle/myCalibreServer/compare/v0.11.0...v0.11.1) (2025-11-01)
+
+
+### Bug Fixes
+
+* suppress webpack warnings for optional dependencies ([3791b18](https://github.com/bibulle/myCalibreServer/commit/3791b18002cd818d6eedebe932b12256fa20cfa8))
+* update HTTP 304 response handling for NestJS compatibility ([070fc94](https://github.com/bibulle/myCalibreServer/commit/070fc94b32da61a1e9a1877a5e5f0cee0ab91faa))
+
 ## [0.11.0](https://github.com/bibulle/myCalibreServer/compare/v0.10.4...v0.11.0) (2025-11-01)
 
 
