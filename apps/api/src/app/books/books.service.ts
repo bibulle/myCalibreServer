@@ -139,61 +139,53 @@ export class BooksService {
   }
 
   async getBookToDownload(token: string, book_id: number, res: Response, format: 'EPUB' | 'MOBI', contentType: 'application/epub+zip' | 'application/x-mobipocket-ebook') {
-    return new Promise<StreamableFile>((resolve) => {
+    try {
       if (!token) {
         throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
       }
 
-      this._usersService
-        .checkToken(token)
-        .then((user) => {
-          if (!user) {
-            throw new HttpException('Not Authorized', HttpStatus.UNAUTHORIZED);
-          }
+      const user = await this._usersService.checkToken(token);
+      if (!user) {
+        throw new HttpException('Not Authorized', HttpStatus.UNAUTHORIZED);
+      }
 
-          this._calibreDbService
-            .getBookPaths(book_id)
-            .then((book: BookPath) => {
-              let fullPath = null;
+      try {
+        const book: BookPath = await this._calibreDbService.getBookPaths(book_id);
+        let fullPath = null;
 
-              if (book && book.book_path && book.data) {
-                const data = book.data.filter((bd: BookData) => {
-                  return bd.data_format == format;
-                });
-                if (data && data.length != 0) {
-                  fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
-                  fsPromises
-                    .stat(fullPath)
-                    .then(async () => {
-                      await this._usersService.addDownloadedBook(user, book_id, data[0]);
-                      res.set({
-                        'Content-Type': contentType,
-                        'Thumbnail-control': 'public, max-age=31536000',
-                        'Content-Disposition': `attachment; filename="${data[0].data_name}.${format.toLowerCase()}"`,
-                      });
-                      resolve(new StreamableFile(createReadStream(fullPath)));
-                    })
-                    .catch((reason) => {
-                      BooksService.logger.error(`${reason}`);
-                      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-                    });
-                } else {
-                  throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-                }
-              } else {
-                throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-              }
-            })
-            .catch((err) => {
-              BooksService.logger.error(err);
+        if (book && book.book_path && book.data) {
+          const data = book.data.filter((bd: BookData) => {
+            return bd.data_format == format;
+          });
+          if (data && data.length != 0) {
+            fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
+            try {
+              await fsPromises.stat(fullPath);
+              await this._usersService.addDownloadedBook(user, book_id, data[0]);
+              res.set({
+                'Content-Type': contentType,
+                'Thumbnail-control': 'public, max-age=31536000',
+                'Content-Disposition': `attachment; filename="${data[0].data_name}.${format.toLowerCase()}"`,
+              });
+              return new StreamableFile(createReadStream(fullPath));
+            } catch (reason) {
+              BooksService.logger.error(`${reason}`);
               throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-            });
-        })
-        .catch((err) => {
-          BooksService.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+            }
+          } else {
+            throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+          }
+        } else {
+          throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+        }
+      } catch (err) {
+        BooksService.logger.error(err);
+        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      }
+    } catch (err) {
+      BooksService.logger.error(err);
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async calculateMissingBookThumbnail(): Promise<void> {
