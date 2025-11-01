@@ -196,293 +196,238 @@ export class BooksService {
     });
   }
 
-  calculateMissingBookThumbnail(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this._calibreDbService
-        .getBooks()
-        .then(async (books) => {
-          for (const book of books.filter((b) => b.book_has_cover)) {
-            const coverPath = this.getCoverPath(book);
-            const coverStat = statSync(coverPath, { throwIfNoEntry: false });
-            const coverDate = coverStat ? coverStat.mtime : null;
+  async calculateMissingBookThumbnail(): Promise<void> {
+    try {
+      const books = await this._calibreDbService.getBooks();
+      for (const book of books.filter((b) => b.book_has_cover)) {
+        const coverPath = this.getCoverPath(book);
+        const coverStat = statSync(coverPath, { throwIfNoEntry: false });
+        const coverDate = coverStat ? coverStat.mtime : null;
 
-            const thumbnailPath = this.getThumbnailPath(book);
-            const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
-            const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(0);
+        const thumbnailPath = this.getThumbnailPath(book);
+        const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
+        const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(0);
 
-            if (coverDate && coverDate.getTime() >= thumbnailDate.getTime()) {
-              BooksService.logger.debug(`Calculate thumbnail : ${book.book_title}`);
-              // BooksService.logger.debug(`${coverDate} ${coverPath}`);
-              // BooksService.logger.debug(`${thumbnailDate} ${thumbnailPath}`);
+        if (coverDate && coverDate.getTime() >= thumbnailDate.getTime()) {
+          BooksService.logger.debug(`Calculate thumbnail : ${book.book_title}`);
+          // BooksService.logger.debug(`${coverDate} ${coverPath}`);
+          // BooksService.logger.debug(`${thumbnailDate} ${thumbnailPath}`);
 
-              mkdirSync(path.dirname(thumbnailPath), { recursive: true });
+          mkdirSync(path.dirname(thumbnailPath), { recursive: true });
 
-              await this.resizeImage(coverPath, thumbnailPath);
-            }
-          }
-          process.nextTick(resolve);
-        })
-        .catch((reason) => {
-          BooksService.logger.error(reason);
-          reject(reason);
-        });
-    });
+          await this.resizeImage(coverPath, thumbnailPath);
+        }
+      }
+    } catch (error) {
+      BooksService.logger.error(error);
+      throw error;
+    }
   }
 
-  calculateMissingSeriesThumbnail(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this._calibreDbService
-        .getAllSeries()
-        .then(async (seriesLst) => {
-          for (const series of seriesLst) {
-            const thumbnailPath = this._seriesService.getThumbnailPath(series.series_id);
-            const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
-            const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(1);
+  async calculateMissingSeriesThumbnail(): Promise<void> {
+    try {
+      const seriesLst = await this._calibreDbService.getAllSeries();
+      for (const series of seriesLst) {
+        const thumbnailPath = this._seriesService.getThumbnailPath(series.series_id);
+        const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
+        const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(1);
 
-            let coversDate = new Date(0);
-            series.books.forEach((book) => {
-              const coverPath = this.getCoverPath(book);
-              const coverStat = statSync(coverPath, { throwIfNoEntry: false });
-              coversDate = coverStat && coverStat.mtime.getTime() >= coversDate.getTime() ? coverStat.mtime : coversDate;
-  
+        let coversDate = new Date(0);
+        series.books.forEach((book) => {
+          const coverPath = this.getCoverPath(book);
+          const coverStat = statSync(coverPath, { throwIfNoEntry: false });
+          coversDate = coverStat && coverStat.mtime.getTime() >= coversDate.getTime() ? coverStat.mtime : coversDate;
+        });
+
+        // BooksService.logger.debug(`${coverDate} ${thumbnailDate}`);
+        if (coversDate.getTime() > thumbnailDate.getTime()) {
+          BooksService.logger.debug(`calculate series thumbnail [start]: ${series.series_name} (${series.books.length} books)`);
+
+          const calculation: SeriesThumbnailCalculation = {
+            theBuffer: undefined,
+            width: 0,
+            height: SeriesThumbnailCalculation.INITIAL_HEIGHT,
+            step_increment: SeriesThumbnailCalculation.INITIAL_STEP_INCREMENT,
+            step: -1 * SeriesThumbnailCalculation.INITIAL_STEP_INCREMENT,
+          };
+
+          for (const book of series.books) {
+            calculation.step += calculation.step_increment;
+            calculation.height += calculation.step;
+
+            if (existsSync(this.getCoverPath(book))) {
+              await this.resizeSeries(this.getCoverPath(book), calculation).catch((reason) => {
+                BooksService.logger.error('Error while resizing series');
+                BooksService.logger.error(reason);
+              });
+            }
+          }
+
+          if (calculation.theBuffer) {
+            mkdirSync(path.dirname(thumbnailPath), { recursive: true });
+
+            BooksService.logger.debug(`calculate series thumbnail [end]  : ${series.series_name} (${series.books.length} books)`);
+            await this.saveBufferToPng(calculation.theBuffer, thumbnailPath).catch((reason) => {
+              BooksService.logger.error('Error while saving series');
+              BooksService.logger.error(reason);
             });
-
-            // BooksService.logger.debug(`${coverDate} ${thumbnailDate}`);
-            if (coversDate.getTime() > thumbnailDate.getTime()) {
-              BooksService.logger.debug(`calculate series thumbnail [start]: ${series.series_name} (${series.books.length} books)`);
-
-              const calculation: SeriesThumbnailCalculation = {
-                theBuffer: undefined,
-                width: 0,
-                height: SeriesThumbnailCalculation.INITIAL_HEIGHT,
-                step_increment: SeriesThumbnailCalculation.INITIAL_STEP_INCREMENT,
-                step: -1 * SeriesThumbnailCalculation.INITIAL_STEP_INCREMENT,
-              };
-
-              for (const book of series.books) {
-                calculation.step += calculation.step_increment;
-                calculation.height += calculation.step;
-
-                if (existsSync(this.getCoverPath(book))) {
-                  await this.resizeSeries(this.getCoverPath(book), calculation).catch((reason) => {
-                    BooksService.logger.error('Error while resizing series');
-                    BooksService.logger.error(reason);
-                  });
-                }
-              }
-
-              if (calculation.theBuffer) {
-                mkdirSync(path.dirname(thumbnailPath), { recursive: true });
-
-                BooksService.logger.debug(`calculate series thumbnail [end]  : ${series.series_name} (${series.books.length} books)`);
-                await this.saveBufferToPng(calculation.theBuffer, thumbnailPath).catch((reason) => {
-                  BooksService.logger.error('Error while saving series');
-                  BooksService.logger.error(reason);
-                });
-              }
-            }
           }
-
-          process.nextTick(resolve);
-        })
-        .catch((reason) => {
-          BooksService.logger.error(reason);
-          reject(reason);
-        });
-    });
+        }
+      }
+    } catch (error) {
+      BooksService.logger.error(error);
+      throw error;
+    }
   }
 
-  calculateSpritesBookThumbnail(): Promise<void> {
+  async calculateSpritesBookThumbnail(): Promise<void> {
     // BooksService.logger.debug('calculateSpritesBookThumbnail()');
 
-    return new Promise<void>((resolve, reject) => {
+    try {
       // const spriteList = {};
-      this._calibreDbService
-        .getBooks()
-        .then(async (books) => {
-          const spriteList: Sprite[] = [
-            ...new Set<Sprite>(
-              books
-                .map((b) => {
-                  return { id: ThumbnailUtils.getSpritesIndex(b.book_id), spriteTime: this.getSpriteDate(b), thumbnailTime: this.getThumbnailDate(b) };
-                })
-                .reduce((accumulator, current) => {
-                  const found = accumulator.find((s) => s.id === current.id);
-                  if (found) {
-                    found.thumbnailTime = current.thumbnailTime > found.thumbnailTime ? current.thumbnailTime : found.thumbnailTime;
-                  } else {
-                    accumulator.push(current);
-                  }
-                  return accumulator;
-                }, [] as Sprite[])
-                .filter((s) => s.thumbnailTime >= s.spriteTime)
-            ),
-          ].sort((s1, s2) => s1.id - s2.id);
-          // BooksService.logger.debug(spriteList);
+      const books = await this._calibreDbService.getBooks();
+      const spriteList: Sprite[] = [
+        ...new Set<Sprite>(
+          books
+            .map((b) => {
+              return { id: ThumbnailUtils.getSpritesIndex(b.book_id), spriteTime: this.getSpriteDate(b), thumbnailTime: this.getThumbnailDate(b) };
+            })
+            .reduce((accumulator, current) => {
+              const found = accumulator.find((s) => s.id === current.id);
+              if (found) {
+                found.thumbnailTime = current.thumbnailTime > found.thumbnailTime ? current.thumbnailTime : found.thumbnailTime;
+              } else {
+                accumulator.push(current);
+              }
+              return accumulator;
+            }, [] as Sprite[])
+            .filter((s) => s.thumbnailTime >= s.spriteTime)
+        ),
+      ].sort((s1, s2) => s1.id - s2.id);
+      // BooksService.logger.debug(spriteList);
 
-          for (const i of spriteList) {
-            BooksService.logger.debug(`sprite ${i.id} start`);
+      for (const i of spriteList) {
+        BooksService.logger.debug(`sprite ${i.id} start`);
 
-            await this.createSpritesBooks(i.id);
+        await this.createSpritesBooks(i.id);
 
-            BooksService.logger.debug(`sprite ${i.id} done`);
-          }
+        BooksService.logger.debug(`sprite ${i.id} done`);
+      }
 
-          // BooksService.logger.debug('calculateSpritesBookThumbnail done');
-
-          process.nextTick(resolve);
-        })
-        .catch((reason) => {
-          BooksService.logger.error(reason);
-          reject(reason);
-        });
-    });
+      // BooksService.logger.debug('calculateSpritesBookThumbnail done');
+    } catch (error) {
+      BooksService.logger.error(error);
+      throw error;
+    }
   }
 
-  resizeImage(srcPath: string, trgPath: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async resizeImage(srcPath: string, trgPath: string): Promise<void> {
+    try {
       mkdirSync(dirname(trgPath), { recursive: true });
-      sharp(srcPath)
-        .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
-        .toFile(trgPath, (err) => {
-          if (err) {
-            BooksService.logger.error(err);
-            reject(err);
-          } else {
-            // BooksService.logger.debug(info);
-            process.nextTick(resolve);
-          }
-        });
-    });
+      await sharp(srcPath).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFile(trgPath);
+      // BooksService.logger.debug(info);
+    } catch (error) {
+      BooksService.logger.error(error);
+      throw error;
+    }
   }
 
-  resizeSeries(srcPath: string, calculation: SeriesThumbnailCalculation): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async resizeSeries(srcPath: string, calculation: SeriesThumbnailCalculation): Promise<void> {
+    try {
       if (!calculation.theBuffer) {
         // first cover, just copy it
-        sharp(srcPath)
+        const { data, info } = await sharp(srcPath)
           .resize({
             height: calculation.height,
             fit: 'contain',
             background: { r: 0, g: 0, b: 0, alpha: 0 },
           })
           .toFormat(sharp.format.png)
-          .toBuffer((err, buffer, info) => {
-            if (err) {
-              reject(err);
-            } else {
-              calculation.width = info.width;
-              calculation.theBuffer = buffer;
+          .toBuffer({ resolveWithObject: true });
 
-              process.nextTick(resolve);
-            }
-          });
+        calculation.width = info.width;
+        calculation.theBuffer = data;
       } else {
         // no first cover, copy it shifted
-        sharp(srcPath)
+        const { data: buffer, info } = await sharp(srcPath)
           .resize({
             height: calculation.height,
             fit: 'contain',
             background: { r: 0, g: 0, b: 0, alpha: 0 },
           })
           .toFormat(sharp.format.png)
-          .toBuffer((err, buffer, info) => {
-            if (err) {
-              return reject(err);
-            }
-            sharp(calculation.theBuffer)
-              .extend({
-                top: calculation.step / 2,
-                bottom: calculation.step / 2,
-                left: 0,
-                right: Math.max(0, calculation.step + info.width - calculation.width),
-                background: { r: 0, g: 0, b: 0, alpha: 0 },
-              })
-              .composite([
-                {
-                  input: buffer,
-                  blend: 'overlay',
-                  top: 0,
-                  left: calculation.step,
-                },
-              ])
-              .toBuffer((err, buffer, info) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  if (info.height > 10 * SeriesThumbnailCalculation.INITIAL_HEIGHT) {
-                    //debug("height to big, resize " + info.height + " " + height);
-                    calculation.height = Math.round(calculation.height / 10);
-                    calculation.step = Math.round(calculation.step / 10);
-                    calculation.step = calculation.step + (calculation.step % 2);
-                    calculation.step_increment = Math.ceil(calculation.step_increment / 10);
-                    calculation.step_increment = calculation.step_increment + (calculation.step_increment % 2);
-                    //debug("     "+height+" "+step);
+          .toBuffer({ resolveWithObject: true });
 
-                    sharp(buffer)
-                      .resize(null, calculation.height)
-                      .toBuffer((err, buffer, info) => {
-                        if (err) {
-                          reject(err);
-                        } else {
-                          //debug(info);
-                          calculation.width = info.width;
-                          calculation.theBuffer = buffer;
-                          process.nextTick(resolve);
-                        }
-                      });
-                  } else {
-                    calculation.width = info.width;
-                    calculation.theBuffer = buffer;
-                    process.nextTick(resolve);
-                  }
-                }
-              });
-          });
+        const { data: compositeBuffer, info: compositeInfo } = await sharp(calculation.theBuffer)
+          .extend({
+            top: calculation.step / 2,
+            bottom: calculation.step / 2,
+            left: 0,
+            right: Math.max(0, calculation.step + info.width - calculation.width),
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+          })
+          .composite([
+            {
+              input: buffer,
+              blend: 'overlay',
+              top: 0,
+              left: calculation.step,
+            },
+          ])
+          .toBuffer({ resolveWithObject: true });
+
+        if (compositeInfo.height > 10 * SeriesThumbnailCalculation.INITIAL_HEIGHT) {
+          //debug("height to big, resize " + info.height + " " + height);
+          calculation.height = Math.round(calculation.height / 10);
+          calculation.step = Math.round(calculation.step / 10);
+          calculation.step = calculation.step + (calculation.step % 2);
+          calculation.step_increment = Math.ceil(calculation.step_increment / 10);
+          calculation.step_increment = calculation.step_increment + (calculation.step_increment % 2);
+          //debug("     "+height+" "+step);
+
+          const { data: resizedBuffer, info: resizedInfo } = await sharp(compositeBuffer).resize(null, calculation.height).toBuffer({ resolveWithObject: true });
+
+          //debug(info);
+          calculation.width = resizedInfo.width;
+          calculation.theBuffer = resizedBuffer;
+        } else {
+          calculation.width = compositeInfo.width;
+          calculation.theBuffer = compositeBuffer;
+        }
       }
-    });
+    } catch (error) {
+      throw error;
+    }
   }
 
-  saveBufferToPng(theBuffer: Buffer, trgPath: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      sharp(theBuffer)
-        .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
-        .toFormat(sharp.format.png)
-        .toFile(trgPath, (err) => {
-          if (err) {
-            BooksService.logger.error(err);
-            reject(err);
-          } else {
-            //debug(thumbnailPath + " done");
-            process.nextTick(resolve);
-            //debug(info);
-          }
-        });
-    });
+  async saveBufferToPng(theBuffer: Buffer, trgPath: string): Promise<void> {
+    try {
+      await sharp(theBuffer).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toFile(trgPath);
+      //debug(thumbnailPath + " done");
+      //debug(info);
+    } catch (error) {
+      BooksService.logger.error(error);
+      throw error;
+    }
   }
 
   static maxWidth = 0;
-  static getThumbnailInfo(path: string): Promise<OutputInfo> {
-    return new Promise<OutputInfo>((resolve, reject) => {
-      sharp(path)
-        .resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT)
-        .toFormat(sharp.format.png)
-        .toBuffer((err, buffer, info) => {
-          if (err) {
-            reject(err);
-          } else {
-            if (info.width > this.maxWidth) {
-              this.maxWidth = info.width;
-              // BooksService.logger.debug(`${path} : ${this.maxWidth}`);
-            }
-            if (info.width > ThumbnailUtils.THUMBNAIL_HEIGHT) {
-              BooksService.logger.warn(`TOO BIG ${path} : ${info.width}`);
-            }
+  static async getThumbnailInfo(path: string): Promise<OutputInfo> {
+    try {
+      const { data, info } = await sharp(path).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toBuffer({ resolveWithObject: true });
 
-            resolve(info);
-          }
-        });
-    });
+      if (info.width > this.maxWidth) {
+        this.maxWidth = info.width;
+        // BooksService.logger.debug(`${path} : ${this.maxWidth}`);
+      }
+      if (info.width > ThumbnailUtils.THUMBNAIL_HEIGHT) {
+        BooksService.logger.warn(`TOO BIG ${path} : ${info.width}`);
+      }
+
+      return info;
+    } catch (error) {
+      throw error;
+    }
   }
 
   getSpriteDate(book: Book): number {
@@ -497,76 +442,55 @@ export class BooksService {
     return stat ? stat.mtimeMs : 0;
   }
 
-  createSpritesBooks(index: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async createSpritesBooks(index: number): Promise<void> {
+    try {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
-      this.getSpritesBooksOverlay(index)
-        .then((overlay) => {
-          // create empty image (and add overlay)
-          sharp({ create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-            .composite(overlay)
-            .png({ palette: true, compressionLevel: 9 })
-            .toBuffer()
-            .then((buffer) => {
-              sharp(buffer).toFile(this.getSpritesPath(index), (err) => {
-                if (err) {
-                  BooksService.logger.error(err);
-                  reject(err);
-                } else {
-                  // BooksService.logger.debug(info);
-                  process.nextTick(resolve);
-                }
-              });
-            });
-        })
-        .catch((reason) => {
-          BooksService.logger.error(reason);
-          reject(reason);
-        });
-    });
+      const overlay = await this.getSpritesBooksOverlay(index);
+      // create empty image (and add overlay)
+      const buffer = await sharp({
+        create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
+      })
+        .composite(overlay)
+        .png({ palette: true, compressionLevel: 9 })
+        .toBuffer();
+
+      await sharp(buffer).toFile(this.getSpritesPath(index));
+      // BooksService.logger.debug(info);
+    } catch (error) {
+      BooksService.logger.error(error);
+      throw error;
+    }
   }
 
-  getSpritesBooksOverlay(index: number): Promise<OverlayOptions[]> {
-    return new Promise<OverlayOptions[]>((resolve, reject) => {
-      BooksService.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL)
-        .then((err_info) => {
-          this._calibreDbService.getBooks().then((books) => {
-            const overlay: Promise<OverlayOptions>[] = books
-              .filter((b) => ThumbnailUtils.getSpritesIndex(b.book_id) === index)
-              .map(async (b) => {
-                let info = err_info;
-                let path = CacheService.ERR_COVER_THUMBNAIL;
-                if (existsSync(this.getThumbnailPath(b))) {
-                  path = this.getThumbnailPath(b);
-                  const my_info = await BooksService.getThumbnailInfo(path).catch((err) => {
-                    BooksService.logger.debug(err);
-                  });
-                  if (my_info) {
-                    info = my_info;
-                  }
-                  // BooksService.logger.debug(path);
-                }
-                return {
-                  input: path,
-                  top: 0,
-                  left: ThumbnailUtils.THUMBNAIL_HEIGHT * ThumbnailUtils.getIndexInSprites(b.book_id) + Math.round((ThumbnailUtils.THUMBNAIL_HEIGHT - info.width) / 2),
-                };
-              });
-            Promise.all(overlay)
-              .then((r) => {
-                process.nextTick(() => {
-                  resolve(r);
-                });
-              })
-              .catch((reason) => {
-                reject(reason);
-              });
-          });
-        })
-        .catch((reason) => {
-          reject(reason);
+  async getSpritesBooksOverlay(index: number): Promise<OverlayOptions[]> {
+    try {
+      const err_info = await BooksService.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL);
+      const books = await this._calibreDbService.getBooks();
+      const overlay: Promise<OverlayOptions>[] = books
+        .filter((b) => ThumbnailUtils.getSpritesIndex(b.book_id) === index)
+        .map(async (b) => {
+          let info = err_info;
+          let path = CacheService.ERR_COVER_THUMBNAIL;
+          if (existsSync(this.getThumbnailPath(b))) {
+            path = this.getThumbnailPath(b);
+            const my_info = await BooksService.getThumbnailInfo(path).catch((err) => {
+              BooksService.logger.debug(err);
+            });
+            if (my_info) {
+              info = my_info;
+            }
+            // BooksService.logger.debug(path);
+          }
+          return {
+            input: path,
+            top: 0,
+            left: ThumbnailUtils.THUMBNAIL_HEIGHT * ThumbnailUtils.getIndexInSprites(b.book_id) + Math.round((ThumbnailUtils.THUMBNAIL_HEIGHT - info.width) / 2),
+          };
         });
-    });
+      return await Promise.all(overlay);
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
