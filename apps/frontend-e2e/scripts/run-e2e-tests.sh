@@ -82,6 +82,7 @@ echo -e "\n${YELLOW}🚀 Step 2: Starting backend API with test databases...${NC
 export MONGO_URL=mongodb://localhost:27017
 export MONGO_DB_NAME=myCalibreDb_test
 export PATH_BOOKS="$PROJECT_ROOT/test/data/calibre"
+export PATH_MY_CALIBRE="$PROJECT_ROOT/test/data/my-calibre"
 
 # Start backend in background with nohup and detached from terminal
 nohup npx nx serve api < /dev/null > /tmp/e2e-backend.log 2>&1 &

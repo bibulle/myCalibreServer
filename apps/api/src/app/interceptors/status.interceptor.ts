@@ -11,16 +11,19 @@ export class StatusInterceptor implements NestInterceptor {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-
     return next.handle().pipe(
       map(async (data) => {
+        // Skip interceptor for null/undefined responses (e.g., 304 Not Modified)
+        if (!data) {
+          return data;
+        }
 
         if (!data.version) {
           data.version = this._versionService.getVersion();
-        } 
+        }
         if (!data.status) {
           data.status = await this._healthService.getHealthSattus();
-        } 
+        }
         // this.logger.log(`${JSON.stringify(data, null, 2)}`);
 
         return data;

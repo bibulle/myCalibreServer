@@ -75,11 +75,11 @@ describe('AuthorsController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.getAuthors(headers, mockResponse);
+      await controller.getAuthors(headers, mockResponse);
 
       expect(cacheService.getCachePath).toHaveBeenCalledWith(CacheKey.AUTHORS);
       expect(mockResponse.set).toHaveBeenCalledWith({ ETag: '123456789' });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 when ETag matches', async () => {
@@ -91,14 +91,10 @@ describe('AuthorsController', () => {
 
       const headers = { 'if-none-match': '123456789' };
 
-      // The controller returns early with 304
-      controller.getAuthors(headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.getAuthors(headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
 
     it('should set correct ETag from file modification time', async () => {

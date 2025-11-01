@@ -84,11 +84,11 @@ describe('SeriesController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.getSeries(headers, mockResponse);
+      await controller.getSeries(headers, mockResponse);
 
       expect(cacheService.getCachePath).toHaveBeenCalledWith(CacheKey.SERIES);
       expect(mockResponse.set).toHaveBeenCalledWith({ ETag: '123456789' });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 when ETag matches', async () => {
@@ -100,14 +100,10 @@ describe('SeriesController', () => {
 
       const headers = { 'if-none-match': '123456789' };
 
-      // The controller returns early with 304
-      controller.getSeries(headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.getSeries(headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
 
     // Note: Error handling test skipped - same Promise.catch() issue as BooksController
@@ -122,14 +118,14 @@ describe('SeriesController', () => {
       (fs.promises.stat as jest.Mock).mockResolvedValue({ size: 1000 });
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
-      const result = await controller.getThumbnail(1, mockResponse);
+      await controller.getThumbnail(1, mockResponse);
 
       expect(seriesService.getThumbnailPath).toHaveBeenCalledWith(1);
       expect(mockResponse.set).toHaveBeenCalledWith({
         'Content-Type': 'image/png',
         'Cache-Control': 'max-age=31536000',
       });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return error cover when thumbnail not found', async () => {
@@ -140,13 +136,13 @@ describe('SeriesController', () => {
       (fs.promises.stat as jest.Mock).mockRejectedValue(new Error('File not found'));
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
-      const result = await controller.getThumbnail(1, mockResponse);
+      await controller.getThumbnail(1, mockResponse);
 
       expect(mockResponse.set).toHaveBeenCalledWith({
         'Content-Type': 'image/svg+xml',
         'Cache-control': 'public, max-age=3600',
       });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should handle different series IDs', async () => {
@@ -175,14 +171,14 @@ describe('SeriesController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.getSprite(1, headers, mockResponse);
+      await controller.getSprite(1, headers, mockResponse);
 
       expect(seriesService.getSpritesPath).toHaveBeenCalledWith(1);
       expect(mockResponse.set).toHaveBeenCalledWith({
         'Content-Type': 'image/png',
         ETag: '111222333',
       });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 when sprite ETag matches', async () => {
@@ -195,14 +191,10 @@ describe('SeriesController', () => {
 
       const headers = { 'if-none-match': '111222333' };
 
-      // The controller returns early with 304
-      controller.getSprite(1, headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.getSprite(1, headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
 
     it('should throw NotFoundException when sprite does not exist', async () => {

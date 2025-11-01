@@ -121,11 +121,11 @@ describe('BooksController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.getBooks(headers, mockResponse);
+      await controller.getBooks(headers, mockResponse);
 
       expect(cacheService.getCachePath).toHaveBeenCalledWith(CacheKey.BOOKS);
       expect(mockResponse.set).toHaveBeenCalledWith({ ETag: '123456789' });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 when ETag matches', async () => {
@@ -137,14 +137,10 @@ describe('BooksController', () => {
 
       const headers = { 'if-none-match': '123456789' };
 
-      // The controller returns early with 304, no StreamableFile returned
-      const result = controller.getBooks(headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.getBooks(headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
 
     // Note: Error handling test skipped - controller uses throw instead of reject in Promise.catch()
@@ -163,11 +159,11 @@ describe('BooksController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.new(headers, mockResponse);
+      await controller.new(headers, mockResponse);
 
       expect(cacheService.getCachePath).toHaveBeenCalledWith(CacheKey.NEW_BOOKS);
       expect(mockResponse.set).toHaveBeenCalledWith({ ETag: '987654321' });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 for new books when ETag matches', async () => {
@@ -179,14 +175,10 @@ describe('BooksController', () => {
 
       const headers = { 'if-none-match': '987654321' };
 
-      // The controller returns early with 304
-      controller.new(headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.new(headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
   });
 
@@ -344,14 +336,14 @@ describe('BooksController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.getSprite(1, headers, mockResponse);
+      await controller.getSprite(1, headers, mockResponse);
 
       expect(booksService.getSpritesPath).toHaveBeenCalledWith(1);
       expect(mockResponse.set).toHaveBeenCalledWith({
         'Content-Type': 'image/png',
         ETag: '111222333',
       });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 when sprite ETag matches', async () => {
@@ -364,14 +356,10 @@ describe('BooksController', () => {
 
       const headers = { 'if-none-match': '111222333' };
 
-      // The controller returns early with 304
-      controller.getSprite(1, headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.getSprite(1, headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
 
     it('should throw NotFoundException when sprite does not exist', async () => {

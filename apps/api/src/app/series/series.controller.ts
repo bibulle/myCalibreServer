@@ -16,13 +16,13 @@ export class SeriesController {
   // ====================================
   @Get('')
   @UseGuards(AuthGuard('jwt'))
-  async getSeries(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
+  async getSeries(@Headers() headers: Record<string, string>, @Res() res): Promise<void> {
     try {
       const path = await this._cacheService.getCachePath(CacheKey.SERIES);
       const stats = statSync(path);
       const etag = stats.mtimeMs.toString();
       if (headers['if-none-match'] === etag) {
-        return res.status(304).send('No change');
+        return res.status(304).send();
       }
 
       res.set({
@@ -30,7 +30,7 @@ export class SeriesController {
       });
 
       const file = createReadStream(path);
-      return new StreamableFile(file);
+      file.pipe(res);
     } catch (err) {
       this.logger.error(err);
       throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -41,7 +41,7 @@ export class SeriesController {
   // route for getting series thumbnail
   // ====================================
   @Get('/thumbnail/:id.png')
-  async getThumbnail(@Param('id') series_id: number, @Response({ passthrough: true }) res): Promise<StreamableFile> {
+  async getThumbnail(@Param('id') series_id: number, @Res() res): Promise<void> {
     const err_cover_path = CacheService.ERR_COVER;
     const thumbnailPath = this._seriesService.getThumbnailPath(series_id);
 
@@ -51,13 +51,13 @@ export class SeriesController {
         'Content-Type': 'image/png',
         'Cache-Control': 'max-age=31536000',
       });
-      return new StreamableFile(createReadStream(thumbnailPath));
+      createReadStream(thumbnailPath).pipe(res);
     } catch {
       res.set({
         'Content-Type': 'image/svg+xml',
         'Cache-control': 'public, max-age=3600',
       });
-      return new StreamableFile(createReadStream(err_cover_path));
+      createReadStream(err_cover_path).pipe(res);
     }
   }
 
@@ -65,7 +65,7 @@ export class SeriesController {
   // route for getting series thumbnail sprites
   // ====================================
   @Get('/sprite/:id.png')
-  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
+  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res() res): Promise<void> {
     const spritePath = this._seriesService.getSpritesPath(sprite_id);
 
     if (!existsSync(spritePath)) {
@@ -74,7 +74,7 @@ export class SeriesController {
     const stats = statSync(spritePath);
     const etag = stats.mtimeMs.toString();
     if (headers['if-none-match'] === etag) {
-      return res.status(304).send('No change');
+      return res.status(304).send();
     }
 
     res.set({
@@ -82,6 +82,6 @@ export class SeriesController {
       ETag: etag,
     });
 
-    return new StreamableFile(createReadStream(spritePath));
+    createReadStream(spritePath).pipe(res);
   }
 }
