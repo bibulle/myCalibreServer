@@ -79,51 +79,47 @@ export class AuthenticationController {
 
   @Get('google/unlink')
   @UseGuards(AuthGuard(['jwt']))
-  googleUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      // this.logger.debug(modifiedUserId);
-      if (!modifiedUserId || modifiedUserId.length === 0) {
-        throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
-      }
+  async googleUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {
+    // this.logger.debug(modifiedUserId);
+    if (!modifiedUserId || modifiedUserId.length === 0) {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
 
-      modifiedUserId = modifiedUserId.replace(/ /g, '+');
+    modifiedUserId = modifiedUserId.replace(/ /g, '+');
 
-      const user: User = req.user as User;
-      if (user) {
-        if (modifiedUserId !== user.id) {
-          if (!user.local.isAdmin) {
-            throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
-          } else {
-            this._userService
-              .findById(modifiedUserId)
-              .then((modifiedUser) => {
-                if (modifiedUser) {
-                  modifiedUser.google = {};
-                  this._userService.saveUser(modifiedUser, true);
-                  resolve({
-                    user: this._userService.user2API(modifiedUser),
-                  });
-                } else {
-                  throw new HttpException('User not found 1', HttpStatus.NOT_FOUND);
-                }
-              })
-              .catch((reason) => {
-                this.logger.error(reason);
-                throw new HttpException('User not found 2', HttpStatus.NOT_FOUND);
-              });
-          }
+    const user: User = req.user as User;
+    if (user) {
+      if (modifiedUserId !== user.id) {
+        if (!user.local.isAdmin) {
+          throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
         } else {
-          user.google = {};
-          this._userService.saveUser(user, true);
-          resolve({
-            user: this._userService.user2API(user),
-            id_token: this._userService.createToken(user),
-          });
+          try {
+            const modifiedUser = await this._userService.findById(modifiedUserId);
+            if (modifiedUser) {
+              modifiedUser.google = {};
+              await this._userService.saveUser(modifiedUser, true);
+              return {
+                user: this._userService.user2API(modifiedUser),
+              };
+            } else {
+              throw new HttpException('User not found 1', HttpStatus.NOT_FOUND);
+            }
+          } catch (reason) {
+            this.logger.error(reason);
+            throw new HttpException('User not found 2', HttpStatus.NOT_FOUND);
+          }
         }
       } else {
-        throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+        user.google = {};
+        await this._userService.saveUser(user, true);
+        return {
+          user: this._userService.user2API(user),
+          id_token: this._userService.createToken(user),
+        };
       }
-    });
+    } else {
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
   // =====================================
   // FACEBOOK ROUTES =====================
@@ -176,51 +172,47 @@ export class AuthenticationController {
 
   @Get('facebook/unlink')
   @UseGuards(AuthGuard(['jwt']))
-  facebookUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      // this.logger.debug(modifiedUserId);
-      if (!modifiedUserId || modifiedUserId.length === 0) {
-        throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
-      }
+  async facebookUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {
+    // this.logger.debug(modifiedUserId);
+    if (!modifiedUserId || modifiedUserId.length === 0) {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
 
-      modifiedUserId = modifiedUserId.replace(/ /g, '+');
+    modifiedUserId = modifiedUserId.replace(/ /g, '+');
 
-      const user: User = req.user as User;
-      if (user) {
-        if (modifiedUserId !== user.id) {
-          if (!user.local.isAdmin) {
-            throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
-          } else {
-            this._userService
-              .findById(modifiedUserId)
-              .then((modifiedUser) => {
-                if (modifiedUser) {
-                  modifiedUser.facebook = {};
-                  this._userService.saveUser(modifiedUser, true);
-                  resolve({
-                    user: this._userService.user2API(modifiedUser),
-                  });
-                } else {
-                  throw new HttpException('User not found 1', HttpStatus.NOT_FOUND);
-                }
-              })
-              .catch((reason) => {
-                this.logger.error(reason);
-                throw new HttpException('User not found 2', HttpStatus.NOT_FOUND);
-              });
-          }
+    const user: User = req.user as User;
+    if (user) {
+      if (modifiedUserId !== user.id) {
+        if (!user.local.isAdmin) {
+          throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
         } else {
-          user.facebook = {};
-          this._userService.saveUser(user, true);
-          resolve({
-            user: this._userService.user2API(user),
-            id_token: this._userService.createToken(user),
-          });
+          try {
+            const modifiedUser = await this._userService.findById(modifiedUserId);
+            if (modifiedUser) {
+              modifiedUser.facebook = {};
+              await this._userService.saveUser(modifiedUser, true);
+              return {
+                user: this._userService.user2API(modifiedUser),
+              };
+            } else {
+              throw new HttpException('User not found 1', HttpStatus.NOT_FOUND);
+            }
+          } catch (reason) {
+            this.logger.error(reason);
+            throw new HttpException('User not found 2', HttpStatus.NOT_FOUND);
+          }
         }
       } else {
-        throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+        user.facebook = {};
+        await this._userService.saveUser(user, true);
+        return {
+          user: this._userService.user2API(user),
+          id_token: this._userService.createToken(user),
+        };
       }
-    });
+    } else {
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   // =====================================
@@ -250,25 +242,21 @@ export class AuthenticationController {
   @Get('/user')
   @UseGuards(AuthGuard('jwt'))
   async getUser(@Req() req): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      const user: User = req.user as User;
-      if (user) {
-        const ret: ApiReturn = {};
+    const user: User = req.user as User;
+    if (user) {
+      const ret: ApiReturn = {};
 
-        this._userService
-          .findById(user.id)
-          .then((loaderUser) => {
-            ret.user = this._userService.user2API(loaderUser);
-            resolve(ret);
-          })
-          .catch((err) => {
-            this.logger.error(err);
-            throw new HttpException('Authentication failed', HttpStatus.UNAUTHORIZED);
-          });
-      } else {
+      try {
+        const loaderUser = await this._userService.findById(user.id);
+        ret.user = this._userService.user2API(loaderUser);
+        return ret;
+      } catch (err) {
+        this.logger.error(err);
         throw new HttpException('Authentication failed', HttpStatus.UNAUTHORIZED);
       }
-    });
+    } else {
+      throw new HttpException('Authentication failed', HttpStatus.UNAUTHORIZED);
+    }
   }
 
   // ====================================
@@ -297,7 +285,6 @@ export class AuthenticationController {
   @Post('checktoken')
   @UseGuards(AuthGuard('temporary-token'))
   async checkToken(@Req() req): Promise<ApiReturn> {
-    
     const user: User = req.user as User;
     if (user) {
       this._userService.updateLastConnection(user);
