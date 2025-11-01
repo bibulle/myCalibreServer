@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/bibulle/myCalibreServer/compare/v0.10.4...v0.11.0) (2025-11-01)
+
+
+### Features
+
+* **e2e:** Complete E2E test infrastructure with 76/88 passing tests ([722dea4](https://github.com/bibulle/myCalibreServer/commit/722dea42f3c528e3e4a5e7adf85cd1a69e5c1293))
+
+
+### Bug Fixes
+
+* **health:** optimize health check performance and reliability ([f8b1b21](https://github.com/bibulle/myCalibreServer/commit/f8b1b21784fcfb93842a88798c929b75eaa78693)), closes [#138](https://github.com/bibulle/myCalibreServer/issues/138)
+
 ### [0.10.4](https://github.com/bibulle/myCalibreServer/compare/v0.10.3...v0.10.4) (2025-08-19)
 
 

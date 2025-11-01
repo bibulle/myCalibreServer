@@ -1,6 +1,6 @@
 {
   "name": "my-calibre-server",
-  "version": "0.10.4",
+  "version": "0.11.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -25,9 +25,9 @@
     "e2e:headless": "./apps/frontend-e2e/scripts/run-e2e-tests.sh --headless",
     "e2e:seed": "node apps/frontend-e2e/scripts/seed-test-db.js",
     "models": "sequelize-auto -o ./models -e=sqlite -d data/calibre/metadata.db",
-    "release-patch": "standard-version --no-verify --commit-all --release-as patch",
-    "release-minor": "standard-version --no-verify --commit-all --release-as minor",
-    "release-major": "standard-version --no-verify --commit-all --release-as major",
+    "release-patch": "npm run test:api && npm run test:frontend && npm run e2e:headless && standard-version --no-verify --commit-all --release-as patch",
+    "release-minor": "npm run test:api && standard-version --no-verify --commit-all --release-as minor",
+    "release-major": "npm run test:api && npm run test:frontend && npm run e2e:headless && standard-version --no-verify --commit-all --release-as major",
     "replace:version": "json -I -f libs/api-interfaces/src/lib/version.json -e \"this.version='`cat package.json | json version`'; this.github_url='`cat package.json | npx json repository.url`'; this.name='$npm_package_name'; this.copyright='2016-`date +%Y` `cat package.json | npx json author.name`'\" && git add libs/api-interfaces/src/lib/version.json"
   },
   "standard-version": {
