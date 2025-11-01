@@ -18,169 +18,136 @@ export class UsersService {
   constructor(private configService: ConfigService, private myCalibreService: MyCalibreDbService, private _mailService: MailService) {}
 
   async getAll(): Promise<User[]> {
-    return new Promise<User[]>((resolve, reject) => {
-      this.myCalibreService
-        .getAllUsers()
-        .then((docs) => {
-          if (!docs) {
-            return resolve(null);
-          } else {
-            return resolve(docs.map((doc) => this.createUser(doc)));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const docs = await this.myCalibreService.getAllUsers();
+      if (!docs) {
+        return null;
+      } else {
+        return docs.map((doc) => this.createUser(doc));
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
 
   async findByUsername(username: string): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      this.myCalibreService
-        .findUserByUsername(username)
-        .then((doc) => {
-          if (!doc) {
-            return resolve(null);
-          } else {
-            return resolve(this.createUser(doc));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.findUserByUsername(username);
+      if (!doc) {
+        return null;
+      } else {
+        return this.createUser(doc);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async findById(userId: string): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      this.myCalibreService
-        .findUserById(userId)
-        .then((doc) => {
-          if (!doc) {
-            return resolve(null);
-          } else {
-            // this.logger.debug(doc);
-            return resolve(this.createUser(doc));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.findUserById(userId);
+      if (!doc) {
+        return null;
+      } else {
+        // this.logger.debug(doc);
+        return this.createUser(doc);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async findByGoogleId(userId: string): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      this.myCalibreService
-        .findUserByGoogleId(userId)
-        .then((doc) => {
-          if (!doc) {
-            return resolve(null);
-          } else {
-            return resolve(this.createUser(doc));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.findUserByGoogleId(userId);
+      if (!doc) {
+        return null;
+      } else {
+        return this.createUser(doc);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async findByFacebookId(userId: string): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      this.myCalibreService
-        .findUserByFacebookId(userId)
-        .then((doc) => {
-          if (!doc) {
-            return resolve(null);
-          } else {
-            return resolve(this.createUser(doc));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.findUserByFacebookId(userId);
+      if (!doc) {
+        return null;
+      } else {
+        return this.createUser(doc);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async findByTemporaryToken(token: string): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      this.myCalibreService
-        .findByTemporaryToken(token)
-        .then((doc) => {
-          if (!doc) {
-            return resolve(null);
-          } else {
-            return resolve(this.createUser(doc));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.findByTemporaryToken(token);
+      if (!doc) {
+        return null;
+      } else {
+        return this.createUser(doc);
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async saveUser(user: User, changeUpdateDate = true): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      this.myCalibreService
-        .saveUser(user, true, changeUpdateDate)
-        .then((doc) => {
-          if (!doc) {
-            return resolve(null);
-          } else {
-            // this.logger.debug(JSON.stringify(doc, null, 2))
-            return resolve(user);
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.saveUser(user, true, changeUpdateDate);
+      if (!doc) {
+        return null;
+      } else {
+        // this.logger.debug(JSON.stringify(doc, null, 2))
+        return user;
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async deleteUser(userId: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.myCalibreService
-        .deleteUser(userId)
-        .then((doc) => {
-          if (!doc) {
-            return resolve();
-          } else {
-            // this.logger.debug(JSON.stringify(doc, null, 2))
-            return resolve();
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+    try {
+      const doc = await this.myCalibreService.deleteUser(userId);
+      if (!doc) {
+        return;
+      } else {
+        // this.logger.debug(JSON.stringify(doc, null, 2))
+        return;
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async resetUserPassword(userId: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.findById(userId)
-        .then((modifiedUser) => {
-          if (!modifiedUser) {
-            return reject('User not found');
-          }
+    try {
+      const modifiedUser = await this.findById(userId);
+      if (!modifiedUser) {
+        throw 'User not found';
+      }
 
-          const email = modifiedUser.local.email || modifiedUser.google.email || modifiedUser.facebook.email;
-          if (!email) {
-            return reject('User has no email');
-          }
-          // generate a temporary token
-          const token = this.generateSalt();
-          modifiedUser.temporary_token = token;
-          modifiedUser.temporary_token_date = new Date();
+      const email = modifiedUser.local.email || modifiedUser.google.email || modifiedUser.facebook.email;
+      if (!email) {
+        throw 'User has no email';
+      }
+      // generate a temporary token
+      const token = this.generateSalt();
+      modifiedUser.temporary_token = token;
+      modifiedUser.temporary_token_date = new Date();
 
-          const newUser = this.createUser(modifiedUser);
+      const newUser = this.createUser(modifiedUser);
 
-          this.saveUser(newUser, true)
-            .then(async () => {
-              const url = `https://bib.bibulle.fr/changepassword?token=${token}`;
-              const title = 'Reset your password on Bibulle shared library';
-              const content = `
+      await this.saveUser(newUser, true);
+      
+      const url = `https://bib.bibulle.fr/changepassword?token=${token}`;
+      const title = 'Reset your password on Bibulle shared library';
+      const content = `
 <p>Please use this <a href="${url}">URL</a> to reset your password</p>
 <p>This url will be ok for 10 hours</p>
 <br>
@@ -188,196 +155,149 @@ export class UsersService {
 <small>${url}</small>
 <hr>
 `;
-              this._mailService
-                .sendMail(email, title, content)
-                .then(() => {
-                  resolve();
-                })
-                .catch((err) => {
-                  this.logger.error(err);
-                  return reject(err);
-                });
-            })
-            .catch((err) => {
-              this.logger.error(err);
-              return reject(err);
-            });
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+      await this._mailService.sendMail(email, title, content);
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async changeUserPassword(userId: string, newPassword: string): Promise<UserAPI> {
-    return new Promise<UserAPI>((resolve, reject) => {
-      this.findById(userId)
-        .then((modifiedUser) => {
-          if (!modifiedUser) {
-            return reject('User not found');
-          }
+    try {
+      const modifiedUser = await this.findById(userId);
+      if (!modifiedUser) {
+        throw 'User not found';
+      }
 
-          modifiedUser.local['password'] = newPassword;
-          const newUser = this.createUser(modifiedUser);
+      modifiedUser.local['password'] = newPassword;
+      const newUser = this.createUser(modifiedUser);
 
-          this.saveUser(newUser, true)
-            .then(() => {
-              resolve(this.user2API(newUser));
-            })
-            .catch((err) => {
-              this.logger.error(err);
-              return reject(err);
-            });
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+      await this.saveUser(newUser, true);
+      return this.user2API(newUser);
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
   async mergeUsers(userSrcId: string, userTrgId: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      Promise.all([this.findById(userSrcId), this.findById(userTrgId)])
-        .then((users) => {
-          if ((!users || users.length !== 2 || !users[0]) || !users[1]) {
-            return reject('User not found');
-          }
+    try {
+      const users = await Promise.all([this.findById(userSrcId), this.findById(userTrgId)]);
+      if ((!users || users.length !== 2 || !users[0]) || !users[1]) {
+        throw new Error('User not found');
+      }
 
-          const userSrc = users[0];
-          const userTrg = users[1];
+      const userSrc = users[0];
+      const userTrg = users[1];
 
-          this.mergeAndSaveUsers(userSrc, userTrg)
-            .then(() => {
-              resolve();
-            })
-            .catch((err) => {
-              this.logger.error(err);
-              return reject(err);
-            });
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          return reject(err);
-        });
-    });
+      await this.mergeAndSaveUsers(userSrc, userTrg);
+    } catch (err) {
+      this.logger.error(err);
+      throw err;
+    }
   }
 
   async mergeAndSaveUsers(userSrc: User, userTrg: User): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      // the salt must be transferred sometime
-      if (!userTrg.local.hashedPassword || userSrc.local.hashedPassword) {
-        userTrg.local.salt = userSrc.local.salt;
-      }
+    // the salt must be transferred sometime
+    if (!userTrg.local.hashedPassword || userSrc.local.hashedPassword) {
+      userTrg.local.salt = userSrc.local.salt;
+    }
 
-      // get the older created
-      if (userSrc.created.getTime() < userTrg.created.getTime()) {
-        userTrg.created = userSrc.created;
-      }
+    // get the older created
+    if (userSrc.created.getTime() < userTrg.created.getTime()) {
+      userTrg.created = userSrc.created;
+    }
 
-      // this.logger.debug(userSrc.local);
-      // this.logger.debug(userTrg.local);
-      _.mergeWith(userTrg.local, userSrc.local, (objValue, srcValue) => {
-        if (objValue) {
-          return objValue;
-        } else {
-          return srcValue;
-        }
-      });
-      // this.logger.debug(userSrc.facebook);
-      // this.logger.debug(userTrg.facebook);
-      _.mergeWith(userTrg.facebook, userSrc.facebook, (objValue, srcValue) => {
-        if (objValue) {
-          return objValue;
-        } else {
-          return srcValue;
-        }
-      });
-      // this.logger.debug(userSrc.twitter);
-      // this.logger.debug(userTrg.twitter);
-      _.mergeWith(userTrg.twitter, userSrc.twitter, (objValue, srcValue) => {
-        if (objValue) {
-          return objValue;
-        } else {
-          return srcValue;
-        }
-      });
-      // this.logger.debug(userSrc.google);
-      // this.logger.debug(userTrg.google);
-      _.mergeWith(userTrg.google, userSrc.google, (objValue, srcValue) => {
-        if (objValue) {
-          return objValue;
-        } else {
-          return srcValue;
-        }
-      });
-
-      // in history, more complicated
-      // get the most recent connection
-      if (userSrc.history.lastConnection) {
-        if (!userTrg.history.lastConnection || userSrc.history.lastConnection > userTrg.history.lastConnection) {
-          userTrg.history.lastConnection = userSrc.history.lastConnection;
-        }
+    // this.logger.debug(userSrc.local);
+    // this.logger.debug(userTrg.local);
+    _.mergeWith(userTrg.local, userSrc.local, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue;
+      } else {
+        return srcValue;
       }
-      // concat the downloaded books
-      if (!userSrc.history.downloadedBooks) {
-        userSrc.history.downloadedBooks = [];
-      }
-      if (!userSrc.history.ratings) {
-        userSrc.history.ratings = [];
-      }
-      if (!userTrg.history.downloadedBooks) {
-        userTrg.history.downloadedBooks = [];
-      }
-      if (!userTrg.history.ratings) {
-        userTrg.history.ratings = [];
-      }
-      for (let i = 0; i < userSrc.history.downloadedBooks.length; i++) {
-        const srcId = userSrc.history.downloadedBooks[i].id;
-        let found = false;
-        for (let j = 0; j < userTrg.history.downloadedBooks.length; j++) {
-          if (userTrg.history.downloadedBooks[j].id === srcId) {
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
-          userTrg.history.downloadedBooks.push(userSrc.history.downloadedBooks[i]);
-        }
-      }
-      // concat the rating
-      for (let i = 0; i < userSrc.history.ratings.length; i++) {
-        const srcId = userSrc.history.ratings[i].book_id;
-        let found = false;
-        for (let j = 0; j < userTrg.history.ratings.length; j++) {
-          if (userTrg.history.ratings[j].book_id === srcId) {
-            found = true;
-            // get the most recent
-            if (userSrc.history.ratings[i].date > userTrg.history.ratings[j].date) {
-              userTrg.history.ratings[j].date = userSrc.history.ratings[i].date;
-              userTrg.history.ratings[j].rating = userSrc.history.ratings[i].rating;
-            }
-            break;
-          }
-        }
-        if (!found) {
-          userTrg.history.ratings.push(userSrc.history.ratings[i]);
-        }
-      }
-
-      this.deleteUser(userSrc.id)
-        .then(() => {
-          this.saveUser(userTrg, true)
-            .then(() => {
-              resolve();
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        })
-        .catch((err) => {
-          reject(err);
-        });
     });
+    // this.logger.debug(userSrc.facebook);
+    // this.logger.debug(userTrg.facebook);
+    _.mergeWith(userTrg.facebook, userSrc.facebook, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue;
+      } else {
+        return srcValue;
+      }
+    });
+    // this.logger.debug(userSrc.twitter);
+    // this.logger.debug(userTrg.twitter);
+    _.mergeWith(userTrg.twitter, userSrc.twitter, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue;
+      } else {
+        return srcValue;
+      }
+    });
+    // this.logger.debug(userSrc.google);
+    // this.logger.debug(userTrg.google);
+    _.mergeWith(userTrg.google, userSrc.google, (objValue, srcValue) => {
+      if (objValue) {
+        return objValue;
+      } else {
+        return srcValue;
+      }
+    });
+
+    // in history, more complicated
+    // get the most recent connection
+    if (userSrc.history.lastConnection) {
+      if (!userTrg.history.lastConnection || userSrc.history.lastConnection > userTrg.history.lastConnection) {
+        userTrg.history.lastConnection = userSrc.history.lastConnection;
+      }
+    }
+    // concat the downloaded books
+    if (!userSrc.history.downloadedBooks) {
+      userSrc.history.downloadedBooks = [];
+    }
+    if (!userSrc.history.ratings) {
+      userSrc.history.ratings = [];
+    }
+    if (!userTrg.history.downloadedBooks) {
+      userTrg.history.downloadedBooks = [];
+    }
+    if (!userTrg.history.ratings) {
+      userTrg.history.ratings = [];
+    }
+    for (let i = 0; i < userSrc.history.downloadedBooks.length; i++) {
+      const srcId = userSrc.history.downloadedBooks[i].id;
+      let found = false;
+      for (let j = 0; j < userTrg.history.downloadedBooks.length; j++) {
+        if (userTrg.history.downloadedBooks[j].id === srcId) {
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        userTrg.history.downloadedBooks.push(userSrc.history.downloadedBooks[i]);
+      }
+    }
+    // concat the rating
+    for (let i = 0; i < userSrc.history.ratings.length; i++) {
+      const srcId = userSrc.history.ratings[i].book_id;
+      let found = false;
+      for (let j = 0; j < userTrg.history.ratings.length; j++) {
+        if (userTrg.history.ratings[j].book_id === srcId) {
+          found = true;
+          // get the most recent
+          if (userSrc.history.ratings[i].date > userTrg.history.ratings[j].date) {
+            userTrg.history.ratings[j].date = userSrc.history.ratings[i].date;
+            userTrg.history.ratings[j].rating = userSrc.history.ratings[i].rating;
+          }
+          break;
+        }
+      }
+      if (!found) {
+        userTrg.history.ratings.push(userSrc.history.ratings[i]);
+      }
+    }
+
+    await this.deleteUser(userSrc.id);
+    await this.saveUser(userTrg, true);
   }
 
   validPassword(user: User, password: string): boolean {
@@ -421,21 +341,21 @@ export class UsersService {
    */
   checkToken(token): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      verify(token, this.configService.get('AUTHENT_JWT_SECRET'), (err, decoded) => {
+      verify(token, this.configService.get('AUTHENT_JWT_SECRET'), async (err, decoded) => {
         if (err) {
           this.logger.error(err);
           reject(err);
+          return;
         }
         // this.logger.debug(decoded);
-        this.findById(decoded.id)
-          .then((user) => {
-            // this.logger.debug(user);
-            resolve(user);
-          })
-          .catch((err) => {
-            this.logger.debug(err);
-            reject(err);
-          });
+        try {
+          const user = await this.findById(decoded.id);
+          // this.logger.debug(user);
+          resolve(user);
+        } catch (err) {
+          this.logger.debug(err);
+          reject(err);
+        }
       });
     });
   }
@@ -571,77 +491,25 @@ export class UsersService {
       }
     });
   }
-  addDownloadedBook(userIn: User, book_id: number, bookData: BookData): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.findById(userIn.id)
-        .then((user) => {
-          if (!user.history.downloadedBooks) {
-            user.history.downloadedBooks = [];
-          }
-
-          const bookDownloaded = user.history.downloadedBooks.find((bd) => {
-            return bd.id === book_id;
-          });
-
-          if (!bookDownloaded) {
-            user.history.downloadedBooks.push({
-              id: book_id,
-              data: bookData,
-              date: new Date(),
-            });
-          }
-          user.history.downloadedBooks.sort((a, b) => {
-            if (typeof a.date === 'string') {
-              a.date = new Date(a.date);
-            }
-            if (typeof b.date === 'string') {
-              b.date = new Date(b.date);
-            }
-            if (a.date.getTime() < b.date.getTime()) {
-              return -1;
-            } else {
-              return 1;
-            }
-          });
-          this.saveUser(user)
-            .then(() => {
-              resolve();
-            })
-            .catch((reason) => {
-              this.logger.error(reason);
-              reject();
-            });
-        })
-        .catch((reason) => {
-          this.logger.error(reason);
-          reject();
-        });
-    });
-  }
-  async addRatingBook(user: User, book_id: number, bookName: string, rating: number): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (!user.history.ratings) {
-        user.history.ratings = [];
+  async addDownloadedBook(userIn: User, book_id: number, bookData: BookData): Promise<void> {
+    try {
+      const user = await this.findById(userIn.id);
+      if (!user.history.downloadedBooks) {
+        user.history.downloadedBooks = [];
       }
-      let bookRating = user.history.ratings.find((br) => {
-        return br.book_id === book_id;
+
+      const bookDownloaded = user.history.downloadedBooks.find((bd) => {
+        return bd.id === book_id;
       });
-      if (!bookRating) {
-        bookRating = {
-          book_id: book_id,
-          rating: undefined,
-          date: undefined,
-          book_name: bookName,
-        };
-        user.history.ratings.push(bookRating);
-      }
 
-      if (bookRating.rating !== rating) {
-        bookRating.rating = rating;
-        bookRating.date = new Date();
+      if (!bookDownloaded) {
+        user.history.downloadedBooks.push({
+          id: book_id,
+          data: bookData,
+          date: new Date(),
+        });
       }
-
-      user.history.ratings.sort((a, b) => {
+      user.history.downloadedBooks.sort((a, b) => {
         if (typeof a.date === 'string') {
           a.date = new Date(a.date);
         }
@@ -654,16 +522,54 @@ export class UsersService {
           return 1;
         }
       });
-
-      this.saveUser(user)
-        .then(() => {
-          resolve();
-        })
-        .catch((reason) => {
-          this.logger.error(reason);
-          reject();
-        });
+      await this.saveUser(user);
+    } catch (reason) {
+      this.logger.error(reason);
+      throw reason;
+    }
+  }
+  async addRatingBook(user: User, book_id: number, bookName: string, rating: number): Promise<void> {
+    if (!user.history.ratings) {
+      user.history.ratings = [];
+    }
+    let bookRating = user.history.ratings.find((br) => {
+      return br.book_id === book_id;
     });
+    if (!bookRating) {
+      bookRating = {
+        book_id: book_id,
+        rating: undefined,
+        date: undefined,
+        book_name: bookName,
+      };
+      user.history.ratings.push(bookRating);
+    }
+
+    if (bookRating.rating !== rating) {
+      bookRating.rating = rating;
+      bookRating.date = new Date();
+    }
+
+    user.history.ratings.sort((a, b) => {
+      if (typeof a.date === 'string') {
+        a.date = new Date(a.date);
+      }
+      if (typeof b.date === 'string') {
+        b.date = new Date(b.date);
+      }
+      if (a.date.getTime() < b.date.getTime()) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+
+    try {
+      await this.saveUser(user);
+    } catch (reason) {
+      this.logger.error(reason);
+      throw reason;
+    }
   }
 
   /**
@@ -674,41 +580,38 @@ export class UsersService {
    * @private
    */
   async getBearerUser(request: Request): Promise<User> {
-    return new Promise<User>((resolve, reject) => {
-      let token: string;
-      if (request.headers || request.headers['authorization']) {
-        const authorization: string = request.headers['authorization'];
-        // if (typeof request.headers.authorization === "string") {
-        //   authorization = request.headers.authorization;
-        // }
-        // this.logger.debug(authorization);
-        const parts = authorization.split(' ');
-        // console.log(parts);
-        if (parts.length == 2) {
-          const scheme = parts[0],
-            credentials = parts[1];
+    let token: string;
+    if (request.headers || request.headers['authorization']) {
+      const authorization: string = request.headers['authorization'];
+      // if (typeof request.headers.authorization === "string") {
+      //   authorization = request.headers.authorization;
+      // }
+      // this.logger.debug(authorization);
+      const parts = authorization.split(' ');
+      // console.log(parts);
+      if (parts.length == 2) {
+        const scheme = parts[0],
+          credentials = parts[1];
 
-          if (/^Bearer$/i.test(scheme)) {
-            token = credentials;
-          }
+        if (/^Bearer$/i.test(scheme)) {
+          token = credentials;
         }
       }
-      // this.logger.debug(token);
+    }
+    // this.logger.debug(token);
 
-      if (!token) {
-        // this.logger.debug('reject');
-        return reject('No token');
-      }
+    if (!token) {
+      // this.logger.debug('reject');
+      throw new Error('No token');
+    }
 
-      this.checkToken(token)
-        .then((user) => {
-          // this.logger.debug('resolve');
-          resolve(user);
-        })
-        .catch((reason) => {
-          // this.logger.debug('reject');
-          reject(reason);
-        });
-    });
+    try {
+      const user = await this.checkToken(token);
+      // this.logger.debug('resolve');
+      return user;
+    } catch (reason) {
+      // this.logger.debug('reject');
+      throw reason;
+    }
   }
 }
