@@ -20,7 +20,7 @@ export class MailService {
       from: `<${this._configService.get('SMTP_USER_NAME')}>`,
       to: `${toMail}`,
       subject: subject,
-      html: text
+      html: text,
     } as SendMailOptions;
 
     if (attachment_filename && attachment_path) {
@@ -29,7 +29,7 @@ export class MailService {
           filename: attachment_filename,
           path: attachment_path,
         },
-      ]
+      ];
     }
 
     return new Promise<void>((resolve, reject) => {

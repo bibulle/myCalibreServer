@@ -17,28 +17,24 @@ export class SeriesController {
   @Get('')
   @UseGuards(AuthGuard('jwt'))
   async getSeries(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return new Promise<StreamableFile>((resolve) => {
-      this._cacheService
-        .getCachePath(CacheKey.SERIES)
-        .then((path) => {
-          const stats = statSync(path);
-          const etag = stats.mtimeMs.toString();
-          if (headers['if-none-match'] === etag) {
-            return res.status(304).send('No change');
-          }
+    try {
+      const path = await this._cacheService.getCachePath(CacheKey.SERIES);
+      const stats = statSync(path);
+      const etag = stats.mtimeMs.toString();
+      if (headers['if-none-match'] === etag) {
+        return res.status(304).send('No change');
+      }
 
-          res.set({
-            ETag: etag,
-          });
+      res.set({
+        ETag: etag,
+      });
 
-          const file = createReadStream(path);
-          resolve(new StreamableFile(file));
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+      const file = createReadStream(path);
+      return new StreamableFile(file);
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   // ====================================
@@ -47,27 +43,22 @@ export class SeriesController {
   @Get('/thumbnail/:id.png')
   async getThumbnail(@Param('id') series_id: number, @Response({ passthrough: true }) res): Promise<StreamableFile> {
     const err_cover_path = CacheService.ERR_COVER;
+    const thumbnailPath = this._seriesService.getThumbnailPath(series_id);
 
-    return new Promise<StreamableFile>((resolve) => {
-      const thumbnailPath = this._seriesService.getThumbnailPath(series_id);
-
-      fsPromises
-        .stat(thumbnailPath)
-        .then(() => {
-          res.set({
-            'Content-Type': 'image/png',
-            'Cache-Control': 'max-age=31536000',
-          });
-          resolve(new StreamableFile(createReadStream(thumbnailPath)));
-        })
-        .catch(() => {
-          res.set({
-            'Content-Type': 'image/svg+xml',
-            'Cache-control': 'public, max-age=3600',
-          });
-          resolve(new StreamableFile(createReadStream(err_cover_path)));
-        });
-    });
+    try {
+      await fsPromises.stat(thumbnailPath);
+      res.set({
+        'Content-Type': 'image/png',
+        'Cache-Control': 'max-age=31536000',
+      });
+      return new StreamableFile(createReadStream(thumbnailPath));
+    } catch {
+      res.set({
+        'Content-Type': 'image/svg+xml',
+        'Cache-control': 'public, max-age=3600',
+      });
+      return new StreamableFile(createReadStream(err_cover_path));
+    }
   }
 
   // ====================================
@@ -75,24 +66,22 @@ export class SeriesController {
   // ====================================
   @Get('/sprite/:id.png')
   async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return new Promise<StreamableFile>((resolve) => {
-      const spritePath = this._seriesService.getSpritesPath(sprite_id);
+    const spritePath = this._seriesService.getSpritesPath(sprite_id);
 
-      if (!existsSync(spritePath)) {
-        throw new NotFoundException();
-      }
-      const stats = statSync(spritePath);
-      const etag = stats.mtimeMs.toString();
-      if (headers['if-none-match'] === etag) {
-        return res.status(304).send('No change');
-      }
+    if (!existsSync(spritePath)) {
+      throw new NotFoundException();
+    }
+    const stats = statSync(spritePath);
+    const etag = stats.mtimeMs.toString();
+    if (headers['if-none-match'] === etag) {
+      return res.status(304).send('No change');
+    }
 
-      res.set({
-        'Content-Type': 'image/png',
-        ETag: etag,
-      });
-
-      resolve(new StreamableFile(createReadStream(spritePath)));
+    res.set({
+      'Content-Type': 'image/png',
+      ETag: etag,
     });
+
+    return new StreamableFile(createReadStream(spritePath));
   }
 }

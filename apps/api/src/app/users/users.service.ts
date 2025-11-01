@@ -144,7 +144,7 @@ export class UsersService {
       const newUser = this.createUser(modifiedUser);
 
       await this.saveUser(newUser, true);
-      
+
       const url = `https://bib.bibulle.fr/changepassword?token=${token}`;
       const title = 'Reset your password on Bibulle shared library';
       const content = `
@@ -181,7 +181,7 @@ export class UsersService {
   async mergeUsers(userSrcId: string, userTrgId: string): Promise<void> {
     try {
       const users = await Promise.all([this.findById(userSrcId), this.findById(userTrgId)]);
-      if ((!users || users.length !== 2 || !users[0]) || !users[1]) {
+      if (!users || users.length !== 2 || !users[0] || !users[1]) {
         throw new Error('User not found');
       }
 
@@ -327,12 +327,11 @@ export class UsersService {
       return false;
     }
 
-    if (!user.temporary_token_date || user.temporary_token_date.getTime() < new Date().getTime()- 1000*3600*10) {
-      return false
+    if (!user.temporary_token_date || user.temporary_token_date.getTime() < new Date().getTime() - 1000 * 3600 * 10) {
+      return false;
     }
 
     return true;
-
   }
   /**
    * Check tocken
@@ -377,7 +376,7 @@ export class UsersService {
       'history',
     ]);
 
-    if (sentUser.local.username == "toto2") {
+    if (sentUser.local.username == 'toto2') {
       delete sentUser.history.downloadedBooks;
     }
 
@@ -385,10 +384,10 @@ export class UsersService {
     delete sentUser.google.token;
     delete sentUser.twitter.token;
 
-    if (sentUser.history && ! sentUser.history.downloadedBooks) {
+    if (sentUser.history && !sentUser.history.downloadedBooks) {
       sentUser.history.downloadedBooks = [];
     }
-    if (sentUser.history && ! sentUser.history.ratings) {
+    if (sentUser.history && !sentUser.history.ratings) {
       sentUser.history.ratings = [];
     }
 

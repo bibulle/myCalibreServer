@@ -16,27 +16,23 @@ export class TagsController {
   @Get('')
   @UseGuards(AuthGuard('jwt'))
   async getSeries(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return new Promise<StreamableFile>((resolve) => {
-      this._cacheService
-        .getCachePath(CacheKey.TAGS)
-        .then((path) => {
-          const stats = statSync(path);
-          const etag = stats.mtimeMs.toString();
-          if (headers['if-none-match'] === etag) {
-            return res.status(304).send('No change');
-          }
+    try {
+      const path = await this._cacheService.getCachePath(CacheKey.TAGS);
+      const stats = statSync(path);
+      const etag = stats.mtimeMs.toString();
+      if (headers['if-none-match'] === etag) {
+        return res.status(304).send('No change');
+      }
 
-          res.set({
-            ETag: etag,
-          });
+      res.set({
+        ETag: etag,
+      });
 
-          const file = createReadStream(path);
-          resolve(new StreamableFile(file));
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+      const file = createReadStream(path);
+      return new StreamableFile(file);
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
