@@ -5,9 +5,9 @@
   "projectType": "application",
   "targets": {
     "e2e": {
-      "executor": "@nrwl/cypress:cypress",
+      "executor": "@nx/cypress:cypress",
       "options": {
-        "cypressConfig": "apps/frontend-e2e/cypress.json",
+        "cypressConfig": "apps/frontend-e2e/cypress.config.ts",
         "devServerTarget": "frontend:serve:development",
         "testingType": "e2e"
       },
@@ -34,7 +34,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/eslint:lint",
       "outputs": [
         "{options.outputFile}"
       ],

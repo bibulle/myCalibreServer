@@ -4,19 +4,19 @@
 
   // retrieve variables from theme
   // (all possible variables, use only what you really need)
-  $primary: mat.get-color-from-palette($theme, primary);
-  $accent: mat.get-color-from-palette($theme, accent);
-  $warn: mat.get-color-from-palette($theme, warn);
-  $foreground: mat.get-color-from-palette($theme, foreground);
-  $background: mat.get-color-from-palette($theme, background);
+  $primary: mat.get-theme-color($theme, primary);
+  $accent: mat.get-theme-color($theme, accent);
+  $warn: mat.get-theme-color($theme, warn);
+  $foreground: mat.get-theme-color($theme, foreground);
+  $background: mat.get-theme-color($theme, background);
 
   // all of these variables contain many additional variables
 
   .user-list-header {
 
     .fa-home[disabled] {
-      background-color: mat.get-color-from-palette($primary, 500);
-      color: mat.get-color-from-palette($primary, default-contrast);
+      background-color: $primary;
+      color: $primary;
     }
 
     .fa-home {
