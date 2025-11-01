@@ -14,6 +14,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **health:** optimize health check performance and reliability ([f8b1b21](https://github.com/bibulle/myCalibreServer/commit/f8b1b21784fcfb93842a88798c929b75eaa78693)), closes [#138](https://github.com/bibulle/myCalibreServer/issues/138)
 
+
+### Code Refactoring
+
+* **api:** convert Promise constructors to async/await pattern ([#130](https://github.com/bibulle/myCalibreServer/issues/130))
+  * Refactored ~28 methods across services and controllers
+  * Improved code readability and maintainability
+  * All 231 tests passing
+
 ### [0.10.4](https://github.com/bibulle/myCalibreServer/compare/v0.10.3...v0.10.4) (2025-08-19)
 
 

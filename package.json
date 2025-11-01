@@ -33,7 +33,29 @@
   "standard-version": {
     "scripts": {
       "postbump": "npm run replace:version"
-    }
+    },
+    "types": [
+      {
+        "type": "feat",
+        "section": "Features"
+      },
+      {
+        "type": "fix",
+        "section": "Bug Fixes"
+      },
+      {
+        "type": "refactor",
+        "section": "Code Refactoring"
+      },
+      {
+        "type": "perf",
+        "section": "Performance Improvements"
+      },
+      {
+        "type": "test",
+        "section": "Tests"
+      }
+    ]
   },
   "private": true,
   "config": {
