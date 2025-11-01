@@ -6,12 +6,10 @@ import { VersionService } from './version.service';
 export class VersionController {
   constructor(private _vesionService: VersionService) {}
 
-  @Get('')
+  @Get()
   async version(): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      resolve({
-        version: this._vesionService.getVersion(),
-      });
-    });
+    return {
+      version: this._vesionService.getVersion(),
+    };
   }
 }
