@@ -28,13 +28,13 @@ export class BooksController {
   // ====================================
   @Get('')
   @UseGuards(AuthGuard('jwt'))
-  async getBooks(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
+  async getBooks(@Headers() headers: Record<string, string>, @Res() res): Promise<StreamableFile | void> {
     try {
       const path = await this._cacheService.getCachePath(CacheKey.BOOKS);
       const stats = statSync(path);
       const etag = stats.mtimeMs.toString();
       if (headers['if-none-match'] === etag) {
-        return res.status(304).send('No change');
+        return res.status(304).send();
       }
 
       res.set({
@@ -42,7 +42,7 @@ export class BooksController {
       });
 
       const file = createReadStream(path);
-      return new StreamableFile(file);
+      file.pipe(res);
     } catch (err) {
       this.logger.error(err);
       throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,7 +54,7 @@ export class BooksController {
   // ====================================
   @Get('/new')
   @UseGuards(AuthGuard('jwt'))
-  async new(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
+  async new(@Headers() headers: Record<string, string>, @Res() res): Promise<void> {
     try {
       const path = await this._cacheService.getCachePath(CacheKey.NEW_BOOKS);
       const stats = statSync(path);
@@ -66,11 +66,11 @@ export class BooksController {
 
       if (headers['if-none-match'] === etag) {
         this.logger.log('  Done : BooksController new 304');
-        return res.status(304).send('No change');
+        return res.status(304).send();
       }
 
       const file = createReadStream(path);
-      return new StreamableFile(file);
+      file.pipe(res);
     } catch (err) {
       this.logger.error(err);
       throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -197,7 +197,7 @@ export class BooksController {
   // route for getting books thumbnail sprites
   // ====================================
   @Get('/sprite/:id.png')
-  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
+  async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res() res): Promise<void> {
     const spritePath = this._booksService.getSpritesPath(sprite_id);
 
     if (!existsSync(spritePath)) {
@@ -206,7 +206,7 @@ export class BooksController {
     const stats = statSync(spritePath);
     const etag = stats.mtimeMs.toString();
     if (headers['if-none-match'] === etag) {
-      return res.status(304).send('No change');
+      return res.status(304).send();
     }
 
     res.set({
@@ -214,7 +214,7 @@ export class BooksController {
       ETag: etag,
     });
 
-    return new StreamableFile(createReadStream(spritePath));
+    createReadStream(spritePath).pipe(res);
   }
 
   // ====================================

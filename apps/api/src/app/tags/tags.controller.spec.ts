@@ -76,11 +76,11 @@ describe('TagsController', () => {
       (fs.createReadStream as jest.Mock).mockReturnValue(mockStream);
 
       const headers = {};
-      const result = await controller.getSeries(headers, mockResponse);
+      await controller.getSeries(headers, mockResponse);
 
       expect(cacheService.getCachePath).toHaveBeenCalledWith(CacheKey.TAGS);
       expect(mockResponse.set).toHaveBeenCalledWith({ ETag: '123456789' });
-      expect(result).toBeInstanceOf(StreamableFile);
+      expect(mockStream.pipe).toHaveBeenCalledWith(mockResponse);
     });
 
     it('should return 304 when ETag matches', async () => {
@@ -92,14 +92,10 @@ describe('TagsController', () => {
 
       const headers = { 'if-none-match': '123456789' };
 
-      // The controller returns early with 304
-      controller.getSeries(headers, mockResponse);
-
-      // Wait a bit for the promise to resolve
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await controller.getSeries(headers, mockResponse);
 
       expect(mockResponse.status).toHaveBeenCalledWith(304);
-      expect(mockResponse.send).toHaveBeenCalledWith('No change');
+      expect(mockResponse.send).toHaveBeenCalledWith();
     });
 
     it('should set correct ETag from file modification time', async () => {

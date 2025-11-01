@@ -4,11 +4,29 @@
   "sourceRoot": "libs/api-interfaces/src",
   "projectType": "library",
   "targets": {
-    "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": ["{options.outputFile}"],
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
-        "lintFilePatterns": ["libs/api-interfaces/**/*.ts"]
+        "outputPath": "dist/libs/api-interfaces",
+        "main": "libs/api-interfaces/src/index.ts",
+        "tsConfig": "libs/api-interfaces/tsconfig.lib.json",
+        "assets": [
+          "libs/api-interfaces/*.md"
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "libs/api-interfaces/**/*.ts"
+        ]
       }
     }
   },

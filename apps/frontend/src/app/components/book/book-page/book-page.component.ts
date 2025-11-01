@@ -256,7 +256,6 @@ export class BookPageComponent implements OnInit {
     MatRatingModule,
   ],
   declarations: [BookPageComponent, KindleDialogComponent],
-  entryComponents: [KindleDialogComponent],
   exports: [BookPageComponent],
 })
 export class BookPageModule {}
