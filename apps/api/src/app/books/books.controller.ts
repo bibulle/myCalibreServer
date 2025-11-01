@@ -29,28 +29,24 @@ export class BooksController {
   @Get('')
   @UseGuards(AuthGuard('jwt'))
   async getBooks(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return new Promise<StreamableFile>((resolve) => {
-      this._cacheService
-        .getCachePath(CacheKey.BOOKS)
-        .then((path) => {
-          const stats = statSync(path);
-          const etag = stats.mtimeMs.toString();
-          if (headers['if-none-match'] === etag) {
-            return res.status(304).send('No change');
-          }
+    try {
+      const path = await this._cacheService.getCachePath(CacheKey.BOOKS);
+      const stats = statSync(path);
+      const etag = stats.mtimeMs.toString();
+      if (headers['if-none-match'] === etag) {
+        return res.status(304).send('No change');
+      }
 
-          res.set({
-            ETag: etag,
-          });
+      res.set({
+        ETag: etag,
+      });
 
-          const file = createReadStream(path);
-          resolve(new StreamableFile(file));
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+      const file = createReadStream(path);
+      return new StreamableFile(file);
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   // ====================================
@@ -59,30 +55,26 @@ export class BooksController {
   @Get('/new')
   @UseGuards(AuthGuard('jwt'))
   async new(@Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return new Promise<StreamableFile>((resolve) => {
-      this._cacheService
-        .getCachePath(CacheKey.NEW_BOOKS)
-        .then((path) => {
-          const stats = statSync(path);
-          const etag = stats.mtimeMs.toString();
+    try {
+      const path = await this._cacheService.getCachePath(CacheKey.NEW_BOOKS);
+      const stats = statSync(path);
+      const etag = stats.mtimeMs.toString();
 
-          res.set({
-            ETag: etag,
-          });
+      res.set({
+        ETag: etag,
+      });
 
-          if (headers['if-none-match'] === etag) {
-            this.logger.log('  Done : BooksController new 304');
-            return res.status(304).send('No change');
-          }
+      if (headers['if-none-match'] === etag) {
+        this.logger.log('  Done : BooksController new 304');
+        return res.status(304).send('No change');
+      }
 
-          const file = createReadStream(path);
-          resolve(new StreamableFile(file));
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+      const file = createReadStream(path);
+      return new StreamableFile(file);
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   // ====================================
@@ -94,19 +86,15 @@ export class BooksController {
   @Header('Pragma', 'no-cache')
   @Header('Expires', '0')
   async getBook(@Param('id') book_id: number): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      this._calibreDb
-        .getBook(book_id, this._usersService.getAll())
-        .then((book) => {
-          const ret: ApiReturn = {};
-          ret.book = book;
-          resolve(ret);
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
-        });
-    });
+    try {
+      const book = await this._calibreDb.getBook(book_id, this._usersService.getAll());
+      const ret: ApiReturn = {};
+      ret.book = book;
+      return ret;
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
   // ====================================
   // route for getting books cover
@@ -115,47 +103,41 @@ export class BooksController {
   async getCover(@Param('id') book_id: number, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     const err_cover_path = CacheService.ERR_COVER;
 
-    return new Promise<StreamableFile>((resolve) => {
-      this._calibreDb
-        .getBookPaths(book_id)
-        .then((bookpath) => {
-          if (bookpath && bookpath.book_has_cover && bookpath.book_path) {
-            const coverPath = this._booksService.getCoverPath(bookpath);
+    try {
+      const bookpath = await this._calibreDb.getBookPaths(book_id);
+      if (bookpath && bookpath.book_has_cover && bookpath.book_path) {
+        const coverPath = this._booksService.getCoverPath(bookpath);
 
-            fsPromises
-              .stat(coverPath)
-              .then(() => {
-                res.set({
-                  'Content-Type': 'image/jpg',
-                  'Cache-control': 'public, max-age=3600',
-                });
+        try {
+          await fsPromises.stat(coverPath);
+          res.set({
+            'Content-Type': 'image/jpg',
+            'Cache-control': 'public, max-age=3600',
+          });
 
-                resolve(new StreamableFile(createReadStream(coverPath)));
-              })
-              .catch(() => {
-                res.set({
-                  'Content-Type': 'image/svg+xml',
-                  'Cache-control': 'public, max-age=3600',
-                });
-                resolve(new StreamableFile(createReadStream(err_cover_path)));
-              });
-          } else {
-            res.set({
-              'Content-Type': 'image/svg+xml',
-              'Cache-control': 'public, max-age=3600',
-            });
-            resolve(new StreamableFile(createReadStream(err_cover_path)));
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
+          return new StreamableFile(createReadStream(coverPath));
+        } catch {
           res.set({
             'Content-Type': 'image/svg+xml',
             'Cache-control': 'public, max-age=3600',
           });
-          resolve(new StreamableFile(createReadStream(err_cover_path)));
+          return new StreamableFile(createReadStream(err_cover_path));
+        }
+      } else {
+        res.set({
+          'Content-Type': 'image/svg+xml',
+          'Cache-control': 'public, max-age=3600',
         });
-    });
+        return new StreamableFile(createReadStream(err_cover_path));
+      }
+    } catch (err) {
+      this.logger.error(err);
+      res.set({
+        'Content-Type': 'image/svg+xml',
+        'Cache-control': 'public, max-age=3600',
+      });
+      return new StreamableFile(createReadStream(err_cover_path));
+    }
   }
   // ====================================
   // route for getting books thumbnail
@@ -164,59 +146,51 @@ export class BooksController {
   async getThumbnail(@Param('id') book_id: number, @Res({ passthrough: true }) res): Promise<StreamableFile> {
     const err_cover_path = CacheService.ERR_COVER;
 
-    return new Promise<StreamableFile>((resolve) => {
-      this._calibreDb
-        .getBookPaths(book_id)
-        .then((bookpath) => {
-          if (bookpath && bookpath.book_has_cover && bookpath.book_path) {
-            const thumbnailPath = this._booksService.getThumbnailPath(bookpath);
-            const coverPath = this._booksService.getCoverPath(bookpath);
+    try {
+      const bookpath = await this._calibreDb.getBookPaths(book_id);
+      if (bookpath && bookpath.book_has_cover && bookpath.book_path) {
+        const thumbnailPath = this._booksService.getThumbnailPath(bookpath);
+        const coverPath = this._booksService.getCoverPath(bookpath);
 
-            fsPromises
-              .stat(thumbnailPath)
-              .then(() => {
-                res.set({
-                  'Content-Type': 'image/jpg',
-                  'Cache-Control': 'max-age=31536000',
-                });
-                resolve(new StreamableFile(createReadStream(thumbnailPath)));
-              })
-              .catch(() => {
-                fsPromises
-                  .stat(coverPath)
-                  .then(() => {
-                    res.set({
-                      'Content-Type': 'image/jpg',
-                      'Cache-control': 'public, max-age=3600',
-                    });
+        try {
+          await fsPromises.stat(thumbnailPath);
+          res.set({
+            'Content-Type': 'image/jpg',
+            'Cache-Control': 'max-age=31536000',
+          });
+          return new StreamableFile(createReadStream(thumbnailPath));
+        } catch {
+          try {
+            await fsPromises.stat(coverPath);
+            res.set({
+              'Content-Type': 'image/jpg',
+              'Cache-control': 'public, max-age=3600',
+            });
 
-                    resolve(new StreamableFile(createReadStream(coverPath)));
-                  })
-                  .catch(() => {
-                    res.set({
-                      'Content-Type': 'image/svg+xml',
-                      'Cache-control': 'public, max-age=3600',
-                    });
-                    resolve(new StreamableFile(createReadStream(err_cover_path)));
-                  });
-              });
-          } else {
+            return new StreamableFile(createReadStream(coverPath));
+          } catch {
             res.set({
               'Content-Type': 'image/svg+xml',
               'Cache-control': 'public, max-age=3600',
             });
-            resolve(new StreamableFile(createReadStream(err_cover_path)));
+            return new StreamableFile(createReadStream(err_cover_path));
           }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          res.set({
-            'Content-Type': 'image/svg+xml',
-            'Cache-control': 'public, max-age=3600',
-          });
-          resolve(new StreamableFile(createReadStream(err_cover_path)));
+        }
+      } else {
+        res.set({
+          'Content-Type': 'image/svg+xml',
+          'Cache-control': 'public, max-age=3600',
         });
-    });
+        return new StreamableFile(createReadStream(err_cover_path));
+      }
+    } catch (err) {
+      this.logger.error(err);
+      res.set({
+        'Content-Type': 'image/svg+xml',
+        'Cache-control': 'public, max-age=3600',
+      });
+      return new StreamableFile(createReadStream(err_cover_path));
+    }
   }
 
   // ====================================
@@ -224,25 +198,23 @@ export class BooksController {
   // ====================================
   @Get('/sprite/:id.png')
   async getSprite(@Param('id') sprite_id: number, @Headers() headers: Record<string, string>, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return new Promise<StreamableFile>((resolve) => {
-      const spritePath = this._booksService.getSpritesPath(sprite_id);
+    const spritePath = this._booksService.getSpritesPath(sprite_id);
 
-      if (!existsSync(spritePath)) {
-        throw new NotFoundException();
-      }
-      const stats = statSync(spritePath);
-      const etag = stats.mtimeMs.toString();
-      if (headers['if-none-match'] === etag) {
-        return res.status(304).send('No change');
-      }
+    if (!existsSync(spritePath)) {
+      throw new NotFoundException();
+    }
+    const stats = statSync(spritePath);
+    const etag = stats.mtimeMs.toString();
+    if (headers['if-none-match'] === etag) {
+      return res.status(304).send('No change');
+    }
 
-      res.set({
-        'Content-Type': 'image/png',
-        ETag: etag,
-      });
-
-      resolve(new StreamableFile(createReadStream(spritePath)));
+    res.set({
+      'Content-Type': 'image/png',
+      ETag: etag,
     });
+
+    return new StreamableFile(createReadStream(spritePath));
   }
 
   // ====================================
@@ -266,37 +238,31 @@ export class BooksController {
     // this.logger.debug(book_id);
     // this.logger.debug(rating);
 
-    return new Promise<ApiReturn>((resolve) => {
-      if (!rating) {
-        throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    if (!rating) {
+      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+    }
+
+    const user: User = req.user as User;
+
+    try {
+      const book: BookPath = await this._calibreDb.getBookPaths(book_id);
+      // debug(book);
+
+      if (book && book.book_path && book.data) {
+        try {
+          await this._usersService.addRatingBook(user, book_id, book.data[0].data_name, rating);
+          return { ok: 'Rating saved' };
+        } catch (reason) {
+          this.logger.error(reason);
+          throw new HttpException('Something go wrong :-(', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+      } else {
+        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
       }
-
-      const user: User = req.user as User;
-
-      this._calibreDb
-        .getBookPaths(book_id)
-        .then((book: BookPath) => {
-          // debug(book);
-
-          if (book && book.book_path && book.data) {
-            this._usersService
-              .addRatingBook(user, book_id, book.data[0].data_name, rating)
-              .then(() => {
-                resolve({ ok: 'Rating saved' });
-              })
-              .catch((reason) => {
-                this.logger.error(reason);
-                throw new HttpException('Something go wrong :-(', HttpStatus.INTERNAL_SERVER_ERROR);
-              });
-          } else {
-            throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-          }
-        })
-        .catch((err) => {
-          this.logger.error(err);
-          throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-        });
-    });
+    } catch (err) {
+      this.logger.error(err);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
   }
 
   // ====================================
@@ -305,18 +271,16 @@ export class BooksController {
   @Get('/:id/:type/url')
   @UseGuards(AuthGuard('jwt'))
   async getEpubUrl(@Param('id') book_id: number, @Req() req): Promise<ApiReturn> {
-    return new Promise<ApiReturn>((resolve) => {
-      const user: User = req.user as User;
-      if (!user) {
-        throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
-      }
+    const user: User = req.user as User;
+    if (!user) {
+      throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
+    }
 
-      const token = this._usersService.createTemporaryToken(user);
+    const token = this._usersService.createTemporaryToken(user);
 
-      const ret: ApiReturn = {};
-      ret.id_token = token;
-      resolve(ret);
-    });
+    const ret: ApiReturn = {};
+    ret.id_token = token;
+    return ret;
   }
 
   @Get(':id/send/kindle')
