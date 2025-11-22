@@ -8,6 +8,6 @@
     "target": "es2015",
     "resolveJsonModule": true
   },
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts", "**/*.e2e-spec.ts"],
   "include": ["**/*.ts"]
 }

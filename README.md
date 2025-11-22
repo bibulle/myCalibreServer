@@ -38,9 +38,14 @@ You can generate secure secrets with:
 openssl rand -base64 32
 ```
 
-4. Start the application
+4. Start the application (2 terminals)
+
 ```bash
-npm start
+# Terminal 1: API NestJS
+npm run start:api
+
+# Terminal 2: Frontend Angular (avec proxy /api)
+npm run start:frontend
 ```
 
 ## 🔧 Configuration
