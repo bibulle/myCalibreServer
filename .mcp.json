@@ -10,8 +10,8 @@
     },
     "github": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"]
+      "command": "/bin/bash",
+      "args": ["-c", "set -a && source ~/.claude/.env && set +a && npx -y @modelcontextprotocol/server-github"]
     }
   }
 }
