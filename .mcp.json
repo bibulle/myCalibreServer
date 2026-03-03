@@ -7,6 +7,11 @@
         "nx",
         "mcp"
       ]
+    },
+    "github": {
+      "type": "stdio",
+      "command": "/bin/bash",
+      "args": ["-c", "set -a && source ~/.claude/.env && set +a && npx -y @modelcontextprotocol/server-github"]
     }
   }
 }
