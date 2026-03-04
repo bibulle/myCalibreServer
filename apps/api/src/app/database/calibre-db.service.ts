@@ -85,7 +85,7 @@ export class CalibreDbService {
         .field('books.has_cover', 'book_has_cover')
         .field('books.pubdate', 'book_date')
         .field('books.path', 'book_path')
-        .field('books.isbn', 'book_isbn')
+        .field("(SELECT val FROM identifiers WHERE identifiers.book = books.id AND identifiers.type = 'isbn' LIMIT 1)", 'book_isbn')
         .field('books.series_index', 'book_series_index')
         .field('books.timestamp', 'timestamp')
         .field('books.last_modified', 'last_modified')
