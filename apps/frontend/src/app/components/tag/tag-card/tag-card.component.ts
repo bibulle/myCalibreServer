@@ -7,9 +7,10 @@ import { Tag } from '@my-calibre-server/api-interfaces';
 import { BookCardModule } from '../../book/book-card/book-card.component';
 
 @Component({
-  selector: 'my-calibre-server-tag-card',
-  templateUrl: './tag-card.component.html',
-  styleUrls: ['./tag-card.component.scss']
+    selector: 'my-calibre-server-tag-card',
+    templateUrl: './tag-card.component.html',
+    styleUrls: ['./tag-card.component.scss'],
+    standalone: false
 })
 export class TagCardComponent {
 

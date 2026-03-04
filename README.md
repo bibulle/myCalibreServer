@@ -4,8 +4,8 @@ my own calibre server
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js (v14+)
-- npm or yarn
+- Node.js 24 LTS (use `.nvmrc` with `nvm use`)
+- npm 10+
 - A Calibre library
 
 ### Installation

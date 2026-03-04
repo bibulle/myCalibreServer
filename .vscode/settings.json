@@ -19,5 +19,48 @@
     "sqlite",
     "squel",
     "Streamable"
-  ]
+  ],
+  "chat.tools.terminal.autoApprove": {
+    "git checkout": true,
+    "npm install": true,
+    "npm uninstall": true,
+    "/^node node_modules/\\.bin/nx migrate --run-migrations 2>&1 \\| grep -v \"EBADENGINE\\\\\\|Unsupported engine\\\\\\|npm WARN\\\\\\|required:\\\\\\|current:\\\\\\|node:\\\\\\|npm:\\\\\\|yarn:\" \\| tail -50$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^cat migrations\\.json \\| python3 -c \"import json,sys; m=json\\.load\\(sys\\.stdin\\); \\[print\\(x\\['package'\\], '-', x\\['name'\\]\\) for x in m\\.get\\('migrations',\\[\\]\\)\\]\" 2>&1 \\| head -30$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^cat node_modules/@angular-devkit/build-angular/package\\.json \\| python3 -c \"import json,sys; p=json\\.load\\(sys\\.stdin\\); print\\(p\\.get\\('version'\\)\\)\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^node node_modules/\\.bin/nx _migrate --run-migrations 2>&1 \\| grep -v \"EBADENGINE\\\\\\|Unsupported engine\\\\\\|npm WARN\\\\\\|required:\\\\\\|current:\\\\\\|node:\\\\\\|npm:\\\\\\|yarn:\" \\| grep -E \"Error\\|TypeError\\|Cannot\\|error\" \\| head -20$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^node node_modules/\\.bin/nx _migrate --run-migrations 2>&1 \\| grep -v \"EBADENGINE\\\\\\|Unsupported engine\\\\\\|npm WARN\\\\\\|required:\\\\\\|current:\\\\\\|node:\\\\\\|npm:\\\\\\|yarn:\" \\| tail -30$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^node node_modules/\\.bin/nx _migrate --run-migrations 2>&1 \\| grep -v \"EBADENGINE\\\\\\|Unsupported engine\\\\\\|npm WARN\\\\\\|required:\\\\\\|current:\\\\\\|node:\\\\\\|npm:\\\\\\|yarn:\" \\| grep -E \"Running migration\\|✓\\|Ran \\|Successfully\\|Error\\|FAIL\\|No changes\" \\| head -50$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^node node_modules/\\.bin/nx _migrate --run-migrations 2>&1 \\| grep -v \"EBADENGINE\\\\\\|Unsupported engine\\\\\\|npm WARN\\\\\\|required:\\\\\\|current:\\\\\\|node:\\\\\\|npm:\\\\\\|yarn:\" \\| tail -20$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^cat apps/frontend/tsconfig\\.app\\.json \\| python3 -c \"import json,sys; print\\(json\\.dumps\\(json\\.load\\(sys\\.stdin\\), indent=2\\)\\)\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^node node_modules/\\.bin/nx _migrate --run-migrations 2>&1$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    ".": true,
+    "nvm": true
+  }
 }

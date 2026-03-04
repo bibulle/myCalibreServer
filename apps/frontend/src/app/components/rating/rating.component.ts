@@ -14,10 +14,11 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule } from '@angular/platform-browser';
 
 @Component({
-  selector: 'my-calibre-server-mat-rating',
-  templateUrl: './rating.component.html',
-  styleUrls: ['./rating.component.scss'],
-  encapsulation: ViewEncapsulation.Emulated,
+    selector: 'my-calibre-server-mat-rating',
+    templateUrl: './rating.component.html',
+    styleUrls: ['./rating.component.scss'],
+    encapsulation: ViewEncapsulation.Emulated,
+    standalone: false
 })
 export class MatRatingComponent implements OnInit {
   @Input() disabled = false;

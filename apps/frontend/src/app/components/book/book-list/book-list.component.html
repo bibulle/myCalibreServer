@@ -1,7 +1,15 @@
-<mat-content *ngIf="books">
-  <my-calibre-server-book-card *ngFor="let book of books; let index = index" [book]="book"  [index]="index" class="has-shadow"> </my-calibre-server-book-card>
-  <div class="max-reached" *ngIf="books.length === MAX_BOOK">
-    <span>{{ 'label.limited' | translate: param }}</span>
-  </div>
-</mat-content>
-<mat-spinner *ngIf="!books"></mat-spinner>
+@if (books) {
+  <mat-content>
+    @for (book of books; track book; let index = $index) {
+      <my-calibre-server-book-card [book]="book"  [index]="index" class="has-shadow"> </my-calibre-server-book-card>
+    }
+    @if (books.length === MAX_BOOK) {
+      <div class="max-reached">
+        <span>{{ 'label.limited' | translate: param }}</span>
+      </div>
+    }
+  </mat-content>
+}
+@if (!books) {
+  <mat-spinner></mat-spinner>
+}

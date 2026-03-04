@@ -3,8 +3,10 @@ import {DatePipe} from '@angular/common';
 import {TranslateService} from '@ngx-translate/core';
 
 @Pipe({
-  name: 'localizedDate',
-  pure: false  // required to update the value when currentLang is changed
+    name: 'localizedDate',
+    pure: false // required to update the value when currentLang is changed
+    ,
+    standalone: false
 })
 export class LocalizedDatePipe implements PipeTransform {
   private value: string|null = null;

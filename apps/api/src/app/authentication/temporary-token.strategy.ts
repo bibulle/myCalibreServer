@@ -42,6 +42,11 @@ class RealTemporaryTokenStrategy extends PassportStrategy(UniqueTokenStrategy, '
     });
 
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validate(_token: string): any {
+    return null;
+  }
 }
 
 @Injectable()

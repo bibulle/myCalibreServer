@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import {Filter, FilterService} from '../filter-bar/filter.service';
 
 @Component({
-  selector: 'my-calibre-server-not-found',
-  templateUrl: './not-found.component.html',
-  styleUrls: ['./not-found.component.scss']
+    selector: 'my-calibre-server-not-found',
+    templateUrl: './not-found.component.html',
+    styleUrls: ['./not-found.component.scss'],
+    standalone: false
 })
 export class NotFoundComponent {
 

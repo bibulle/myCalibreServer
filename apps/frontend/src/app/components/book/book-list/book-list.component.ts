@@ -4,7 +4,6 @@ import { Component, NgModule, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { MatCommonModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Book } from '@my-calibre-server/api-interfaces';
@@ -21,9 +20,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 // const leftPad = require('left-pad');
 
 @Component({
-  selector: 'my-calibre-server-book-list',
-  templateUrl: './book-list.component.html',
-  styleUrls: ['./book-list.component.scss'],
+    selector: 'my-calibre-server-book-list',
+    templateUrl: './book-list.component.html',
+    styleUrls: ['./book-list.component.scss'],
+    standalone: false
 })
 export class BookListComponent implements OnInit, OnDestroy {
   MAX_BOOK = 200;
@@ -315,7 +315,6 @@ export class BookListComponent implements OnInit, OnDestroy {
 @NgModule({
   imports: [
     FormsModule,
-    MatCommonModule,
     CommonModule,
     MatCardModule,
     MatButtonModule,

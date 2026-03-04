@@ -5,9 +5,10 @@ import { NotificationService } from '../../notification/notification.service';
 import { UserService } from '../user.service';
 
 @Component({
-  selector: 'my-calibre-server-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'my-calibre-server-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements OnInit {
 

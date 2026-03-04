@@ -23,7 +23,8 @@ export type BreakAction = 'hide' | 'show';
  *
  */
 @Directive({
-  selector: '[myCalibreServerMatPeekaboo]',
+    selector: '[myCalibreServerMatPeekaboo]',
+    standalone: false
 })
 export class MatPeekabooDirective implements OnInit {
   static SIZES: string[] = [

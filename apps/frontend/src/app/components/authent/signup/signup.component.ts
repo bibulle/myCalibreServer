@@ -5,9 +5,10 @@ import {Router} from '@angular/router';
 import {NotificationService} from '../../notification/notification.service';
 
 @Component({
-  selector: 'my-calibre-server-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+    selector: 'my-calibre-server-signup',
+    templateUrl: './signup.component.html',
+    styleUrls: ['./signup.component.scss'],
+    standalone: false
 })
 export class SignupComponent implements OnInit {
 

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatCommonModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -16,9 +15,10 @@ import { UserProfileModule } from '../../profile/user-profile/user-profile.compo
 import { UserService } from '../../user.service';
 
 @Component({
-  selector: 'my-calibre-server-user-list-item',
-  templateUrl: './user-list-item.component.html',
-  styleUrls: ['./user-list-item.component.scss']
+    selector: 'my-calibre-server-user-list-item',
+    templateUrl: './user-list-item.component.html',
+    styleUrls: ['./user-list-item.component.scss'],
+    standalone: false
 })
 export class UserListItemComponent {
 
@@ -109,8 +109,7 @@ export class UserListItemComponent {
     MatInputModule,
     UserProfileModule,
     TranslateModule,
-    LocalizedDateModule,
-    MatCommonModule
+    LocalizedDateModule
   ],
   declarations: [
     UserListItemComponent

@@ -5,9 +5,10 @@ import { NotificationService } from '../../notification/notification.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'my-calibre-server-connect-local',
-  templateUrl: './connect-local.component.html',
-  styleUrls: ['./connect-local.component.scss'],
+    selector: 'my-calibre-server-connect-local',
+    templateUrl: './connect-local.component.html',
+    styleUrls: ['./connect-local.component.scss'],
+    standalone: false
 })
 export class ConnectLocalComponent implements OnInit {
   constructor(

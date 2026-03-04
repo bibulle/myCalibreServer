@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0](https://github.com/bibulle/myCalibreServer/compare/v0.11.1...v0.12.0) (2026-03-04)
+
+
+### Features
+
+* improve local start ([9af63ed](https://github.com/bibulle/myCalibreServer/commit/9af63eda858683bd2ccf5218a817c5e608b8a26d))
+
+
+### Code Refactoring
+
+* upgrade to Angular 21, NestJS 11, Nx 22 and Node.js 24 LTS ([47e4ed5](https://github.com/bibulle/myCalibreServer/commit/47e4ed59b1bf0fb58c04c9a9b5553aaa74edea4b))
+
 ### [0.11.1](https://github.com/bibulle/myCalibreServer/compare/v0.11.0...v0.11.1) (2025-11-01)
 
 

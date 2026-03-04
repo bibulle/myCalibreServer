@@ -11,9 +11,10 @@ import { Filter, FilterService } from '../filter-bar/filter.service';
 import { NotificationService } from '../notification/notification.service';
 
 @Component({
-  selector: 'my-calibre-server-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+    selector: 'my-calibre-server-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss'],
+    standalone: false
 })
 export class HomeComponent implements OnInit {
 

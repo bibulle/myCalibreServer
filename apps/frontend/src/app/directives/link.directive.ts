@@ -2,7 +2,8 @@ import { Directive, Output, EventEmitter, ElementRef, HostListener } from '@angu
 import { Ink } from '../core/util/ink';
 
 @Directive({
-  selector: '[myCalibreServerMatInk]',
+    selector: '[myCalibreServerMatInk]',
+    standalone: false
 })
 export class MatInkDirective {
 
@@ -12,7 +13,7 @@ export class MatInkDirective {
   constructor(private _element: ElementRef) {
   }
 
-  @HostListener('mousedown') onMousedown(event: MouseEvent) {
+  @HostListener('mousedown', ['$event']) onMousedown(event: MouseEvent) {
     if (this._element && Ink.canApply(this._element.nativeElement)) {
       Ink.rippleEvent(this._element.nativeElement, event).then(() => {
         this.inked.emit(this);

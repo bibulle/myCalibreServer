@@ -11,9 +11,10 @@ import { Series } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'my-calibre-server-series-list',
-  templateUrl: './series-list.component.html',
-  styleUrls: ['./series-list.component.scss']
+    selector: 'my-calibre-server-series-list',
+    templateUrl: './series-list.component.html',
+    styleUrls: ['./series-list.component.scss'],
+    standalone: false
 })
 export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 
