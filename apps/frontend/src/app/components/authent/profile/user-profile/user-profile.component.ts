@@ -18,9 +18,10 @@ import { NotificationService } from '../../../notification/notification.service'
 import { UserService } from '../../user.service';
 
 @Component({
-  selector: 'my-calibre-server-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.scss'],
+    selector: 'my-calibre-server-user-profile',
+    templateUrl: './user-profile.component.html',
+    styleUrls: ['./user-profile.component.scss'],
+    standalone: false
 })
 export class UserProfileComponent implements OnInit, OnChanges {
   @Input()

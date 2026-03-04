@@ -12,9 +12,10 @@ import { UserService } from './components/authent/user.service';
 import { Filter, FilterService } from './components/filter-bar/filter.service';
 
 @Component({
-  selector: 'my-calibre-server-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+    selector: 'my-calibre-server-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
 

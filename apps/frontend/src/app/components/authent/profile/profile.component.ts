@@ -5,9 +5,10 @@ import {User} from '@my-calibre-server/api-interfaces';
 import {Router} from '@angular/router';
 
 @Component({
-  selector: 'my-calibre-server-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+    selector: 'my-calibre-server-profile',
+    templateUrl: './profile.component.html',
+    styleUrls: ['./profile.component.scss'],
+    standalone: false
 })
 export class ProfileComponent implements OnInit {
 

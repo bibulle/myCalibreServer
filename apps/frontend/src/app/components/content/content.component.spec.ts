@@ -3,11 +3,13 @@ import { Component } from '@angular/core';
 import { MatContentDirective, MatContentModule } from './content.component';
 
 @Component({
+  standalone: false,
   template: '<mat-content>Test Content</mat-content>',
 })
 class TestHostComponent {}
 
 @Component({
+  standalone: false,
   template: '<mat-content layout-padding>Padded Content</mat-content>',
 })
 class TestHostWithPaddingComponent {}

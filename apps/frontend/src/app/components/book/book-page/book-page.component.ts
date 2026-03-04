@@ -25,9 +25,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
-  selector: 'my-calibre-server-book-page',
-  templateUrl: './book-page.component.html',
-  styleUrls: ['./book-page.component.scss'],
+    selector: 'my-calibre-server-book-page',
+    templateUrl: './book-page.component.html',
+    styleUrls: ['./book-page.component.scss'],
+    standalone: false
 })
 export class BookPageComponent implements OnInit {
   // filter: Filter;

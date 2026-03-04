@@ -11,9 +11,10 @@ import { Author } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
-  selector: 'my-calibre-server-author-list',
-  templateUrl: './author-list.component.html',
-  styleUrls: ['./author-list.component.scss'],
+    selector: 'my-calibre-server-author-list',
+    templateUrl: './author-list.component.html',
+    styleUrls: ['./author-list.component.scss'],
+    standalone: false
 })
 export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
   MAX_AUTHORS = 100;

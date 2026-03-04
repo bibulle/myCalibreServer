@@ -16,9 +16,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
-  selector: 'my-calibre-server-filter-bar',
-  templateUrl: './filter-bar.component.html',
-  styleUrls: ['./filter-bar.component.scss']
+    selector: 'my-calibre-server-filter-bar',
+    templateUrl: './filter-bar.component.html',
+    styleUrls: ['./filter-bar.component.scss'],
+    standalone: false
 })
 export class FilterBarComponent implements OnInit, OnDestroy {
 

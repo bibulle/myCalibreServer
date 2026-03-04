@@ -13,13 +13,13 @@ import { MdPeekabooModule } from './directives/peekaboo.directive';
 import { MatContentModule } from './components/content/content.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { registerLocaleData } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from '@auth0/angular-jwt';
 import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TRANSLATE_HTTP_LOADER_CONFIG, TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AuthGuard } from './components/authent/auth.guard';
 import { AuthGuardAdmin } from './components/authent/auth.guard.admin';
 import { AuthentModule } from './components/authent/authent.module';
@@ -68,8 +68,7 @@ registerLocaleData(localeEn, 'en');
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
+        useClass: TranslateHttpLoader,
       },
       missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler },
       //       // useDefaultLang: false
@@ -98,7 +97,7 @@ registerLocaleData(localeEn, 'en');
       registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
-  providers: [TitleService, NotificationService, WindowService, AuthGuard, AuthGuardToken, AuthGuardAdmin],
+  providers: [TitleService, NotificationService, WindowService, AuthGuard, AuthGuardToken, AuthGuardAdmin, { provide: TRANSLATE_HTTP_LOADER_CONFIG, useValue: {} }],
   bootstrap: [AppComponent],
 })
 export class AppModule {
@@ -109,6 +108,3 @@ export class AppModule {
   }
 }
 
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http);
-}

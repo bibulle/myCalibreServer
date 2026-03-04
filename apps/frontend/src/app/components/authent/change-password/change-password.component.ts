@@ -6,9 +6,10 @@ import { NotificationService } from '../../notification/notification.service';
 import { UserService } from '../user.service';
 
 @Component({
-  selector: 'my-calibre-server-change-password',
-  templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.scss'],
+    selector: 'my-calibre-server-change-password',
+    templateUrl: './change-password.component.html',
+    styleUrls: ['./change-password.component.scss'],
+    standalone: false
 })
 export class ChangePasswordComponent implements OnInit {
 

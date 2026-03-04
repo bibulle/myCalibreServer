@@ -24,7 +24,8 @@
             "prefix": "my-calibre-server",
             "style": "kebab-case"
           }
-        ]
+        ],
+        "@angular-eslint/prefer-standalone": "off"
       }
     },
     {

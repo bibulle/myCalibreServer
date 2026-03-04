@@ -4,9 +4,10 @@ import {User} from '@my-calibre-server/api-interfaces';
 import {Router} from '@angular/router';
 
 @Component({
-  selector: 'my-calibre-server-profile-button',
-  templateUrl: './profile-button.component.html',
-  styleUrls: ['./profile-button.component.scss']
+    selector: 'my-calibre-server-profile-button',
+    templateUrl: './profile-button.component.html',
+    styleUrls: ['./profile-button.component.scss'],
+    standalone: false
 })
 export class ProfileButtonComponent implements OnInit {
 
