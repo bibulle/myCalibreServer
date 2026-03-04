@@ -36,6 +36,14 @@
     "scripts": {
       "postbump": "npm run replace:version"
     },
+    "bumpFiles": [
+      "package.json",
+      "package-lock.json",
+      {
+        "filename": "libs/api-interfaces/src/lib/version.json",
+        "type": "json"
+      }
+    ],
     "types": [
       {
         "type": "feat",
