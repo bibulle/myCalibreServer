@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.1](https://github.com/bibulle/myCalibreServer/compare/v0.12.0...v0.12.1) (2026-03-04)
+
+
+### Features
+
+* migrate calibre isbn field to identifiers table ([913c1c2](https://github.com/bibulle/myCalibreServer/commit/913c1c2641ef2e05a1fe204e79f780f7523978f1))
+
 ## [0.12.0](https://github.com/bibulle/myCalibreServer/compare/v0.11.1...v0.12.0) (2026-03-04)
 
 
