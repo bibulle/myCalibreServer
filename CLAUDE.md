@@ -15,10 +15,12 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 
 ## Contraintes critiques (OBLIGATOIRES)
 
+- **Toujours commencer par un `git pull` sur `master`** avant de créer une branche ou de commencer à travailler, afin de partir de la version la plus récente du code
 - Travailler exclusivement dans une branche dédiée (pas dans `master`)
 - Ne jamais pousser de modifications directement sur la branche `master`
 - Ne jamais commiter sans feu vert explicite de l'utilisateur
 - Ne jamais créer de pull request sans validation explicite de l'utilisateur
+- **Avant de demander le feu vert de l'utilisateur, lancer les serveurs** (`npm run start:api` et `npm run start:frontend`) afin qu'il puisse tester l'application localement
 - Attendre explicitement le feu vert de l'utilisateur après qu'il ait exécuté les tests localement
 - Ne pas modifier le code fonctionnel existant (hors ajustements mineurs strictement nécessaires)
 - Aucun test ne doit être supprimé, désactivé ou ignoré (`skip`, `xit`, `xdescribe`, `pending`, etc.)
