@@ -482,13 +482,14 @@ export class UsersService {
     return user;
   }
 
-  updateLastConnection(user: User) {
-    user.history.lastConnection = new Date();
-    this.saveUser(user, false).catch((err) => {
-      if (err) {
-        this.logger.error(err);
-      }
-    });
+  async updateLastConnection(userIn: User) {
+    try {
+      const user = await this.findById(userIn.id);
+      user.history.lastConnection = new Date();
+      await this.saveUser(user, false);
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
   async addDownloadedBook(userIn: User, book_id: number, bookData: BookData): Promise<void> {
     try {
@@ -527,43 +528,44 @@ export class UsersService {
       throw reason;
     }
   }
-  async addRatingBook(user: User, book_id: number, bookName: string, rating: number): Promise<void> {
-    if (!user.history.ratings) {
-      user.history.ratings = [];
-    }
-    let bookRating = user.history.ratings.find((br) => {
-      return br.book_id === book_id;
-    });
-    if (!bookRating) {
-      bookRating = {
-        book_id: book_id,
-        rating: undefined,
-        date: undefined,
-        book_name: bookName,
-      };
-      user.history.ratings.push(bookRating);
-    }
-
-    if (bookRating.rating !== rating) {
-      bookRating.rating = rating;
-      bookRating.date = new Date();
-    }
-
-    user.history.ratings.sort((a, b) => {
-      if (typeof a.date === 'string') {
-        a.date = new Date(a.date);
-      }
-      if (typeof b.date === 'string') {
-        b.date = new Date(b.date);
-      }
-      if (a.date.getTime() < b.date.getTime()) {
-        return -1;
-      } else {
-        return 1;
-      }
-    });
-
+  async addRatingBook(userIn: User, book_id: number, bookName: string, rating: number): Promise<void> {
     try {
+      const user = await this.findById(userIn.id);
+      if (!user.history.ratings) {
+        user.history.ratings = [];
+      }
+      let bookRating = user.history.ratings.find((br) => {
+        return br.book_id === book_id;
+      });
+      if (!bookRating) {
+        bookRating = {
+          book_id: book_id,
+          rating: undefined,
+          date: undefined,
+          book_name: bookName,
+        };
+        user.history.ratings.push(bookRating);
+      }
+
+      if (bookRating.rating !== rating) {
+        bookRating.rating = rating;
+        bookRating.date = new Date();
+      }
+
+      user.history.ratings.sort((a, b) => {
+        if (typeof a.date === 'string') {
+          a.date = new Date(a.date);
+        }
+        if (typeof b.date === 'string') {
+          b.date = new Date(b.date);
+        }
+        if (a.date.getTime() < b.date.getTime()) {
+          return -1;
+        } else {
+          return 1;
+        }
+      });
+
       await this.saveUser(user);
     } catch (reason) {
       this.logger.error(reason);
