@@ -415,15 +415,18 @@ describe('UsersService', () => {
   });
 
   describe('updateLastConnection', () => {
-    it('should update last connection date', async () => {
-      mockMyCalibreDbService.saveUser.mockResolvedValue(mockUser);
-      const user = { ...mockUser };
-      const oldDate = user.history.lastConnection;
+    it('should reload user from DB before updating last connection', async () => {
+      const freshUser = { ...mockUser, history: { ...mockUser.history, lastConnection: new Date('2023-01-01') } };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(freshUser);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(freshUser);
 
-      await service.updateLastConnection(user);
+      const staleUser = { ...mockUser };
 
-      expect(user.history.lastConnection.getTime()).toBeGreaterThan(oldDate.getTime());
-      expect(mockMyCalibreDbService.saveUser).toHaveBeenCalledWith(user, true, false);
+      await service.updateLastConnection(staleUser);
+
+      expect(mockMyCalibreDbService.findUserById).toHaveBeenCalledWith('user123');
+      expect(freshUser.history.lastConnection.getTime()).toBeGreaterThan(new Date('2023-01-01').getTime());
+      expect(mockMyCalibreDbService.saveUser).toHaveBeenCalledWith(freshUser, true, false);
     });
   });
 
@@ -471,15 +474,19 @@ describe('UsersService', () => {
   });
 
   describe('addRatingBook', () => {
-    it('should add a book rating', async () => {
-      const user = { ...mockUser, history: { ...mockUser.history, ratings: [] } };
-      mockMyCalibreDbService.saveUser.mockResolvedValue(user);
+    it('should reload user from DB before modifying ratings', async () => {
+      const freshUser = { ...mockUser, history: { ...mockUser.history, ratings: [], downloadedBooks: [{ id: 999, data: { data_id: 1, data_format: 'EPUB', data_size: 100, data_name: 'existing-book' }, date: new Date() }] } };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(freshUser);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(freshUser);
 
-      await service.addRatingBook(user, 123, 'Test Book', 5);
+      const staleUser = { ...mockUser, history: { ...mockUser.history, ratings: [], downloadedBooks: [] } };
 
-      expect(user.history.ratings.length).toBe(1);
-      expect(user.history.ratings[0].book_id).toBe(123);
-      expect(user.history.ratings[0].rating).toBe(5);
+      await service.addRatingBook(staleUser, 123, 'Test Book', 5);
+
+      expect(mockMyCalibreDbService.findUserById).toHaveBeenCalledWith('user123');
+      expect(freshUser.history.ratings.length).toBe(1);
+      expect(freshUser.history.ratings[0].book_id).toBe(123);
+      expect(freshUser.history.ratings[0].rating).toBe(5);
       expect(mockMyCalibreDbService.saveUser).toHaveBeenCalled();
     });
 
@@ -491,6 +498,7 @@ describe('UsersService', () => {
           ratings: [{ book_id: 123, rating: 3, date: new Date('2023-01-01'), book_name: 'Test Book' }],
         },
       };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(user);
       mockMyCalibreDbService.saveUser.mockResolvedValue(user);
 
       await service.addRatingBook(user, 123, 'Test Book', 5);
@@ -509,6 +517,7 @@ describe('UsersService', () => {
           ratings: [{ book_id: 123, rating: 5, date: existingDate, book_name: 'Test Book' }],
         },
       };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(user);
       mockMyCalibreDbService.saveUser.mockResolvedValue(user);
 
       await service.addRatingBook(user, 123, 'Test Book', 5);
