@@ -92,10 +92,10 @@ describe('CalibreDb1Service', () => {
       expect(result[0]).toHaveProperty('book_title');
     });
 
-    it('should return exactly 2 books from test database', async () => {
+    it('should return exactly 15 books from test database', async () => {
       const result = await service.getBooks();
 
-      expect(result.length).toBe(2);
+      expect(result.length).toBe(15);
     });
 
     it('should handle limit parameter', async () => {
@@ -107,18 +107,18 @@ describe('CalibreDb1Service', () => {
 
     it('should handle offset parameter', async () => {
       const allBooks = await service.getBooks();
-      const offsetBooks = await service.getBooks(10, 1);
+      const offsetBooks = await service.getBooks(1000000, 1);
 
       expect(offsetBooks.length).toBe(allBooks.length - 1);
     });
 
     it('should filter by book id', async () => {
-      const result = await service.getBooks(undefined, undefined, 1);
+      const result = await service.getBooks(undefined, undefined, 2);
 
       expect(result).toBeDefined();
       expect(result.length).toBeGreaterThan(0);
       if (result.length > 0) {
-        expect(result[0].book_id).toBe(1);
+        expect(result[0].book_id).toBe(2);
       }
     });
   });
@@ -129,7 +129,7 @@ describe('CalibreDb1Service', () => {
 
       expect(result).toBeDefined();
       expect(typeof result).toBe('number');
-      expect(result).toBe(2);
+      expect(result).toBe(15);
     });
 
     it('should return a positive number', async () => {
@@ -141,7 +141,7 @@ describe('CalibreDb1Service', () => {
 
   describe('getBookPaths', () => {
     it('should return book paths', async () => {
-      const result = await service.getBookPaths(1);
+      const result = await service.getBookPaths(2);
 
       expect(result).toBeDefined();
       expect(result.book_path).toBeDefined();
@@ -150,10 +150,10 @@ describe('CalibreDb1Service', () => {
 
   describe('getBook', () => {
     it('should return a single book with full details', async () => {
-      const result = await service.getBook(1, Promise.resolve([]));
+      const result = await service.getBook(2, Promise.resolve([]));
 
       expect(result).toBeDefined();
-      expect(result.book_id).toBe(1);
+      expect(result.book_id).toBe(2);
       expect(result.book_title).toBeDefined();
     });
   });
