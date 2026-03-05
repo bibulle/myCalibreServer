@@ -53,6 +53,8 @@ export class BookPath {
   book_id = 0;
   book_has_cover = '';
   book_path = '';
+  series_name = '';
+  book_series_index = 0;
 
   data: BookData[] = [];
 }

@@ -118,6 +118,60 @@ Ne demander de tester que lorsque les environnements sont fonctionnels et stable
 
 ---
 
+## Lancement dans un worktree (IMPORTANT)
+
+Lorsque l'on travaille dans un worktree (`.claude/worktrees/`), les données non versionnées (`.env`, `data/`, `node_modules/`) ne sont pas présentes. Avant de lancer les serveurs :
+
+1. **Installer les dépendances** :
+   ```bash
+   npm ci
+   ```
+
+2. **Copier le fichier `.env`** depuis le repo principal :
+   ```bash
+   cp /Users/m341772/Developer/myCalibreServer/.env .env
+   ```
+
+3. **Créer un symlink vers le répertoire `data/`** (bibliothèque Calibre + cache) :
+   ```bash
+   ln -s /Users/m341772/Developer/myCalibreServer/data data
+   ```
+   > Cela permet à l'API de trouver `metadata.db`, les couvertures et les fichiers EPUB/MOBI
+   > sans modifier le `.env`. Les chemins par défaut (`PATH_BOOKS`, `PATH_MY_CALIBRE`)
+   > résolvent vers `data/calibre` et `data/my-calibre` relatifs au CWD.
+
+4. **Libérer les ports** si nécessaire (un autre serveur peut déjà tourner) :
+   ```bash
+   lsof -ti:3333 | xargs kill -9 2>/dev/null   # API
+   lsof -ti:4200 | xargs kill -9 2>/dev/null   # Frontend
+   ```
+
+5. **Lancer les serveurs** :
+   ```bash
+   npm run start:api
+   npm run start:frontend
+   ```
+
+6. **Vérifier que les serveurs répondent** :
+   ```bash
+   curl -s http://localhost:3333/api/version   # API
+   curl -s http://localhost:4200 | head -1     # Frontend
+   ```
+
+### Variables d'environnement minimales requises
+
+| Variable | Obligatoire | Effet si absente |
+|---|---|---|
+| `SESSION_SECRET` | **Oui** | Le serveur quitte immédiatement (`process.exit(1)`) |
+| `AUTHENT_JWT_SECRET` | **Oui** | Toutes les routes authentifiées échouent |
+| `AUTHENT_LENGTH` | **Oui** | Le login crash (`pbkdf2Sync`) |
+| `AUTHENT_DIGEST` | **Oui** | Le login crash (`pbkdf2Sync`) |
+| `MONGO_URL` | Recommandé | Défaut : `mongodb://192.168.0.126:30994` |
+| `PATH_BOOKS` | Optionnel | Défaut : `data/calibre` (relatif au CWD, couvert par le symlink) |
+| `PATH_MY_CALIBRE` | Optionnel | Défaut : `data/my-calibre` (relatif au CWD, couvert par le symlink) |
+
+---
+
 ## Commandes de référence
 
 **Démarrage :**

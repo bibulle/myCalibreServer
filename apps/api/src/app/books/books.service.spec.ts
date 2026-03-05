@@ -5,7 +5,9 @@ import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { SeriesService } from '../series/series.service';
-import { Book } from '@my-calibre-server/api-interfaces';
+import { Book, BookData } from '@my-calibre-server/api-interfaces';
+import { HttpException } from '@nestjs/common';
+import { promises as fsPromises } from 'fs';
 
 describe('BooksService', () => {
   let service: BooksService;
@@ -16,11 +18,14 @@ describe('BooksService', () => {
   const mockCalibreDbService = {
     getBooks: jest.fn(),
     getBookById: jest.fn(),
+    getBookPaths: jest.fn(),
   };
 
   const mockUsersService = {
     findOne: jest.fn(),
     updateDownloads: jest.fn(),
+    checkToken: jest.fn(),
+    addDownloadedBook: jest.fn(),
   };
 
   const mockConfigService = {
@@ -207,17 +212,11 @@ describe('BooksService', () => {
 
   describe('Cron job initialization', () => {
     it('should register cron job on service creation', () => {
-      expect(mockSchedulerRegistry.addCronJob).toHaveBeenCalledWith(
-        'cronThumbnailRecurrent',
-        expect.any(Object)
-      );
+      expect(mockSchedulerRegistry.addCronJob).toHaveBeenCalledWith('cronThumbnailRecurrent', expect.any(Object));
     });
 
     it('should use configured cron expression', () => {
-      expect(mockConfigService.get).toHaveBeenCalledWith(
-        'CRON_Thumbnail_RECURRING',
-        expect.any(String)
-      );
+      expect(mockConfigService.get).toHaveBeenCalledWith('CRON_Thumbnail_RECURRING', expect.any(String));
     });
   });
 
@@ -286,6 +285,107 @@ describe('BooksService', () => {
 
       expect(book.data).toBeDefined();
       expect(book.data.length).toBe(0);
+    });
+  });
+
+  describe('getBookToDownload', () => {
+    let mockRes: any;
+
+    beforeEach(() => {
+      mockRes = {
+        set: jest.fn(),
+      };
+    });
+
+    it('should include series name in filename when book has a series', async () => {
+      const mockUser = { id: 1, username: 'testuser' };
+      mockCalibreDbService.getBookPaths.mockResolvedValue({
+        book_id: 1,
+        book_path: 'Author/Book Title (1)',
+        book_has_cover: '1',
+        series_name: 'My Series',
+        book_series_index: 3,
+        data: [new BookData({ data_id: 1, data_format: 'EPUB', data_size: 1000, data_name: 'Book_Title' })],
+      });
+      mockUsersService.checkToken.mockResolvedValue(mockUser);
+      mockUsersService.addDownloadedBook.mockResolvedValue(undefined);
+      jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
+
+      try {
+        await service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip');
+      } catch {
+        // StreamableFile may throw because there's no real file
+      }
+
+      expect(mockRes.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Disposition': 'attachment; filename="My Series - 3 - Book_Title.epub"',
+        })
+      );
+    });
+
+    it('should use only data_name in filename when book has no series', async () => {
+      const mockUser = { id: 1, username: 'testuser' };
+      mockCalibreDbService.getBookPaths.mockResolvedValue({
+        book_id: 2,
+        book_path: 'Author/Book Without Series (2)',
+        book_has_cover: '1',
+        series_name: '',
+        book_series_index: 0,
+        data: [new BookData({ data_id: 2, data_format: 'MOBI', data_size: 2000, data_name: 'Standalone_Book' })],
+      });
+      mockUsersService.checkToken.mockResolvedValue(mockUser);
+      mockUsersService.addDownloadedBook.mockResolvedValue(undefined);
+      jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
+
+      try {
+        await service.getBookToDownload('valid-token', 2, mockRes, 'MOBI', 'application/x-mobipocket-ebook');
+      } catch {
+        // StreamableFile may throw because there's no real file
+      }
+
+      expect(mockRes.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Disposition': 'attachment; filename="Standalone_Book.mobi"',
+        })
+      );
+    });
+
+    it('should sanitize special characters in series name', async () => {
+      const mockUser = { id: 1, username: 'testuser' };
+      mockCalibreDbService.getBookPaths.mockResolvedValue({
+        book_id: 3,
+        book_path: 'Author/Book (3)',
+        book_has_cover: '1',
+        series_name: 'Series: "Special" <Edition>',
+        book_series_index: 1,
+        data: [new BookData({ data_id: 3, data_format: 'EPUB', data_size: 1500, data_name: 'Special_Book' })],
+      });
+      mockUsersService.checkToken.mockResolvedValue(mockUser);
+      mockUsersService.addDownloadedBook.mockResolvedValue(undefined);
+      jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
+
+      try {
+        await service.getBookToDownload('valid-token', 3, mockRes, 'EPUB', 'application/epub+zip');
+      } catch {
+        // StreamableFile may throw because there's no real file
+      }
+
+      expect(mockRes.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Disposition': 'attachment; filename="Series_ _Special_ _Edition_ - 1 - Special_Book.epub"',
+        })
+      );
+    });
+
+    it('should throw INTERNAL_SERVER_ERROR when no token is provided', async () => {
+      await expect(service.getBookToDownload('', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toThrow(HttpException);
+    });
+
+    it('should throw INTERNAL_SERVER_ERROR when token is invalid', async () => {
+      mockUsersService.checkToken.mockResolvedValue(null);
+
+      await expect(service.getBookToDownload('invalid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toThrow(HttpException);
     });
   });
 });
