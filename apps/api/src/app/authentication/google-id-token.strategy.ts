@@ -2,93 +2,85 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-custom';
+import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
-import GoogleTokenStrategy = require('passport-google-id-token');
 
-
-class RealGoogleIdTokenStrategy extends PassportStrategy(GoogleTokenStrategy, 'google-id-token') {
+class RealGoogleIdTokenStrategy extends PassportStrategy(Strategy, 'google-id-token') {
   readonly logger = new Logger(RealGoogleIdTokenStrategy.name);
 
-  private static readonly SCOPES = ['profile'];
+  private readonly _oauthClient: OAuth2Client;
 
-  constructor(private readonly _usersService: UsersService, _clientID: string, clientSecret: string, callbackURL: string) {
-    //noinspection JSUnusedGlobalSymbols
-    super(
-      {
-        clientID: _clientID,
-        clientSecret: clientSecret,
-        callbackURL: callbackURL,
-        passReqToCallback: false,
-        scope: RealGoogleIdTokenStrategy.SCOPES,
-      },
-      (parsedToken, tokenId: string, done: any) => {
-        try {
-          const profile = parsedToken.payload;
+  constructor(
+    private readonly _usersService: UsersService,
+    private readonly _clientID: string
+  ) {
+    super();
+    this._oauthClient = new OAuth2Client(this._clientID);
+  }
 
-          this.logger.debug(`validate ${profile.displayName}`);
-          // console.trace();
+  async validate(req: any): Promise<any> {
+    try {
+      const idToken = req.query?.id_token || req.body?.id_token;
 
-          this._usersService
-            .findByGoogleId(tokenId)
-            .then((user) => {
-              // this.logger.debug(user);
-
-              if (user) {
-                // user exist
-                // const jwt = this._usersService.createToken(user);
-
-                return done(null, user);
-              } else {
-                // user do not exist (create it)
-                const firstName = profile.given_name || profile.name.replace(/ [^ ]*$/, '');
-                const lastName = profile.family_name || profile.name.replace(/^.* /, '');
-                const email = profile.emails
-
-                const newUser = this._usersService.createUser({
-                  local: {
-                    username: profile.username,
-                    firstname: firstName,
-                    lastname: lastName,
-                    email: email,
-                  },
-                  google: {
-                    id: profile.sub,
-                    name: profile.name,
-                    email: email,
-                  },
-                });
-                // this._usersService.saveUser(newUser);
-                return done(null, newUser);
-              }
-            })
-            .catch((err) => {
-              this.logger.error('Status : ' + err.status + ' (' + err.message.message + ')');
-              this.logger.error(err);
-              throw new UnauthorizedException('unauthorized', err.message);
-            });
-        } catch (err) {
-          this.logger.error('Status : ' + err.status + ' (' + err.message.message + ')');
-          this.logger.error(err);
-          throw new UnauthorizedException('unauthorized', err.message);
-        }
+      if (!idToken) {
+        throw new UnauthorizedException('No id_token provided');
       }
-    );
+
+      const ticket = await this._oauthClient.verifyIdToken({
+        idToken,
+        audience: this._clientID,
+      });
+
+      const payload = ticket.getPayload();
+      if (!payload) {
+        throw new UnauthorizedException('Invalid token payload');
+      }
+
+      const googleId = payload.sub;
+      this.logger.debug(`validate ${payload.name}`);
+
+      const user = await this._usersService.findByGoogleId(googleId);
+
+      if (user) {
+        return user;
+      } else {
+        // user does not exist (create it)
+        const firstName = payload.given_name || (payload.name ? payload.name.replace(/ [^ ]*$/, '') : '');
+        const lastName = payload.family_name || (payload.name ? payload.name.replace(/^.* /, '') : '');
+        const email = payload.email;
+
+        const newUser = this._usersService.createUser({
+          local: {
+            username: undefined,
+            firstname: firstName,
+            lastname: lastName,
+            email: email,
+          },
+          google: {
+            id: googleId,
+            name: payload.name,
+            email: email,
+          },
+        });
+        return newUser;
+      }
+    } catch (err) {
+      this.logger.error(err);
+      throw new UnauthorizedException('unauthorized');
+    }
   }
 }
 
 @Injectable()
 export class GoogleIdTokenStrategy {
   constructor(
-    // private readonly calendarService: CalendarService,
     private readonly _usersService: UsersService,
     private readonly _configService: ConfigService
   ) {
     this.strategy = new RealGoogleIdTokenStrategy(
-      // this.calendarService,
       this._usersService,
-      this._configService.get('AUTHENT_GOOGLE_ANDROID_CLIENTID'),
-      this._configService.get('AUTHENT_GOOGLE_ANDROID_CLIENTSECRET'),
-      this._configService.get('AUTHENT_GOOGLE_CALLBACKURL')
+      this._configService.get('AUTHENT_GOOGLE_ANDROID_CLIENTID')
     );
   }
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.2](https://github.com/bibulle/myCalibreServer/compare/v0.12.1...v0.12.2) (2026-03-05)
+
+
+### Bug Fixes
+
+* resolve all npm security vulnerabilities and remove unused dependencies ([4f018a1](https://github.com/bibulle/myCalibreServer/commit/4f018a1af5bee1c6e13933a3332f67c2e075ccf3))
+
 ### [0.12.1](https://github.com/bibulle/myCalibreServer/compare/v0.12.0...v0.12.1) (2026-03-04)
 
 
