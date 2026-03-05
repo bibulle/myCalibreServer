@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.3](https://github.com/bibulle/myCalibreServer/compare/v0.12.2...v0.12.3) (2026-03-05)
+
+
+### Bug Fixes
+
+* include series name in downloaded file title ([#36](https://github.com/bibulle/myCalibreServer/issues/36)) ([dcb0f22](https://github.com/bibulle/myCalibreServer/commit/dcb0f22ba87f0074bec98d80215aee8ec6d6c64d))
+* reload user from DB before save in addRatingBook and updateLastConnection ([ffca081](https://github.com/bibulle/myCalibreServer/commit/ffca08116c2e630b2af115f7c3bd238321efd8e6)), closes [#139](https://github.com/bibulle/myCalibreServer/issues/139)
+
 ### [0.12.2](https://github.com/bibulle/myCalibreServer/compare/v0.12.1...v0.12.2) (2026-03-05)
 
 
