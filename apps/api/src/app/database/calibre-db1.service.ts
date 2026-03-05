@@ -189,6 +189,10 @@ export class CalibreDb1Service {
         .field('books.id', 'book_id')
         .field('books.has_cover', 'book_has_cover')
         .field('books.path', 'book_path')
+        .field('books.series_index', 'book_series_index')
+
+        // sunSeries
+        .field(this._concat('series', 'book', 'name'), 'series_name')
 
         // sumData
         .field(this._concat_simple('data', 'books', 'book', 'id'), 'data_id')

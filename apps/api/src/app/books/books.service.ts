@@ -162,10 +162,17 @@ export class BooksService {
             try {
               await fsPromises.stat(fullPath);
               await this._usersService.addDownloadedBook(user, book_id, data[0]);
+
+              let filename = data[0].data_name;
+              if (book.series_name) {
+                filename = `${book.series_name} - ${book.book_series_index} - ${filename}`;
+              }
+              filename = filename.replace(/[<>:"/\\|?*]/g, '_');
+
               res.set({
                 'Content-Type': contentType,
                 'Thumbnail-control': 'public, max-age=31536000',
-                'Content-Disposition': `attachment; filename="${data[0].data_name}.${format.toLowerCase()}"`,
+                'Content-Disposition': `attachment; filename="${filename}.${format.toLowerCase()}"`,
               });
               return new StreamableFile(createReadStream(fullPath));
             } catch (reason) {
