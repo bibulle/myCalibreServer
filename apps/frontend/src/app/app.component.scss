@@ -1,5 +1,6 @@
-@import 'shared/styles';
-@import 'shared/layout';
+@use 'shared/variables' as *;
+@use 'shared/styles';
+@use 'shared/layout';
 
 :host {
   display: block;

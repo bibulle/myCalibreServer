@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 
 // mixin name will be used in main style.scss
 @mixin user-profile-component-theme($theme) {
