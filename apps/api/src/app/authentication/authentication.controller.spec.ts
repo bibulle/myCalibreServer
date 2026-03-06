@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthenticationController } from './authentication.controller';
 import { UsersService } from '../users/users.service';
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { User } from '@my-calibre-server/api-interfaces';
 
 describe('AuthenticationController', () => {
@@ -116,7 +116,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.googleLoginCallback(req)).rejects.toThrow(HttpException);
+      await expect(controller.googleLoginCallback(req)).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     });
   });
 
@@ -137,7 +139,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.googleIdTokenLogin(req)).rejects.toThrow(HttpException);
+      await expect(controller.googleIdTokenLogin(req)).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     });
   });
 
@@ -175,13 +179,17 @@ describe('AuthenticationController', () => {
     it('should reject non-admin unlinking another user', async () => {
       const req = { user: mockUser };
 
-      await expect(controller.googleUnlink(req, 'other-user-id')).rejects.toThrow(HttpException);
+      await expect(controller.googleUnlink(req, 'other-user-id')).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should throw BadRequest when userId is missing', async () => {
       const req = { user: mockUser };
 
-      await expect(controller.googleUnlink(req, '')).rejects.toThrow(HttpException);
+      await expect(controller.googleUnlink(req, '')).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -214,7 +222,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.facebookjLoginCallback(req)).rejects.toThrow(HttpException);
+      await expect(controller.facebookjLoginCallback(req)).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     });
   });
 
@@ -236,7 +246,9 @@ describe('AuthenticationController', () => {
     it('should throw BadRequest when userId is missing', async () => {
       const req = { user: mockUser };
 
-      await expect(controller.facebookUnlink(req, '')).rejects.toThrow(HttpException);
+      await expect(controller.facebookUnlink(req, '')).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -257,7 +269,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.login(req)).rejects.toThrow(HttpException);
+      await expect(controller.login(req)).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     });
   });
 
@@ -277,7 +291,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.getUser(req)).rejects.toThrow(HttpException);
+      await expect(controller.getUser(req)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
   });
 
@@ -298,7 +314,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.signup(req)).rejects.toThrow(HttpException);
+      await expect(controller.signup(req)).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     });
   });
 
@@ -319,7 +337,9 @@ describe('AuthenticationController', () => {
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
 
-      await expect(controller.checkToken(req)).rejects.toThrow(HttpException);
+      await expect(controller.checkToken(req)).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
     });
   });
 });

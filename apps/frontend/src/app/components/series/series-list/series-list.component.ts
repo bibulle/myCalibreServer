@@ -1,31 +1,31 @@
-import {AfterViewInit, Component, NgModule, OnDestroy, OnInit} from '@angular/core';
-import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from '../../filter-bar/filter.service';
-import {SeriesService} from '../series.service';
-import {CommonModule} from '@angular/common';
-import {MatContentModule} from '../../content/content.component';
-import {SeriesCardModule} from '../series-card/series-card.component';
-import {ActivatedRoute, Params} from '@angular/router';
-import {Subscription} from 'rxjs';
-import {TranslateModule} from '@ngx-translate/core';
+import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/core';
+import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { SeriesService } from '../series.service';
+import { CommonModule } from '@angular/common';
+import { MatContentModule } from '../../content/content.component';
+import { SeriesCardModule } from '../series-card/series-card.component';
+import { ActivatedRoute, Params } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { TranslateModule } from '@ngx-translate/core';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationService } from '../../notification/notification.service';
 
 @Component({
-    selector: 'my-calibre-server-series-list',
-    templateUrl: './series-list.component.html',
-    styleUrls: ['./series-list.component.scss'],
-    standalone: false
+  selector: 'my-calibre-server-series-list',
+  templateUrl: './series-list.component.html',
+  styleUrls: ['./series-list.component.scss'],
+  standalone: false,
 })
 export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
-
   MAX_SERIES = 100;
   param = {
     max: this.MAX_SERIES,
-    totalCount: this.MAX_SERIES
+    totalCount: this.MAX_SERIES,
   };
 
-  series: Series[]=[];
-  fullSeries: Series[]=[];
+  series: Series[] = [];
+  fullSeries: Series[] = [];
 
   selectedId?: number;
 
@@ -38,7 +38,8 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
   private _currentFilterSubscription?: Subscription;
 
   static _cleanAccent(str: string): string {
-    return str.toLowerCase()
+    return str
+      .toLowerCase()
       .replace(/[àâªáäãåā]/g, 'a')
       .replace(/[èéêëęėē]/g, 'e')
       .replace(/[iïìíįī]/g, 'i')
@@ -48,16 +49,10 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/[œ]/g, 'oe');
   }
 
-
-  constructor(private _seriesService: SeriesService,
-              private _filterService: FilterService,
-              private route: ActivatedRoute) {
-
-  }
+  constructor(private _seriesService: SeriesService, private _filterService: FilterService, private route: ActivatedRoute, private _notificationService: NotificationService) {}
 
   //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
-
     // Search for params (search)
     this.route.queryParams.forEach((params: Params) => {
       if (params['id']) {
@@ -68,29 +63,26 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
 
-
     this._filterService.updateNotDisplayed(false);
     this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate, SortType.Author]);
-    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
-      (filter: Filter) => {
-        // console.log(filter);
-        this.filter = filter;
-        if (this.fullSeries) {
-          this._fillSeries();
-        }
+    this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
+      // console.log(filter);
+      this.filter = filter;
+      if (this.fullSeries) {
+        this._fillSeries();
       }
-    );
+    });
 
     this._seriesService
       .getSeries()
-      .then(series => {
+      .then((series) => {
         this.fullSeries = series;
         this._fillSeries();
-
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
-      })
+        this._notificationService.error(err);
+      });
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -102,7 +94,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
         if (element) {
           element.scrollTop = 0;
         }
-      })
+      });
     }
   }
 
@@ -122,39 +114,34 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!this.fullSeries || !this.filter) {
       return;
     }
-    const _filterCount = (++this.filterCount);
+    const _filterCount = ++this.filterCount;
 
     const tmpSeries = this._filterAndSortSeries();
 
     // console.log(tmpSeries);
     if (tmpSeries) {
-
       let cpt = 0;
       const STEP = 5;
 
       // if series list exists already, start from books length
       if (this.series) {
-        cpt = Math.min(
-          Math.ceil(this.series.length / STEP),
-          Math.floor(tmpSeries.length / STEP)) + 1;
+        cpt = Math.min(Math.ceil(this.series.length / STEP), Math.floor(tmpSeries.length / STEP)) + 1;
       }
       const initCpt = cpt;
 
       while (cpt * STEP <= tmpSeries.length + STEP) {
         const _cpt = cpt + 1;
         setTimeout(() => {
-            if (_filterCount === this.filterCount) {
-              this.series = tmpSeries.filter((b, i) => {
-                return i < _cpt * STEP;
-              });
-            }
-          },
-          100 * (cpt - initCpt));
+          if (_filterCount === this.filterCount) {
+            this.series = tmpSeries.filter((b, i) => {
+              return i < _cpt * STEP;
+            });
+          }
+        }, 100 * (cpt - initCpt));
 
         cpt++;
       }
     }
-
   }
 
   /**
@@ -171,29 +158,27 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // first filter
     const filteredSeries = this.fullSeries
-    // filter on text
+      // filter on text
       .filter((s: Series) => {
-
-        const strToSearch = s.series_name
-          .concat(s.author_name.toString())
-          .concat(s.books.reduce((p, c) => {
+        const strToSearch = s.series_name.concat(s.author_name.toString()).concat(
+          s.books.reduce((p, c) => {
             return p + c;
-          }, ''));
+          }, '')
+        );
 
-        return (SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search.trim())));
+        return SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search.trim()));
       })
       // filter on language
       .filter((s: Series) => {
-
         if (!s.allBooks) {
           s.allBooks = s.books;
         }
 
-        s.books = s.allBooks.filter(b => {
-          return (b.lang_code === LangAvailable[this.filter.lang].toLowerCase()) || (this.filter.lang === LangAvailable.All)
+        s.books = s.allBooks.filter((b) => {
+          return b.lang_code === LangAvailable[this.filter.lang].toLowerCase() || this.filter.lang === LangAvailable.All;
         });
 
-        return (s.books.length !== 0);
+        return s.books.length !== 0;
       })
       .sort((b1: Series, b2: Series) => {
         let v1: string;
@@ -203,28 +188,30 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
         switch (this.filter.sort) {
           case SortType.Name:
             break;
-          case SortType.Author: {
-            const v1Lst = b1.author_sort.concat();
-            const v2Lst = b2.author_sort.concat();
-            if (this.filter.sorting_direction === SortingDirection.Desc) {
-              v1Lst.reverse();
-              v2Lst.reverse();
+          case SortType.Author:
+            {
+              const v1Lst = b1.author_sort.concat();
+              const v2Lst = b2.author_sort.concat();
+              if (this.filter.sorting_direction === SortingDirection.Desc) {
+                v1Lst.reverse();
+                v2Lst.reverse();
+              }
+              v1 = v1Lst.toString() + ' ' + v1;
+              v2 = v2Lst.toString() + ' ' + v2;
             }
-            v1 = v1Lst.toString() + ' ' + v1;
-            v2 = v2Lst.toString() + ' ' + v2;
-          }
             break;
           case SortType.PublishDate:
-          default: {
-            const v1Lst = b1.book_date.concat();
-            const v2Lst = b2.book_date.concat();
-            if (this.filter.sorting_direction === SortingDirection.Desc) {
-              v1Lst.reverse();
-              v2Lst.reverse();
+          default:
+            {
+              const v1Lst = b1.book_date.concat();
+              const v2Lst = b2.book_date.concat();
+              if (this.filter.sorting_direction === SortingDirection.Desc) {
+                v1Lst.reverse();
+                v2Lst.reverse();
+              }
+              v1 = v1Lst.toString() + ' ' + v1;
+              v2 = v2Lst.toString() + ' ' + v2;
             }
-            v1 = v1Lst.toString() + ' ' + v1;
-            v2 = v2Lst.toString() + ' ' + v2;
-          }
             break;
         }
 
@@ -241,29 +228,15 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.param.totalCount = this.totalSeriesCount;
 
     // then limit size
-    return filteredSeries
-      .filter((b, i) => {
-        return i < this.MAX_SERIES;
-      });
+    return filteredSeries.filter((b, i) => {
+      return i < this.MAX_SERIES;
+    });
   }
-
 }
-
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatProgressSpinnerModule,
-    MatContentModule,
-    SeriesCardModule,
-    TranslateModule
-  ],
-  declarations: [
-    SeriesListComponent,
-  ],
-  exports: [
-    SeriesListComponent
-  ]
+  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, SeriesCardModule, TranslateModule],
+  declarations: [SeriesListComponent],
+  exports: [SeriesListComponent],
 })
-export class SeriesListModule {
-}
+export class SeriesListModule {}

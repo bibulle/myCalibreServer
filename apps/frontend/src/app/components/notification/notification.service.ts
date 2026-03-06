@@ -1,13 +1,10 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import {UserService} from '../authent/user.service';
+import { UserService } from '../authent/user.service';
 
 @Injectable()
 export class NotificationService {
-
-  constructor(public _snackBar: MatSnackBar,
-              private _userService: UserService) {
-  }
+  constructor(public _snackBar: MatSnackBar, private _userService: UserService) {}
 
   message(message: string) {
     // console.log(message);
@@ -25,15 +22,13 @@ export class NotificationService {
   }
 
   error(err: string) {
-
     console.error(JSON.stringify(err));
     const message = this._extractMessage(err);
     // console.error(message);
     this._display(message, 5000, ['error']);
   }
 
-  _display(message: string, duration: number, extraClasses: [string]|null) {
-
+  _display(message: string, duration: number, extraClasses: [string] | null) {
     const config = new MatSnackBarConfig();
     config.duration = duration;
     if (extraClasses) {
@@ -45,18 +40,28 @@ export class NotificationService {
 
   _extractMessage(err: any) {
     if (!err) {
-      return "Unknowkn error !!!"
+      return 'Unknown error';
     }
-    let message = err.statusText || err;
-    if (err['_body']) {
-      const error = JSON.parse(err['_body'])
-      console.log(error)
-      if ( error.error && error.error.name === 'JsonWebTokenError') {
+    // Angular HttpClient HttpErrorResponse: parsed body is in err.error
+    if (err.error && typeof err.error === 'object') {
+      const body = err.error;
+      if (body.error && body.error.name === 'JsonWebTokenError') {
         this._userService.logout();
       }
-
-      message = error.message || message;
+      return body.message || err.statusText || 'Unknown error';
     }
-    return message;
+    // Legacy Angular Http module: body is a JSON string in _body
+    if (err['_body']) {
+      const error = JSON.parse(err['_body']);
+      if (error.error && error.error.name === 'JsonWebTokenError') {
+        this._userService.logout();
+      }
+      return error.message || err.statusText || 'Unknown error';
+    }
+    // Plain string
+    if (typeof err === 'string') {
+      return err;
+    }
+    return err.statusText || err.message || 'Unknown error';
   }
 }

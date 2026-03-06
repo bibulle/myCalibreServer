@@ -1,8 +1,9 @@
-import { Controller, Get, Headers, HttpException, HttpStatus, Logger, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, Headers, Logger, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, statSync } from 'fs';
 import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
+import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
 
 @Controller('tags')
 export class TagsController {
@@ -32,7 +33,7 @@ export class TagsController {
       file.pipe(res);
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to retrieve tags');
     }
   }
 }

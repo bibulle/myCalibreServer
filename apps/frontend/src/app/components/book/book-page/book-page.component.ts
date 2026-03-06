@@ -25,10 +25,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
-    selector: 'my-calibre-server-book-page',
-    templateUrl: './book-page.component.html',
-    styleUrls: ['./book-page.component.scss'],
-    standalone: false
+  selector: 'my-calibre-server-book-page',
+  templateUrl: './book-page.component.html',
+  styleUrls: ['./book-page.component.scss'],
+  standalone: false,
 })
 export class BookPageComponent implements OnInit {
   // filter: Filter;
@@ -80,6 +80,7 @@ export class BookPageComponent implements OnInit {
       })
       .catch((err) => {
         console.log(err);
+        this._notificationService.error(err);
       });
   }
 
@@ -117,7 +118,7 @@ export class BookPageComponent implements OnInit {
       })
       .catch((err) => {
         console.log(err);
-        this._notificationService.error(err.statusText);
+        this._notificationService.error(err);
       });
   }
 
@@ -176,7 +177,7 @@ export class BookPageComponent implements OnInit {
           })
           .catch((err) => {
             console.log(err);
-            this._notificationService.error(err.statusText);
+            this._notificationService.error(err);
           });
       }
     });
@@ -205,7 +206,7 @@ export class BookPageComponent implements OnInit {
       })
       .catch((err) => {
         console.log(err);
-        this._notificationService.error(err.statusText);
+        this._notificationService.error(err);
       });
   }
 
@@ -232,7 +233,7 @@ export class BookPageComponent implements OnInit {
       })
       .catch((err) => {
         console.log(err);
-        this._notificationService.error(err.statusText);
+        this._notificationService.error(err);
       });
   }
 }

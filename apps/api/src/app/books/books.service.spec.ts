@@ -6,7 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { SeriesService } from '../series/series.service';
 import { Book, BookData } from '@my-calibre-server/api-interfaces';
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import * as fs from 'fs';
 import { promises as fsPromises } from 'fs';
 
 describe('BooksService', () => {
@@ -295,6 +296,10 @@ describe('BooksService', () => {
       mockRes = {
         set: jest.fn(),
       };
+      jest.spyOn(fs, 'createReadStream').mockReturnValue({
+        on: jest.fn(),
+        pipe: jest.fn(),
+      } as unknown as fs.ReadStream);
     });
 
     it('should include series name in filename when book has a series', async () => {
@@ -378,14 +383,36 @@ describe('BooksService', () => {
       );
     });
 
-    it('should throw INTERNAL_SERVER_ERROR when no token is provided', async () => {
-      await expect(service.getBookToDownload('', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toThrow(HttpException);
+    it('should throw BAD_REQUEST when no token is provided', async () => {
+      await expect(service.getBookToDownload('', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
 
-    it('should throw INTERNAL_SERVER_ERROR when token is invalid', async () => {
+    it('should throw UNAUTHORIZED when token is invalid', async () => {
       mockUsersService.checkToken.mockResolvedValue(null);
 
-      await expect(service.getBookToDownload('invalid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toThrow(HttpException);
+      await expect(service.getBookToDownload('invalid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    });
+
+    it('should throw NOT_FOUND when book file is missing', async () => {
+      const mockUser = { id: 1, username: 'testuser' };
+      mockCalibreDbService.getBookPaths.mockResolvedValue({
+        book_id: 1,
+        book_path: 'Author/Book Title (1)',
+        book_has_cover: '1',
+        series_name: '',
+        book_series_index: 0,
+        data: [new BookData({ data_id: 1, data_format: 'EPUB', data_size: 1000, data_name: 'Book_Title' })],
+      });
+      mockUsersService.checkToken.mockResolvedValue(mockUser);
+      jest.spyOn(fsPromises, 'stat').mockRejectedValue(Object.assign(new Error('Missing file'), { code: 'ENOENT' }));
+
+      await expect(service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
     });
   });
 });

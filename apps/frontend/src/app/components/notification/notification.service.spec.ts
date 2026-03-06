@@ -139,7 +139,7 @@ describe('NotificationService', () => {
 
       service.error(null as any);
 
-      expect(mockSnackBar.open).toHaveBeenCalledWith('Unknowkn error !!!', undefined, expect.any(Object));
+      expect(mockSnackBar.open).toHaveBeenCalledWith('Unknown error', undefined, expect.any(Object));
 
       consoleErrorSpy.mockRestore();
     });
@@ -177,12 +177,12 @@ describe('NotificationService', () => {
   describe('_extractMessage', () => {
     it('should return default message for null error', () => {
       const message = service['_extractMessage'](null);
-      expect(message).toBe('Unknowkn error !!!');
+      expect(message).toBe('Unknown error');
     });
 
     it('should return default message for undefined error', () => {
       const message = service['_extractMessage'](undefined);
-      expect(message).toBe('Unknowkn error !!!');
+      expect(message).toBe('Unknown error');
     });
 
     it('should return string error as is', () => {
@@ -252,6 +252,40 @@ describe('NotificationService', () => {
       expect(message).toBe('Fallback error');
 
       consoleLogSpy.mockRestore();
+    });
+
+    it('should extract message from Angular HttpClient err.error object', () => {
+      const error = {
+        status: 404,
+        statusText: 'Not Found',
+        error: { statusCode: 404, name: 'BookNotFoundException', message: 'Book with ID 42 not found', errorCode: 'RESOURCE_NOT_FOUND' },
+      };
+
+      const message = service['_extractMessage'](error);
+      expect(message).toBe('Book with ID 42 not found');
+    });
+
+    it('should fallback to statusText when err.error has no message', () => {
+      const error = {
+        status: 500,
+        statusText: 'Internal Server Error',
+        error: { statusCode: 500, name: 'Error' },
+      };
+
+      const message = service['_extractMessage'](error);
+      expect(message).toBe('Internal Server Error');
+    });
+
+    it('should logout user on JsonWebTokenError in err.error', () => {
+      const error = {
+        status: 401,
+        statusText: 'Unauthorized',
+        error: { error: { name: 'JsonWebTokenError' }, message: 'Invalid token' },
+      };
+
+      service['_extractMessage'](error);
+
+      expect(mockUserService.logout).toHaveBeenCalled();
     });
   });
 

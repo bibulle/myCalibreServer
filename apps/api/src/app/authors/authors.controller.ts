@@ -1,4 +1,5 @@
-import { Controller, Get, HttpException, HttpStatus, Headers, Res, Logger, StreamableFile, UseGuards } from '@nestjs/common';
+import { Controller, Get, Headers, Res, Logger, StreamableFile, UseGuards } from '@nestjs/common';
+import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, statSync } from 'fs';
 import { CacheKey, CacheService } from '../cache/cache.service';
@@ -32,7 +33,7 @@ export class AuthorsController {
       file.pipe(res);
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to retrieve authors');
     }
   }
 }
