@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.5](https://github.com/bibulle/myCalibreServer/compare/v0.12.4...v0.12.5) (2026-03-06)
+
+
+### Bug Fixes
+
+* migrate Sass [@import](https://github.com/import) to @use/[@forward](https://github.com/forward) to remove deprecation warnings ([#149](https://github.com/bibulle/myCalibreServer/issues/149)) ([c571085](https://github.com/bibulle/myCalibreServer/commit/c571085b5bd9bde70f50adfa31ea414a13829325))
+
 ### [0.12.4](https://github.com/bibulle/myCalibreServer/compare/v0.12.3...v0.12.4) (2026-03-06)
 
 
