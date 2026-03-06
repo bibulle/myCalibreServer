@@ -1,5 +1,4 @@
-@import '../../../shared/styles';
-//@import "../../../shared/layout";
+@use '../../../shared/variables' as *;
 
 :host {
   display: flex;

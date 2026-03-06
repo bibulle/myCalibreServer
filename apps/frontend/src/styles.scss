@@ -1,4 +1,10 @@
 @use '@angular/material' as mat;
+@use 'app/shared/theme' as theme;
+@use 'app/app.component.theme' as appTheme;
+@use 'app/components/authent/users-list/users-list.component.theme' as usersListTheme;
+@use 'app/components/authent/users-list/user-list-item/user-list-item.component.theme' as userListItemTheme;
+@use 'app/components/authent/profile/user-profile/user-profile.component.theme' as userProfileTheme;
+@use 'app/components/not-found/not-found.component.theme' as notFoundTheme;
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
@@ -6,60 +12,19 @@
 // always include only once per project
 @include mat.elevation-classes();
 @include mat.app-background();
- 
-// import our custom theme
-@import 'app/shared/theme.scss';
 
-/// Replace `$search` with `$replace` in `$string`
-/// @author Kitty Giraudel
-/// @param {String} $string - Initial string
-/// @param {String} $search - Substring to replace
-/// @param {String} $replace ('') - New value
-/// @return {String} - Updated string
-@function str-replace($string, $search, $replace: '') {
-  $index: str-index($string, $search);
-  
-  @if $index {
-    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
-  }
-  
-  @return $string;
-}
-
-@include mat.all-component-themes($theme);
-
-// import custom component themes
-@import 'app/app.component.theme';
-@import 'app/components/authent/users-list/users-list.component.theme';
-@import 'app/components/authent/users-list/user-list-item/user-list-item.component.theme';
-@import 'app/components/authent/profile/user-profile/user-profile.component.theme';
-// @import 'app/components/author/author-list/author-list.component.theme';
-// @import 'app/components/book/book-card/book-card.component.theme';
-// @import 'app/components/book/book-list/book-list.component.theme';
-// @import 'app/components/book/book-page/book-page.component.theme';
-@import 'app/components/not-found/not-found.component.theme';
-// @import 'app/components/series/series-list/series-list.component.theme';
-// @import 'app/components/subheader/subheader.component.theme';
+@include mat.all-component-themes(theme.$theme);
 
 @mixin custom-components-theme($theme) {
-  @include app-component-theme($theme);
-//   @include author-list-component-theme($theme);
-//   @include book-card-component-theme($theme);
-//   @include book-list-component-theme($theme);
-//   @include book-page-component-theme($theme);
-  @include not-found-component-theme($theme);
-  @include user-profile-component-theme($theme);
-//   @include series-list-component-theme($theme);
-//   @include subheader-component-theme($theme);
-  @include users-list-component-theme($theme);
-  @include user-list-item-component-theme($theme);
+  @include appTheme.app-component-theme($theme);
+  @include notFoundTheme.not-found-component-theme($theme);
+  @include userProfileTheme.user-profile-component-theme($theme);
+  @include usersListTheme.users-list-component-theme($theme);
+  @include userListItemTheme.user-list-item-component-theme($theme);
 }
 
 
-@include custom-components-theme($theme);
-
-
-
+@include custom-components-theme(theme.$theme);
 
 
 
@@ -134,33 +99,6 @@ body mat-nav-list mat-list-item[mat-ink] .mat-list-item:hover {
     //width: 100%
 }
 
-// .material-icons {
-//   font-family: 'Material Icons', serif;
-//   font-weight: normal;
-//   font-style: normal;
-//   font-size: 24px;  /* Preferred icon size */
-//   display: inline-block;
-//   width: 1em;
-//   height: 1em;
-//   line-height: 1;
-//   text-transform: none;
-//   letter-spacing: normal;
-//   word-wrap: normal;
-//   white-space: nowrap;
-//   direction: ltr;
-
-//   /* Support for all WebKit browsers. */
-//   -webkit-font-smoothing: antialiased;
-//   /* Support for Safari and Chrome. */
-//   text-rendering: optimizeLegibility;
-
-//   /* Support for Firefox. */
-//   -moz-osx-font-smoothing: grayscale;
-
-//   /* Support for IE. */
-//   font-feature-settings: 'liga';
-// }
-
 // Rules for sizing the icon.
 .material-icons.mat-18 { font-size: 18px; }
 .material-icons.mat-24 { font-size: 24px; }
@@ -225,7 +163,7 @@ my-calibre-server-filter-bar {
 my-calibre-server-mat-rating button.mat-mdc-icon-button.mat-mdc-button-base {
   width: auto;
   padding: 0;
-  
+
   .mat-mdc-button-touch-target {
     position: absolute;
     top: auto;
