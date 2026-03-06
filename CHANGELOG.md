@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.6](https://github.com/bibulle/myCalibreServer/compare/v0.12.5...v0.12.6) (2026-03-06)
+
+
+### Bug Fixes
+
+* limit DockerHub push and DevOps config editing to master branch ([#150](https://github.com/bibulle/myCalibreServer/issues/150)) ([9bfd064](https://github.com/bibulle/myCalibreServer/commit/9bfd0648607b734f32d5ad780fdccb38fbdf35c7))
+
 ### [0.12.5](https://github.com/bibulle/myCalibreServer/compare/v0.12.4...v0.12.5) (2026-03-06)
 
 

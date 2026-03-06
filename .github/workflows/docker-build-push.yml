@@ -38,7 +38,7 @@ jobs:
 
       - name: Checkout gitops
         uses: actions/checkout@v4
-        if: ${{ env.actions_token != '' }}
+        if: ${{ env.actions_token != '' && github.ref == 'refs/heads/master' }}
         with:
           repository: bibulle/myKubernetesConfig
           token: ${{ env.actions_token }}
@@ -85,12 +85,12 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ${{env.APP_PATH}}
-          push: ${{ env.dockerhub_username != '' && env.dockerhub_password != '' }}
+          push: ${{ env.dockerhub_username != '' && env.dockerhub_password != '' && github.ref == 'refs/heads/master' }}
           tags: ${{env.DOCKER_TAGS}}
 
       - name: Update k8s yaml file
         id: update_yml
-        if: ${{ env.actions_token != '' }}
+        if: ${{ env.actions_token != '' && github.ref == 'refs/heads/master' }}
         run: |
           cd ${{env.OPS_PATH}}
           image="bibulle\/${{env.APP_NAME}}"
@@ -100,7 +100,7 @@ jobs:
 
       - name: Commit k8s yaml file
         id: commit_yml
-        if: env.actions_token != '' && steps.update_yml.outputs.line_modified != '0'
+        if: env.actions_token != '' && github.ref == 'refs/heads/master' && steps.update_yml.outputs.line_modified != '0'
         run: |
           cd ${{env.OPS_PATH}}
           git config --global user.email "${GITHUB_ACTOR}"
