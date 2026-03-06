@@ -196,7 +196,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockImplementation((u) => u);
 
-      await expect(controller.save(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.save(req, body)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should reject when user tries to make themselves admin', async () => {
@@ -210,14 +212,18 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockImplementation((u) => u);
 
-      await expect(controller.save(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.save(req, body)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should throw BadRequest when user id is missing', async () => {
       const req = { user: mockUser };
       const body = { user: {} };
 
-      await expect(controller.save(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.save(req, body)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -241,7 +247,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockUser);
 
-      await expect(controller.delete(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.delete(req, body)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should throw BadRequest when userId is missing', async () => {
@@ -250,7 +258,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockAdminUser);
 
-      await expect(controller.delete(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.delete(req, body)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -274,7 +284,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockUser);
 
-      await expect(controller.resetpassword(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.resetpassword(req, body)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should throw BadRequest when userId is missing', async () => {
@@ -283,7 +295,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockAdminUser);
 
-      await expect(controller.resetpassword(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.resetpassword(req, body)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 
@@ -308,7 +322,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockUser);
 
-      await expect(controller.changepassword(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.changepassword(req, body)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
 
     // Note: Error handling test skipped
@@ -336,7 +352,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockUser);
 
-      await expect(controller.mergeUsers(req, body)).rejects.toThrow();
+      await expect(controller.mergeUsers(req, body)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should throw BadRequest when userSrcId is missing', async () => {
@@ -345,7 +363,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockAdminUser);
 
-      await expect(controller.mergeUsers(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.mergeUsers(req, body)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
 
     it('should throw BadRequest when userTrgId is missing', async () => {
@@ -354,7 +374,9 @@ describe('UsersController', () => {
 
       mockUsersService.createUser.mockReturnValue(mockAdminUser);
 
-      await expect(controller.mergeUsers(req, body)).rejects.toThrow(HttpException);
+      await expect(controller.mergeUsers(req, body)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
   });
 });

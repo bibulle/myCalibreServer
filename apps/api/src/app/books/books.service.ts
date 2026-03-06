@@ -1,8 +1,12 @@
 import { Book, BookData, BookPath, Sprite, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
-import { HttpException, HttpStatus, Injectable, Logger, StreamableFile } from '@nestjs/common';
+import { HttpException, Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
 import { createReadStream, promises as fsPromises, mkdirSync, statSync, existsSync } from 'fs';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
+import { ApiBadRequestException } from '../exceptions/api-bad-request.exception';
+import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
+import { ApiUnauthorizedException } from '../exceptions/api-unauthorized.exception';
+import { BookNotFoundException } from '../exceptions/book-not-found.exception';
 import { UsersService } from '../users/users.service';
 import _ = require('lodash');
 import path = require('path');
@@ -141,57 +145,53 @@ export class BooksService {
   async getBookToDownload(token: string, book_id: number, res: Response, format: 'EPUB' | 'MOBI', contentType: 'application/epub+zip' | 'application/x-mobipocket-ebook') {
     try {
       if (!token) {
-        throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+        throw new ApiBadRequestException('Token is required');
       }
 
       const user = await this._usersService.checkToken(token);
       if (!user) {
-        throw new HttpException('Not Authorized', HttpStatus.UNAUTHORIZED);
+        throw new ApiUnauthorizedException('Token is invalid');
       }
 
-      try {
-        const book: BookPath = await this._calibreDbService.getBookPaths(book_id);
-        let fullPath = null;
-
-        if (book && book.book_path && book.data) {
-          const data = book.data.filter((bd: BookData) => {
-            return bd.data_format == format;
-          });
-          if (data && data.length != 0) {
-            fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
-            try {
-              await fsPromises.stat(fullPath);
-              await this._usersService.addDownloadedBook(user, book_id, data[0]);
-
-              let filename = data[0].data_name;
-              if (book.series_name) {
-                filename = `${book.series_name} - ${book.book_series_index} - ${filename}`;
-              }
-              filename = filename.replace(/[<>:"/\\|?*]/g, '_');
-
-              res.set({
-                'Content-Type': contentType,
-                'Thumbnail-control': 'public, max-age=31536000',
-                'Content-Disposition': `attachment; filename="${filename}.${format.toLowerCase()}"`,
-              });
-              return new StreamableFile(createReadStream(fullPath));
-            } catch (reason) {
-              BooksService.logger.error(`${reason}`);
-              throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-            }
-          } else {
-            throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-          }
-        } else {
-          throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-        }
-      } catch (err) {
-        BooksService.logger.error(err);
-        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      const book: BookPath = await this._calibreDbService.getBookPaths(book_id);
+      if (!book || !book.book_path || !book.data) {
+        throw new BookNotFoundException(book_id);
       }
+
+      const data = book.data.filter((bd: BookData) => {
+        return bd.data_format == format;
+      });
+      if (!data || data.length === 0) {
+        throw new BookNotFoundException(book_id);
+      }
+
+      const fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
+
+      await fsPromises.stat(fullPath);
+      await this._usersService.addDownloadedBook(user, book_id, data[0]);
+
+      let filename = data[0].data_name;
+      if (book.series_name) {
+        filename = `${book.series_name} - ${book.book_series_index} - ${filename}`;
+      }
+      filename = filename.replace(/[<>:"/\\|?*]/g, '_');
+
+      res.set({
+        'Content-Type': contentType,
+        'Thumbnail-control': 'public, max-age=31536000',
+        'Content-Disposition': `attachment; filename="${filename}.${format.toLowerCase()}"`,
+      });
+
+      return new StreamableFile(createReadStream(fullPath));
     } catch (err) {
       BooksService.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      if (err && err.code === 'ENOENT') {
+        throw new BookNotFoundException(book_id);
+      }
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new ApiInternalServerException('Unable to prepare book download');
     }
   }
 

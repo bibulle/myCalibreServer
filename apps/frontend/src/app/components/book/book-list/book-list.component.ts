@@ -16,14 +16,15 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationService } from '../../notification/notification.service';
 
 // const leftPad = require('left-pad');
 
 @Component({
-    selector: 'my-calibre-server-book-list',
-    templateUrl: './book-list.component.html',
-    styleUrls: ['./book-list.component.scss'],
-    standalone: false
+  selector: 'my-calibre-server-book-list',
+  templateUrl: './book-list.component.html',
+  styleUrls: ['./book-list.component.scss'],
+  standalone: false,
 })
 export class BookListComponent implements OnInit, OnDestroy {
   MAX_BOOK = 200;
@@ -55,7 +56,7 @@ export class BookListComponent implements OnInit, OnDestroy {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _bookService: BookService, private _filterService: FilterService) {
+  constructor(private _bookService: BookService, private _filterService: FilterService, private _notificationService: NotificationService) {
     while (this.books.length < this.MAX_BOOK) {
       this.books.push(new Book());
     }
@@ -80,6 +81,7 @@ export class BookListComponent implements OnInit, OnDestroy {
       })
       .catch((err) => {
         console.log(err);
+        this._notificationService.error(err);
       });
   }
 

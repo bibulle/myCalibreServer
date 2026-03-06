@@ -1,6 +1,9 @@
 import { ApiReturn, User } from '@my-calibre-server/api-interfaces';
-import { Body, Controller, Get, HttpException, HttpStatus, InternalServerErrorException, Logger, Post, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Logger, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBadRequestException } from '../exceptions/api-bad-request.exception';
+import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
+import { ApiUnauthorizedException } from '../exceptions/api-unauthorized.exception';
 import { MailService } from '../utils/mail.service';
 import { UsersService } from './users.service';
 
@@ -23,7 +26,7 @@ export class UsersController {
       return ret;
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to retrieve users');
     }
   }
 
@@ -41,7 +44,7 @@ export class UsersController {
       return ret;
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to retrieve current user');
     }
   }
   // =====================================
@@ -53,21 +56,19 @@ export class UsersController {
     const connectedUser = this._userService.createUser(req.user);
 
     if (!body?.user?.id) {
-      throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('User ID is required');
     }
 
     const savedUser = this._userService.createUser(body.user);
-    // this.logger.debug(JSON.stringify(connectedUser, null,2));
-    // this.logger.debug(JSON.stringify(savedUser, null,2));
 
     // modifying myself or i'm an admin, save it (else Not authorized)
     if (connectedUser.id !== savedUser.id && connectedUser.local.isAdmin !== true) {
-      throw new HttpException('Not authorize to modify this user', HttpStatus.UNAUTHORIZED);
+      throw new ApiUnauthorizedException('Not authorized to modify this user');
     }
 
-    // try to becom an admin, reject
+    // try to become an admin, reject
     if (connectedUser.id === savedUser.id && connectedUser.local.isAdmin === false && savedUser.local.isAdmin === true) {
-      throw new HttpException('Mouarf !!!', HttpStatus.UNAUTHORIZED);
+      throw new ApiUnauthorizedException('Cannot self-elevate to admin');
     }
 
     this.logger.debug(`Saving user ${savedUser.local.username} : ${savedUser.local.firstname} ${savedUser.local.lastname}`);
@@ -85,7 +86,7 @@ export class UsersController {
       return { user: this._userService.user2API(user) };
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to save user');
     }
   }
   // =====================================
@@ -97,14 +98,14 @@ export class UsersController {
     const connectedUser = this._userService.createUser(req.user);
 
     if (!body?.userId) {
-      throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('User ID is required');
     }
 
     const userId = body.userId;
 
     // i'm an admin, delete it (else Not authorized)
     if (connectedUser.local.isAdmin !== true) {
-      throw new HttpException('Not authorize to delete this user', HttpStatus.UNAUTHORIZED);
+      throw new ApiUnauthorizedException('Not authorized to delete this user');
     }
 
     this.logger.debug(`Deleting user ${userId}`);
@@ -114,7 +115,7 @@ export class UsersController {
       return {};
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to delete user');
     }
   }
   // =====================================
@@ -128,14 +129,14 @@ export class UsersController {
     const connectedUser = this._userService.createUser(req.user);
 
     if (!body?.userId) {
-      throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('User ID is required');
     }
 
     const userId = body.userId;
 
     // i'm an admin, delete it (else Not authorized)
     if (connectedUser.local.isAdmin !== true) {
-      throw new HttpException('Not authorize to modify this user', HttpStatus.UNAUTHORIZED);
+      throw new ApiUnauthorizedException('Not authorized to modify this user');
     }
 
     this.logger.debug(`Reset password fo user ${connectedUser.local.firstname} ${connectedUser.local.lastname}`);
@@ -145,7 +146,7 @@ export class UsersController {
       return { ok: 'mail sent' };
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException(typeof err === 'string' ? err : 'Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException(typeof err === 'string' ? err : 'Unable to reset user password');
     }
     // });
   }
@@ -158,7 +159,7 @@ export class UsersController {
     const connectedUser = this._userService.createUser(req.user);
 
     if (!body?.password) {
-      throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('Password is required');
     }
 
     const password = body.password;
@@ -171,7 +172,7 @@ export class UsersController {
       return { ok: 'Password changed', user: user };
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to change password');
     }
   }
   // =====================================
@@ -183,7 +184,7 @@ export class UsersController {
     const connectedUser = this._userService.createUser(req.user);
 
     if (!body?.userSrcId || !body?.userTrgId) {
-      throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('Source user ID and target user ID are required');
     }
 
     const userSrcId = body.userSrcId;
@@ -191,7 +192,7 @@ export class UsersController {
 
     // i'm an admin, delete it (else Not authorized)
     if (connectedUser.local.isAdmin !== true) {
-      throw new UnauthorizedException('Not authorize to modify those users');
+      throw new ApiUnauthorizedException('Not authorized to merge users');
     }
 
     this.logger.debug(`Merge some users`);
@@ -202,7 +203,7 @@ export class UsersController {
       return { users: users };
     } catch (err) {
       this.logger.error(err);
-      throw new InternalServerErrorException('Something go wrong');
+      throw new ApiInternalServerException('Unable to merge users');
     }
   }
 }

@@ -9,12 +9,13 @@ import { Subscription } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { Author } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { NotificationService } from '../../notification/notification.service';
 
 @Component({
-    selector: 'my-calibre-server-author-list',
-    templateUrl: './author-list.component.html',
-    styleUrls: ['./author-list.component.scss'],
-    standalone: false
+  selector: 'my-calibre-server-author-list',
+  templateUrl: './author-list.component.html',
+  styleUrls: ['./author-list.component.scss'],
+  standalone: false,
 })
 export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
   MAX_AUTHORS = 100;
@@ -48,7 +49,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _authorService: AuthorService, private _filterService: FilterService, private route: ActivatedRoute) {}
+  constructor(private _authorService: AuthorService, private _filterService: FilterService, private route: ActivatedRoute, private _notificationService: NotificationService) {}
 
   //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
@@ -80,6 +81,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
       })
       .catch((err) => {
         console.log(err);
+        this._notificationService.error(err);
       });
   }
 

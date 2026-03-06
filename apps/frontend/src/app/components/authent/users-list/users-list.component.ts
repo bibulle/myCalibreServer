@@ -15,10 +15,10 @@ import { UserService } from '../user.service';
 import { UserListItemModule } from './user-list-item/user-list-item.component';
 
 @Component({
-    selector: 'my-calibre-server--users-list',
-    templateUrl: './users-list.component.html',
-    styleUrls: ['./users-list.component.scss'],
-    standalone: false
+  selector: 'my-calibre-server--users-list',
+  templateUrl: './users-list.component.html',
+  styleUrls: ['./users-list.component.scss'],
+  standalone: false,
 })
 export class UsersListComponent implements OnInit {
   SortType = {
@@ -75,7 +75,7 @@ export class UsersListComponent implements OnInit {
       })
       .catch((err) => {
         console.log(err);
-        this._notificationService.error(err.statusText);
+        this._notificationService.error(err);
       });
   }
 
@@ -96,7 +96,7 @@ export class UsersListComponent implements OnInit {
         })
         .catch((err) => {
           console.log(err);
-          this._notificationService.error(err.statusText);
+          this._notificationService.error(err);
         });
     }
   }
@@ -139,8 +139,8 @@ export class UsersListComponent implements OnInit {
           v2 = UsersListComponent.d(u2.history?.lastConnection) + v2;
           break;
         case this.SortType.DownloadCount:
-          v1 = UsersListComponent.n((u1.history?.downloadedBooks ? u1.history?.downloadedBooks.length : 0)) + v1;
-          v2 = UsersListComponent.n((u2.history?.downloadedBooks ? u2.history?.downloadedBooks.length : 0)) + v2;
+          v1 = UsersListComponent.n(u1.history?.downloadedBooks ? u1.history?.downloadedBooks.length : 0) + v1;
+          v2 = UsersListComponent.n(u2.history?.downloadedBooks ? u2.history?.downloadedBooks.length : 0) + v2;
           break;
         case this.SortType.IsAdmin:
           v1 = u1.local.isAdmin + v1;

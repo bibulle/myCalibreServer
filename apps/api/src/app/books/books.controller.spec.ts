@@ -418,7 +418,9 @@ describe('BooksController', () => {
     });
 
     it('should throw BadRequest when rating is missing', async () => {
-      await expect(controller.setRating(1, null, mockRequest)).rejects.toThrow(new HttpException('Bad request', HttpStatus.BAD_REQUEST));
+      await expect(controller.setRating(1, null, mockRequest)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
 
     // Note: Error handling test skipped - same Promise.catch() issue
@@ -438,7 +440,9 @@ describe('BooksController', () => {
     it('should throw Unauthorized when user not found', async () => {
       const requestWithoutUser = { user: null };
 
-      await expect(controller.getEpubUrl(1, requestWithoutUser)).rejects.toThrow(new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED));
+      await expect(controller.getEpubUrl(1, requestWithoutUser)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
   });
 
@@ -466,11 +470,15 @@ describe('BooksController', () => {
     it('should throw Unauthorized when user not found', async () => {
       const requestWithoutUser = { user: null };
 
-      await expect(controller.sendKindle(1, 'user@kindle.com', requestWithoutUser)).rejects.toThrow(new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED));
+      await expect(controller.sendKindle(1, 'user@kindle.com', requestWithoutUser)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
     });
 
     it('should throw BadRequest when mail is missing', async () => {
-      await expect(controller.sendKindle(1, null, mockRequest)).rejects.toThrow(new HttpException('Something go wrong', HttpStatus.BAD_REQUEST));
+      await expect(controller.sendKindle(1, null, mockRequest)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
     });
 
     it('should throw error when book not found', async () => {

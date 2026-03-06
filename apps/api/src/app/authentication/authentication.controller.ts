@@ -1,6 +1,10 @@
 import { ApiReturn, User } from '@my-calibre-server/api-interfaces';
-import { Controller, Get, HttpCode, HttpException, HttpStatus, Logger, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpException, Logger, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBadRequestException } from '../exceptions/api-bad-request.exception';
+import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
+import { ApiUnauthorizedException } from '../exceptions/api-unauthorized.exception';
+import { UserNotFoundException } from '../exceptions/user-not-found.exception';
 import { UsersService } from '../users/users.service';
 
 @Controller('authent')
@@ -54,7 +58,7 @@ export class AuthenticationController {
 
       return ret;
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Authentication failed (google callback)');
     }
   }
 
@@ -73,7 +77,7 @@ export class AuthenticationController {
 
       return ret;
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Authentication failed (google id token)');
     }
   }
 
@@ -82,7 +86,7 @@ export class AuthenticationController {
   async googleUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {
     // this.logger.debug(modifiedUserId);
     if (!modifiedUserId || modifiedUserId.length === 0) {
-      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('User ID is required');
     }
 
     modifiedUserId = modifiedUserId.replace(/ /g, '+');
@@ -91,7 +95,7 @@ export class AuthenticationController {
     if (user) {
       if (modifiedUserId !== user.id) {
         if (!user.local.isAdmin) {
-          throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
+          throw new ApiUnauthorizedException('Not authorized to unlink another user');
         } else {
           try {
             const modifiedUser = await this._userService.findById(modifiedUserId);
@@ -102,11 +106,14 @@ export class AuthenticationController {
                 user: this._userService.user2API(modifiedUser),
               };
             } else {
-              throw new HttpException('User not found 1', HttpStatus.NOT_FOUND);
+              throw new UserNotFoundException(modifiedUserId);
             }
           } catch (reason) {
             this.logger.error(reason);
-            throw new HttpException('User not found 2', HttpStatus.NOT_FOUND);
+            if (reason instanceof HttpException) {
+              throw reason;
+            }
+            throw new UserNotFoundException(modifiedUserId);
           }
         }
       } else {
@@ -118,7 +125,7 @@ export class AuthenticationController {
         };
       }
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('User session is missing');
     }
   }
   // =====================================
@@ -166,7 +173,7 @@ export class AuthenticationController {
 
       return ret;
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Authentication failed (facebook callback)');
     }
   }
 
@@ -175,7 +182,7 @@ export class AuthenticationController {
   async facebookUnlink(@Req() req, @Query('userId') modifiedUserId: string): Promise<ApiReturn> {
     // this.logger.debug(modifiedUserId);
     if (!modifiedUserId || modifiedUserId.length === 0) {
-      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('User ID is required');
     }
 
     modifiedUserId = modifiedUserId.replace(/ /g, '+');
@@ -184,7 +191,7 @@ export class AuthenticationController {
     if (user) {
       if (modifiedUserId !== user.id) {
         if (!user.local.isAdmin) {
-          throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
+          throw new ApiUnauthorizedException('Not authorized to unlink another user');
         } else {
           try {
             const modifiedUser = await this._userService.findById(modifiedUserId);
@@ -195,11 +202,14 @@ export class AuthenticationController {
                 user: this._userService.user2API(modifiedUser),
               };
             } else {
-              throw new HttpException('User not found 1', HttpStatus.NOT_FOUND);
+              throw new UserNotFoundException(modifiedUserId);
             }
           } catch (reason) {
             this.logger.error(reason);
-            throw new HttpException('User not found 2', HttpStatus.NOT_FOUND);
+            if (reason instanceof HttpException) {
+              throw reason;
+            }
+            throw new UserNotFoundException(modifiedUserId);
           }
         }
       } else {
@@ -211,7 +221,7 @@ export class AuthenticationController {
         };
       }
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('User session is missing');
     }
   }
 
@@ -231,7 +241,7 @@ export class AuthenticationController {
 
       return ret;
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Local login failed');
     }
   }
 
@@ -252,10 +262,10 @@ export class AuthenticationController {
         return ret;
       } catch (err) {
         this.logger.error(err);
-        throw new HttpException('Authentication failed', HttpStatus.UNAUTHORIZED);
+        throw new ApiUnauthorizedException('Authentication failed');
       }
     } else {
-      throw new HttpException('Authentication failed', HttpStatus.UNAUTHORIZED);
+      throw new ApiUnauthorizedException('Authentication failed');
     }
   }
 
@@ -275,7 +285,7 @@ export class AuthenticationController {
 
       return ret;
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Signup failed');
     }
   }
 
@@ -294,7 +304,7 @@ export class AuthenticationController {
 
       return ret;
     } else {
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Token check failed');
     }
   }
 }

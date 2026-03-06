@@ -9,12 +9,13 @@ import { MatContentModule } from '../../content/content.component';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { TagCardModule } from '../tag-card/tag-card.component';
 import { TagService } from '../tag.service';
+import { NotificationService } from '../../notification/notification.service';
 
 @Component({
-    selector: 'my-calibre-server-tag-list',
-    templateUrl: './tag-list.component.html',
-    styleUrls: ['./tag-list.component.scss'],
-    standalone: false
+  selector: 'my-calibre-server-tag-list',
+  templateUrl: './tag-list.component.html',
+  styleUrls: ['./tag-list.component.scss'],
+  standalone: false,
 })
 export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
   MAX_TAGS = 100;
@@ -48,7 +49,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _tagService: TagService, private _filterService: FilterService, private route: ActivatedRoute) {}
+  constructor(private _tagService: TagService, private _filterService: FilterService, private route: ActivatedRoute, private _notificationService: NotificationService) {}
 
   //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
@@ -80,6 +81,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       })
       .catch((err) => {
         console.log(err);
+        this._notificationService.error(err);
       });
   }
 

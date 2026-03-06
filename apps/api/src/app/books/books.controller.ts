@@ -1,10 +1,14 @@
 import { ApiReturn, BookData, BookPath, User } from '@my-calibre-server/api-interfaces';
-import { Body, Controller, Get, Header, Headers, HttpException, HttpStatus, Logger, NotFoundException, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, HttpException, Logger, NotFoundException, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 import { createReadStream, existsSync, promises as fsPromises, statSync } from 'fs';
 import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
+import { ApiBadRequestException } from '../exceptions/api-bad-request.exception';
+import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
+import { ApiUnauthorizedException } from '../exceptions/api-unauthorized.exception';
+import { BookNotFoundException } from '../exceptions/book-not-found.exception';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../utils/mail.service';
 import { BooksService } from './books.service';
@@ -45,7 +49,7 @@ export class BooksController {
       file.pipe(res);
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to read books cache');
     }
   }
 
@@ -73,7 +77,7 @@ export class BooksController {
       file.pipe(res);
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to read new books cache');
     }
   }
 
@@ -93,7 +97,7 @@ export class BooksController {
       return ret;
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Something go wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new ApiInternalServerException('Unable to load book details');
     }
   }
   // ====================================
@@ -239,7 +243,7 @@ export class BooksController {
     // this.logger.debug(rating);
 
     if (!rating) {
-      throw new HttpException('Bad request', HttpStatus.BAD_REQUEST);
+      throw new ApiBadRequestException('Rating is required');
     }
 
     const user: User = req.user as User;
@@ -254,14 +258,17 @@ export class BooksController {
           return { ok: 'Rating saved' };
         } catch (reason) {
           this.logger.error(reason);
-          throw new HttpException('Something go wrong :-(', HttpStatus.INTERNAL_SERVER_ERROR);
+          throw new ApiInternalServerException('Unable to save book rating');
         }
       } else {
-        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+        throw new BookNotFoundException(book_id);
       }
     } catch (err) {
       this.logger.error(err);
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new ApiInternalServerException('Unable to set book rating');
     }
   }
 
@@ -273,7 +280,7 @@ export class BooksController {
   async getEpubUrl(@Param('id') book_id: number, @Req() req): Promise<ApiReturn> {
     const user: User = req.user as User;
     if (!user) {
-      throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
+      throw new ApiUnauthorizedException('User is not authenticated');
     }
 
     const token = this._usersService.createTemporaryToken(user);
@@ -290,10 +297,10 @@ export class BooksController {
     try {
       const user: User = req.user as User;
       if (!user) {
-        throw new HttpException('Something go wrong', HttpStatus.UNAUTHORIZED);
+        throw new ApiUnauthorizedException('User is not authenticated');
       }
       if (!mail || !book_id) {
-        throw new HttpException('Something go wrong', HttpStatus.BAD_REQUEST);
+        throw new ApiBadRequestException('Mail and book id are required');
       }
       const book = await this._calibreDb.getBookPaths(book_id);
       let fullPath = null;
@@ -310,26 +317,24 @@ export class BooksController {
             await this._mailService.sendMail(mail, 'My books', 'This book was sent to you by myCalibre.', `${data[0].data_name}.${format.toLowerCase()}`, `${fullPath}`);
             return { ok: 'Book sent' };
           } else {
-            throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+            throw new BookNotFoundException(book_id);
           }
         } else {
-          throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+          throw new BookNotFoundException(book_id);
         }
       } else {
-        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+        throw new BookNotFoundException(book_id);
       }
     } catch (err) {
-      let mes = 'Something go wrong';
-      let status = HttpStatus.INTERNAL_SERVER_ERROR;
       if (err && err.code === 'ENOENT') {
-        mes = 'Not found';
-        status = HttpStatus.NOT_FOUND;
-      } else if (err && err.status) {
-        status = err.status;
+        throw new BookNotFoundException(book_id);
       }
+
       this.logger.error(err);
-      this.logger.error(JSON.stringify(err, null, 2));
-      throw new HttpException(mes, status);
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new ApiInternalServerException('Unable to send book to Kindle');
     }
   }
 }
