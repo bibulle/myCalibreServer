@@ -17,7 +17,10 @@ import {Component, Directive, NgModule} from '@angular/core';
  * </hljs>
  *
  */
-@Directive({selector: 'mat-content'})
+@Directive({
+    selector: 'mat-content',
+    standalone: false
+})
 export class MatContentDirective {
 }
 

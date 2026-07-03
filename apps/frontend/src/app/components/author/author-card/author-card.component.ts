@@ -7,9 +7,10 @@ import { Author } from '@my-calibre-server/api-interfaces';
 import { BookCardModule } from '../../book/book-card/book-card.component';
 
 @Component({
-  selector: 'my-calibre-server-author-card',
-  templateUrl: './author-card.component.html',
-  styleUrls: ['./author-card.component.scss']
+    selector: 'my-calibre-server-author-card',
+    templateUrl: './author-card.component.html',
+    styleUrls: ['./author-card.component.scss'],
+    standalone: false
 })
 export class AuthorCardComponent {
 

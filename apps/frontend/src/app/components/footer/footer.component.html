@@ -1,6 +1,8 @@
 <p class="mat-caption version">
-  <a href="{{version.github_url}}"
-     target="_blank"
-     *ngIf="version">{{version.name}} v{{version.version}}</a>
+  @if (version) {
+    <a href="{{version.github_url}}"
+      target="_blank"
+    >{{version.name}} v{{version.version}}</a>
+  }
   © {{version.copyright}}
 </p>

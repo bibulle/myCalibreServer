@@ -4,11 +4,13 @@ import { MatContentDirective, MatContentModule } from './content.component';
 
 @Component({
   template: '<mat-content>Test Content</mat-content>',
+  standalone: false,
 })
 class TestHostComponent {}
 
 @Component({
   template: '<mat-content layout-padding>Padded Content</mat-content>',
+  standalone: false,
 })
 class TestHostWithPaddingComponent {}
 

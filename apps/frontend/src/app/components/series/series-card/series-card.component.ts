@@ -8,9 +8,10 @@ import { BookCardModule } from '../../book/book-card/book-card.component';
 import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 
 @Component({
-  selector: 'my-calibre-server-series-card',
-  templateUrl: './series-card.component.html',
-  styleUrls: ['./series-card.component.scss'],
+    selector: 'my-calibre-server-series-card',
+    templateUrl: './series-card.component.html',
+    styleUrls: ['./series-card.component.scss'],
+    standalone: false
 })
 export class SeriesCardComponent {
   @Input()

@@ -42,6 +42,11 @@ class RealTemporaryTokenStrategy extends PassportStrategy(UniqueTokenStrategy, '
     });
 
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validate(...args: any[]): any {
+    // Not used: the verify callback passed to super() handles validation directly.
+  }
 }
 
 @Injectable()

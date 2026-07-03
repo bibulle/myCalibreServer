@@ -3,7 +3,6 @@ import { Component, NgModule, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatCommonModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -16,9 +15,10 @@ import { UserService } from '../user.service';
 import { UserListItemModule } from './user-list-item/user-list-item.component';
 
 @Component({
-  selector: 'my-calibre-server--users-list',
-  templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.scss'],
+    selector: 'my-calibre-server--users-list',
+    templateUrl: './users-list.component.html',
+    styleUrls: ['./users-list.component.scss'],
+    standalone: false
 })
 export class UsersListComponent implements OnInit {
   SortType = {
@@ -174,7 +174,6 @@ export class UsersListComponent implements OnInit {
 @NgModule({
   imports: [
     FormsModule,
-    MatCommonModule,
     CommonModule,
     MatCardModule,
     MatButtonModule,

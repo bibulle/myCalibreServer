@@ -1,8 +1,16 @@
-<mat-content *ngIf="series">
-  <my-calibre-server-series-card *ngFor="let serie of series" [series]="serie" [booksClosed]="serie.series_id !== selectedId">
-  </my-calibre-server-series-card>
-  <div class="max-reached" *ngIf="series.length === MAX_SERIES">
-    <span>{{ 'label.limited' | translate:param }}</span>
-  </div>
-</mat-content>
-<mat-spinner *ngIf="!series"></mat-spinner>
+@if (series) {
+  <mat-content>
+    @for (serie of series; track serie) {
+      <my-calibre-server-series-card [series]="serie" [booksClosed]="serie.series_id !== selectedId">
+      </my-calibre-server-series-card>
+    }
+    @if (series.length === MAX_SERIES) {
+      <div class="max-reached">
+        <span>{{ 'label.limited' | translate:param }}</span>
+      </div>
+    }
+  </mat-content>
+}
+@if (!series) {
+  <mat-spinner></mat-spinner>
+}

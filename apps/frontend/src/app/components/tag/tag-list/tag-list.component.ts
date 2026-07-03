@@ -11,9 +11,10 @@ import { TagCardModule } from '../tag-card/tag-card.component';
 import { TagService } from '../tag.service';
 
 @Component({
-  selector: 'my-calibre-server-tag-list',
-  templateUrl: './tag-list.component.html',
-  styleUrls: ['./tag-list.component.scss'],
+    selector: 'my-calibre-server-tag-list',
+    templateUrl: './tag-list.component.html',
+    styleUrls: ['./tag-list.component.scss'],
+    standalone: false
 })
 export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
   MAX_TAGS = 100;

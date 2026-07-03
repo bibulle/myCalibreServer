@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRatingModule } from '../rating/rating.component';
-import { BookListComponent, BookListModule } from './book-list/book-list.component';
+import { BookListModule } from './book-list/book-list.component';
 import { BookPageModule } from './book-page/book-page.component';
 import { BookService } from './book.service';
 
@@ -20,7 +20,7 @@ import { BookService } from './book.service';
     BookService
   ],
   exports: [
-    BookListComponent
+    BookListModule
   ],
   declarations: [
   ]

@@ -1,8 +1,16 @@
-<mat-content *ngIf="authors">
-  <my-calibre-server-author-card *ngFor="let author of authors" [author]="author" [booksClosed]="author.author_id !== selectedId">
-  </my-calibre-server-author-card>
-  <div class="max-reached" *ngIf="authors.length === MAX_AUTHORS">
-    <span>{{ 'label.limited' | translate:param }}</span>
-  </div>
-</mat-content>
-<mat-spinner *ngIf="!authors"></mat-spinner>
+@if (authors) {
+  <mat-content>
+    @for (author of authors; track author) {
+      <my-calibre-server-author-card [author]="author" [booksClosed]="author.author_id !== selectedId">
+      </my-calibre-server-author-card>
+    }
+    @if (authors.length === MAX_AUTHORS) {
+      <div class="max-reached">
+        <span>{{ 'label.limited' | translate:param }}</span>
+      </div>
+    }
+  </mat-content>
+}
+@if (!authors) {
+  <mat-spinner></mat-spinner>
+}

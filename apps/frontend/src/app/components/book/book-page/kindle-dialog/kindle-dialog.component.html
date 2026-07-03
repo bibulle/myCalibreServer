@@ -7,9 +7,11 @@
         <input matInput placeholder="{{ 'label.email' | translate }}" type="email" required [matAutocomplete]="auto" [(ngModel)]="mail" name="mail" (change)="mailFilter()" (keyup)="mailFilter()" />
       </mat-form-field>
       <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let mail of filteredMails" [value]="mail">
-          {{ mail }}
-        </mat-option>
+        @for (mail of filteredMails; track mail) {
+          <mat-option [value]="mail">
+            {{ mail }}
+          </mat-option>
+        }
       </mat-autocomplete>
       <div class="message" [innerHTML]="'label.kindle.warning' | translate"></div>
     </mat-card-content>

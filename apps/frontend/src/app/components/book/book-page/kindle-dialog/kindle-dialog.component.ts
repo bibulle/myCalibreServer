@@ -8,9 +8,10 @@ export class KindleDialogReturn {
 }
 
 @Component({
-  selector: 'my-calibre-server-kindle-dialog',
-  templateUrl: './kindle-dialog.component.html',
-  styleUrls: ['./kindle-dialog.component.scss'],
+    selector: 'my-calibre-server-kindle-dialog',
+    templateUrl: './kindle-dialog.component.html',
+    styleUrls: ['./kindle-dialog.component.scss'],
+    standalone: false
 })
 export class KindleDialogComponent implements OnInit {
   user: User = {} as User;

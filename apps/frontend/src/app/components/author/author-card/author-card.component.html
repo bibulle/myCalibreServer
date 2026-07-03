@@ -1,13 +1,24 @@
-<mat-card class="author-card" *ngIf="author && author.author_name" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
-  <mat-card-title class="author-name">
-    {{ author.author_name }}
-    <span class="date" *ngIf="author.book_date[1]">{{ author.book_date[0] | date : 'yyyy' }}-</span
-    ><span class="date" *ngIf="author.book_date[author.book_date.length - 1]">{{ author.book_date[author.book_date.length - 1] | date : 'yyyy' }}</span>
-    <button mat-icon-button class="mat-icon-button">
-      <mat-icon *ngIf="booksClosed">keyboard_arrow_down</mat-icon>
-      <mat-icon *ngIf="!booksClosed">keyboard_arrow_up</mat-icon>
-    </button>
-  </mat-card-title>
-
-  <my-calibre-server-book-card *ngFor="let book of author.books" [book]="book"> </my-calibre-server-book-card>
-</mat-card>
+@if (author && author.author_name) {
+  <mat-card class="author-card" [class.books-closed]="booksClosed" (click)="toggleBooksClosed()">
+    <mat-card-title class="author-name">
+      {{ author.author_name }}
+      @if (author.book_date[1]) {
+        <span class="date">{{ author.book_date[0] | date : 'yyyy' }}-</span
+          >
+          }@if (author.book_date[author.book_date.length - 1]) {
+          <span class="date">{{ author.book_date[author.book_date.length - 1] | date : 'yyyy' }}</span>
+        }
+        <button mat-icon-button class="mat-icon-button">
+          @if (booksClosed) {
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          }
+          @if (!booksClosed) {
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          }
+        </button>
+      </mat-card-title>
+      @for (book of author.books; track book) {
+        <my-calibre-server-book-card [book]="book"> </my-calibre-server-book-card>
+      }
+    </mat-card>
+  }

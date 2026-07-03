@@ -10,9 +10,10 @@ import { ImageSpritesModule } from '../../image-sprites/image-sprites.component'
 import { MatRatingModule } from '../../rating/rating.component';
 
 @Component({
-  selector: 'my-calibre-server-book-card',
-  templateUrl: './book-card.component.html',
-  styleUrls: ['./book-card.component.scss']
+    selector: 'my-calibre-server-book-card',
+    templateUrl: './book-card.component.html',
+    styleUrls: ['./book-card.component.scss'],
+    standalone: false
 })
 export class BookCardComponent {
 
