@@ -11,7 +11,7 @@
     "github": {
       "type": "stdio",
       "command": "/bin/bash",
-      "args": ["-c", "set -a && source ~/.claude/.env && set +a && npx -y @modelcontextprotocol/server-github"]
+      "args": ["-c", "set -a && source /Users/eric/.claude/.env && set +a && exec docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN ghcr.io/github/github-mcp-server"]
     }
   }
 }

@@ -46,5 +46,7 @@ Thumbs.db
 # Nx cache
 .nx
 /.claude/worktrees
+/.claude/.env
+/.claude/settings.local.json
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
