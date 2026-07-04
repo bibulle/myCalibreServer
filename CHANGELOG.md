@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.7](https://github.com/bibulle/myCalibreServer/compare/v0.12.6...v0.12.7) (2026-07-04)
+
+
+### Bug Fixes
+
+* prevent sharp composite crash on stale/oversized series thumbnails ([#188](https://github.com/bibulle/myCalibreServer/issues/188)) ([ae4d557](https://github.com/bibulle/myCalibreServer/commit/ae4d55738f1615d410877d9b54ecd77d4319b699))
+* switch GitHub MCP server to official Docker-based server ([#186](https://github.com/bibulle/myCalibreServer/issues/186)) ([4d2fa62](https://github.com/bibulle/myCalibreServer/commit/4d2fa624292ac68dd3efd3e9cfc231c70a5b05ff))
+
 ### [0.12.6](https://github.com/bibulle/myCalibreServer/compare/v0.12.5...v0.12.6) (2026-03-06)
 
 
