@@ -251,14 +251,20 @@ export class BooksService {
           };
 
           for (const book of series.books) {
-            calculation.step += calculation.step_increment;
-            calculation.height += calculation.step;
-
             if (existsSync(this.getCoverPath(book))) {
+              calculation.step += calculation.step_increment;
+              calculation.height += calculation.step;
+
+              BooksService.logger.debug(
+                `resizeSeries book=${book.book_id} step=${calculation.step} height=${calculation.height} width=${calculation.width}`
+              );
+
               await this.resizeSeries(this.getCoverPath(book), calculation).catch((reason) => {
                 BooksService.logger.error('Error while resizing series');
                 BooksService.logger.error(reason);
               });
+            } else {
+              BooksService.logger.warn(`Series "${series.series_name}": cover missing on disk for book ${book.book_id} (${this.getCoverPath(book)}), skipped`);
             }
           }
 
@@ -357,6 +363,16 @@ export class BooksService {
           .toFormat(sharp.format.png)
           .toBuffer({ resolveWithObject: true });
 
+        const extendedHeight = (await sharp(calculation.theBuffer).metadata()).height + calculation.step;
+        BooksService.logger.debug(
+          `resizeSeries composite: base=${calculation.width}x${extendedHeight} (step=${calculation.step}) overlay=${info.width}x${info.height} (left=${calculation.step})`
+        );
+        if (extendedHeight < info.height) {
+          BooksService.logger.warn(
+            `resizeSeries: overlay taller than extended base (base=${extendedHeight}, overlay=${info.height}) for ${srcPath}, composite will fail`
+          );
+        }
+
         const { data: compositeBuffer, info: compositeInfo } = await sharp(calculation.theBuffer)
           .extend({
             top: calculation.step / 2,
@@ -395,6 +411,7 @@ export class BooksService {
         }
       }
     } catch (error) {
+      BooksService.logger.error(`resizeSeries failed for ${srcPath} (height=${calculation.height}, step=${calculation.step}, width=${calculation.width})`);
       throw error;
     }
   }
