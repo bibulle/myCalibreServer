@@ -18,14 +18,19 @@
 | Outil | Version |
 |-------|---------|
 | Node.js | 24 LTS (`.nvmrc`) |
-| Nx | 22.5.3 |
-| Angular | 21.1.6 |
-| Angular Material / CDK | 21.1.6 |
-| NestJS | 11.x |
+| Nx | 22.7.6 |
+| Angular | 21.2.17 |
+| Angular Material / CDK | 21.2.14 |
+| NestJS | 11.1.27 |
 | TypeScript | 5.9.3 |
-| Jest | 30.2.0 |
+| Jest | 30.4.2 |
 | Playwright | 1.61.x (e2e — no MongoDB required) |
 | ESLint | 9.x (format `.eslintrc.json` — pas encore migré en flat config) |
+
+> Angular 22, Nx 23, TypeScript 6 et ESLint 10 sont disponibles en amont mais
+> volontairement non adoptés ici : ce sont des montées de version majeures qui
+> impliquent potentiellement du code fonctionnel et sont traitées comme des
+> chantiers séparés nécessitant un accord explicite préalable.
 
 ## Notes importantes
 
