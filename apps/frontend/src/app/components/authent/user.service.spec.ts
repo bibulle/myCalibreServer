@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { ApiReturn, User, UserAPI } from '@my-calibre-server/api-interfaces';
 import { of, throwError } from 'rxjs';
+import { WindowService } from '../../core/util/window.service';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -412,6 +413,259 @@ describe('UserService', () => {
           }, 100);
         }
       });
+    });
+  });
+
+  describe('Error message extraction (via error callbacks)', () => {
+    it('should use the last entry when the error payload is an array', async () => {
+      mockHttpClient.post.mockReturnValue(throwError(() => ({ error: [{ statusText: 'first' }, { statusText: 'last' }] })));
+
+      await expect(service.save(mockUser)).rejects.toBe('last');
+    });
+
+    it('should use the nested error when it carries a message', async () => {
+      mockHttpClient.post.mockReturnValue(throwError(() => ({ error: { message: 'nested message' } })));
+
+      await expect(service.remove(mockUser)).rejects.toBe('nested message');
+    });
+
+    it('should fall back to the nested error object when it has no message', async () => {
+      const nestedError = { code: 'ERR_TEST' };
+      mockHttpClient.post.mockReturnValue(throwError(() => ({ error: nestedError })));
+
+      await expect(service.resetPassword(mockUser)).rejects.toBe(nestedError);
+    });
+
+    it('should use statusText when present on a plain error', async () => {
+      mockHttpClient.post.mockReturnValue(throwError(() => ({ statusText: 'Unauthorized' })));
+
+      await expect(service.save(mockUser)).rejects.toBe('Unauthorized');
+    });
+
+    it('should fall back to "Connection error" when the error carries no usable information', async () => {
+      mockHttpClient.post.mockReturnValue(throwError(() => ''));
+
+      await expect(service.save(mockUser)).rejects.toBe('Connection error');
+    });
+
+    it('should recover gracefully when reading the error payload throws', async () => {
+      const throwingError = {
+        get error() {
+          throw new Error('boom while reading error');
+        },
+        message: 'fallback message',
+      };
+      mockHttpClient.post.mockReturnValue(throwError(() => throwingError));
+
+      await expect(service.save(mockUser)).rejects.toBe('fallback message');
+    });
+  });
+
+  describe('Additional error branches', () => {
+    it('should reject when refreshUser request errors', async () => {
+      mockHttpClient.get.mockReturnValue(throwError(() => 'network down'));
+
+      await expect(service.refreshUser()).rejects.toBe('network down');
+    });
+
+    it('should reject when getAll request errors', async () => {
+      mockHttpClient.get.mockReturnValue(throwError(() => 'network down'));
+
+      await expect(service.getAll()).rejects.toBe('network down');
+    });
+
+    it('should reject when getAll response has no users', async () => {
+      mockHttpClient.get.mockReturnValue(of({} as ApiReturn));
+
+      await expect(service.getAll()).rejects.toBe('Cannot get users');
+    });
+
+    it('should reject when merge request errors', async () => {
+      mockHttpClient.post.mockReturnValue(throwError(() => 'network down'));
+
+      await expect(service.merge(mockUser, mockUser)).rejects.toBe('network down');
+    });
+
+    it('should reject when merge response has no users', async () => {
+      mockHttpClient.post.mockReturnValue(of({} as ApiReturn));
+
+      await expect(service.merge(mockUser, mockUser)).rejects.toBe('Cannot merge user');
+    });
+
+    it('should reject when resetPassword response has no ok field', async () => {
+      mockHttpClient.post.mockReturnValue(of({} as ApiReturn));
+
+      await expect(service.resetPassword(mockUser)).rejects.toBe('something go wrong');
+    });
+
+    it('should reject when unlinkGoogle response has no user', async () => {
+      mockHttpClient.get.mockReturnValue(of({} as ApiReturn));
+
+      await expect(service.unlinkGoogle('user123')).rejects.toBe('Cannot get users');
+    });
+
+    it('should reject when unlinkGoogle request errors', async () => {
+      mockHttpClient.get.mockReturnValue(throwError(() => 'network down'));
+
+      await expect(service.unlinkGoogle('user123')).rejects.toBe('network down');
+    });
+  });
+
+  describe('_doPost response branches (via login)', () => {
+    it('should resolve with the user when the response has no id_token but has a user', async () => {
+      mockHttpClient.post.mockReturnValue(of({ user: mockUserAPI } as ApiReturn));
+
+      const result = await service.login('testuser', 'password');
+
+      expect(result).toEqual(mockUserAPI);
+    });
+
+    it('should reject when the response has neither id_token nor user', async () => {
+      mockHttpClient.post.mockReturnValue(of({} as ApiReturn));
+
+      await expect(service.login('testuser', 'password')).rejects.toBeUndefined();
+    });
+  });
+
+  describe('_doGet response branches (via loginFacebook)', () => {
+    it('should resolve with the user when the response has no id_token but has a user', async () => {
+      mockHttpClient.get.mockReturnValue(of({ user: mockUserAPI } as ApiReturn));
+
+      const result = await service.loginFacebook({ code: 'abc' });
+
+      expect(result).toEqual(mockUserAPI);
+    });
+
+    it('should resolve with an empty string when the response has neither id_token nor user', async () => {
+      mockHttpClient.get.mockReturnValue(of({} as ApiReturn));
+
+      const result = await service.loginFacebook({ code: 'abc' });
+
+      expect(result).toBe('');
+    });
+
+    it('should reject with the extracted error message when the request errors', async () => {
+      mockHttpClient.get.mockReturnValue(throwError(() => ({ message: 'boom' })));
+
+      await expect(service.loginFacebook({ code: 'abc' })).rejects.toBe('boom');
+    });
+  });
+
+  describe('_parseQueryString', () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const parse = (str: any) => (service as any)._parseQueryString(str);
+
+    it('should return an empty object for non-string input', () => {
+      expect(parse(undefined)).toEqual({});
+    });
+
+    it('should return an empty object once separators are stripped from an otherwise empty string', () => {
+      expect(parse('?')).toEqual({});
+    });
+
+    it('should parse a simple key=value pair', () => {
+      expect(parse('code=abc123')).toEqual({ code: 'abc123' });
+    });
+
+    it('should treat a key without "=" as null', () => {
+      expect(parse('flag')).toEqual({ flag: null });
+    });
+
+    it('should turn a repeated key into an array', () => {
+      expect(parse('a=1&a=2')).toEqual({ a: ['1', '2'] });
+    });
+
+    it('should keep accumulating repeated keys past the second occurrence', () => {
+      expect(parse('a=1&a=2&a=3')).toEqual({ a: ['1', '2', '3'] });
+    });
+
+    it('should decode percent-encoding and turn + into spaces', () => {
+      expect(parse('msg=hello+world%21')).toEqual({ msg: 'hello world!' });
+    });
+  });
+
+  describe('OAuth popup flow (_startLoginOAuth)', () => {
+    let fakeWindow: { location: { href: string }; close: jest.Mock };
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      fakeWindow = { location: { href: '' }, close: jest.fn() };
+      jest.spyOn(WindowService, 'createWindow').mockReturnValue(fakeWindow as unknown as Window);
+    });
+
+    afterEach(() => {
+      jest.clearAllTimers();
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+    });
+
+    it('should reject with a timeout once the polling budget is exhausted', async () => {
+      const promise = service.startLoginFacebook();
+      // loopCount starts at 600 and decrements every 100ms tick until it goes negative
+      jest.advanceTimersByTime(100 * 602);
+
+      await expect(promise).rejects.toEqual('Time out');
+      expect(fakeWindow.close).toHaveBeenCalled();
+    });
+
+    it('should keep polling without crashing when reading the window location throws', () => {
+      Object.defineProperty(fakeWindow, 'location', {
+        get() {
+          throw new Error('cross-origin');
+        },
+      });
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
+      service.startLoginFacebook();
+      expect(() => jest.advanceTimersByTime(100)).not.toThrow();
+      expect(logSpy).toHaveBeenCalledWith('Error:', expect.any(Error));
+    });
+
+    it('should resolve after a successful Facebook code callback', async () => {
+      mockHttpClient.get.mockReturnValue(of({ id_token: mockJwtToken } as ApiReturn));
+
+      const promise = service.startLoginFacebook();
+      fakeWindow.location.href = 'http://localhost/assets/logged.html?code=abc123';
+      jest.advanceTimersByTime(100);
+
+      await expect(promise).resolves.toBeUndefined();
+      expect(fakeWindow.close).toHaveBeenCalled();
+    });
+
+    it('should resolve after a successful Google code callback', async () => {
+      mockHttpClient.get.mockReturnValue(of({ id_token: mockJwtToken } as ApiReturn));
+
+      const promise = service.startLoginGoogle();
+      fakeWindow.location.href = 'http://localhost/assets/logged.html?code=abc123';
+      jest.advanceTimersByTime(100);
+
+      await expect(promise).resolves.toBeUndefined();
+    });
+
+    it('should reject when the code callback login request fails', async () => {
+      mockHttpClient.get.mockReturnValue(throwError(() => ({ message: 'boom' })));
+
+      const promise = service.startLoginFacebook();
+      fakeWindow.location.href = 'http://localhost/assets/logged.html?code=abc123';
+      jest.advanceTimersByTime(100);
+
+      await expect(promise).rejects.toBe('boom');
+    });
+
+    it('should reject when the callback URL has neither a code nor an error message', async () => {
+      const promise = service.startLoginFacebook();
+      fakeWindow.location.href = 'http://localhost/assets/logged.html?foo=bar';
+      jest.advanceTimersByTime(100);
+
+      await expect(promise).rejects.toEqual('Login error');
+    });
+
+    it('should reject with the decoded error message when the callback URL carries one', async () => {
+      const promise = service.startLoginFacebook();
+      fakeWindow.location.href = 'http://localhost/assets/logged.html?error_message=Access+denied';
+      jest.advanceTimersByTime(100);
+
+      await expect(promise).rejects.toEqual('Access denied');
     });
   });
 });

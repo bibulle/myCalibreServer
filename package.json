@@ -16,11 +16,11 @@
     "start:frontend": "nx serve frontend",
     "start:api": "nx serve api",
     "build": "nx build",
-    "test": "nx test",
+    "test": "nx run-many --target=test",
     "test:api": "nx test api",
     "test:frontend": "nx test frontend",
     "test:watch": "nx test --watch",
-    "test:coverage": "nx test --coverage",
+    "test:coverage": "nx run-many --target=test --coverage",
     "e2e": "./apps/frontend-e2e/scripts/run-e2e-tests.sh",
     "e2e:open": "./apps/frontend-e2e/scripts/run-e2e-tests.sh --open",
     "e2e:spec": "./apps/frontend-e2e/scripts/run-e2e-tests.sh --spec",
@@ -74,6 +74,12 @@
     "ajv@^6": "6.14.0",
     "ajv@^8": "8.18.0",
     "minimatch": "10.2.4",
+    "test-exclude": {
+      "minimatch": "^3.1.2",
+      "glob": {
+        "minimatch": "^3.1.2"
+      }
+    },
     "@tootallnate/once": "3.0.1",
     "koa": "3.1.2"
   },

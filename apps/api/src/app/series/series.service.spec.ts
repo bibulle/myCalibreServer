@@ -3,6 +3,7 @@ import { SeriesService } from './series.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { CacheService } from '../cache/cache.service';
+import { BooksService } from '../books/books.service';
 import * as sharp from 'sharp';
 import { existsSync, mkdtempSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
@@ -49,6 +50,7 @@ describe('SeriesService', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -156,23 +158,106 @@ describe('SeriesService', () => {
 
       await expect(service.calculateSpritesSeriesThumbnail()).rejects.toThrow('DB Error');
     });
+
+    it('should build one sprite sheet per group of series that needs regeneration', async () => {
+      const series = [{ series_id: 1 }, { series_id: 2 }, { series_id: 60 }] as unknown as Series[];
+      mockCalibreDbService.getAllSeries.mockResolvedValue(series);
+      jest.spyOn(service, 'getSpriteDate').mockReturnValue(0);
+      jest.spyOn(service, 'getThumbnailDate').mockReturnValue(1);
+      const createSpritesSeriesSpy = jest.spyOn(service, 'createSpritesSeries').mockResolvedValue(undefined);
+
+      await service.calculateSpritesSeriesThumbnail();
+
+      expect(createSpritesSeriesSpy).toHaveBeenCalledTimes(2);
+      expect(createSpritesSeriesSpy.mock.calls.map((c) => c[0]).sort((a, b) => a - b)).toEqual([0, 50]);
+    });
+
+    it('should skip a sprite group that is already up to date', async () => {
+      const series = [{ series_id: 1 }] as unknown as Series[];
+      mockCalibreDbService.getAllSeries.mockResolvedValue(series);
+      jest.spyOn(service, 'getSpriteDate').mockReturnValue(2);
+      jest.spyOn(service, 'getThumbnailDate').mockReturnValue(1);
+      const createSpritesSeriesSpy = jest.spyOn(service, 'createSpritesSeries').mockResolvedValue(undefined);
+
+      await service.calculateSpritesSeriesThumbnail();
+
+      expect(createSpritesSeriesSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('createSpritesSeries', () => {
-    it('should create sprites for a specific index', async () => {
-      mockCalibreDbService.getAllSeries.mockResolvedValue([mockSeries]);
+    let tmpDir: string;
 
-      // This will fail because it tries to access file system, but we test the structure
-      await expect(service.createSpritesSeries(0)).rejects.toThrow();
+    beforeEach(() => {
+      tmpDir = mkdtempSync(join(tmpdir(), 'series-service-test-'));
+    });
+
+    afterEach(() => {
+      rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    it('should assemble the sprite sheet and write it to disk', async () => {
+      const spritePath = join(tmpDir, 'sprites', 'sprites_series_000000.png');
+      jest.spyOn(service, 'getSpritesPath').mockReturnValue(spritePath);
+      jest.spyOn(service, 'getSpritesSeriesOverlay').mockResolvedValue([]);
+
+      await service.createSpritesSeries(0);
+
+      expect(existsSync(spritePath)).toBe(true);
+    });
+
+    it('should reject when building the overlay fails', async () => {
+      jest.spyOn(service, 'getSpritesPath').mockReturnValue(join(tmpDir, 'sprites_series_000000.png'));
+      jest.spyOn(service, 'getSpritesSeriesOverlay').mockRejectedValue(new Error('overlay failed'));
+
+      await expect(service.createSpritesSeries(0)).rejects.toThrow('overlay failed');
     });
   });
 
   describe('getSpritesSeriesOverlay', () => {
-    it('should get overlay options for series sprites', async () => {
-      mockCalibreDbService.getAllSeries.mockResolvedValue([mockSeries]);
+    it('should build one overlay entry per series in the group, using the error cover when no thumbnail exists', async () => {
+      const series = [{ series_id: 0 }, { series_id: 1 }] as unknown as Series[];
+      mockCalibreDbService.getAllSeries.mockResolvedValue(series);
+      jest.spyOn(BooksService, 'getThumbnailInfo').mockResolvedValue({ width: 100 } as any);
+      jest.spyOn(service, 'getThumbnailPath').mockReturnValue('/does/not/exist.png');
 
-      // This will fail because it tries to access file system, but we test the structure
-      await expect(service.getSpritesSeriesOverlay(0)).rejects.toThrow();
+      const overlay = await service.getSpritesSeriesOverlay(0);
+
+      expect(overlay).toHaveLength(2);
+      // each slot is one THUMBNAIL_HEIGHT (160px) apart
+      expect(overlay[1].left - overlay[0].left).toBe(160);
+    });
+
+    it('should use the real thumbnail path when one exists on disk', async () => {
+      const series = [{ series_id: 0 }] as unknown as Series[];
+      mockCalibreDbService.getAllSeries.mockResolvedValue(series);
+      jest.spyOn(BooksService, 'getThumbnailInfo').mockResolvedValue({ width: 120 } as any);
+      jest.spyOn(service, 'getThumbnailPath').mockReturnValue(__filename); // any real file on disk
+
+      const overlay = await service.getSpritesSeriesOverlay(0);
+
+      expect(overlay[0].input).toBe(__filename);
+    });
+
+    it('should fall back to the error cover info when reading the real thumbnail info fails', async () => {
+      const series = [{ series_id: 0 }] as unknown as Series[];
+      mockCalibreDbService.getAllSeries.mockResolvedValue(series);
+      jest.spyOn(service, 'getThumbnailPath').mockReturnValue(__filename);
+      jest
+        .spyOn(BooksService, 'getThumbnailInfo')
+        .mockResolvedValueOnce({ width: 90 } as any) // err_info
+        .mockRejectedValueOnce('broken thumbnail');
+
+      const overlay = await service.getSpritesSeriesOverlay(0);
+
+      expect(overlay).toHaveLength(1);
+    });
+
+    it('should propagate errors from the database', async () => {
+      jest.spyOn(BooksService, 'getThumbnailInfo').mockResolvedValue({ width: 100 } as any);
+      mockCalibreDbService.getAllSeries.mockRejectedValue('db down');
+
+      await expect(service.getSpritesSeriesOverlay(0)).rejects.toEqual('db down');
     });
   });
 
