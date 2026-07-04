@@ -2,6 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SeriesService } from './series.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { Series } from '@my-calibre-server/api-interfaces';
+import { CacheService } from '../cache/cache.service';
+import * as sharp from 'sharp';
+import { existsSync, mkdtempSync, rmSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
 
 describe('SeriesService', () => {
   let service: SeriesService;
@@ -168,6 +173,60 @@ describe('SeriesService', () => {
 
       // This will fail because it tries to access file system, but we test the structure
       await expect(service.getSpritesSeriesOverlay(0)).rejects.toThrow();
+    });
+  });
+
+  describe('removeOversizedOverlays', () => {
+    let tmpDir: string;
+    const originalErrCoverThumbnail = CacheService.ERR_COVER_THUMBNAIL;
+
+    beforeEach(() => {
+      tmpDir = mkdtempSync(join(tmpdir(), 'series-service-test-'));
+    });
+
+    afterEach(() => {
+      rmSync(tmpDir, { recursive: true, force: true });
+      CacheService.ERR_COVER_THUMBNAIL = originalErrCoverThumbnail;
+    });
+
+    it('keeps overlays that fit the canvas and deletes stale/oversized files from disk', async () => {
+      const fittingPath = join(tmpDir, 'fitting.png');
+      const oversizedPath = join(tmpDir, 'oversized.png');
+
+      await sharp({ create: { width: 40, height: 40, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).png().toFile(fittingPath);
+      await sharp({ create: { width: 40, height: 150, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).png().toFile(oversizedPath);
+
+      const overlay = [
+        { input: fittingPath, top: 0, left: 0 },
+        { input: oversizedPath, top: 0, left: 50 },
+      ];
+
+      const result = await service.removeOversizedOverlays(overlay, 100, 100);
+
+      expect(result).toEqual([{ input: fittingPath, top: 0, left: 0 }]);
+      expect(existsSync(fittingPath)).toBe(true);
+      expect(existsSync(oversizedPath)).toBe(false);
+    });
+
+    it('excludes an oversized shared error placeholder without deleting it', async () => {
+      const placeholderPath = join(tmpDir, 'placeholder.png');
+      await sharp({ create: { width: 40, height: 150, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).png().toFile(placeholderPath);
+      CacheService.ERR_COVER_THUMBNAIL = placeholderPath;
+
+      const overlay = [{ input: placeholderPath, top: 0, left: 0 }];
+
+      const result = await service.removeOversizedOverlays(overlay, 100, 100);
+
+      expect(result).toEqual([]);
+      expect(existsSync(placeholderPath)).toBe(true);
+    });
+
+    it('drops an overlay whose file cannot be read without throwing', async () => {
+      const overlay = [{ input: join(tmpDir, 'does-not-exist.png'), top: 0, left: 0 }];
+
+      const result = await service.removeOversizedOverlays(overlay, 100, 100);
+
+      expect(result).toEqual([]);
     });
   });
 });

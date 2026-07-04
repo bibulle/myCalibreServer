@@ -251,14 +251,16 @@ export class BooksService {
           };
 
           for (const book of series.books) {
-            calculation.step += calculation.step_increment;
-            calculation.height += calculation.step;
-
             if (existsSync(this.getCoverPath(book))) {
+              calculation.step += calculation.step_increment;
+              calculation.height += calculation.step;
+
               await this.resizeSeries(this.getCoverPath(book), calculation).catch((reason) => {
                 BooksService.logger.error('Error while resizing series');
                 BooksService.logger.error(reason);
               });
+            } else {
+              BooksService.logger.warn(`Series "${series.series_name}": cover missing on disk for book ${book.book_id} (${this.getCoverPath(book)}), skipped`);
             }
           }
 
@@ -395,6 +397,7 @@ export class BooksService {
         }
       }
     } catch (error) {
+      BooksService.logger.error(`resizeSeries failed for ${srcPath} (height=${calculation.height}, step=${calculation.step}, width=${calculation.width})`);
       throw error;
     }
   }

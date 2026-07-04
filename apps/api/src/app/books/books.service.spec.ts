@@ -46,6 +46,7 @@ describe('BooksService', () => {
 
   const mockSeriesService = {
     calculateSpritesSeriesThumbnail: jest.fn(),
+    getThumbnailPath: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -208,6 +209,44 @@ describe('BooksService', () => {
       // This test would require mocking fs.statSync
       // For now, we just test the non-existent case
       expect(true).toBe(true);
+    });
+  });
+
+  describe('calculateMissingSeriesThumbnail', () => {
+    it('should not skip a step/height increment when a book cover is missing on disk', async () => {
+      // Reproduces the "Image to composite must have same dimensions or smaller" sharp crash:
+      // step/height used to advance for every book in the series, even when its cover file was
+      // absent from disk, desynchronizing the accumulated thumbnail buffer from the next overlay size.
+      const books = [
+        { book_id: 1, book_path: 'Author/Book1 (1)' },
+        { book_id: 2, book_path: 'Author/Book2 (2)' },
+        { book_id: 3, book_path: 'Author/Book3 (3)' },
+      ] as unknown as Book[];
+
+      (mockCalibreDbService as any).getAllSeries = jest.fn().mockResolvedValue([{ series_id: 10, series_name: 'Test Series', books }]);
+
+      jest.spyOn(seriesService, 'getThumbnailPath').mockReturnValue('/thumbnails/series-10.png');
+
+      jest.spyOn(fs, 'statSync').mockImplementation((p: any) => {
+        if (String(p).includes('series-10.png')) {
+          return { mtime: new Date(0) } as any;
+        }
+        return { mtime: new Date(2000, 0, 1) } as any;
+      });
+
+      // Book2's cover is referenced in the DB but missing on disk
+      jest.spyOn(fs, 'existsSync').mockImplementation((p: any) => !String(p).includes('Book2'));
+
+      const calculations: { step: number; height: number }[] = [];
+      jest.spyOn(service, 'resizeSeries').mockImplementation(async (_srcPath: string, calculation: any) => {
+        calculations.push({ step: calculation.step, height: calculation.height });
+      });
+
+      await service.calculateMissingSeriesThumbnail();
+
+      expect(service.resizeSeries).toHaveBeenCalledTimes(2);
+      expect(calculations[1].step - calculations[0].step).toBe(10);
+      expect(calculations[1].height - calculations[0].height).toBe(10);
     });
   });
 
