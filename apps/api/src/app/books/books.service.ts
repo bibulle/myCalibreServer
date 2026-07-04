@@ -47,10 +47,15 @@ export class BooksService {
         if (!existsSync(CacheService.ERR_COVER_THUMBNAIL)) {
           await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
         }
+        BooksService.logger.warn('[thumbnail-cron] calculateMissingBookThumbnail start');
         await this.calculateMissingBookThumbnail();
+        BooksService.logger.warn('[thumbnail-cron] calculateMissingSeriesThumbnail start');
         await this.calculateMissingSeriesThumbnail();
+        BooksService.logger.warn('[thumbnail-cron] calculateSpritesBookThumbnail start');
         await this.calculateSpritesBookThumbnail();
+        BooksService.logger.warn('[thumbnail-cron] calculateSpritesSeriesThumbnail start');
         await this._seriesService.calculateSpritesSeriesThumbnail();
+        BooksService.logger.warn('[thumbnail-cron] done');
       } catch (error) {
         BooksService.logger.error(error);
       } finally {
@@ -255,8 +260,8 @@ export class BooksService {
               calculation.step += calculation.step_increment;
               calculation.height += calculation.step;
 
-              BooksService.logger.debug(
-                `resizeSeries book=${book.book_id} step=${calculation.step} height=${calculation.height} width=${calculation.width}`
+              BooksService.logger.warn(
+                `[resizeSeries] book=${book.book_id} step=${calculation.step} height=${calculation.height} width=${calculation.width}`
               );
 
               await this.resizeSeries(this.getCoverPath(book), calculation).catch((reason) => {
@@ -364,8 +369,8 @@ export class BooksService {
           .toBuffer({ resolveWithObject: true });
 
         const extendedHeight = (await sharp(calculation.theBuffer).metadata()).height + calculation.step;
-        BooksService.logger.debug(
-          `resizeSeries composite: base=${calculation.width}x${extendedHeight} (step=${calculation.step}) overlay=${info.width}x${info.height} (left=${calculation.step})`
+        BooksService.logger.warn(
+          `[resizeSeries] composite: base=${calculation.width}x${extendedHeight} (step=${calculation.step}) overlay=${info.width}x${info.height} (left=${calculation.step})`
         );
         if (extendedHeight < info.height) {
           BooksService.logger.warn(
@@ -462,6 +467,11 @@ export class BooksService {
     try {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
       const overlay = await this.getSpritesBooksOverlay(index);
+      BooksService.logger.warn(
+        `[createSpritesBooks] index=${index} canvas=${ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT}x${ThumbnailUtils.THUMBNAIL_HEIGHT} overlay=${JSON.stringify(
+          overlay.map((o) => ({ input: o.input, top: o.top, left: o.left }))
+        )}`
+      );
       // create empty image (and add overlay)
       const buffer = await sharp({
         create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },

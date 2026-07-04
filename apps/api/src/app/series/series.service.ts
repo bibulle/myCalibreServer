@@ -80,6 +80,12 @@ export class SeriesService {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
       this.getSpritesSeriesOverlay(index)
         .then((overlay) => {
+          const canvasWidth = ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT;
+          SeriesService.logger.warn(
+            `[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} overlay=${JSON.stringify(
+              overlay.map((o) => ({ input: o.input, top: o.top, left: o.left }))
+            )}`
+          );
           // create empty image (and add overlay)
           sharp({ create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
             .composite(overlay)
