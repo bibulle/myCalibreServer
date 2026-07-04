@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.9](https://github.com/bibulle/myCalibreServer/compare/v0.12.8...v0.12.9) (2026-07-04)
+
+
+### Bug Fixes
+
+* don't hardcode the sandbox Chromium path for local Playwright runs ([520987b](https://github.com/bibulle/myCalibreServer/commit/520987bb03dacda10adb3ac938d3e7b0ac8e2919))
+
+
+### Tests
+
+* add read-only Playwright e2e suite for MongoDB-less environments ([7e61e90](https://github.com/bibulle/myCalibreServer/commit/7e61e90a5c57ad14beead4dac3b6b86963c5c155))
+
 ### [0.12.8](https://github.com/bibulle/myCalibreServer/compare/v0.12.7...v0.12.8) (2026-07-04)
 
 
