@@ -123,6 +123,21 @@ npx nx e2e frontend-e2e --spec="apps/frontend-e2e/src/integration/app.spec.ts"
 - Screenshots: `dist/cypress/apps/frontend-e2e/screenshots/`
 - Videos: `dist/cypress/apps/frontend-e2e/videos/`
 
+### E2E Tests (Playwright, read-only)
+
+A second, lighter e2e suite using Playwright instead of Cypress, covering
+only the flows that don't require a user account (no MongoDB dependency):
+application loading, responsive design, API health/version checks, and
+protected routes correctly rejecting unauthenticated requests. It exists
+for environments where MongoDB isn't available at all — see
+`apps/frontend-e2e-playwright/README.md` for details, including how it
+swaps the `mongodb` driver for a stub so the API doesn't need one to stay
+up. It complements the Cypress suite above, it does not replace it.
+
+```bash
+npm run e2e:playwright
+```
+
 ### Running Tests in CI/CD
 
 ```bash
