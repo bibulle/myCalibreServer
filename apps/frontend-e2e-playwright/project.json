@@ -1,0 +1,17 @@
+{
+  "name": "frontend-e2e-playwright",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/frontend-e2e-playwright/tests",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "playwright test",
+        "cwd": "apps/frontend-e2e-playwright"
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["frontend", "api"]
+}

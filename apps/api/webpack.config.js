@@ -9,6 +9,9 @@ module.exports = composePlugins(withNx(), (config) => {
       'better-sqlite3',
       'sqlite3',
       'sharp',
+      // Kept as a real runtime require (not bundled) so it can be swapped for a
+      // stub via Node's module resolution in environments without MongoDB (e2e)
+      'mongodb',
       // Optional NestJS dependencies
       'cache-manager',
       'class-validator',

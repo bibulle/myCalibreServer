@@ -1,6 +1,6 @@
 {
   "name": "my-calibre-server",
-  "version": "0.12.8",
+  "version": "0.12.9",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "e2e:spec": "./apps/frontend-e2e/scripts/run-e2e-tests.sh --spec",
     "e2e:headless": "./apps/frontend-e2e/scripts/run-e2e-tests.sh --headless",
     "e2e:seed": "node apps/frontend-e2e/scripts/seed-test-db.js",
+    "e2e:playwright": "playwright test --config=apps/frontend-e2e-playwright/playwright.config.ts",
     "release-patch": "npm run test:api && npm run test:frontend && npm run e2e:headless && standard-version --no-verify --commit-all --release-as patch",
     "release-minor": "npm run test:api && standard-version --no-verify --commit-all --release-as minor",
     "release-major": "npm run test:api && npm run test:frontend && npm run e2e:headless && standard-version --no-verify --commit-all --release-as major",
@@ -152,6 +153,7 @@
     "@nx/node": "22.5.3",
     "@nx/webpack": "22.5.3",
     "@nx/workspace": "22.5.3",
+    "@playwright/test": "^1.61.1",
     "@types/express-session": "^1.17.7",
     "@types/jest": "30.0.0",
     "@types/lodash": "^4.14.191",

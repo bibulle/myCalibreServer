@@ -8,6 +8,10 @@ sprites_*.png
 /tmp
 /out-tsc
 
+# Playwright e2e artifacts
+/test-results
+/playwright-report
+
 # dependencies
 node_modules
 
