@@ -18,7 +18,7 @@
 | Outil | Version |
 |-------|---------|
 | Node.js | 24 LTS (`.nvmrc`) |
-| Nx | 22.7.6 |
+| Nx | 23.0.1 |
 | Angular | 21.2.17 |
 | Angular Material / CDK | 21.2.14 |
 | NestJS | 11.1.27 |
@@ -27,13 +27,24 @@
 | Playwright | 1.61.x (e2e — no MongoDB required) |
 | ESLint | 9.x (format `.eslintrc.json` — pas encore migré en flat config) |
 
-> Angular 22, Nx 23, TypeScript 6 et ESLint 10 sont disponibles en amont mais
+> Angular 22, TypeScript 6 et ESLint 10 sont disponibles en amont mais
 > volontairement non adoptés ici : ce sont des montées de version majeures qui
 > impliquent potentiellement du code fonctionnel et sont traitées comme des
 > chantiers séparés nécessitant un accord explicite préalable.
+>
+> **Angular 22 est bloqué en amont** : `@nx/angular@23.0.1` plafonne son peer
+> dependency `@angular-devkit/build-angular` (et `@angular/build`) à `< 22.0.0`.
+> Nx n'a donc pas encore ajouté le support d'Angular 22 ; la montée de version
+> ne pourra être tentée qu'une fois une release `@nx/angular` compatible publiée.
 
 ## Notes importantes
 
+- **Nx 23 / `@nx/webpack`** : `webpack`, `webpack-cli` et `webpack-dev-server` sont
+  désormais des `peerDependencies` explicites de `@nx/webpack` (ajoutés en
+  devDependencies par `nx migrate`). L'exécuteur `@nx/webpack:webpack` (utilisé
+  par le projet `api`) est marqué déprécié et sera retiré en Nx 24, au profit des
+  "inferred targets" (`nx g @nx/webpack:convert-to-inferred`) — migration à
+  prévoir lors du passage à Nx 24, pas nécessaire pour l'instant.
 - **ESLint** : le projet utilise encore le format legacy `.eslintrc.json`. Les migrations Nx qui génèrent `eslint.config.js` sont retirées manuellement de `migrations.json`.
 - **Angular Material / CDK** : les migration scripts v20/v21 (`updateToVxx`) échouent sur Node < 24 due à un conflit ESM/CJS (`ora`). Les migrations sont retirées ; les packages sont à jour.
 - **MatCommonModule** : supprimé dans Angular Material v21. Retirer les imports `MatCommonModule` de tous les `NgModule`.
