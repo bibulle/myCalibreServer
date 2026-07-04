@@ -191,6 +191,32 @@ describe('AuthenticationController', () => {
         status: HttpStatus.BAD_REQUEST,
       });
     });
+
+    it('should throw NotFound when the admin targets a user that does not exist', async () => {
+      const req = { user: mockAdminUser };
+      mockUsersService.findById.mockResolvedValue(null);
+
+      await expect(controller.googleUnlink(req, 'unknown-user-id')).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
+    });
+
+    it('should wrap an unexpected lookup error into NotFound', async () => {
+      const req = { user: mockAdminUser };
+      mockUsersService.findById.mockRejectedValue(new Error('db down'));
+
+      await expect(controller.googleUnlink(req, 'unknown-user-id')).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
+    });
+
+    it('should throw InternalServerError when there is no user on the request', async () => {
+      const req = { user: undefined };
+
+      await expect(controller.googleUnlink(req, 'any-id')).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+      });
+    });
   });
 
   describe('facebookLogin', () => {
@@ -226,6 +252,23 @@ describe('AuthenticationController', () => {
         status: HttpStatus.INTERNAL_SERVER_ERROR,
       });
     });
+
+    it('should handle Facebook OAuth callback for an already connected user', async () => {
+      const req = { user: { ...mockUser, facebook: { id: 'fb-123' } } };
+      const connectedUser = { ...mockAdminUser, facebook: {} };
+      const token = 'jwt-token-fb-connected';
+
+      mockUsersService.getBearerUser.mockResolvedValue(connectedUser);
+      mockUsersService.saveUser.mockReturnValue(undefined);
+      mockUsersService.createToken.mockReturnValue(token);
+
+      const result = await controller.facebookjLoginCallback(req);
+
+      expect(connectedUser.facebook).toEqual(req.user.facebook);
+      expect(usersService.saveUser).toHaveBeenCalledWith(connectedUser);
+      expect(result.id_token).toBe(token);
+      expect(result.user).toBe(connectedUser);
+    });
   });
 
   describe('facebookUnlink', () => {
@@ -248,6 +291,46 @@ describe('AuthenticationController', () => {
 
       await expect(controller.facebookUnlink(req, '')).rejects.toMatchObject({
         status: HttpStatus.BAD_REQUEST,
+      });
+    });
+
+    it('should allow admin to unlink another user Facebook account', async () => {
+      const req = { user: mockAdminUser };
+      const targetUser = { ...mockUser, facebook: { id: 'fb-123' } };
+
+      mockUsersService.findById.mockResolvedValue(targetUser);
+      mockUsersService.saveUser.mockReturnValue(undefined);
+      mockUsersService.user2API.mockReturnValue({ id: targetUser.id });
+
+      const result = await controller.facebookUnlink(req, mockUser.id);
+
+      expect(targetUser.facebook).toEqual({});
+      expect(usersService.findById).toHaveBeenCalledWith(mockUser.id);
+      expect(result.user.id).toBe(mockUser.id);
+    });
+
+    it('should reject non-admin unlinking another user', async () => {
+      const req = { user: mockUser };
+
+      await expect(controller.facebookUnlink(req, 'other-user-id')).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    });
+
+    it('should throw NotFound when the admin targets a user that does not exist', async () => {
+      const req = { user: mockAdminUser };
+      mockUsersService.findById.mockResolvedValue(null);
+
+      await expect(controller.facebookUnlink(req, 'unknown-user-id')).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
+    });
+
+    it('should throw InternalServerError when there is no user on the request', async () => {
+      const req = { user: undefined };
+
+      await expect(controller.facebookUnlink(req, 'any-id')).rejects.toMatchObject({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
       });
     });
   });
@@ -290,6 +373,15 @@ describe('AuthenticationController', () => {
 
     it('should throw when user is undefined', async () => {
       const req = { user: undefined };
+
+      await expect(controller.getUser(req)).rejects.toMatchObject({
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    });
+
+    it('should wrap a lookup failure into Unauthorized', async () => {
+      const req = { user: mockUser };
+      mockUsersService.findById.mockRejectedValue(new Error('db down'));
 
       await expect(controller.getUser(req)).rejects.toMatchObject({
         status: HttpStatus.UNAUTHORIZED,

@@ -155,6 +155,12 @@ describe('UsersService', () => {
 
       expect(result).toBeNull();
     });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.findUserByUsername.mockRejectedValue(new Error('db down'));
+
+      await expect(service.findByUsername('testuser')).rejects.toThrow('db down');
+    });
   });
 
   describe('findById', () => {
@@ -175,6 +181,12 @@ describe('UsersService', () => {
 
       expect(result).toBeNull();
     });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.findUserById.mockRejectedValue(new Error('db down'));
+
+      await expect(service.findById('user123')).rejects.toThrow('db down');
+    });
   });
 
   describe('findByGoogleId', () => {
@@ -187,6 +199,20 @@ describe('UsersService', () => {
       expect(result.google.id).toBe('google123');
       expect(mockMyCalibreDbService.findUserByGoogleId).toHaveBeenCalledWith('google123');
     });
+
+    it('should return null if user not found', async () => {
+      mockMyCalibreDbService.findUserByGoogleId.mockResolvedValue(null);
+
+      const result = await service.findByGoogleId('nonexistent');
+
+      expect(result).toBeNull();
+    });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.findUserByGoogleId.mockRejectedValue(new Error('db down'));
+
+      await expect(service.findByGoogleId('google123')).rejects.toThrow('db down');
+    });
   });
 
   describe('findByFacebookId', () => {
@@ -198,6 +224,46 @@ describe('UsersService', () => {
       expect(result).toBeDefined();
       expect(result.facebook.id).toBe('fb123');
       expect(mockMyCalibreDbService.findUserByFacebookId).toHaveBeenCalledWith('fb123');
+    });
+
+    it('should return null if user not found', async () => {
+      mockMyCalibreDbService.findUserByFacebookId.mockResolvedValue(null);
+
+      const result = await service.findByFacebookId('nonexistent');
+
+      expect(result).toBeNull();
+    });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.findUserByFacebookId.mockRejectedValue(new Error('db down'));
+
+      await expect(service.findByFacebookId('fb123')).rejects.toThrow('db down');
+    });
+  });
+
+  describe('findByTemporaryToken', () => {
+    it('should find user by temporary token', async () => {
+      mockMyCalibreDbService.findByTemporaryToken.mockResolvedValue(mockUser);
+
+      const result = await service.findByTemporaryToken('temp-token');
+
+      expect(result).toBeDefined();
+      expect(result.id).toBe('user123');
+      expect(mockMyCalibreDbService.findByTemporaryToken).toHaveBeenCalledWith('temp-token');
+    });
+
+    it('should return null if user not found', async () => {
+      mockMyCalibreDbService.findByTemporaryToken.mockResolvedValue(null);
+
+      const result = await service.findByTemporaryToken('unknown-token');
+
+      expect(result).toBeNull();
+    });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.findByTemporaryToken.mockRejectedValue(new Error('db down'));
+
+      await expect(service.findByTemporaryToken('temp-token')).rejects.toThrow('db down');
     });
   });
 
@@ -218,6 +284,20 @@ describe('UsersService', () => {
 
       expect(mockMyCalibreDbService.saveUser).toHaveBeenCalledWith(mockUser, true, false);
     });
+
+    it('should return null when the database reports no document was saved', async () => {
+      mockMyCalibreDbService.saveUser.mockResolvedValue(null);
+
+      const result = await service.saveUser(mockUser);
+
+      expect(result).toBeNull();
+    });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.saveUser.mockRejectedValue(new Error('db down'));
+
+      await expect(service.saveUser(mockUser)).rejects.toThrow('db down');
+    });
   });
 
   describe('deleteUser', () => {
@@ -227,6 +307,39 @@ describe('UsersService', () => {
       await service.deleteUser('user123');
 
       expect(mockMyCalibreDbService.deleteUser).toHaveBeenCalledWith('user123');
+    });
+
+    it('should resolve even when the database reports nothing was deleted', async () => {
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(null);
+
+      await expect(service.deleteUser('unknown')).resolves.toBeUndefined();
+    });
+
+    it('should log and rethrow when the database call fails', async () => {
+      mockMyCalibreDbService.deleteUser.mockRejectedValue(new Error('db down'));
+
+      await expect(service.deleteUser('user123')).rejects.toThrow('db down');
+    });
+  });
+
+  describe('mergeUsers', () => {
+    it('should look up both users and merge them', async () => {
+      const userSrc = { ...mockUser, id: 'src' };
+      const userTrg = { ...mockUser, id: 'trg' };
+      mockMyCalibreDbService.findUserById.mockImplementation((id: string) => Promise.resolve(id === 'src' ? userSrc : userTrg));
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeUsers('src', 'trg');
+
+      expect(mockMyCalibreDbService.deleteUser).toHaveBeenCalledWith('src');
+      expect(mockMyCalibreDbService.saveUser).toHaveBeenCalledWith(userTrg, true, true);
+    });
+
+    it('should reject when either user cannot be found', async () => {
+      mockMyCalibreDbService.findUserById.mockImplementation((id: string) => Promise.resolve(id === 'src' ? mockUser : null));
+
+      await expect(service.mergeUsers('src', 'trg')).rejects.toThrow('User not found');
     });
   });
 
@@ -308,6 +421,15 @@ describe('UsersService', () => {
 
       expect(apiUser.history.downloadedBooks).toEqual([]);
       expect(apiUser.history.ratings).toEqual([]);
+    });
+
+    it('should empty the downloaded books history for the legacy "toto2" demo account', () => {
+      const demoUser = { ...mockUser, local: { ...mockUser.local, username: 'toto2' }, history: { ...mockUser.history, downloadedBooks: [{ id: 1 }] as any } };
+
+      const apiUser = service.user2API(demoUser);
+
+      // the field is deleted then immediately re-initialized to an empty array by the fallback below it
+      expect(apiUser.history.downloadedBooks).toEqual([]);
     });
   });
 
@@ -412,6 +534,15 @@ describe('UsersService', () => {
       expect(typeof user.local.isAdmin).toBe('boolean');
       expect(user.local.isAdmin).toBe(true);
     });
+
+    it('should generate an id when none is provided', () => {
+      const rawData = { local: { username: 'no-id-user' } };
+
+      const user = service.createUser(rawData);
+
+      expect(user.id).toBeDefined();
+      expect(user.id.length).toBeGreaterThan(0);
+    });
   });
 
   describe('updateLastConnection', () => {
@@ -427,6 +558,12 @@ describe('UsersService', () => {
       expect(mockMyCalibreDbService.findUserById).toHaveBeenCalledWith('user123');
       expect(freshUser.history.lastConnection.getTime()).toBeGreaterThan(new Date('2023-01-01').getTime());
       expect(mockMyCalibreDbService.saveUser).toHaveBeenCalledWith(freshUser, true, false);
+    });
+
+    it('should log (and not throw) when the underlying lookup fails', async () => {
+      mockMyCalibreDbService.findUserById.mockRejectedValue(new Error('db down'));
+
+      await expect(service.updateLastConnection(mockUser)).resolves.toBeUndefined();
     });
   });
 
@@ -470,6 +607,44 @@ describe('UsersService', () => {
 
       // Book should not be added again, but save should still be called
       expect(mockMyCalibreDbService.saveUser).toHaveBeenCalled();
+    });
+
+    it('should initialize the downloaded books array when missing', async () => {
+      const bookData: BookData = { data_id: 1, data_format: 'EPUB', data_size: 1000, data_name: 'test-book' };
+      const user = { ...mockUser, history: { ...mockUser.history, downloadedBooks: undefined as any } };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(user);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(user);
+
+      await service.addDownloadedBook(user, 123, bookData);
+
+      expect(user.history.downloadedBooks.length).toBe(1);
+    });
+
+    it('should sort downloaded books chronologically, converting string dates', async () => {
+      const bookData: BookData = { data_id: 1, data_format: 'EPUB', data_size: 1000, data_name: 'test-book' };
+      const user = {
+        ...mockUser,
+        history: {
+          ...mockUser.history,
+          downloadedBooks: [
+            { id: 1, data: bookData, date: '2023-06-01' as unknown as Date },
+            { id: 2, data: bookData, date: new Date('2023-01-01') },
+          ],
+        },
+      };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(user);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(user);
+
+      await service.addDownloadedBook(user, 3, bookData);
+
+      expect(user.history.downloadedBooks.map((d) => d.id)).toEqual([2, 1, 3]);
+      expect(user.history.downloadedBooks[0].date).toBeInstanceOf(Date);
+    });
+
+    it('should log and rethrow when the underlying lookup fails', async () => {
+      mockMyCalibreDbService.findUserById.mockRejectedValue(new Error('db down'));
+
+      await expect(service.addDownloadedBook(mockUser, 1, {} as BookData)).rejects.toThrow('db down');
     });
   });
 
@@ -523,6 +698,42 @@ describe('UsersService', () => {
       await service.addRatingBook(user, 123, 'Test Book', 5);
 
       expect(user.history.ratings[0].date).toBe(existingDate);
+    });
+
+    it('should initialize the ratings array when missing', async () => {
+      const user = { ...mockUser, history: { ...mockUser.history, ratings: undefined as any } };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(user);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(user);
+
+      await service.addRatingBook(user, 123, 'Test Book', 5);
+
+      expect(user.history.ratings.length).toBe(1);
+    });
+
+    it('should sort ratings chronologically, converting string dates', async () => {
+      const user = {
+        ...mockUser,
+        history: {
+          ...mockUser.history,
+          ratings: [
+            { book_id: 1, rating: 3, date: '2023-06-01' as unknown as Date, book_name: 'Older API rating' },
+            { book_id: 2, rating: 4, date: new Date('2023-01-01'), book_name: 'Newest' },
+          ],
+        },
+      };
+      mockMyCalibreDbService.findUserById.mockResolvedValue(user);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(user);
+
+      await service.addRatingBook(user, 3, 'New Book', 5);
+
+      expect(user.history.ratings.map((r) => r.book_id)).toEqual([2, 1, 3]);
+      expect(user.history.ratings[1].date).toBeInstanceOf(Date);
+    });
+
+    it('should log and rethrow when the underlying lookup fails', async () => {
+      mockMyCalibreDbService.findUserById.mockRejectedValue(new Error('db down'));
+
+      await expect(service.addRatingBook(mockUser, 1, 'Book', 5)).rejects.toThrow('db down');
     });
   });
 
@@ -664,6 +875,140 @@ describe('UsersService', () => {
       await service.mergeAndSaveUsers(userSrc, userTrg);
 
       expect(userTrg.history.downloadedBooks.length).toBe(2);
+    });
+
+    it('should not duplicate a downloaded book already present on the target', async () => {
+      const bookData: BookData = { data_id: 1, data_format: 'EPUB', data_size: 1000, data_name: 'book' };
+      const userSrc = { ...mockUser, id: 'src', history: { ...mockUser.history, downloadedBooks: [{ id: 1, data: bookData, date: new Date() }] } };
+      const userTrg = { ...mockUser, id: 'trg', history: { ...mockUser.history, downloadedBooks: [{ id: 1, data: bookData, date: new Date() }] } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.history.downloadedBooks.length).toBe(1);
+    });
+
+    it('should default src/trg history arrays to empty when missing', async () => {
+      const userSrc = { ...mockUser, id: 'src', history: { lastConnection: undefined, downloadedBooks: undefined, ratings: undefined } as any };
+      const userTrg = { ...mockUser, id: 'trg', history: { lastConnection: undefined, downloadedBooks: undefined, ratings: undefined } as any };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.history.downloadedBooks).toEqual([]);
+      expect(userTrg.history.ratings).toEqual([]);
+    });
+
+    it('should add a new rating from the source when the target has none for that book', async () => {
+      const userSrc = { ...mockUser, id: 'src', history: { ...mockUser.history, ratings: [{ book_id: 1, rating: 4, date: new Date('2023-01-01'), book_name: 'Book' }] } };
+      const userTrg = { ...mockUser, id: 'trg', history: { ...mockUser.history, ratings: [] } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.history.ratings).toEqual([{ book_id: 1, rating: 4, date: new Date('2023-01-01'), book_name: 'Book' }]);
+    });
+
+    it('should keep the more recent rating when both users rated the same book', async () => {
+      const userSrc = { ...mockUser, id: 'src', history: { ...mockUser.history, ratings: [{ book_id: 1, rating: 5, date: new Date('2023-06-01'), book_name: 'Book' }] } };
+      const userTrg = { ...mockUser, id: 'trg', history: { ...mockUser.history, ratings: [{ book_id: 1, rating: 2, date: new Date('2023-01-01'), book_name: 'Book' }] } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.history.ratings.length).toBe(1);
+      expect(userTrg.history.ratings[0].rating).toBe(5);
+    });
+
+    it('should keep the target rating when it is more recent than the source', async () => {
+      const userSrc = { ...mockUser, id: 'src', history: { ...mockUser.history, ratings: [{ book_id: 1, rating: 5, date: new Date('2023-01-01'), book_name: 'Book' }] } };
+      const userTrg = { ...mockUser, id: 'trg', history: { ...mockUser.history, ratings: [{ book_id: 1, rating: 2, date: new Date('2023-06-01'), book_name: 'Book' }] } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.history.ratings[0].rating).toBe(2);
+    });
+
+    it('should keep the most recent lastConnection between both users', async () => {
+      const userSrc = { ...mockUser, id: 'src', history: { ...mockUser.history, lastConnection: new Date('2023-06-01') } };
+      const userTrg = { ...mockUser, id: 'trg', history: { ...mockUser.history, lastConnection: new Date('2023-01-01') } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.history.lastConnection).toEqual(new Date('2023-06-01'));
+    });
+
+    it('should not overwrite an existing target field with an empty source field', async () => {
+      const userSrc = { ...mockUser, id: 'src', local: { ...mockUser.local, firstname: undefined } };
+      const userTrg = { ...mockUser, id: 'trg', local: { ...mockUser.local, firstname: 'Kept' } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.local.firstname).toBe('Kept');
+    });
+
+    it('should transfer the salt from the source when the target has no hashed password', async () => {
+      const userSrc = { ...mockUser, id: 'src', local: { ...mockUser.local, salt: 'src-salt', hashedPassword: undefined } };
+      const userTrg = { ...mockUser, id: 'trg', local: { ...mockUser.local, salt: 'trg-salt', hashedPassword: undefined } };
+      mockMyCalibreDbService.deleteUser.mockResolvedValue(true);
+      mockMyCalibreDbService.saveUser.mockResolvedValue(userTrg);
+
+      await service.mergeAndSaveUsers(userSrc, userTrg);
+
+      expect(userTrg.local.salt).toBe('src-salt');
+    });
+  });
+
+  describe('createTemporaryToken', () => {
+    it('should create a short-lived JWT containing only the user id', () => {
+      const token = service.createTemporaryToken(mockUser);
+
+      expect(typeof token).toBe('string');
+      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      expect(payload.id).toBe('user123');
+      expect(payload.local).toBeUndefined();
+    });
+  });
+
+  describe('getBearerUser', () => {
+    const buildRequest = (authorization?: string): any => ({ headers: authorization !== undefined ? { authorization } : {} });
+
+    it('should return the user for a valid Bearer token', async () => {
+      const token = service.createToken(mockUser);
+      mockMyCalibreDbService.findUserById.mockResolvedValue(mockUser);
+
+      const result = await service.getBearerUser(buildRequest(`Bearer ${token}`));
+
+      expect(result.id).toBe('user123');
+    });
+
+    it('should throw when there is no authorization header', async () => {
+      // Note: `request.headers` being a (truthy) empty object means the code still tries to
+      // read/split the missing `authorization` value instead of hitting the intended "No token"
+      // guard - this documents that pre-existing behavior rather than the intended message.
+      await expect(service.getBearerUser(buildRequest())).rejects.toThrow(TypeError);
+    });
+
+    it('should throw when the authorization header has the wrong shape', async () => {
+      await expect(service.getBearerUser(buildRequest('MalformedHeaderWithoutScheme'))).rejects.toThrow('No token');
+    });
+
+    it('should throw when the scheme is not Bearer', async () => {
+      await expect(service.getBearerUser(buildRequest('Basic sometoken'))).rejects.toThrow('No token');
+    });
+
+    it('should propagate the error when the token is invalid', async () => {
+      await expect(service.getBearerUser(buildRequest('Bearer invalid.token.here'))).rejects.toBeDefined();
     });
   });
 });

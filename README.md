@@ -126,10 +126,10 @@ npx nx e2e frontend-e2e --spec="apps/frontend-e2e/src/integration/app.spec.ts"
 ### Running Tests in CI/CD
 
 ```bash
-# Run all tests
+# Run all tests (frontend + backend)
 npm run test
 
-# Run tests with coverage
-npx nx test api --coverage
+# Run all tests with a coverage report (frontend + backend)
+npm run test:coverage
 ```
 
