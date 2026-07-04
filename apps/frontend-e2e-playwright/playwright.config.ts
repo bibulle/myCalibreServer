@@ -3,12 +3,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 /**
- * Read-only Playwright e2e suite.
- *
- * Scope: only covers flows that do not require a user account (no MongoDB
- * dependency), so it can run anywhere without a running MongoDB instance -
- * unlike the existing Cypress suite (`apps/frontend-e2e`), whose
- * authenticated specs need one. See `apps/frontend-e2e-playwright/README.md`.
+ * Playwright e2e suite - the only e2e suite in this workspace (replaces the
+ * former Cypress suite). Runs against the real API and frontend dev servers,
+ * with MongoDB swapped for an in-memory stub (see ./mongo-stub) so no
+ * MongoDB instance is needed anywhere - locally or in CI. See
+ * `apps/frontend-e2e-playwright/README.md`.
  */
 
 // Some sandboxed CI environments pre-install a Chromium build that may not

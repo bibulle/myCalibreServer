@@ -96,47 +96,28 @@ npx nx test api --testPathPattern=health
 npx nx test api --watch
 ```
 
-### E2E Tests (Cypress)
+### E2E Tests (Playwright)
 
-Full-stack integration tests that run in a real browser:
-
-```bash
-# Run E2E tests (headless mode)
-npx nx e2e frontend-e2e
-
-# Run E2E tests with Cypress UI (interactive mode)
-npx nx e2e frontend-e2e --watch
-
-# Run specific test file
-npx nx e2e frontend-e2e --spec="apps/frontend-e2e/src/integration/app.spec.ts"
-```
-
-**What E2E tests cover:**
-
-- ✅ Application loading and rendering
-- ✅ Backend API health checks (`/api/health`, `/api/version`)
-- ✅ Responsive design (mobile, tablet, desktop)
-- ✅ Full-stack integration (frontend + backend)
-
-**Test artifacts:**
-
-- Screenshots: `dist/cypress/apps/frontend-e2e/screenshots/`
-- Videos: `dist/cypress/apps/frontend-e2e/videos/`
-
-### E2E Tests (Playwright, read-only)
-
-A second, lighter e2e suite using Playwright instead of Cypress, covering
-only the flows that don't require a user account (no MongoDB dependency):
-application loading, responsive design, API health/version checks, and
-protected routes correctly rejecting unauthenticated requests. It exists
-for environments where MongoDB isn't available at all — see
-`apps/frontend-e2e-playwright/README.md` for details, including how it
-swaps the `mongodb` driver for a stub so the API doesn't need one to stay
-up. It complements the Cypress suite above, it does not replace it.
+Full-stack integration tests that run in a real browser, against the real
+API and frontend dev servers:
 
 ```bash
 npm run e2e:playwright
 ```
+
+**What E2E tests cover:**
+
+- ✅ Application loading, rendering, and responsive design (mobile, tablet, desktop)
+- ✅ Backend API health checks (`/api/health`, `/api/version`)
+- ✅ Authentication (login, roles, protected routes)
+- ✅ Books, series, authors, and tags browsing, search, filtering, and sorting
+- ✅ Book ratings
+
+No MongoDB instance is required to run this suite, anywhere: the API's
+`mongodb` driver is swapped for a small in-memory stub pre-seeded with test
+users (see `apps/frontend-e2e-playwright/README.md` for details). This is
+the only e2e suite in this workspace — it replaced an earlier Cypress suite
+that needed a real local MongoDB.
 
 ### Running Tests in CI/CD
 

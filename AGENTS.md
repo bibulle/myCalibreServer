@@ -24,7 +24,7 @@
 | NestJS | 11.x |
 | TypeScript | 5.9.3 |
 | Jest | 30.2.0 |
-| Cypress | 15.9.0 |
+| Playwright | 1.61.x (e2e — no MongoDB required) |
 | ESLint | 9.x (format `.eslintrc.json` — pas encore migré en flat config) |
 
 ## Notes importantes

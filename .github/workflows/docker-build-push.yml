@@ -18,7 +18,7 @@ env:
 
 jobs:
   test:
-    name: Run unit tests and read-only e2e
+    name: Run unit and e2e tests
     runs-on: ubuntu-latest
 
     services:
@@ -43,10 +43,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        # Skip the Cypress binary download: the full Cypress e2e suite isn't run in this job
         run: npm ci
-        env:
-          CYPRESS_INSTALL_BINARY: 0
 
       - name: Install Playwright's Chromium browser
         run: npx playwright install --with-deps chromium
@@ -59,7 +56,7 @@ jobs:
           # apps/api/src/app/database/my-calibre-db.service.spec.ts
           MONGO_TEST_URL: mongodb://localhost:27017
 
-      - name: Run read-only Playwright e2e suite
+      - name: Run Playwright e2e suite
         run: npm run e2e:playwright
 
   # define job to build and publish docker image

@@ -11,7 +11,7 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 - Interfaces partagées : `libs/api-interfaces`
 - Déploiement : Docker, GitHub Actions
 
-> Le détail précis des versions (Nx, Angular, NestJS, Jest, Cypress...) est maintenu dans `AGENTS.md` — s'y référer en cas de doute plutôt que de dupliquer ici.
+> Le détail précis des versions (Nx, Angular, NestJS, Jest, Playwright...) est maintenu dans `AGENTS.md` — s'y référer en cas de doute plutôt que de dupliquer ici.
 
 ---
 
@@ -43,7 +43,7 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 4. Lancer les serveurs et vérifier qu'ils démarrent sans erreur ; lancer les tests unitaires et e2e s'ils existent, et boucler jusqu'au vert (cf. "Boucle de validation des tests")
 5. Committer, pousser (`git push -u origin <branche>`) et ouvrir une pull request **en draft** via le MCP GitHub
 6. Surveiller le CI/CD de la PR ; en cas d'échec, corriger et repousser jusqu'au vert
-   > Le workflow CI (`.github/workflows/docker-build-push.yml`) exécute désormais un job `test` (tests unitaires frontend/backend, avec un vrai MongoDB de service, + la suite e2e Playwright en lecture seule) avant le job de build+push Docker, qui en dépend (`needs: test`). La suite Cypress complète n'est pas incluse dans ce gate (trop lourde : nécessite un seed de données et ralentirait chaque run) — elle reste à lancer manuellement en local avant une PR si le changement touche des parcours qu'elle seule couvre.
+   > Le workflow CI (`.github/workflows/docker-build-push.yml`) exécute un job `test` (tests unitaires frontend/backend, avec un vrai MongoDB de service, + la suite e2e Playwright complète) avant le job de build+push Docker, qui en dépend (`needs: test`). La suite e2e Playwright (seule suite e2e du projet depuis la suppression de Cypress) ne nécessite aucune instance MongoDB, y compris pour ses parcours authentifiés (login, notes, séries/auteurs/tags) : le driver `mongodb` de l'API est remplacé par un stub en mémoire pré-rempli (voir `apps/frontend-e2e-playwright/README.md`).
 7. Attendre le feu vert explicite de l'utilisateur, après qu'il ait testé l'application localement
 8. Une fois le feu vert obtenu, monter la version npm : `npm run release-patch` par défaut, ou `release-minor` / `release-major` si l'utilisateur le précise explicitement ; pousser le commit et le tag générés
 9. Surveiller à nouveau le CI/CD sur ce nouveau push ; corriger et repousser si besoin jusqu'au vert
@@ -56,9 +56,9 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 
 ```
 apps/
-  api/              # NestJS backend
-  frontend/         # Angular frontend
-  frontend-e2e/     # Tests E2E Cypress
+  api/                      # NestJS backend
+  frontend/                 # Angular frontend
+  frontend-e2e-playwright/  # Tests E2E Playwright (pas de MongoDB requis)
 libs/
   api-interfaces/   # Interfaces et types partagés
 ```
@@ -72,7 +72,7 @@ Toute modification d'interface partagée dans `libs/api-interfaces` doit être p
 Mettre à jour et compléter :
 - les tests unitaires backend : controllers, services, guards, interceptors (Jest + NestJS Testing)
 - les tests unitaires frontend : components, services, guards, pipes (Jest + jest-preset-angular)
-- les tests end-to-end (Cypress)
+- les tests end-to-end (Playwright, `apps/frontend-e2e-playwright/`)
 
 Ajouter des tests manquants pour couvrir :
 - les parcours critiques
@@ -209,11 +209,7 @@ npm run test:coverage     # Tests avec rapport de couverture
 
 **Tests E2E :**
 ```bash
-npm run e2e:seed          # Seed de la base de données de test
-npm run e2e               # Tests E2E (mode headless par défaut)
-npm run e2e:headless      # Tests E2E headless explicitement
-npm run e2e:open          # Tests E2E avec interface Cypress
-npm run e2e:spec          # Lancer un spec Cypress spécifique
+npm run e2e:playwright    # Tests E2E Playwright (aucune instance MongoDB requise)
 ```
 
 **Build :**
