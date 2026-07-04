@@ -96,11 +96,18 @@ export class SeriesService {
               }
             })
           );
-          const oversized = realDims.filter((d) => (d.realWidth ?? 0) > canvasWidth || (d.realHeight ?? 0) > ThumbnailUtils.THUMBNAIL_HEIGHT);
-          SeriesService.logger.warn(`[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} items=${realDims.length} oversized=${oversized.length}`);
-          const traced = realDims.filter((d) => String(d.input).includes(`${path.sep}5${path.sep}thumbnail`));
-          if (traced.length > 0) {
-            SeriesService.logger.warn(`[createSpritesSeries] index=${index} traced series 5: ${JSON.stringify(traced)}`);
+          const isOversized = (d: (typeof realDims)[number]) => (d.realWidth ?? 0) > canvasWidth || (d.realHeight ?? 0) > ThumbnailUtils.THUMBNAIL_HEIGHT;
+          const oversizedCount = realDims.filter(isOversized).length;
+          SeriesService.logger.warn(`[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} items=${realDims.length} oversized=${oversizedCount}`);
+          // sharp's composite() iterates the overlay array in order and throws on the FIRST
+          // entry that doesn't fit, so that's the one actually responsible for the crash below.
+          const firstOversizedIndex = realDims.findIndex(isOversized);
+          if (firstOversizedIndex >= 0) {
+            SeriesService.logger.error(
+              `[createSpritesSeries] index=${index} FIRST oversized entry (position ${firstOversizedIndex}/${realDims.length}), this is the one sharp will crash on: ${JSON.stringify(
+                realDims[firstOversizedIndex]
+              )}`
+            );
           }
 
           // create empty image (and add overlay)
