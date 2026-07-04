@@ -5,31 +5,50 @@
 myCalibreServer est une application web de gestion de bibliothèque numérique (livres au format Calibre).
 
 **Stack technique :**
-- Monorepo : Nx 19
-- Frontend : Angular 18 (Angular Material, PWA, JWT)
-- Backend : NestJS 9 (Express, Passport, Sequelize, SQLite)
+- Monorepo : Nx 22
+- Frontend : Angular 21 (Angular Material, PWA, JWT)
+- Backend : NestJS 11 (Express, Passport, Sequelize, SQLite)
 - Interfaces partagées : `libs/api-interfaces`
 - Déploiement : Docker, GitHub Actions
+
+> Le détail précis des versions (Nx, Angular, NestJS, Jest, Cypress...) est maintenu dans `AGENTS.md` — s'y référer en cas de doute plutôt que de dupliquer ici.
 
 ---
 
 ## Contraintes critiques (OBLIGATOIRES)
 
-- **Toujours commencer par un `git pull` sur `master`** avant de créer une branche ou de commencer à travailler, afin de partir de la version la plus récente du code
-- Travailler exclusivement dans une branche dédiée (pas dans `master`)
-- Ne jamais pousser de modifications directement sur la branche `master`
-- Ne jamais commiter sans feu vert explicite de l'utilisateur
-- Ne jamais créer de pull request sans validation explicite de l'utilisateur
-- **Avant de demander le feu vert de l'utilisateur, lancer les serveurs** (`npm run start:api` et `npm run start:frontend`) afin qu'il puisse tester l'application localement
-- Attendre explicitement le feu vert de l'utilisateur après qu'il ait exécuté les tests localement
-- Ne pas modifier le code fonctionnel existant (hors ajustements mineurs strictement nécessaires)
+- **S'aligner avec `master`** (le dépôt distant GitHub) avant de créer une branche, puis régulièrement pendant le travail (avant l'ouverture de la PR, avant la montée de version, avant le merge final)
+- Travailler exclusivement dans une branche dédiée par fonctionnalité/tâche (pas dans `master`)
+- Ne jamais pousser de modifications directement sur la branche `master` (toujours passer par une pull request)
+- Ne pas modifier le code fonctionnel existant (hors ajustements mineurs strictement nécessaires, ou demande expresse de l'utilisateur)
 - Aucun test ne doit être supprimé, désactivé ou ignoré (`skip`, `xit`, `xdescribe`, `pending`, etc.)
+- Avant de committer/pousser : vérifier que les tests unitaires (frontend/backend) et e2e (s'ils existent) passent, et que les serveurs démarrent sans erreur (`npm run start:api`, `npm run start:frontend`)
+- Le commit, le push et l'ouverture de la pull request (toujours en **draft**) ne nécessitent pas de feu vert préalable de l'utilisateur — cf. "Processus de livraison" ci-dessous
+- **Un feu vert explicite de l'utilisateur reste obligatoire avant toute montée de version**, une fois qu'il a testé l'application localement
+- Le merge final de la PR peut être fait automatiquement, **uniquement si le seul changement intervenu depuis le feu vert de l'utilisateur est la montée de version** (sinon, redemander une validation avant de merger)
 
 **Conventions de nommage des branches :**
 - `feat/<description>` pour les nouvelles fonctionnalités
 - `fix/<description>` pour les corrections de bugs
 - `refactor/<description>` pour les refactorisations
 - `<auteur>/issue<numéro>` pour les issues GitHub
+
+---
+
+## Processus de livraison (workflow)
+
+1. Récupérer `master` à jour (`git pull origin master` ou `git fetch` + rebase) avant de créer la branche
+2. Créer une branche dédiée par fonctionnalité/tâche (cf. conventions de nommage ci-dessus)
+3. Implémenter la demande (tests + documentation inclus, cf. sections dédiées)
+4. Lancer les serveurs et vérifier qu'ils démarrent sans erreur ; lancer les tests unitaires et e2e s'ils existent, et boucler jusqu'au vert (cf. "Boucle de validation des tests")
+5. Committer, pousser (`git push -u origin <branche>`) et ouvrir une pull request **en draft** via le MCP GitHub
+6. Surveiller le CI/CD de la PR ; en cas d'échec, corriger et repousser jusqu'au vert
+   > ⚠️ Limite connue (correction prévue prochainement) : le workflow CI actuel (`.github/workflows/docker-build-push.yml`) ne fait qu'un build Docker, il ne relance pas les tests. Tant que ce n'est pas corrigé, un CI vert ne dispense pas de la boucle de validation des tests locale (étape 4) — c'est elle qui fait foi.
+7. Attendre le feu vert explicite de l'utilisateur, après qu'il ait testé l'application localement
+8. Une fois le feu vert obtenu, monter la version npm : `npm run release-patch` par défaut, ou `release-minor` / `release-major` si l'utilisateur le précise explicitement ; pousser le commit et le tag générés
+9. Surveiller à nouveau le CI/CD sur ce nouveau push ; corriger et repousser si besoin jusqu'au vert
+10. Si le CI est vert, merger la pull request (via le MCP GitHub) et surveiller le CI/CD déclenché par le merge sur `master`
+    > Le merge sur `master` déclenche le build + push de l'image Docker (si les secrets Docker Hub sont configurés) et la mise à jour du dépôt `myKubernetesConfig` (déploiement K8s). C'est une action à fort impact, mais autorisée automatiquement ici car elle intervient juste après la validation explicite de l'utilisateur, le seul changement supplémentaire étant la montée de version.
 
 ---
 
@@ -127,14 +146,14 @@ Lorsque l'on travaille dans un worktree (`.claude/worktrees/`), les données non
    npm ci
    ```
 
-2. **Copier le fichier `.env`** depuis le repo principal :
+2. **Copier le fichier `.env`** depuis le repo principal (chemin local de l'utilisateur — à lui demander s'il n'est pas connu ; en session cloud sans accès à ce repo, demander le contenu du `.env` ou en générer un minimal à partir de `.env.example`) :
    ```bash
-   cp /Users/m341772/Developer/myCalibreServer/.env .env
+   cp <chemin-repo-principal>/.env .env
    ```
 
 3. **Créer un symlink vers le répertoire `data/`** (bibliothèque Calibre + cache) :
    ```bash
-   ln -s /Users/m341772/Developer/myCalibreServer/data data
+   ln -s <chemin-repo-principal>/data data
    ```
    > Cela permet à l'API de trouver `metadata.db`, les couvertures et les fichiers EPUB/MOBI
    > sans modifier le `.env`. Les chemins par défaut (`PATH_BOOKS`, `PATH_MY_CALIBRE`)
@@ -208,10 +227,11 @@ npm run build             # Build frontend + backend (Nx)
 
 - Liste des tests ajoutés ou modifiés
 - Liste des sections de documentation mises à jour
-- Nom de la branche dédiée utilisée
+- Nom de la branche dédiée utilisée et lien de la pull request (draft)
 - Contenu complet des modifications (tests + documentation)
 - Commandes exactes pour lancer les serveurs et exécuter les tests
-- État final confirmé : tous les tests sont verts et la documentation est à jour
+- État du CI/CD (vert/rouge, corrections effectuées le cas échéant)
+- État final confirmé : tous les tests sont verts, la documentation est à jour, et (une fois le feu vert utilisateur obtenu) la version montée et la PR mergée
 
 ---
 
@@ -221,4 +241,4 @@ npm run build             # Build frontend + backend (Nx)
 - Justifier les choix effectués
 - Prioriser la clarté, la cohérence et la maintenabilité du code
 - Respecter les conventions de commits existantes (`feat:`, `fix:`, `refactor:`, `test:`, `chore:`)
-- **Attendre explicitement le feu vert de l'utilisateur avant toute action de versioning ou de push**
+- Suivre le "Processus de livraison" défini plus haut : commit/push/PR draft automatiques, feu vert utilisateur obligatoire avant toute montée de version, merge final surveillé via le CI/CD
