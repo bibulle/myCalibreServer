@@ -236,6 +236,23 @@ export class BooksService {
         const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
         const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(1);
 
+        // Diagnostic only: flag any existing series thumbnail whose real on-disk dimensions
+        // don't match THUMBNAIL_HEIGHT, regardless of whether it will be regenerated below.
+        if (thumbnailStat) {
+          await sharp(thumbnailPath)
+            .metadata()
+            .then((meta) => {
+              if (meta.height !== ThumbnailUtils.THUMBNAIL_HEIGHT) {
+                BooksService.logger.warn(
+                  `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" existing thumbnail ${thumbnailPath} has wrong size ${meta.width}x${meta.height} (expected height ${ThumbnailUtils.THUMBNAIL_HEIGHT}), mtime=${thumbnailStat.mtime.toISOString()}`
+                );
+              }
+            })
+            .catch((metaErr) => {
+              BooksService.logger.warn(`[calculateMissingSeriesThumbnail] series=${series.series_id} could not read metadata for ${thumbnailPath}: ${metaErr}`);
+            });
+        }
+
         let coversDate = new Date(0);
         series.books.forEach((book) => {
           const coverPath = this.getCoverPath(book);
@@ -245,7 +262,10 @@ export class BooksService {
 
         // BooksService.logger.debug(`${coverDate} ${thumbnailDate}`);
         if (coversDate.getTime() > thumbnailDate.getTime()) {
-          BooksService.logger.debug(`calculate series thumbnail [start]: ${series.series_name} (${series.books.length} books)`);
+          const booksWithCover = series.books.filter((b) => existsSync(this.getCoverPath(b))).length;
+          BooksService.logger.warn(
+            `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" regenerating: ${series.books.length} books (${booksWithCover} with cover on disk), coversDate=${coversDate.toISOString()} > thumbnailDate=${thumbnailDate.toISOString()}`
+          );
 
           const calculation: SeriesThumbnailCalculation = {
             theBuffer: undefined,
@@ -276,7 +296,10 @@ export class BooksService {
           if (calculation.theBuffer) {
             mkdirSync(path.dirname(thumbnailPath), { recursive: true });
 
-            BooksService.logger.debug(`calculate series thumbnail [end]  : ${series.series_name} (${series.books.length} books)`);
+            const preSaveMeta = await sharp(calculation.theBuffer).metadata();
+            BooksService.logger.warn(
+              `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" accumulated buffer before final resize: ${preSaveMeta.width}x${preSaveMeta.height}`
+            );
             await this.saveBufferToPng(calculation.theBuffer, thumbnailPath).catch((reason) => {
               BooksService.logger.error('Error while saving series');
               BooksService.logger.error(reason);
@@ -423,9 +446,8 @@ export class BooksService {
 
   async saveBufferToPng(theBuffer: Buffer, trgPath: string): Promise<void> {
     try {
-      await sharp(theBuffer).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toFile(trgPath);
-      //debug(thumbnailPath + " done");
-      //debug(info);
+      const info = await sharp(theBuffer).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toFile(trgPath);
+      BooksService.logger.warn(`[saveBufferToPng] wrote ${trgPath} : ${info.width}x${info.height}`);
     } catch (error) {
       BooksService.logger.error(error);
       throw error;
