@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.11](https://github.com/bibulle/myCalibreServer/compare/v0.12.9...v0.12.11) (2026-07-04)
+
+
+### Tests
+
+* make the mongo-stub real and remove Cypress in favor of Playwright ([5e1742f](https://github.com/bibulle/myCalibreServer/commit/5e1742f006c0f53a1508338b07c7480df96d2297))
+
 ### [0.12.10](https://github.com/bibulle/myCalibreServer/compare/v0.12.9...v0.12.10) (2026-07-04)
 
 
