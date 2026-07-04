@@ -43,7 +43,7 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 4. Lancer les serveurs et vérifier qu'ils démarrent sans erreur ; lancer les tests unitaires et e2e s'ils existent, et boucler jusqu'au vert (cf. "Boucle de validation des tests")
 5. Committer, pousser (`git push -u origin <branche>`) et ouvrir une pull request **en draft** via le MCP GitHub
 6. Surveiller le CI/CD de la PR ; en cas d'échec, corriger et repousser jusqu'au vert
-   > ⚠️ Limite connue (correction prévue prochainement) : le workflow CI actuel (`.github/workflows/docker-build-push.yml`) ne fait qu'un build Docker, il ne relance pas les tests. Tant que ce n'est pas corrigé, un CI vert ne dispense pas de la boucle de validation des tests locale (étape 4) — c'est elle qui fait foi.
+   > Le workflow CI (`.github/workflows/docker-build-push.yml`) exécute désormais un job `test` (tests unitaires frontend/backend, avec un vrai MongoDB de service, + la suite e2e Playwright en lecture seule) avant le job de build+push Docker, qui en dépend (`needs: test`). La suite Cypress complète n'est pas incluse dans ce gate (trop lourde : nécessite un seed de données et ralentirait chaque run) — elle reste à lancer manuellement en local avant une PR si le changement touche des parcours qu'elle seule couvre.
 7. Attendre le feu vert explicite de l'utilisateur, après qu'il ait testé l'application localement
 8. Une fois le feu vert obtenu, monter la version npm : `npm run release-patch` par défaut, ou `release-minor` / `release-major` si l'utilisateur le précise explicitement ; pousser le commit et le tag générés
 9. Surveiller à nouveau le CI/CD sur ce nouveau push ; corriger et repousser si besoin jusqu'au vert
