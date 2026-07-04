@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as fs from 'fs';
 import * as path from 'path';
 
 /**
@@ -9,6 +10,15 @@ import * as path from 'path';
  * unlike the existing Cypress suite (`apps/frontend-e2e`), whose
  * authenticated specs need one. See `apps/frontend-e2e-playwright/README.md`.
  */
+
+// Some sandboxed CI environments pre-install a Chromium build that may not
+// match this workspace's pinned Playwright version, at a fixed path, with
+// browser downloads blocked - point directly at it there. Everywhere else
+// (including local dev), omit executablePath entirely so Playwright resolves
+// the browser it installed itself (`npx playwright install chromium`).
+const sandboxChromiumPath = process.env.PLAYWRIGHT_CHROMIUM_PATH || '/opt/pw-browsers/chromium';
+const launchOptions = fs.existsSync(sandboxChromiumPath) ? { executablePath: sandboxChromiumPath } : {};
+
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -24,12 +34,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        // This workspace pins a Playwright version that may not match the
-        // Chromium revision pre-installed in some sandboxed environments;
-        // point directly at it instead of letting Playwright resolve/download one.
-        launchOptions: {
-          executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH || '/opt/pw-browsers/chromium',
-        },
+        launchOptions,
       },
     },
   ],
