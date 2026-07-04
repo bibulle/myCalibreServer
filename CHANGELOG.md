@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.10](https://github.com/bibulle/myCalibreServer/compare/v0.12.9...v0.12.10) (2026-07-04)
+
+
+### Bug Fixes
+
+* provide dummy OAuth env vars for CI Playwright e2e webServer ([a0f0b7b](https://github.com/bibulle/myCalibreServer/commit/a0f0b7ba29b5a4fe7372d1e28fbe6f24b8f8b0f4))
+
+
+### Tests
+
+* skip all MyCalibreDbService integration tests when MongoDB is unavailable ([68d4f93](https://github.com/bibulle/myCalibreServer/commit/68d4f931b890d919bfba663378444c735533f1f2))
+
 ### [0.12.9](https://github.com/bibulle/myCalibreServer/compare/v0.12.8...v0.12.9) (2026-07-04)
 
 
