@@ -79,13 +79,29 @@ export class SeriesService {
     return new Promise<void>((resolve, reject) => {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
       this.getSpritesSeriesOverlay(index)
-        .then((overlay) => {
+        .then(async (overlay) => {
           const canvasWidth = ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT;
-          SeriesService.logger.warn(
-            `[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} overlay=${JSON.stringify(
-              overlay.map((o) => ({ input: o.input, top: o.top, left: o.left }))
-            )}`
+
+          // Diagnostic only: `overlay[].input` is the raw file on disk, never re-verified against
+          // the in-memory resized `info` used to compute `left` in getSpritesSeriesOverlay. Read
+          // its real on-disk dimensions here to catch any stale/oversized file before it reaches
+          // sharp's composite (which checks the RAW file, not the resized one).
+          const realDims = await Promise.all(
+            overlay.map(async (o) => {
+              try {
+                const meta = await sharp(o.input as string).metadata();
+                return { input: o.input, top: o.top, left: o.left, realWidth: meta.width, realHeight: meta.height };
+              } catch (metaErr) {
+                return { input: o.input, top: o.top, left: o.left, metaError: String(metaErr) };
+              }
+            })
           );
+          SeriesService.logger.warn(`[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} overlay=${JSON.stringify(realDims)}`);
+          const oversized = realDims.filter((d) => (d.realWidth ?? 0) > canvasWidth || (d.realHeight ?? 0) > ThumbnailUtils.THUMBNAIL_HEIGHT);
+          if (oversized.length > 0) {
+            SeriesService.logger.error(`[createSpritesSeries] index=${index} oversized on-disk file(s) that will make sharp composite fail: ${JSON.stringify(oversized)}`);
+          }
+
           // create empty image (and add overlay)
           sharp({ create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
             .composite(overlay)
