@@ -225,18 +225,32 @@ export class BooksService {
 
   async calculateMissingSeriesThumbnail(): Promise<void> {
     try {
+      const TRACED_SERIES_ID = 5; // TODO remove: investigating why series 5 keeps regenerating every cron tick
       const seriesLst = await this._calibreDbService.getAllSeries();
       for (const series of seriesLst) {
+        const traced = series.series_id === TRACED_SERIES_ID;
         const thumbnailPath = this._seriesService.getThumbnailPath(series.series_id);
         const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
         const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(1);
 
         let coversDate = new Date(0);
+        let coversDateBook = '';
         series.books.forEach((book) => {
           const coverPath = this.getCoverPath(book);
           const coverStat = statSync(coverPath, { throwIfNoEntry: false });
-          coversDate = coverStat && coverStat.mtime.getTime() >= coversDate.getTime() ? coverStat.mtime : coversDate;
+          if (coverStat && coverStat.mtime.getTime() >= coversDate.getTime()) {
+            coversDate = coverStat.mtime;
+            coversDateBook = coverPath;
+          }
         });
+
+        if (traced) {
+          BooksService.logger.warn(
+            `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" coversDate=${coversDate.toISOString()} (from ${coversDateBook}) thumbnailDate=${thumbnailDate.toISOString()} delta=${
+              coversDate.getTime() - thumbnailDate.getTime()
+            }ms now=${new Date().toISOString()}`
+          );
+        }
 
         // BooksService.logger.debug(`${coverDate} ${thumbnailDate}`);
         if (coversDate.getTime() > thumbnailDate.getTime()) {
@@ -272,6 +286,12 @@ export class BooksService {
               BooksService.logger.error('Error while saving series');
               BooksService.logger.error(reason);
             });
+            if (traced) {
+              const rewrittenStat = statSync(thumbnailPath, { throwIfNoEntry: false });
+              BooksService.logger.warn(
+                `[calculateMissingSeriesThumbnail] series=${series.series_id} wrote ${thumbnailPath} at mtime=${rewrittenStat?.mtime.toISOString()}, coversDate was ${coversDate.toISOString()}`
+              );
+            }
           }
         }
       }
