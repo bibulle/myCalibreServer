@@ -6,7 +6,7 @@ import { BookService } from '../book.service';
 import { MatContentModule } from '../../content/content.component';
 import { CommonModule } from '@angular/common';
 import { TitleService } from '../../../app/title.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
@@ -253,7 +253,7 @@ export class BookPageComponent implements OnInit {
     MatAutocompleteModule,
     MatDialogModule,
     MatTooltipModule,
-    TranslateModule,
+    TranslatePipe,
     LocalizedDateModule,
     MatRatingModule,
   ],

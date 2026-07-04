@@ -49,12 +49,10 @@ export class AppComponent implements OnInit, OnDestroy, AfterViewChecked {
               private _matIconRegistry: MatIconRegistry,
               private _domSanitizer: DomSanitizer,
               public _breakpointObserver: BreakpointObserver) {
-    this._translate.setDefaultLang('en');
-
-    // console.log(this._translate.getBrowserLang());
-    if (this._translate.getBrowserLang()) {
-      this._translate.use(this._translate.getBrowserLang() as string);
-    }
+    // ngx-translate 18 removed setDefaultLang/getDefaultLang; use the browser
+    // language if available, falling back to 'en' otherwise (same behavior
+    // as the old setDefaultLang('en') + conditional use(browserLang)).
+    this._translate.use(this._translate.getBrowserLang() ?? 'en');
 
     this._matIconRegistry
       .addSvgIcon('flag_fr', this._domSanitizer.bypassSecurityTrustResourceUrl('/assets/flags/4x3/fr.svg'))

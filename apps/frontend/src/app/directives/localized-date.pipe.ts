@@ -16,7 +16,10 @@ export class LocalizedDatePipe implements PipeTransform {
   constructor(private translate: TranslateService) { }
 
   transform(date: any, pattern = 'mediumDate'): any {
-    const currentLang = this.translate.currentLang;
+    // ngx-translate 18: `currentLang` is now a reactive Signal; this pipe is
+    // `pure: false` and re-evaluates every CD cycle already, so a plain
+    // non-reactive snapshot via `getCurrentLang()` preserves prior behavior.
+    const currentLang = this.translate.getCurrentLang() ?? '';
 
     // if we ask another time for the same date & locale, return the last value
     if (date === this.lastDate && currentLang === this.lastLang) {

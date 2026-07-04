@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { Book } from '@my-calibre-server/api-interfaces';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatContentModule } from '../../content/content.component';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { BookCardModule } from '../book-card/book-card.component';
@@ -326,7 +326,7 @@ export class BookListComponent implements OnInit, OnDestroy {
     MatContentModule,
     MatToolbarModule,
     BookCardModule,
-    TranslateModule,
+    TranslatePipe,
     // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,

@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { User } from '@my-calibre-server/api-interfaces';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDateModule } from '../../../../directives/localized-date.pipe';
 import { NotificationService } from '../../../notification/notification.service';
 import { UserProfileModule } from '../../profile/user-profile/user-profile.component';
@@ -108,7 +108,7 @@ export class UserListItemComponent {
     FormsModule,
     MatInputModule,
     UserProfileModule,
-    TranslateModule,
+    TranslatePipe,
     LocalizedDateModule
   ],
   declarations: [

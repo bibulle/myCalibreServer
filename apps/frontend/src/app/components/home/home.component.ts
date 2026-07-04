@@ -3,7 +3,7 @@ import { Component, NgModule, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Book } from '@my-calibre-server/api-interfaces';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BookCardModule } from '../book/book-card/book-card.component';
 import { BookService } from '../book/book.service';
 import { MatContentModule } from '../content/content.component';
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
     MatProgressSpinnerModule,
     MatCardModule,
     BookCardModule,
-    TranslateModule
+    TranslatePipe
   ],
   declarations: [HomeComponent],
   exports: [HomeComponent]

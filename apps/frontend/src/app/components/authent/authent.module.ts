@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ConnectLocalComponent } from './connect-local/connect-local.component';
 import { LoginComponent } from './login/login.component';
@@ -29,7 +29,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatIconModule,
     UsersListModule,
     UserProfileModule,
-    TranslateModule,
+    TranslatePipe,
   ],
   declarations: [LoginComponent, SignupComponent, ProfileButtonComponent, ProfileComponent, ConnectLocalComponent, ChangePasswordComponent],
   providers: [UserService],

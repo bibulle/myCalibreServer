@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilterBarComponent } from './filter-bar.component';
 import { FilterService, Filter, SortType, SortingDirection, LangAvailable } from './filter.service';
 import { of, Subject } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('FilterBarComponent', () => {
@@ -21,8 +21,7 @@ describe('FilterBarComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [FilterBarComponent],
-      imports: [TranslateModule.forRoot()],
-      providers: [{ provide: FilterService, useValue: mockFilterService }],
+      providers: [{ provide: FilterService, useValue: mockFilterService }, provideTranslateService()],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 

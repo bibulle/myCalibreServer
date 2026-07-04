@@ -6,7 +6,7 @@ import { MatContentModule } from '../../content/content.component';
 import { SeriesCardModule } from '../series-card/series-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../notification/notification.service';
@@ -235,7 +235,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, SeriesCardModule, TranslateModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, SeriesCardModule, TranslatePipe],
   declarations: [SeriesListComponent],
   exports: [SeriesListComponent],
 })
