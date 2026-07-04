@@ -96,10 +96,11 @@ export class SeriesService {
               }
             })
           );
-          SeriesService.logger.warn(`[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} overlay=${JSON.stringify(realDims)}`);
           const oversized = realDims.filter((d) => (d.realWidth ?? 0) > canvasWidth || (d.realHeight ?? 0) > ThumbnailUtils.THUMBNAIL_HEIGHT);
-          if (oversized.length > 0) {
-            SeriesService.logger.error(`[createSpritesSeries] index=${index} oversized on-disk file(s) that will make sharp composite fail: ${JSON.stringify(oversized)}`);
+          SeriesService.logger.warn(`[createSpritesSeries] index=${index} canvas=${canvasWidth}x${ThumbnailUtils.THUMBNAIL_HEIGHT} items=${realDims.length} oversized=${oversized.length}`);
+          const traced = realDims.filter((d) => String(d.input).includes(`${path.sep}5${path.sep}thumbnail`));
+          if (traced.length > 0) {
+            SeriesService.logger.warn(`[createSpritesSeries] index=${index} traced series 5: ${JSON.stringify(traced)}`);
           }
 
           // create empty image (and add overlay)

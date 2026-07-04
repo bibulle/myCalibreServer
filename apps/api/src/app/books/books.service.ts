@@ -230,23 +230,23 @@ export class BooksService {
 
   async calculateMissingSeriesThumbnail(): Promise<void> {
     try {
+      const TRACED_SERIES_ID = 5; // TODO remove: temporary investigation of a stale/oversized thumbnail
       const seriesLst = await this._calibreDbService.getAllSeries();
       for (const series of seriesLst) {
+        const traced = series.series_id === TRACED_SERIES_ID;
         const thumbnailPath = this._seriesService.getThumbnailPath(series.series_id);
         const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
         const thumbnailDate = thumbnailStat ? thumbnailStat.mtime : new Date(1);
 
-        // Diagnostic only: flag any existing series thumbnail whose real on-disk dimensions
+        // Diagnostic only: flag if the existing series thumbnail's real on-disk dimensions
         // don't match THUMBNAIL_HEIGHT, regardless of whether it will be regenerated below.
-        if (thumbnailStat) {
+        if (traced && thumbnailStat) {
           await sharp(thumbnailPath)
             .metadata()
             .then((meta) => {
-              if (meta.height !== ThumbnailUtils.THUMBNAIL_HEIGHT) {
-                BooksService.logger.warn(
-                  `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" existing thumbnail ${thumbnailPath} has wrong size ${meta.width}x${meta.height} (expected height ${ThumbnailUtils.THUMBNAIL_HEIGHT}), mtime=${thumbnailStat.mtime.toISOString()}`
-                );
-              }
+              BooksService.logger.warn(
+                `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" existing thumbnail ${thumbnailPath} size ${meta.width}x${meta.height} (expected height ${ThumbnailUtils.THUMBNAIL_HEIGHT}), mtime=${thumbnailStat.mtime.toISOString()}`
+              );
             })
             .catch((metaErr) => {
               BooksService.logger.warn(`[calculateMissingSeriesThumbnail] series=${series.series_id} could not read metadata for ${thumbnailPath}: ${metaErr}`);
@@ -262,10 +262,12 @@ export class BooksService {
 
         // BooksService.logger.debug(`${coverDate} ${thumbnailDate}`);
         if (coversDate.getTime() > thumbnailDate.getTime()) {
-          const booksWithCover = series.books.filter((b) => existsSync(this.getCoverPath(b))).length;
-          BooksService.logger.warn(
-            `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" regenerating: ${series.books.length} books (${booksWithCover} with cover on disk), coversDate=${coversDate.toISOString()} > thumbnailDate=${thumbnailDate.toISOString()}`
-          );
+          if (traced) {
+            const booksWithCover = series.books.filter((b) => existsSync(this.getCoverPath(b))).length;
+            BooksService.logger.warn(
+              `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" regenerating: ${series.books.length} books (${booksWithCover} with cover on disk), coversDate=${coversDate.toISOString()} > thumbnailDate=${thumbnailDate.toISOString()}`
+            );
+          }
 
           const calculation: SeriesThumbnailCalculation = {
             theBuffer: undefined,
@@ -280,15 +282,17 @@ export class BooksService {
               calculation.step += calculation.step_increment;
               calculation.height += calculation.step;
 
-              BooksService.logger.warn(
-                `[resizeSeries] book=${book.book_id} step=${calculation.step} height=${calculation.height} width=${calculation.width}`
-              );
+              if (traced) {
+                BooksService.logger.warn(
+                  `[resizeSeries] book=${book.book_id} step=${calculation.step} height=${calculation.height} width=${calculation.width}`
+                );
+              }
 
               await this.resizeSeries(this.getCoverPath(book), calculation).catch((reason) => {
                 BooksService.logger.error('Error while resizing series');
                 BooksService.logger.error(reason);
               });
-            } else {
+            } else if (traced) {
               BooksService.logger.warn(`Series "${series.series_name}": cover missing on disk for book ${book.book_id} (${this.getCoverPath(book)}), skipped`);
             }
           }
@@ -296,14 +300,20 @@ export class BooksService {
           if (calculation.theBuffer) {
             mkdirSync(path.dirname(thumbnailPath), { recursive: true });
 
-            const preSaveMeta = await sharp(calculation.theBuffer).metadata();
-            BooksService.logger.warn(
-              `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" accumulated buffer before final resize: ${preSaveMeta.width}x${preSaveMeta.height}`
-            );
+            if (traced) {
+              const preSaveMeta = await sharp(calculation.theBuffer).metadata();
+              BooksService.logger.warn(
+                `[calculateMissingSeriesThumbnail] series=${series.series_id} "${series.series_name}" accumulated buffer before final resize: ${preSaveMeta.width}x${preSaveMeta.height}`
+              );
+            }
             await this.saveBufferToPng(calculation.theBuffer, thumbnailPath).catch((reason) => {
               BooksService.logger.error('Error while saving series');
               BooksService.logger.error(reason);
             });
+            if (traced) {
+              const writtenMeta = await sharp(thumbnailPath).metadata();
+              BooksService.logger.warn(`[calculateMissingSeriesThumbnail] series=${series.series_id} wrote ${thumbnailPath} : ${writtenMeta.width}x${writtenMeta.height}`);
+            }
           }
         }
       }
@@ -446,8 +456,9 @@ export class BooksService {
 
   async saveBufferToPng(theBuffer: Buffer, trgPath: string): Promise<void> {
     try {
-      const info = await sharp(theBuffer).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toFile(trgPath);
-      BooksService.logger.warn(`[saveBufferToPng] wrote ${trgPath} : ${info.width}x${info.height}`);
+      await sharp(theBuffer).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toFile(trgPath);
+      //debug(thumbnailPath + " done");
+      //debug(info);
     } catch (error) {
       BooksService.logger.error(error);
       throw error;
