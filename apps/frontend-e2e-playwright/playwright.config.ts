@@ -52,6 +52,19 @@ export default defineConfig({
         AUTHENT_JWT_SECRET: 'e2e-test-jwt-secret',
         AUTHENT_LENGTH: '64',
         AUTHENT_DIGEST: 'sha256',
+        // passport-facebook/passport-google-oauth20 validate their options
+        // synchronously in the constructor and throw if clientID is empty,
+        // which crashes the whole Nest app at boot. These strategies are
+        // always instantiated (see authentication.module.ts) even though
+        // this suite never exercises OAuth login, so dummy values are
+        // enough - no real Facebook/Google app is contacted.
+        AUTHENT_FACEBOOK_CLIENTID: 'e2e-test-facebook-client-id',
+        AUTHENT_FACEBOOK_CLIENTSECRET: 'e2e-test-facebook-client-secret',
+        AUTHENT_FACEBOOK_CALLBACKURL: 'http://localhost:4200/assets/logged.html',
+        AUTHENT_GOOGLE_CLIENTID: 'e2e-test-google-client-id',
+        AUTHENT_GOOGLE_CLIENTSECRET: 'e2e-test-google-client-secret',
+        AUTHENT_GOOGLE_CALLBACKURL: 'http://localhost:4200/assets/logged.html',
+        AUTHENT_GOOGLE_ANDROID_CLIENTID: 'e2e-test-google-android-client-id',
         // Swap the real `mongodb` driver for a no-op in-memory stub (see
         // ./mongo-stub) so the API doesn't crash on an unreachable MongoDB
         // while this read-only suite runs.
