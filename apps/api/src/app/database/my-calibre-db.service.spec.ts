@@ -195,12 +195,16 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return users sorted by updated date descending', async () => {
+      if (!mongoClient) return;
+
       const result = await service.getAllUsers();
 
       expect(result[0].updated.getTime()).toBeGreaterThanOrEqual(result[1].updated.getTime());
     });
 
     it('should return users with expected properties', async () => {
+      if (!mongoClient) return;
+
       const result = await service.getAllUsers();
 
       expect(result[0]).toHaveProperty('id');
@@ -213,6 +217,8 @@ describe('MyCalibreDbService', () => {
 
   describe('findUserById', () => {
     it('should find user by id', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserById('test-user-1');
 
       expect(result).toBeDefined();
@@ -221,6 +227,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return null for non-existent user', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserById('non-existent-id');
 
       expect(result).toBeNull();
@@ -229,6 +237,8 @@ describe('MyCalibreDbService', () => {
 
   describe('findUserByUsername', () => {
     it('should find user by local username', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserByUsername('testuser');
 
       expect(result).toBeDefined();
@@ -237,6 +247,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return null for non-existent username', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserByUsername('nonexistent');
 
       expect(result).toBeNull();
@@ -245,6 +257,8 @@ describe('MyCalibreDbService', () => {
 
   describe('findUserByGoogleId', () => {
     it('should find user by Google ID', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserByGoogleId('google-123456');
 
       expect(result).toBeDefined();
@@ -253,6 +267,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return null for non-existent Google ID', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserByGoogleId('non-existent-google-id');
 
       expect(result).toBeNull();
@@ -261,6 +277,8 @@ describe('MyCalibreDbService', () => {
 
   describe('findUserByFacebookId', () => {
     it('should find user by Facebook ID', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserByFacebookId('facebook-789012');
 
       expect(result).toBeDefined();
@@ -269,6 +287,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return null for non-existent Facebook ID', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findUserByFacebookId('non-existent-fb-id');
 
       expect(result).toBeNull();
@@ -277,6 +297,8 @@ describe('MyCalibreDbService', () => {
 
   describe('findByTemporaryToken', () => {
     it('should find user by temporary token', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findByTemporaryToken('temp-token-123456');
 
       expect(result).toBeDefined();
@@ -285,6 +307,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return null for non-existent token', async () => {
+      if (!mongoClient) return;
+
       const result = await service.findByTemporaryToken('invalid-token');
 
       expect(result).toBeNull();
@@ -293,6 +317,8 @@ describe('MyCalibreDbService', () => {
 
   describe('saveUser', () => {
     it('should insert a new user', async () => {
+      if (!mongoClient) return;
+
       const newUser = {
         id: 'test-user-new',
         email: 'newuser@example.com',
@@ -315,6 +341,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should update an existing user', async () => {
+      if (!mongoClient) return;
+
       const existingUser = await service.findUserById('test-user-1');
       existingUser.email = 'updated@example.com';
 
@@ -328,6 +356,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should set created date if not present', async () => {
+      if (!mongoClient) return;
+
       const newUser = {
         id: 'test-user-with-dates',
         email: 'datetest@example.com',
@@ -342,6 +372,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should update the updated date by default', async () => {
+      if (!mongoClient) return;
+
       const existingUser = await service.findUserById('test-user-2');
       const oldUpdatedDate = existingUser.updated;
 
@@ -354,6 +386,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should not update the updated date when changeUpdateDate is false', async () => {
+      if (!mongoClient) return;
+
       const existingUser = await service.findUserById('test-user-3');
       const oldUpdatedDate = existingUser.updated;
 
@@ -364,6 +398,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should convert string dates in history to Date objects', async () => {
+      if (!mongoClient) return;
+
       const userWithStringDates = {
         id: 'test-user-string-dates',
         email: 'stringdates@example.com',
@@ -396,6 +432,8 @@ describe('MyCalibreDbService', () => {
 
   describe('deleteUser', () => {
     it('should delete a user by id', async () => {
+      if (!mongoClient) return;
+
       // First verify user exists
       let user = await service.findUserById('test-user-4');
       expect(user).toBeDefined();
@@ -412,6 +450,8 @@ describe('MyCalibreDbService', () => {
     });
 
     it('should return deletedCount 0 for non-existent user', async () => {
+      if (!mongoClient) return;
+
       const result = await service.deleteUser('non-existent-user');
 
       expect(result).toBeDefined();

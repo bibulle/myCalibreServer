@@ -17,10 +17,56 @@ env:
   K8S_FILE: my-calibre-server/30-deployment-local.yaml
 
 jobs:
+  test:
+    name: Run unit tests and read-only e2e
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ping:1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        # Skip the Cypress binary download: the full Cypress e2e suite isn't run in this job
+        run: npm ci
+        env:
+          CYPRESS_INSTALL_BINARY: 0
+
+      - name: Install Playwright's Chromium browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run unit tests (frontend + backend)
+        run: npm run test
+        env:
+          # MyCalibreDbService's integration tests auto-detect and use this
+          # instance instead of skipping themselves; see
+          # apps/api/src/app/database/my-calibre-db.service.spec.ts
+          MONGO_TEST_URL: mongodb://localhost:27017
+
+      - name: Run read-only Playwright e2e suite
+        run: npm run e2e:playwright
+
   # define job to build and publish docker image
   build-and-push-docker-image:
     name: Build Docker image and push to repositories
     # run only when code is compiling and tests are passing
+    needs: test
     runs-on: ubuntu-latest
 
     env: 
