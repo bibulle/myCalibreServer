@@ -18,17 +18,6 @@ describe('SeriesCardComponent', () => {
   it('should be created with default inputs', () => {
     expect(component).toBeTruthy();
     expect(component.index).toBe(0);
-    expect(component.booksClosed).toBe(true);
-  });
-
-  describe('toggleBooksClosed', () => {
-    it('should flip the booksClosed flag', () => {
-      component.booksClosed = true;
-      component.toggleBooksClosed();
-      expect(component.booksClosed).toBe(false);
-      component.toggleBooksClosed();
-      expect(component.booksClosed).toBe(true);
-    });
   });
 
   describe('dotColor', () => {

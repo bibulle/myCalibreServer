@@ -1,6 +1,6 @@
 @if (series && series.series_name) {
-  <section class="series-section" [class.collapsed]="booksClosed">
-    <div class="series-header" (click)="toggleBooksClosed()">
+  <section class="series-section">
+    <div class="series-header">
       <span class="dot" [style.background]="dotColor"></span>
       <h2 class="series-name">{{ series.series_name }}</h2>
       @if (series.author_name.length) {
@@ -13,22 +13,19 @@
       }
       <span class="rl-spacer"></span>
       <span class="count-pill">{{ 'label.volumes-count' | translate: { count: series.books.length } }}</span>
-      <span class="chevron">⌄</span>
     </div>
 
-    @if (!booksClosed) {
-      <div class="volumes-grid">
-        @for (book of series.books; track book.book_id) {
-          <div class="volume" (click)="openBook($event, book.book_id)">
-            <div class="volume-cover">
-              <my-calibre-server-image-sprites [type]="0" [id]="book.book_id"></my-calibre-server-image-sprites>
-              <span class="volume-badge">{{ book.book_series_index }}</span>
-            </div>
-            <div class="volume-title">{{ book.book_title }}</div>
-            <div class="volume-meta">{{ 'label.tome' | translate }} {{ book.book_series_index }} · {{ book.book_date | date : 'yyyy' }}</div>
+    <div class="volumes-grid">
+      @for (book of series.books; track book.book_id) {
+        <div class="volume" (click)="openBook($event, book.book_id)">
+          <div class="volume-cover">
+            <my-calibre-server-image-sprites [type]="0" [id]="book.book_id"></my-calibre-server-image-sprites>
+            <span class="volume-badge">{{ book.book_series_index }}</span>
           </div>
-        }
-      </div>
-    }
+          <div class="volume-title">{{ book.book_title }}</div>
+          <div class="volume-meta">{{ 'label.tome' | translate }} {{ book.book_series_index }} · {{ book.book_date | date : 'yyyy' }}</div>
+        </div>
+      }
+    </div>
   </section>
 }

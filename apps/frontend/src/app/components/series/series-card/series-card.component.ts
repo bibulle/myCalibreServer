@@ -20,14 +20,7 @@ export class SeriesCardComponent {
   @Input()
   index = 0;
 
-  @Input()
-  booksClosed = true;
-
   constructor(private _router: Router) {}
-
-  toggleBooksClosed() {
-    this.booksClosed = !this.booksClosed;
-  }
 
   get dotColor(): string {
     return DOT_PALETTE[this.index % DOT_PALETTE.length];

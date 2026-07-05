@@ -15,10 +15,6 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
-}
-
-.series-section:not(.collapsed) .series-header {
   margin-bottom: 20px;
 }
 
@@ -62,16 +58,6 @@
   border-radius: var(--radius-pill);
   padding: 5px 12px;
   white-space: nowrap;
-}
-
-.chevron {
-  font-size: 20px;
-  color: var(--faint);
-  transition: transform .2s ease;
-}
-
-.series-section:not(.collapsed) .chevron {
-  transform: rotate(180deg);
 }
 
 .volumes-grid {
@@ -122,7 +108,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 11px;
 }

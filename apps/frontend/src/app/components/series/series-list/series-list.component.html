@@ -8,8 +8,7 @@
 
   <div class="series-sections">
     @for (serie of series; track serie; let i = $index) {
-      <my-calibre-server-series-card [series]="serie" [index]="i" [booksClosed]="serie.series_id !== selectedId">
-      </my-calibre-server-series-card>
+      <my-calibre-server-series-card [series]="serie" [index]="i"></my-calibre-server-series-card>
     }
   </div>
 
