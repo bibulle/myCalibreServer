@@ -32,14 +32,18 @@
 > potentiellement du code fonctionnel et sont traitées comme des chantiers
 > séparés nécessitant un accord explicite préalable.
 >
-> **Angular 22 est bloqué en amont** : `@nx/angular@23.0.1` plafonne son peer
-> dependency `@angular-devkit/build-angular` (et `@angular/build`) à `< 22.0.0`.
-> Nx n'a donc pas encore ajouté le support d'Angular 22 ; la montée de version
-> ne pourra être tentée qu'une fois une release `@nx/angular` compatible publiée.
+> **Angular 22 est bloqué en amont** : `@nx/angular@23.0.1` (dernière version **stable**)
+> plafonne son peer dependency `@angular-devkit/build-angular` (et `@angular/build`) à
+> `< 22.0.0`. Le support d'Angular 22 existe déjà côté Nx sous forme de builds **canary**
+> (`@nx/angular@23.1.0-canary.*`, dont le peer range monte à `< 23.0.0`), mais aucune
+> release stable `23.1.0` n'est publiée à ce jour (vérifié le 2026-07-05) — décision prise
+> de ne pas dépendre d'un canary en production. La montée de version ne sera retentée
+> qu'une fois une release stable `@nx/angular` compatible publiée.
 >
-> **TypeScript 6 est bloqué pour la même raison** : `@angular-devkit/build-angular@21.2.18`
-> plafonne son peer dependency `typescript` à `< 6.0` (alors que `@angular/compiler-cli`
-> seul autoriserait `< 6.1`). Bloqué tant qu'Angular 22 (et son outillage de build) n'est pas disponible.
+> **TypeScript 6 est couplé à Angular 22, pas un chantier séparé** : `@angular-devkit/build-angular@22.x`
+> (dernière version) exige désormais `typescript >=6.0 <6.1` (le peer `< 6.0` de la 21.x est devenu un
+> plancher `>= 6.0` en 22.x) — impossible de monter TypeScript 6 sans monter Angular 22 en même temps,
+> ni l'inverse. Les deux montées sont donc bloquées ensemble par le même verrou `@nx/angular`.
 
 ## Notes importantes
 
