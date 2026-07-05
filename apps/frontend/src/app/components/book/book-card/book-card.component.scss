@@ -34,12 +34,17 @@
   align-items: center;
   justify-content: center;
 
-  // my-calibre-server-image-sprites sizes and positions itself (own
-  // background-image/-position-x host bindings, sized for its native
-  // sprite-sheet cell) - don't touch those or the sprite alignment
-  // breaks. Just center its natural size in the larger cover slot.
+  // my-calibre-server-image-sprites sizes and positions its background
+  // image itself (background-position-x is a raw pixel offset computed
+  // for its native 80x80 sprite-sheet cell) - changing its width/height/
+  // background-size breaks that offset. A `transform: scale()` is safe
+  // instead: it's a post-layout visual effect that doesn't touch the
+  // element's box or its background positioning math. Scale up to fill
+  // this slot's height (cropping the sides, which eat into the sprite
+  // cell's transparent letterboxing before the real cover art).
   my-calibre-server-image-sprites {
     flex: 0 0 auto;
+    transform: scale(1.875); // 150px (this slot's height) / 80px (native cell)
   }
 }
 
