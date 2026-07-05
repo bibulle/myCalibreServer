@@ -7,14 +7,14 @@
 //$my-theme-accent: mat-palette($mat-light-blue);
 //$my-theme-warn: mat-palette($mat-deep-orange, A200);
 
-// NOTE: primary/accent stay on their original palettes for now so this PR
-// has no visible effect on the current (pre-redesign) UI. The swap to the
-// terracotta accent from the "Reliure" design (see shared/_tokens.scss for
-// the --accent CSS custom property already available) is deferred to the
-// app-shell/nav PR, where the whole header is recolored at once instead of
-// piecemeal.
-$primary: mat.m2-define-palette(mat.$m2-green-palette, 600, 300, 900);
-$accent: mat.m2-define-palette(mat.$m2-light-blue-palette);
+// "Reliure" redesign: a single warm terracotta accent drives both primary
+// and accent so native Material chrome (buttons, toggles, focus rings)
+// matches the --accent design token (see shared/_tokens.scss). The exact
+// brand hex is applied directly via CSS custom properties where pixel
+// fidelity matters; these palettes only need to be a close match for
+// Material's own internal color computations (ripples, states, contrast).
+$primary: mat.m2-define-palette(mat.$m2-deep-orange-palette, 600, 300, 900);
+$accent: mat.m2-define-palette(mat.$m2-deep-orange-palette);
 $warn: mat.m2-define-palette(mat.$m2-deep-orange-palette, A200);
 
 // create theme (use mat-dark-theme for themes with dark backgrounds)

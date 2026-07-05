@@ -1,25 +1,21 @@
-
 :host {
   display: flex;
-  flex-direction: column;
-
-  a {
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
-    padding-left: 16px;
-    width: 100%;
-    text-align: left;
-    .name, .unknown {
-      font-size: 0.8em;
-      line-height: 1em;
-      font-weight: 500;
-    }
-    .email {
-      font-size: 0.8em;
-      font-weight: lighter;
-      line-height: 1em;
-    }
-  }
-
 }
 
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--accent);
+  color: white;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}

@@ -8,7 +8,6 @@ import { AppComponent } from './app.component';
 import { TitleService } from './app/title.service';
 
 import { MatInkDirective } from './directives/link.directive';
-import { MdPeekabooModule } from './directives/peekaboo.directive';
 
 import { MatContentModule } from './components/content/content.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -37,6 +36,7 @@ import { WindowService } from './core/util/window.service';
 import { ThemeService } from './core/theme/theme.service';
 import { AuthGuardToken } from './components/authent/auth.guard.token';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ServiceWorkerModule } from '@angular/service-worker';
 
 export class MyMissingTranslationHandler implements MissingTranslationHandler {
@@ -72,7 +72,6 @@ registerLocaleData(localeEn, 'en');
     BrowserAnimationsModule,
 
     MatContentModule,
-    MdPeekabooModule,
     AppRoutingModule,
     HomeModule,
     NotFoundModule,
@@ -84,6 +83,7 @@ registerLocaleData(localeEn, 'en');
     FilterBarModule,
     MatRatingModule,
     MatButtonModule,
+    MatTooltipModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: AppModule.isWorkerEnable(),
       // Register the ServiceWorker as soon as the application is stable
