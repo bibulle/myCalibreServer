@@ -36,11 +36,39 @@
   }
 
   .logo-mark {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
     background: var(--accent);
+    box-shadow: 0 3px 8px rgba(192, 86, 58, .35);
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-text {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+  }
+
+  .logo-version {
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: .04em;
+    color: var(--accent);
+    background: var(--surface-2);
+    border-radius: var(--radius-pill);
+    padding: 2px 7px;
+    white-space: nowrap;
+
+    .beta {
+      opacity: .65;
+      font-weight: 500;
+    }
   }
 
   .nav-tabs {
