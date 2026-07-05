@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.12.15](https://github.com/bibulle/myCalibreServer/compare/v0.12.14...v0.12.15) (2026-07-05)
+
 ### [0.12.14](https://github.com/bibulle/myCalibreServer/compare/v0.12.13...v0.12.14) (2026-07-04)
 
 ### [0.12.13](https://github.com/bibulle/myCalibreServer/compare/v0.12.12...v0.12.13) (2026-07-04)
