@@ -12,6 +12,13 @@
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 
+  // The design's own sizes (280px search, 38px toggle...) assume border-box;
+  // scope the reset to the header instead of adding it app-wide so the rest
+  // of the (not-yet-restyled) app is unaffected.
+  &, & *, & *::before, & *::after {
+    box-sizing: border-box;
+  }
+
   .bar {
     display: flex;
     align-items: center;
