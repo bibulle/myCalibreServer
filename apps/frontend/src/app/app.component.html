@@ -27,14 +27,20 @@
         </nav>
       }
 
-      @if (!filter.not_displayed) {
-        <div class="search">
-          <my-calibre-server-filter-bar></my-calibre-server-filter-bar>
-        </div>
-      }
+      <span class="spacer"></span>
 
-      <button mat-icon-button type="button" class="theme-toggle" (click)="toggleTheme()" [matTooltip]="(themeService.isDark() ? 'label.theme-light' : 'label.theme-dark') | translate">
-        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      <div class="search">
+        <span class="search-icon">⌕</span>
+        <input
+          type="text"
+          [ngModel]="filter.search"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="{{ 'label.search' | translate }}"
+        />
+      </div>
+
+      <button type="button" class="theme-toggle" (click)="toggleTheme()" [matTooltip]="(themeService.isDark() ? 'label.theme-light' : 'label.theme-dark') | translate">
+        {{ themeService.isDark() ? '☀' : '☾' }}
       </button>
 
       <my-calibre-server-profile-button class="avatar"></my-calibre-server-profile-button>

@@ -62,6 +62,7 @@ describe('AppComponent', () => {
     mockFilterService = {
       currentFilterObservable: jest.fn(() => filterSubject.asObservable()),
       updateAllButNotDisplayed: jest.fn(),
+      updateSearch: jest.fn(),
     } as any;
 
     mockTitleService = {
@@ -273,6 +274,27 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('Search', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should debounce header search input before updating the FilterService', () => {
+      component.ngOnInit();
+
+      component.onSearchChange('dune');
+      expect(mockFilterService.updateSearch).not.toHaveBeenCalled();
+
+      jest.advanceTimersByTime(500);
+
+      expect(mockFilterService.updateSearch).toHaveBeenCalledWith('dune');
+    });
+  });
+
   describe('Theme', () => {
     it('should delegate toggleTheme to the ThemeService', () => {
       component.toggleTheme();
@@ -301,10 +323,11 @@ describe('AppComponent', () => {
       component['_currentFilterSubscription'] = { unsubscribe: unsubscribeSpy } as any;
       component['_currentTitleSubscription'] = { unsubscribe: unsubscribeSpy } as any;
       component['_routerEventsSubscription'] = { unsubscribe: unsubscribeSpy } as any;
+      component['_searchSubscription'] = { unsubscribe: unsubscribeSpy } as any;
 
       component.ngOnDestroy();
 
-      expect(unsubscribeSpy).toHaveBeenCalledTimes(4);
+      expect(unsubscribeSpy).toHaveBeenCalledTimes(5);
     });
   });
 });

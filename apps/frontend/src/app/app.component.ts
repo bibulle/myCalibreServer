@@ -4,8 +4,8 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Title, User, Version } from '@my-calibre-server/api-interfaces';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, filter } from 'rxjs/operators';
 import { TitleService } from './app/title.service';
 import { UserService } from './components/authent/user.service';
 import { Filter, FilterService } from './components/filter-bar/filter.service';
@@ -31,6 +31,8 @@ export class AppComponent implements OnInit, OnDestroy {
   private _currentFilterSubscription: Subscription | undefined;
   private _currentTitleSubscription: Subscription | undefined;
   private _routerEventsSubscription: Subscription | undefined;
+  private _searchSubscription: Subscription | undefined;
+  private _searchSubject = new Subject<string>();
 
   constructor(
               private _userService: UserService,
@@ -103,6 +105,10 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         this.hideHeader = route.data['hideHeader'] === true;
       });
+
+    this._searchSubscription = this._searchSubject
+      .pipe(debounceTime(500))
+      .subscribe(search => this._filterService.updateSearch(search));
   }
 
 
@@ -118,6 +124,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     if (this._routerEventsSubscription) {
       this._routerEventsSubscription.unsubscribe();
+    }
+    if (this._searchSubscription) {
+      this._searchSubscription.unsubscribe();
     }
   }
 
@@ -135,6 +144,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleTheme() {
     this.themeService.toggle();
+  }
+
+  onSearchChange(value: string) {
+    this._searchSubject.next(value);
   }
 
   isVersionBeta(): boolean {
