@@ -34,10 +34,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -75,12 +75,12 @@ jobs:
     # steps to perform in job
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: ${{env.APP_PATH}}
 
       - name: Checkout gitops
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         if: ${{ env.actions_token != '' && github.ref == 'refs/heads/master' }}
         with:
           repository: bibulle/myKubernetesConfig
