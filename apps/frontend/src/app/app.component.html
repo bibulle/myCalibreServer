@@ -29,15 +29,17 @@
 
       <span class="spacer"></span>
 
-      <div class="search">
-        <span class="search-icon">⌕</span>
-        <input
-          type="text"
-          [ngModel]="filter.search"
-          (ngModelChange)="onSearchChange($event)"
-          placeholder="{{ 'label.search' | translate }}"
-        />
-      </div>
+      @if (!filter.not_displayed) {
+        <div class="search">
+          <span class="search-icon">⌕</span>
+          <input
+            type="text"
+            [ngModel]="filter.search"
+            (ngModelChange)="onSearchChange($event)"
+            placeholder="{{ 'label.search' | translate }}"
+          />
+        </div>
+      }
 
       <button type="button" class="theme-toggle" (click)="toggleTheme()" [matTooltip]="(themeService.isDark() ? 'label.theme-light' : 'label.theme-dark') | translate">
         @if (themeService.isDark()) {
