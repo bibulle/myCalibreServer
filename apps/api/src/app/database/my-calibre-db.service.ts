@@ -55,12 +55,12 @@ export class MyCalibreDbService {
       this.collections.users
         .find({})
         .sort({ updated: -1 })
-        .toArray((err, rows) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(rows);
-          }
+        .toArray()
+        .then((rows) => {
+          resolve(rows);
+        })
+        .catch((err) => {
+          reject(err);
         });
     });
   }

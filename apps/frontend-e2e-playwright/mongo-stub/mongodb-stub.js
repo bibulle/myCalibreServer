@@ -57,8 +57,8 @@ class FakeCollection {
           return direction === -1 ? -cmp : cmp;
         });
         return {
-          toArray(callback) {
-            callback(null, docs);
+          toArray() {
+            return Promise.resolve(docs);
           },
         };
       },
