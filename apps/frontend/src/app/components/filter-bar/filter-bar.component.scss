@@ -15,19 +15,13 @@
   mat-form-field {
     flex-grow: 1;
     max-width: 75%;
-    margin-top: 18px;
     font-size: 1.2em;
   }
 
   mat-icon {
-    font-size: 2.5em;
+    font-size: 1.4em;
     height: 1em;
     width: 1em;
-  }
-
-  ::ng-deep label {
-    // deprecated ? moved to style
-    top: 1.7em;
   }
 
   ::ng-deep .mat-input-element {

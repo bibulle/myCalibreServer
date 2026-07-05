@@ -1,16 +1,15 @@
-import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconRegistry } from '@angular/material/icon';
-import { MatSidenav } from '@angular/material/sidenav';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { TranslatePipe, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { of, Subject } from 'rxjs';
 import { AppComponent } from './app.component';
 import { TitleService } from './app/title.service';
 import { UserService } from './components/authent/user.service';
 import { Filter, FilterService } from './components/filter-bar/filter.service';
+import { ThemeService } from './core/theme/theme.service';
 import { Title, User, Version } from '@my-calibre-server/api-interfaces';
 
 describe('AppComponent', () => {
@@ -20,11 +19,12 @@ describe('AppComponent', () => {
   let mockFilterService: jest.Mocked<FilterService>;
   let mockTitleService: jest.Mocked<TitleService>;
   let mockRouter: jest.Mocked<Router>;
-  let mockBreakpointObserver: jest.Mocked<BreakpointObserver>;
+  let mockActivatedRoute: { snapshot: Partial<ActivatedRouteSnapshot> };
   let mockTranslateService: jest.Mocked<TranslateService>;
   let mockMatIconRegistry: jest.Mocked<MatIconRegistry>;
   let mockDomSanitizer: jest.Mocked<DomSanitizer>;
-  let mockChangeDetectorRef: jest.Mocked<ChangeDetectorRef>;
+  let mockThemeService: jest.Mocked<ThemeService>;
+  let routerEventsSubject: Subject<unknown>;
 
   const mockUser: User = {
     id: 'user-123',
@@ -51,7 +51,7 @@ describe('AppComponent', () => {
     const userSubject = new Subject<User>();
     const filterSubject = new Subject<Filter>();
     const titleSubject = new Subject<Title>();
-    const breakpointSubject = new Subject<BreakpointState>();
+    routerEventsSubject = new Subject<unknown>();
 
     mockUserService = {
       checkAuthent: jest.fn(),
@@ -62,6 +62,7 @@ describe('AppComponent', () => {
     mockFilterService = {
       currentFilterObservable: jest.fn(() => filterSubject.asObservable()),
       updateAllButNotDisplayed: jest.fn(),
+      updateSearch: jest.fn(),
     } as any;
 
     mockTitleService = {
@@ -72,6 +73,7 @@ describe('AppComponent', () => {
 
     mockRouter = {
       navigate: jest.fn(() => Promise.resolve(true)),
+      events: routerEventsSubject.asObservable(),
       config: [
         { path: 'home', data: { menu: true, label: 'Home' } },
         { path: 'admin', data: { menu: true, label: 'Admin', admin: true } },
@@ -79,10 +81,9 @@ describe('AppComponent', () => {
       ],
     } as any;
 
-    mockBreakpointObserver = {
-      observe: jest.fn(() => breakpointSubject.asObservable()),
-      isMatched: jest.fn(() => true),
-    } as any;
+    mockActivatedRoute = {
+      snapshot: { firstChild: null, data: {} } as any,
+    };
 
     mockTranslateService = {
       getBrowserLang: jest.fn(() => 'en'),
@@ -98,8 +99,11 @@ describe('AppComponent', () => {
       bypassSecurityTrustResourceUrl: jest.fn((url) => url),
     } as any;
 
-    mockChangeDetectorRef = {
-      detectChanges: jest.fn(),
+    mockThemeService = {
+      mode: 'light',
+      isDark: jest.fn(() => false),
+      setMode: jest.fn(),
+      toggle: jest.fn(),
     } as any;
 
     await TestBed.configureTestingModule({
@@ -111,11 +115,11 @@ describe('AppComponent', () => {
         { provide: FilterService, useValue: mockFilterService },
         { provide: TitleService, useValue: mockTitleService },
         { provide: Router, useValue: mockRouter },
-        { provide: BreakpointObserver, useValue: mockBreakpointObserver },
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: TranslateService, useValue: mockTranslateService },
         { provide: MatIconRegistry, useValue: mockMatIconRegistry },
         { provide: DomSanitizer, useValue: mockDomSanitizer },
-        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: ThemeService, useValue: mockThemeService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -133,14 +137,15 @@ describe('AppComponent', () => {
     expect(component.links).toEqual([]);
     expect(component.filter).toBeInstanceOf(Filter);
     expect(component.title).toBeInstanceOf(Title);
+    expect(component.hideHeader).toBe(false);
   });
 
   it('should fall back to English when no browser language is available', () => {
     (mockTranslateService.getBrowserLang as jest.Mock).mockReturnValue(undefined);
 
     const freshFixture = TestBed.createComponent(AppComponent);
-    freshFixture.componentInstance;
 
+    expect(freshFixture.componentInstance).toBeTruthy();
     expect(mockTranslateService.use).toHaveBeenCalledWith('en');
   });
 
@@ -225,61 +230,35 @@ describe('AppComponent', () => {
         done();
       }, 50);
     });
-  });
 
-  describe('Responsive behavior', () => {
-    it('should detect if menu is pushed (side mode)', () => {
-      component['menu'] = { mode: 'side' } as MatSidenav;
-      expect(component.pushed).toBe(true);
+    it('should not hide the header when the resolved route has no hideHeader flag', () => {
+      mockActivatedRoute.snapshot = { firstChild: null, data: {} } as any;
+      component.ngOnInit();
+
+      routerEventsSubject.next(new NavigationEnd(1, '/books', '/books'));
+
+      expect(component.hideHeader).toBe(false);
     });
 
-    it('should detect if menu is not pushed (over mode)', () => {
-      component['menu'] = { mode: 'over', opened: true } as MatSidenav;
-      expect(component.pushed).toBe(false);
+    it('should hide the header when the deepest resolved route has hideHeader: true', () => {
+      mockActivatedRoute.snapshot = {
+        firstChild: { firstChild: null, data: { hideHeader: true } },
+        data: {},
+      } as any;
+      component.ngOnInit();
+
+      routerEventsSubject.next(new NavigationEnd(1, '/login', '/login'));
+
+      expect(component.hideHeader).toBe(true);
     });
 
-    it('should detect if menu is over and opened', () => {
-      component['menu'] = { mode: 'over', opened: true } as MatSidenav;
-      expect(component.over).toBe(true);
-    });
+    it('should ignore non-NavigationEnd router events for hideHeader', () => {
+      mockActivatedRoute.snapshot = { firstChild: null, data: { hideHeader: true } } as any;
+      component.ngOnInit();
 
-    it('should calculate sidenav width when pushed', () => {
-      component['menu'] = { mode: 'side' } as MatSidenav;
-      expect(component.sidenavWidth).toBe(181);
-    });
+      routerEventsSubject.next({});
 
-    it('should calculate sidenav width as 0 when not pushed', () => {
-      component['menu'] = { mode: 'over' } as MatSidenav;
-      expect(component.sidenavWidth).toBe(0);
-    });
-
-    it('should calculate scroll width', () => {
-      const scrollWidth = component.scrollWidth;
-      expect(scrollWidth).toBeGreaterThanOrEqual(0);
-    });
-  });
-
-  describe('Label methods', () => {
-    beforeEach(() => {
-      component.title = {
-        title: 'Page Title',
-        full_title: 'Full Page Title',
-        main_title: 'Main Title',
-      } as Title;
-    });
-
-    it('should return title when menu is pushed', () => {
-      component['menu'] = { mode: 'side' } as MatSidenav;
-      expect(component.getPrimaryLabel()).toBe('Page Title');
-    });
-
-    it('should return full_title when menu is not pushed', () => {
-      component['menu'] = { mode: 'over' } as MatSidenav;
-      expect(component.getPrimaryLabel()).toBe('Full Page Title');
-    });
-
-    it('should return main_title as secondary label', () => {
-      expect(component.getSecondaryLabel()).toBe('Main Title');
+      expect(component.hideHeader).toBe(false);
     });
   });
 
@@ -289,18 +268,37 @@ describe('AppComponent', () => {
       expect(mockTitleService.goBack).toHaveBeenCalled();
     });
 
-    it('should handle item click with side menu', () => {
-      const mockMenu = { mode: 'side', opened: true };
-      component['menu'] = mockMenu as MatSidenav;
-      component.itemClicked();
+    it('should reset the filter (keeping not_displayed) when a nav item is clicked', () => {
+      component.onNavItemClick();
+      expect(mockFilterService.updateAllButNotDisplayed).toHaveBeenCalledWith(expect.any(Filter));
+    });
+  });
 
-      expect(mockMenu.opened).toBe(true);
-      expect(mockFilterService.updateAllButNotDisplayed).toHaveBeenCalled();
+  describe('Search', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
     });
 
-    it('should handle item click without menu', () => {
-      component['menu'] = null;
-      expect(() => component.itemClicked()).not.toThrow();
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should debounce header search input before updating the FilterService', () => {
+      component.ngOnInit();
+
+      component.onSearchChange('dune');
+      expect(mockFilterService.updateSearch).not.toHaveBeenCalled();
+
+      jest.advanceTimersByTime(500);
+
+      expect(mockFilterService.updateSearch).toHaveBeenCalledWith('dune');
+    });
+  });
+
+  describe('Theme', () => {
+    it('should delegate toggleTheme to the ThemeService', () => {
+      component.toggleTheme();
+      expect(mockThemeService.toggle).toHaveBeenCalled();
     });
   });
 
@@ -324,19 +322,12 @@ describe('AppComponent', () => {
       component['_currentUserSubscription'] = { unsubscribe: unsubscribeSpy } as any;
       component['_currentFilterSubscription'] = { unsubscribe: unsubscribeSpy } as any;
       component['_currentTitleSubscription'] = { unsubscribe: unsubscribeSpy } as any;
+      component['_routerEventsSubscription'] = { unsubscribe: unsubscribeSpy } as any;
+      component['_searchSubscription'] = { unsubscribe: unsubscribeSpy } as any;
 
       component.ngOnDestroy();
 
-      expect(unsubscribeSpy).toHaveBeenCalledTimes(3);
-    });
-  });
-
-  describe('ngAfterViewChecked', () => {
-    it('should trigger change detection', () => {
-      // Call the method directly without rendering template
-      component['_cdRef'] = mockChangeDetectorRef;
-      component.ngAfterViewChecked();
-      expect(mockChangeDetectorRef.detectChanges).toHaveBeenCalled();
+      expect(unsubscribeSpy).toHaveBeenCalledTimes(5);
     });
   });
 });

@@ -32,4 +32,15 @@ export class ProfileButtonComponent implements OnInit {
     this._router.navigate(['/profile'])
   }
 
+  /**
+   * One or two initials shown in the header avatar bubble.
+   */
+  initials(): string {
+    const { firstname, lastname, username } = this.user.local ?? {};
+    if (firstname || lastname) {
+      return `${(firstname ?? '').charAt(0)}${(lastname ?? '').charAt(0)}`.toUpperCase();
+    }
+    return (username ?? '').charAt(0).toUpperCase();
+  }
+
 }

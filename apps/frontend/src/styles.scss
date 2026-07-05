@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 @use 'app/shared/theme' as theme;
 @use 'app/shared/tokens';
-@use 'app/app.component.theme' as appTheme;
 @use 'app/components/authent/users-list/users-list.component.theme' as usersListTheme;
 @use 'app/components/authent/users-list/user-list-item/user-list-item.component.theme' as userListItemTheme;
 @use 'app/components/authent/profile/user-profile/user-profile.component.theme' as userProfileTheme;
@@ -25,7 +24,6 @@
 }
 
 @mixin custom-components-theme($theme) {
-  @include appTheme.app-component-theme($theme);
   @include notFoundTheme.not-found-component-theme($theme);
   @include userProfileTheme.user-profile-component-theme($theme);
   @include usersListTheme.users-list-component-theme($theme);
@@ -47,6 +45,7 @@ html, body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     margin: 0;
+    background: var(--bg);
 }
 
 body, input {
@@ -63,34 +62,6 @@ body, input {
 my-calibre-server-root {
     box-sizing: border-box;
     display: block;
-    padding: 115px 16px 0;
-    //background-color: #009688;
-    //background-color: mat-color($primary);
-    height: 256px;
-    min-height: 256px;
-    max-height: 256px;
-}
-my-calibre-server-root > h1 {
-    margin: 0 auto;
-    width: 80%;
-    color: white;
-    font-family: RobotoDraft, Roboto, 'Helvetica Neue', sans-serif;
-    font-size: 24px;
-    line-height: 1.5;
-    font-weight: 400;
-}
-@media (min-width: 600px) {
-    my-calibre-server-root > h1 {
-        font-size: 56px;
-    }
-}
-
-body mat-nav-list a[mat-list-item].active .mat-list-item, body mat-nav-list mat-list-item.active .mat-list-item {
-  //color: mat-color($primary);
-}
-body mat-nav-list mat-list-item[mat-ink] .mat-list-item:hover {
-  background: none;
-
 }
 
 .mat-card {
@@ -103,10 +74,6 @@ body mat-nav-list mat-list-item[mat-ink] .mat-list-item:hover {
   letter-spacing: 0.020em;
 }
 
-
-.mat-sidenav-content {
-    //width: 100%
-}
 
 // Rules for sizing the icon.
 .material-icons.mat-18 { font-size: 18px; }
@@ -161,9 +128,6 @@ snack-bar-container.error {
 }
 
 my-calibre-server-filter-bar {
-  mat-form-field label {
-    top: 1.7em !important;
-  }
   .mat-input-element {
     caret-color: currentColor !important;
   }

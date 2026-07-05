@@ -1,14 +1,5 @@
 @if (user.id) {
-  <a (click)="openProfile($event, user)">
-    @if (user.local.lastname || user.local.firstname) {
-      <div class="name">{{user.local.firstname}} {{user.local.lastname}}</div>
-    }
-    @if (!user.local.lastname && !user.local.firstname) {
-      <div class="name">{{user.local.username}}</div>
-    }
-    <div class="email">{{user.local.email}}</div>
-  </a>
+  <button type="button" class="avatar" (click)="openProfile($event, user)" [attr.aria-label]="'label.profile' | translate">
+    {{ initials() }}
+  </button>
 }
-<!--<a *ngIf="!user?.local?.username" (click)="login()" mat-button>-->
-<!--<div class="unknown">Unknown user</div>-->
-<!--</a>-->

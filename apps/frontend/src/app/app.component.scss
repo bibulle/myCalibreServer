@@ -1,197 +1,204 @@
 @use 'shared/variables' as *;
-@use 'shared/styles';
-@use 'shared/layout';
 
 :host {
   display: block;
+}
 
-  > mat-sidenav-container {
-    mat-sidenav {
-      width: $app-sidenav-width;
-    }
-    > .mat-sidenav-content {
-      width: 100%;
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: $z-index-toolbar;
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+
+  // The design's own sizes (280px search, 38px toggle...) assume border-box;
+  // scope the reset to the header instead of adding it app-wide so the rest
+  // of the (not-yet-restyled) app is unaffected.
+  &, & *, & *::before, & *::after {
+    box-sizing: border-box;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px 26px;
+    padding: 16px clamp(18px, 4vw, 44px);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-serif-title);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--text-2);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .logo-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: var(--accent);
+    box-shadow: 0 3px 8px rgba(192, 86, 58, .35);
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-text {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+  }
+
+  .logo-version {
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: .04em;
+    color: var(--accent);
+    background: var(--surface-2);
+    border-radius: var(--radius-pill);
+    padding: 2px 7px;
+    white-space: nowrap;
+
+    .beta {
+      opacity: .65;
+      font-weight: 500;
     }
   }
 
-  // .mat-icon-button {
-  //   margin: 0 6px;
-  //   height: 40px;
-  //   min-width: 0;
-  //   line-height: 24px;
-  //   padding: 8px;
-  //   width: 40px;
-  //   border-radius: 50%;
-  // }
+  .nav-tabs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2px;
+    flex: 0 1 auto;
+    white-space: nowrap;
 
-  main {
-    background-color: whitesmoke;
-    mat-content {
-      margin-left: auto;
-      margin-right: auto;
-      &.examples {
-        overflow: hidden;
-      }
-    }
-  }
-  .app-menu {
-    border-right: 1px solid;
-
-    [mat-list-item] {
-      font-size: ($subheader-font-size + 2);
-      font-weight: $subheader-font-weight;
-    }
-    mat-toolbar {
-      border-bottom: 1px solid;
-      position: relative;
-      overflow: hidden;
-      h3 {
-        font-size: 1.5em;
-        font-weight: 500;
-        cursor: pointer;
-      }
-      .beta {
-        -webkit-transform: rotate(45deg);
-        transform: rotate(45deg);
-        position: absolute;
-        right: -34px;
-        top: 10px;
-        width: 100px;
-        text-align: center;
-        font-size: 13px;
-        line-height: 15px;
-      }
-    }
-    .version {
+    a {
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--muted);
       text-decoration: none;
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      font-size: 0.8em;
-    }
-  }
-
-  .fixed-toolbar,
-  .shadow-toolbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: $z-index-toolbar;
-    width: auto;
-    transition: opacity 0.1s ease-in;
-    will-change: opacity;
-    opacity: 1;
-    &.hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-  }
-  .fixed-toolbar button {
-    box-shadow: none;
-  }
-  .fixed-toolbar .verbose-title {
-    font-size: 2em;
-    font-weight: 400;
-    // padding-left: 1em;
-    // @media screen and (max-width: $layout-breakpoint-md) {
-    //   font-size: $display-2-font-size-base;
-    // }
-    // @media screen and (max-width: $layout-breakpoint-sm) {
-    //   font-size: $title-font-size-base;
-    // }
-  }
-  .verbose-title.book-title,
-  .verbose-title.app-title {
-    @media screen and (max-width: $layout-breakpoint-sm) {
-      display: none;
-    }
-  }
-  .filler {
-    flex-grow: 1;
-  }
-
-  mat-toolbar.hero {
-    height: $toolbar-hero-height;
-    min-height: $toolbar-hero-height;
-    max-height: $toolbar-hero-height;
-    padding: 135px 16px 0;
-    h1 {
-      font-size: 56px;
-      font-weight: 600;
-      line-height: 1.5;
-      margin: 0 auto;
-      overflow: visible;
-      width: 1160px;
+      padding: 7px 12px;
+      border-bottom: 2px solid transparent;
       white-space: nowrap;
-    }
-    @media screen and (min-width: ($layout-breakpoint-md + 1)) {
-      h1 {
-        width: $app-content-lg - 32px;
-      }
-    }
-    @media screen and (max-width: $layout-breakpoint-md) {
-      h1 {
-        width: $app-content-md - 32px;
-        // font-size: $display-2-font-size-base;
-      }
-    }
-    @media screen and (max-width: $layout-breakpoint-sm) {
-      //height: 128px;
-      padding-top: 72px;
-      height: $toolbar-tall-height;
-      min-height: $toolbar-tall-height;
-      max-height: $toolbar-tall-height;
-      h1 {
-        font-size: 3em;
-        width: $app-content-sm - 80px;
-        margin-left: 0;
+
+      &.active {
+        color: var(--text-2);
+        font-weight: 600;
+        border-bottom-color: var(--accent);
       }
     }
   }
 
-  mat-content {
-    display: block;
-    font-size: 14px;
-    @media screen and (max-width: $layout-breakpoint-md) {
-      font-size: 12px;
+  .spacer {
+    flex: 1 1 20px;
+  }
+
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 9px 13px;
+    flex: 0 1 280px;
+    min-width: 150px;
+
+    .search-icon {
+      color: var(--faint);
+      font-size: 15px;
+      flex: 0 0 auto;
     }
-    @media screen and (max-width: $layout-breakpoint-sm) {
-      font-size: 10px;
-    }
-    > h1 {
-      margin-top: 60px;
-      margin-bottom: 60px;
-      font-weight: 300;
-    }
-    > mat-divider {
-      margin-top: 60px;
+
+    input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--text-2);
+      width: 100%;
+
+      &::placeholder {
+        color: var(--faint);
+      }
     }
   }
 
-  .fixed-toolbar .filter {
-    @media screen and (max-width: $layout-breakpoint-md) {
-      display: none;
-    }
-  }
-  mat-toolbar.filter {
-    @media screen and (max-width: $layout-breakpoint-md) {
-      display: flex !important;
-    }
-  }
-
-  .contents {
-    width: 100%;
-    min-height: 640px;
+  .theme-toggle {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-2);
+    cursor: pointer;
     padding: 0;
   }
 
-  .filter {
-    display: flex;
-    > span,
-    > div {
-      flex-grow: 1;
-      display: flex;
+  .avatar {
+    flex: 0 0 auto;
+  }
+
+  // Mirrors the design handoff's mobile behavior: the nav becomes a
+  // full-width horizontally-scrolling strip below the search, instead of
+  // wrapping tab-by-tab.
+  @media (max-width: 640px) {
+    .nav-tabs {
+      order: 3;
+      flex-wrap: nowrap;
+      width: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    .search {
+      order: 2;
+      flex: 1 1 100%;
+      width: auto;
     }
   }
+}
+
+.page-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 0;
+
+  h1 {
+    font-family: var(--font-serif-title);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--text);
+    margin: 0;
+  }
+}
+
+.app-main {
+  display: block;
+  min-height: 640px;
 }
