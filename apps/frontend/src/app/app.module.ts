@@ -34,6 +34,7 @@ import { MatRatingModule } from './components/rating/rating.component';
 import { SeriesModule } from './components/series/series.module';
 import { TagModule } from './components/tag/tag.module';
 import { WindowService } from './core/util/window.service';
+import { ThemeService } from './core/theme/theme.service';
 import { AuthGuardToken } from './components/authent/auth.guard.token';
 import { MatButtonModule } from '@angular/material/button';
 import { ServiceWorkerModule } from '@angular/service-worker';
@@ -94,6 +95,7 @@ registerLocaleData(localeEn, 'en');
     TitleService,
     NotificationService,
     WindowService,
+    ThemeService,
     AuthGuard,
     AuthGuardToken,
     AuthGuardAdmin,

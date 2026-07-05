@@ -1,5 +1,6 @@
 @use '@angular/material' as mat;
 @use 'app/shared/theme' as theme;
+@use 'app/shared/tokens';
 @use 'app/app.component.theme' as appTheme;
 @use 'app/components/authent/users-list/users-list.component.theme' as usersListTheme;
 @use 'app/components/authent/users-list/user-list-item/user-list-item.component.theme' as userListItemTheme;
@@ -8,12 +9,20 @@
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
+@import url(https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,600;1,600&family=Spectral:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600&display=swap);
 
 // always include only once per project
 @include mat.elevation-classes();
 @include mat.app-background();
 
 @include mat.all-component-themes(theme.$theme);
+
+// Dark theme: swap only the color layer under `.dark-theme` (applied to
+// <html> by ThemeService) so typography/density stay shared with the light
+// theme defined above.
+.dark-theme {
+  @include mat.all-component-colors(theme.$theme-dark);
+}
 
 @mixin custom-components-theme($theme) {
   @include appTheme.app-component-theme($theme);
