@@ -29,13 +29,17 @@
   border-radius: 7px;
   overflow: hidden;
   box-shadow: var(--shadow-cover-sm);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  // my-calibre-server-image-sprites sizes and positions itself (own
+  // background-image/-position-x host bindings, sized for its native
+  // sprite-sheet cell) - don't touch those or the sprite alignment
+  // breaks. Just center its natural size in the larger cover slot.
   my-calibre-server-image-sprites {
-    width: 100% !important;
-    height: 100% !important;
-    background-size: contain !important;
-    background-position-y: center !important;
-    background-repeat: no-repeat !important;
+    flex: 0 0 auto;
   }
 }
 
