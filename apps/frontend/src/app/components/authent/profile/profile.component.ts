@@ -51,4 +51,16 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/changepassword'])
   }
 
+  isAdmin(): boolean {
+    return this._userService.isUserAdmin();
+  }
+
+  /**
+   * Open the administration (users list) page - only reachable from here,
+   * not from the main nav, per the "Reliure" design.
+   */
+  openAdmin() {
+    this._router.navigate(['/users']);
+  }
+
 }
