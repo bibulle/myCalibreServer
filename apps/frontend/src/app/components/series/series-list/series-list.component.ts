@@ -2,11 +2,10 @@ import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { SeriesService } from '../series.service';
 import { CommonModule } from '@angular/common';
-import { MatContentModule } from '../../content/content.component';
 import { SeriesCardModule } from '../series-card/series-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../notification/notification.service';
@@ -49,7 +48,17 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _seriesService: SeriesService, private _filterService: FilterService, private route: ActivatedRoute, private _notificationService: NotificationService) {}
+  constructor(
+    private _seriesService: SeriesService,
+    private _filterService: FilterService,
+    private route: ActivatedRoute,
+    private _notificationService: NotificationService,
+    private _translateService: TranslateService
+  ) {}
+
+  get subtitle(): string {
+    return this._translateService.instant('label.series-subtitle', { count: this.totalSeriesCount });
+  }
 
   //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
@@ -235,7 +244,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, SeriesCardModule, TranslatePipe],
+  imports: [CommonModule, MatProgressSpinnerModule, SeriesCardModule, TranslatePipe],
   declarations: [SeriesListComponent],
   exports: [SeriesListComponent],
 })

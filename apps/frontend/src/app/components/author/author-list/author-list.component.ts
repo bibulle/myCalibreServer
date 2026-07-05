@@ -1,12 +1,11 @@
 import { Component, OnInit, NgModule, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatContentModule } from '../../content/content.component';
 import { Filter, FilterService, SortType, SortingDirection, LangAvailable } from '../../filter-bar/filter.service';
 import { AuthorService } from '../author.service';
 import { AuthorCardModule } from '../author-card/author-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Author } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../notification/notification.service';
@@ -49,7 +48,17 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _authorService: AuthorService, private _filterService: FilterService, private route: ActivatedRoute, private _notificationService: NotificationService) {}
+  constructor(
+    private _authorService: AuthorService,
+    private _filterService: FilterService,
+    private route: ActivatedRoute,
+    private _notificationService: NotificationService,
+    private _translateService: TranslateService
+  ) {}
+
+  get subtitle(): string {
+    return this._translateService.instant('label.authors-subtitle', { count: this.totalAuthorsCount });
+  }
 
   //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
@@ -220,7 +229,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, AuthorCardModule, TranslatePipe],
+  imports: [CommonModule, MatProgressSpinnerModule, AuthorCardModule, TranslatePipe],
   declarations: [AuthorListComponent],
   exports: [AuthorListComponent],
 })

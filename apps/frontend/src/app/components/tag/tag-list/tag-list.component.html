@@ -1,18 +1,47 @@
 @if (tags) {
-  <mat-content>
-    @for (tag of tags; track tag) {
-      <my-calibre-server-tag-card [tag]="tag" [booksClosed]="tag.tag_id !== selectedId">
-      </my-calibre-server-tag-card>
+  <div class="rl-titlerow">
+    <div>
+      <h1>{{ 'route.tags' | translate }}</h1>
+      <div class="subtitle">{{ subtitle }}</div>
+    </div>
+    @if (tagSelected) {
+      <span class="clear-filter" (click)="clearTagFilter()">✕ {{ 'label.tags-clear-filter' | translate }}</span>
     }
-    @if (tags.length === MAX_TAGS) {
-      <div class="max-reached">
-        <span>{{ 'label.limited' | translate:param }}</span>
-      </div>
+  </div>
+
+  <div class="tag-cloud">
+    @for (tag of tags; track tag.tag_id) {
+      <my-calibre-server-tag-card
+        [tag]="tag"
+        [active]="tag.tag_id === selectedId"
+        [weight]="tagWeight(tag)"
+        [fontSize]="tagFontSize(tag)"
+        (selected)="selectTag(tag)"
+      ></my-calibre-server-tag-card>
     }
-  </mat-content>
+  </div>
+
+  @if (tagSelected) {
+    <div class="section-label">{{ 'label.tags-books-section' | translate: { name: selectedTag?.tag_name } }}</div>
+    <div class="filtered-books-grid">
+      @for (book of selectedTagBooks; track book.book_id) {
+        <div class="filtered-book" (click)="openBook(book.book_id)">
+          <div class="filtered-cover">
+            <my-calibre-server-image-sprites [type]="0" [id]="book.book_id"></my-calibre-server-image-sprites>
+          </div>
+          <div class="filtered-title">{{ book.book_title }}</div>
+          <div class="filtered-author">{{ book.author_name }}</div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (tags.length === MAX_TAGS) {
+    <div class="max-reached">
+      <span>{{ 'label.limited' | translate:param }}</span>
+    </div>
+  }
 }
 @if (!tags) {
-  <mat-content class="spinner">
-    <mat-spinner></mat-spinner>
-  </mat-content>
+  <mat-spinner></mat-spinner>
 }

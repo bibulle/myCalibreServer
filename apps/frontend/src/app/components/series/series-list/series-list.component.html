@@ -1,15 +1,23 @@
 @if (series) {
-  <mat-content>
-    @for (serie of series; track serie) {
-      <my-calibre-server-series-card [series]="serie" [booksClosed]="serie.series_id !== selectedId">
+  <div class="rl-titlerow">
+    <div>
+      <h1>{{ 'route.series' | translate }}</h1>
+      <div class="subtitle">{{ subtitle }}</div>
+    </div>
+  </div>
+
+  <div class="series-sections">
+    @for (serie of series; track serie; let i = $index) {
+      <my-calibre-server-series-card [series]="serie" [index]="i" [booksClosed]="serie.series_id !== selectedId">
       </my-calibre-server-series-card>
     }
-    @if (series.length === MAX_SERIES) {
-      <div class="max-reached">
-        <span>{{ 'label.limited' | translate:param }}</span>
-      </div>
-    }
-  </mat-content>
+  </div>
+
+  @if (series.length === MAX_SERIES) {
+    <div class="max-reached">
+      <span>{{ 'label.limited' | translate:param }}</span>
+    </div>
+  }
 }
 @if (!series) {
   <mat-spinner></mat-spinner>

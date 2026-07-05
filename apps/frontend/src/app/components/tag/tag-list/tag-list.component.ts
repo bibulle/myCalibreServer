@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ActivatedRoute, Params } from '@angular/router';
-import { Tag } from '@my-calibre-server/api-interfaces';
-import { TranslatePipe } from '@ngx-translate/core';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Book, Tag } from '@my-calibre-server/api-interfaces';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
-import { MatContentModule } from '../../content/content.component';
+import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { TagCardModule } from '../tag-card/tag-card.component';
 import { TagService } from '../tag.service';
@@ -49,7 +49,63 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _tagService: TagService, private _filterService: FilterService, private route: ActivatedRoute, private _notificationService: NotificationService) {}
+  constructor(
+    private _tagService: TagService,
+    private _filterService: FilterService,
+    private route: ActivatedRoute,
+    private _notificationService: NotificationService,
+    private _translateService: TranslateService,
+    private _router: Router
+  ) {}
+
+  get tagSelected(): boolean {
+    return !!this.selectedId;
+  }
+
+  get selectedTag(): Tag | undefined {
+    return this.tags.find((t) => t.tag_id === this.selectedId);
+  }
+
+  get selectedTagBooks(): Book[] {
+    return this.selectedTag?.books ?? [];
+  }
+
+  get subtitle(): string {
+    const selected = this.selectedTag;
+    if (selected) {
+      return this._translateService.instant('label.tags-subtitle-filtered', { name: selected.tag_name, count: selected.books.length });
+    }
+    return this._translateService.instant('label.tags-subtitle', { count: this.totalTagsCount });
+  }
+
+  get maxTagCount(): number {
+    return Math.max(1, ...this.tags.map((t) => t.books.length));
+  }
+
+  tagWeight(tag: Tag): number {
+    if (tag.tag_id === this.selectedId) {
+      return 700;
+    }
+    return tag.books.length / this.maxTagCount > 0.5 ? 600 : 500;
+  }
+
+  tagFontSize(tag: Tag): string {
+    const scale = tag.books.length / this.maxTagCount;
+    return (12.5 + scale * 5).toFixed(1) + 'px';
+  }
+
+  selectTag(tag: Tag) {
+    this.selectedId = this.selectedId === tag.tag_id ? undefined : tag.tag_id;
+  }
+
+  clearTagFilter() {
+    this.selectedId = undefined;
+    this._filterService.updateSearch('');
+  }
+
+  openBook(bookId: number) {
+    this._router.navigate(['/book', bookId]);
+  }
 
   //noinspection JSUnusedGlobalSymbols
   ngOnInit() {
@@ -207,7 +263,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, TagCardModule, TranslatePipe],
+  imports: [CommonModule, MatProgressSpinnerModule, TagCardModule, TranslatePipe, ImageSpritesModule],
   declarations: [TagListComponent],
   exports: [TagListComponent],
 })

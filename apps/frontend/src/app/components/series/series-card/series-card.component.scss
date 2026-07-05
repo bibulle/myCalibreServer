@@ -1,76 +1,145 @@
-mat-card {
-  display: flex;
-  flex-direction: row;  
-}
-mat-card-title {
-  font-size: 24px;
-  font-weight: 500;
-}
-mat-card-title .date {
-  font-size: 0.6em;
-}
-
-mat-card-title button {
-  float: right;
-}
-
-mat-card-subtitle .author:not(:last-child):after {
-  content: ", ";
-}
-
-.series-card {
-  margin: 6px 0;
-  padding: 16px 16px 12px 16px;
-}
-
-.series-card mat-card-subtitle, .series-card .date {
-  display: none;
-}
-
-.series-card.books-closed {
-  margin: 0;
-}
-
-.series-card.books-closed mat-card-subtitle {
+:host {
   display: block;
 }
 
-.series-card.books-closed .date {
-  display: inline;
+.series-section {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 16px;
+  padding: 22px clamp(18px, 3vw, 26px);
+  box-shadow: var(--shadow-card);
 }
 
-.series-card.books-closed my-calibre-server-book-card {
-  display: none !important;
-}
-
-.series-card {
+.series-header {
   display: flex;
-  //align-items: center;
-  justify-content: flex-start;
-  align-items: stretch;
-  //box-shadow: none;
-  //margin: 0 -8px;
-  .cover {
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-    flex-grow: 0;
-    padding: 3px;
-    [mat-card-sm-image] {
-      display: block;
-      height: auto;
-      width: auto;
-      max-width: 80px;
-      max-height: 80px;
-      border-radius: inherit;
-      margin: 0 auto;
-    }
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.series-section:not(.collapsed) .series-header {
+  margin-bottom: 20px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.series-name {
+  margin: 0;
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 23px;
+  color: var(--text);
+}
+
+.by-authors {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--muted);
+
+  .author:not(:last-child)::after {
+    content: ', ';
   }
-  .text {
-    margin-left: 1em;
-    flex: 100%;
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
+}
+
+.rl-spacer {
+  flex: 1;
+}
+
+.count-pill {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .05em;
+  color: var(--accent);
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+
+.chevron {
+  font-size: 20px;
+  color: var(--faint);
+  transition: transform .2s ease;
+}
+
+.series-section:not(.collapsed) .chevron {
+  transform: rotate(180deg);
+}
+
+.volumes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 140px);
+  gap: 18px;
+}
+
+.volume {
+  cursor: pointer;
+
+  &:hover .volume-cover {
+    transform: translateY(-4px);
   }
+}
+
+.volume-cover {
+  position: relative;
+  width: 140px;
+  aspect-ratio: 2 / 3;
+  border-radius: 9px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+  transition: transform .18s ease;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // see book-card.component.scss for why transform: scale() is the safe
+  // way to resize the sprite-sheet cover without breaking its pixel-based
+  // background-position math. 210px (140 * 1.5 slot height) / 80px (native cell).
+  my-calibre-server-image-sprites {
+    flex: 0 0 auto;
+    transform: scale(2.625);
+  }
+}
+
+.volume-badge {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .42);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.volume-title {
+  margin-top: 9px;
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.volume-meta {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--faint);
+  margin-top: 3px;
 }
