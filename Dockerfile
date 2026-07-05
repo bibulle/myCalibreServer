@@ -1,5 +1,5 @@
 # -------------
-FROM node:24 AS BUILD
+FROM node:24-trixie AS BUILD
 
 WORKDIR /usr/src
 
@@ -21,7 +21,7 @@ RUN npx nx run-many --parallel --target=build --configuration=production --proje
 #RUN npm run ng build api -- --prod
 
 # -------------
-FROM node:24
+FROM node:24-trixie
 
 # switch to europe timezone
 RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
