@@ -175,7 +175,7 @@ export class MyCalibreDbService {
       // this.logger.debug(query);
       this.collections.users
         //.findOne({ '$or': [{ 'local.username': 'eric' }, { local_username: 'eric' }] })
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
         .findOne(query as {})
         .then((row) => {
           // this.logger.debug(JSON.stringify(row, null, 2));

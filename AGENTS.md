@@ -25,17 +25,21 @@
 | TypeScript | 5.9.3 |
 | Jest | 30.4.2 |
 | Playwright | 1.61.x (e2e — no MongoDB required) |
-| ESLint | 9.x (format `.eslintrc.json` — pas encore migré en flat config) |
+| ESLint | 10.6.0 (flat config, `eslint.config.mjs`) |
 
-> Angular 22, TypeScript 6 et ESLint 10 sont disponibles en amont mais
-> volontairement non adoptés ici : ce sont des montées de version majeures qui
-> impliquent potentiellement du code fonctionnel et sont traitées comme des
-> chantiers séparés nécessitant un accord explicite préalable.
+> Angular 22 et TypeScript 6 sont disponibles en amont mais volontairement non
+> adoptés ici : ce sont des montées de version majeures qui impliquent
+> potentiellement du code fonctionnel et sont traitées comme des chantiers
+> séparés nécessitant un accord explicite préalable.
 >
 > **Angular 22 est bloqué en amont** : `@nx/angular@23.0.1` plafonne son peer
 > dependency `@angular-devkit/build-angular` (et `@angular/build`) à `< 22.0.0`.
 > Nx n'a donc pas encore ajouté le support d'Angular 22 ; la montée de version
 > ne pourra être tentée qu'une fois une release `@nx/angular` compatible publiée.
+>
+> **TypeScript 6 est bloqué pour la même raison** : `@angular-devkit/build-angular@21.2.18`
+> plafonne son peer dependency `typescript` à `< 6.0` (alors que `@angular/compiler-cli`
+> seul autoriserait `< 6.1`). Bloqué tant qu'Angular 22 (et son outillage de build) n'est pas disponible.
 
 ## Notes importantes
 
@@ -45,7 +49,8 @@
   par le projet `api`) est marqué déprécié et sera retiré en Nx 24, au profit des
   "inferred targets" (`nx g @nx/webpack:convert-to-inferred`) — migration à
   prévoir lors du passage à Nx 24, pas nécessaire pour l'instant.
-- **ESLint** : le projet utilise encore le format legacy `.eslintrc.json`. Les migrations Nx qui génèrent `eslint.config.js` sont retirées manuellement de `migrations.json`.
+- **ESLint 10 / flat config** : migré via `nx g @nx/eslint:convert-to-flat-config`, puis les configs générées (qui transcrivaient fidèlement l'ancien plugin cassé `@nrwl/nx`, absent de `node_modules` — le lint était donc silencieusement cassé depuis un moment) ont été réécrites à la main pour utiliser les configs modernes exposées par `@nx/eslint-plugin` (`nx.configs['flat/base']`, `flat/typescript`, `flat/javascript`, `flat/angular`, `flat/angular-template`) et les packages unifiés `angular-eslint` / `typescript-eslint` (remplaçant les paquets scindés `@angular-eslint/*` et `@typescript-eslint/eslint-plugin` + `@typescript-eslint/parser`). Le lint tournant enfin réellement pour la première fois, il a révélé une dette pré-existante (238 problèmes frontend, 114 API) : les règles nouvellement bloquantes (`@angular-eslint/prefer-inject`, les règles a11y de template `interactive-supports-focus`/`click-events-have-key-events`/`elements-content`/`alt-text`, `no-useless-catch`, `no-wrapper-object-types`, `no-empty-function`, `no-useless-assignment`, les conventions de sélecteur) ont été repassées en `warn` dans les `eslint.config.mjs` de chaque projet (marquées `TODO(eslint-10-upgrade)`) pour livrer l'upgrade sans toucher au code fonctionnel ; leur résolution est un chantier séparé, à la demande.
+- **`@nx/eslint:lint` déprécié** : l'exécuteur est marqué déprécié et sera retiré en Nx 24, au profit des "inferred targets" (`nx g @nx/eslint:convert-to-inferred`) — migration à prévoir lors du passage à Nx 24, pas nécessaire pour l'instant.
 - **Angular Material / CDK** : les migration scripts v20/v21 (`updateToVxx`) échouent sur Node < 24 due à un conflit ESM/CJS (`ora`). Les migrations sont retirées ; les packages sont à jour.
 - **MatCommonModule** : supprimé dans Angular Material v21. Retirer les imports `MatCommonModule` de tous les `NgModule`.
 - **cron** : le projet utilise `cron@3.x` (avec générics TypeScript) pour la compatibilité avec `@nestjs/schedule@5`.
