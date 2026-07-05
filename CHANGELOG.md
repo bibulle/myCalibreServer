@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.12.22](https://github.com/bibulle/myCalibreServer/compare/v0.12.21...v0.12.22) (2026-07-05)
+
+
+### Bug Fixes
+
+* **docker:** bump base image to node:24-trixie to fix sqlite3 crash ([433a4a1](https://github.com/bibulle/myCalibreServer/commit/433a4a1978d3b79eecab5ea7bf8df9256b4c0856))
+* **docker:** bump base image to node:24-trixie to fix sqlite3 crash ([2a9f689](https://github.com/bibulle/myCalibreServer/commit/2a9f689ebb47bdb8ee8379114467d2cf62760b21))
+
 ## [0.12.21](https://github.com/bibulle/myCalibreServer/compare/v0.12.20...v0.12.21) (2026-07-05)
 
 
