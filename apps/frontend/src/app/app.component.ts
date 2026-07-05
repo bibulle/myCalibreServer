@@ -2,7 +2,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Title, User, Version } from '@my-calibre-server/api-interfaces';
+import { Title, User } from '@my-calibre-server/api-interfaces';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -19,7 +19,6 @@ import { ThemeService } from './core/theme/theme.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
 
-  version: Version = new Version();
   links: { path: string|undefined, label: string }[] = [];
 
   user: User | undefined;
@@ -55,11 +54,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this._titleService.getVersion()
-      .then(v => {
-        this.version = v;
-      });
-
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe(
       filter => {
         this.filter = filter;
@@ -135,10 +129,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   toggleTheme() {
     this.themeService.toggle();
-  }
-
-  isVersionBeta(): boolean {
-    return this.version.version.startsWith('0.');
   }
 
 }

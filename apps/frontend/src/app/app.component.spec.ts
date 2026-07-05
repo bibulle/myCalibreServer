@@ -10,7 +10,7 @@ import { TitleService } from './app/title.service';
 import { UserService } from './components/authent/user.service';
 import { Filter, FilterService } from './components/filter-bar/filter.service';
 import { ThemeService } from './core/theme/theme.service';
-import { Title, User, Version } from '@my-calibre-server/api-interfaces';
+import { Title, User } from '@my-calibre-server/api-interfaces';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -39,14 +39,6 @@ describe('AppComponent', () => {
     },
   } as User;
 
-  const mockVersion = {
-    version: '1.2.3',
-    buildDate: new Date(),
-    github_url: 'https://github.com/test',
-    name: 'Test App',
-    copyright: '2025',
-  } as Version;
-
   beforeEach(async () => {
     const userSubject = new Subject<User>();
     const filterSubject = new Subject<Filter>();
@@ -65,7 +57,6 @@ describe('AppComponent', () => {
     } as any;
 
     mockTitleService = {
-      getVersion: jest.fn(() => Promise.resolve(mockVersion)),
       currentTitleObservable: jest.fn(() => titleSubject.asObservable()),
       goBack: jest.fn(),
     } as any;
@@ -132,7 +123,6 @@ describe('AppComponent', () => {
   });
 
   it('should initialize with default values', () => {
-    expect(component.version).toBeDefined();
     expect(component.links).toEqual([]);
     expect(component.filter).toBeInstanceOf(Filter);
     expect(component.title).toBeInstanceOf(Title);
@@ -161,14 +151,6 @@ describe('AppComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should fetch version on init', async () => {
-      await component.ngOnInit();
-      await fixture.whenStable();
-
-      expect(mockTitleService.getVersion).toHaveBeenCalled();
-      expect(component.version.version).toBe('1.2.3');
-    });
-
     it('should check authentication on init', () => {
       component.ngOnInit();
       expect(mockUserService.checkAuthent).toHaveBeenCalled();
@@ -277,18 +259,6 @@ describe('AppComponent', () => {
     it('should delegate toggleTheme to the ThemeService', () => {
       component.toggleTheme();
       expect(mockThemeService.toggle).toHaveBeenCalled();
-    });
-  });
-
-  describe('Version methods', () => {
-    it('should detect beta version (0.x.x)', () => {
-      component.version = { version: '0.9.5' } as Version;
-      expect(component.isVersionBeta()).toBe(true);
-    });
-
-    it('should detect non-beta version (1.x.x)', () => {
-      component.version = { version: '1.0.0' } as Version;
-      expect(component.isVersionBeta()).toBe(false);
     });
   });
 

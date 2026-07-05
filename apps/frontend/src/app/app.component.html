@@ -1,7 +1,10 @@
 @if (!hideHeader) {
   <header class="app-header">
     <div class="bar">
-      <a class="logo" routerLink="/">{{ 'title' | translate }}</a>
+      <a class="logo" routerLink="/">
+        <span class="logo-mark"></span>
+        {{ 'title' | translate }}
+      </a>
 
       @if (user?.id) {
         <nav class="nav-tabs">
@@ -20,10 +23,6 @@
       <button mat-icon-button type="button" class="theme-toggle" (click)="toggleTheme()" [matTooltip]="(themeService.isDark() ? 'label.theme-light' : 'label.theme-dark') | translate">
         <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
       </button>
-
-      @if (version.version) {
-        <a href="{{ version.github_url }}" target="_blank" class="version" [class.beta]="isVersionBeta()">v{{ version.version }}</a>
-      }
 
       <my-calibre-server-profile-button class="avatar"></my-calibre-server-profile-button>
     </div>
