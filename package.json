@@ -23,45 +23,7 @@
     "test:coverage": "nx run-many --target=test --coverage",
     "e2e": "playwright test --config=apps/frontend-e2e-playwright/playwright.config.ts",
     "e2e:playwright": "playwright test --config=apps/frontend-e2e-playwright/playwright.config.ts",
-    "release-patch": "npm run test:api && npm run test:frontend && npm run e2e:playwright && standard-version --no-verify --commit-all --release-as patch",
-    "release-minor": "npm run test:api && npm run test:frontend && npm run e2e:playwright && standard-version --no-verify --commit-all --release-as minor",
-    "release-major": "npm run test:api && npm run test:frontend && npm run e2e:playwright && standard-version --no-verify --commit-all --release-as major",
     "replace:version": "json -I -f libs/api-interfaces/src/lib/version.json -e \"this.version='`cat package.json | json version`'; this.github_url='`cat package.json | npx json repository.url`'; this.name='$npm_package_name'; this.copyright='2016-`date +%Y` `cat package.json | npx json author.name`'\" && git add libs/api-interfaces/src/lib/version.json"
-  },
-  "standard-version": {
-    "scripts": {
-      "postbump": "npm run replace:version"
-    },
-    "bumpFiles": [
-      "package.json",
-      "package-lock.json",
-      {
-        "filename": "libs/api-interfaces/src/lib/version.json",
-        "type": "json"
-      }
-    ],
-    "types": [
-      {
-        "type": "feat",
-        "section": "Features"
-      },
-      {
-        "type": "fix",
-        "section": "Bug Fixes"
-      },
-      {
-        "type": "refactor",
-        "section": "Code Refactoring"
-      },
-      {
-        "type": "perf",
-        "section": "Performance Improvements"
-      },
-      {
-        "type": "test",
-        "section": "Tests"
-      }
-    ]
   },
   "private": true,
   "overrides": {
@@ -167,7 +129,6 @@
     "nx": "23.0.1",
     "passport": "^0.7.0",
     "prettier": "^3.9.4",
-    "standard-version": "^9.5.0",
     "supertest": "^7.2.2",
     "ts-jest": "29.4.11",
     "ts-node": "^10.9.2",

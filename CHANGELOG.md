@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
 ### [0.12.20](https://github.com/bibulle/myCalibreServer/compare/v0.12.19...v0.12.20) (2026-07-05)
 

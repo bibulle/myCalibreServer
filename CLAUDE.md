@@ -24,8 +24,8 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 - Aucun test ne doit être supprimé, désactivé ou ignoré (`skip`, `xit`, `xdescribe`, `pending`, etc.)
 - Avant de committer/pousser : vérifier que les tests unitaires (frontend/backend) et e2e (s'ils existent) passent, et que les serveurs démarrent sans erreur (`npm run start:api`, `npm run start:frontend`)
 - Le commit, le push et l'ouverture de la pull request (toujours en **draft**) ne nécessitent pas de feu vert préalable de l'utilisateur — cf. "Processus de livraison" ci-dessous
-- **Un feu vert explicite de l'utilisateur reste obligatoire avant toute montée de version**, une fois qu'il a testé l'application localement
-- Le merge final de la PR peut être fait automatiquement, **uniquement si le seul changement intervenu depuis le feu vert de l'utilisateur est la montée de version** (sinon, redemander une validation avant de merger)
+- **Un feu vert explicite de l'utilisateur reste obligatoire avant toute montée de version** (c'est-à-dire avant de merger la *Release PR* générée automatiquement par `release-please`, cf. "Processus de livraison" ci-dessous), une fois qu'il a testé l'application localement
+- Le merge de la Release PR peut être fait automatiquement une fois ce feu vert obtenu : elle ne contient par construction que la montée de version, le `CHANGELOG.md` et les fichiers de version, jamais de code fonctionnel
 
 **Conventions de nommage des branches :**
 - `feat/<description>` pour les nouvelles fonctionnalités
@@ -45,10 +45,10 @@ myCalibreServer est une application web de gestion de bibliothèque numérique (
 6. Surveiller le CI/CD de la PR ; en cas d'échec, corriger et repousser jusqu'au vert
    > Le workflow CI (`.github/workflows/docker-build-push.yml`) exécute un job `test` (tests unitaires frontend/backend, avec un vrai MongoDB de service, + la suite e2e Playwright complète) avant le job de build+push Docker, qui en dépend (`needs: test`). La suite e2e Playwright (seule suite e2e du projet depuis la suppression de Cypress) ne nécessite aucune instance MongoDB, y compris pour ses parcours authentifiés (login, notes, séries/auteurs/tags) : le driver `mongodb` de l'API est remplacé par un stub en mémoire pré-rempli (voir `apps/frontend-e2e-playwright/README.md`).
 7. Attendre le feu vert explicite de l'utilisateur, après qu'il ait testé l'application localement
-8. Une fois le feu vert obtenu, monter la version npm : `npm run release-patch` par défaut, ou `release-minor` / `release-major` si l'utilisateur le précise explicitement ; pousser le commit et le tag générés
-9. Surveiller à nouveau le CI/CD sur ce nouveau push ; corriger et repousser si besoin jusqu'au vert
-10. Si le CI est vert, merger la pull request (via le MCP GitHub) et surveiller le CI/CD déclenché par le merge sur `master`
-    > Le merge sur `master` déclenche le build + push de l'image Docker (si les secrets Docker Hub sont configurés) et la mise à jour du dépôt `myKubernetesConfig` (déploiement K8s). C'est une action à fort impact, mais autorisée automatiquement ici car elle intervient juste après la validation explicite de l'utilisateur, le seul changement supplémentaire étant la montée de version.
+8. Une fois le feu vert obtenu, merger la pull request de la fonctionnalité (via le MCP GitHub) — **sans montée de version à ce stade** : ce n'est plus une commande locale, cf. point 9
+9. Le merge sur `master` déclenche automatiquement le workflow `release-please` (`.github/workflows/release-please.yml`), qui crée ou met à jour une **Release PR** dédiée (titre `chore(master): release X.Y.Z`) accumulant tous les changements non encore publiés depuis le dernier tag ; son diff contient déjà `CHANGELOG.md`, `package.json`, `package-lock.json` et `libs/api-interfaces/src/lib/version.json` à jour — rien à générer ni committer manuellement
+10. Quand une nouvelle version doit être publiée (immédiatement après une fonctionnalité, ou après en avoir accumulé plusieurs) : surveiller le CI/CD de la Release PR, puis, avec un nouveau feu vert explicite de l'utilisateur après test local, la merger via le MCP GitHub
+    > Le merge de la Release PR crée le tag Git (`vX.Y.Z`) et déclenche le build + push de l'image Docker (si les secrets Docker Hub sont configurés) ainsi que la mise à jour du dépôt `myKubernetesConfig` (déploiement K8s). C'est une action à fort impact, mais autorisée automatiquement ici car elle intervient juste après la validation explicite de l'utilisateur, le seul contenu de cette PR étant par construction la montée de version.
 
 ---
 
@@ -103,7 +103,7 @@ Si un ou plusieurs tests échouent :
 
 Mettre à jour et aligner la documentation avec le comportement réel :
 - `README.md` — installation, configuration, lancement
-- `CHANGELOG.md` — via `standard-version` (ne pas éditer manuellement)
+- `CHANGELOG.md` — généré par `release-please` (ne pas éditer manuellement)
 - `AGENTS.md` — directives spécifiques au workspace Nx pour les agents IA
 - `.env.example` — variables d'environnement requises et optionnelles
 
