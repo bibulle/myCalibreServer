@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { User } from '@my-calibre-server/api-interfaces';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { LocalizedDateModule } from '../../../../directives/localized-date.pipe';
@@ -255,7 +255,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     FormsModule,
     MatInputModule,
     MatTooltipModule,
-    TranslateModule,
+    TranslatePipe,
     LocalizedDateModule,
   ],
   declarations: [UserProfileComponent],

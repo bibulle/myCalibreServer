@@ -3,7 +3,7 @@ import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Tag } from '@my-calibre-server/api-interfaces';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { MatContentModule } from '../../content/content.component';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
@@ -207,7 +207,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, TagCardModule, TranslateModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, TagCardModule, TranslatePipe],
   declarations: [TagListComponent],
   exports: [TagListComponent],
 })

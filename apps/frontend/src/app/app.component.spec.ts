@@ -5,7 +5,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { MatSidenav } from '@angular/material/sidenav';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { of, Subject } from 'rxjs';
 import { AppComponent } from './app.component';
 import { TitleService } from './app/title.service';
@@ -85,7 +85,6 @@ describe('AppComponent', () => {
     } as any;
 
     mockTranslateService = {
-      setDefaultLang: jest.fn(),
       getBrowserLang: jest.fn(() => 'en'),
       use: jest.fn(),
       get: jest.fn(() => of('translated')),
@@ -105,8 +104,9 @@ describe('AppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [TranslateModule.forRoot()],
+      imports: [TranslatePipe],
       providers: [
+        provideTranslateService(),
         { provide: UserService, useValue: mockUserService },
         { provide: FilterService, useValue: mockFilterService },
         { provide: TitleService, useValue: mockTitleService },
@@ -135,8 +135,13 @@ describe('AppComponent', () => {
     expect(component.title).toBeInstanceOf(Title);
   });
 
-  it('should set default language to English', () => {
-    expect(mockTranslateService.setDefaultLang).toHaveBeenCalledWith('en');
+  it('should fall back to English when no browser language is available', () => {
+    (mockTranslateService.getBrowserLang as jest.Mock).mockReturnValue(undefined);
+
+    const freshFixture = TestBed.createComponent(AppComponent);
+    freshFixture.componentInstance;
+
+    expect(mockTranslateService.use).toHaveBeenCalledWith('en');
   });
 
   it('should use browser language if available', () => {

@@ -6,7 +6,7 @@ import { AuthorService } from '../author.service';
 import { AuthorCardModule } from '../author-card/author-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { Author } from '@my-calibre-server/api-interfaces';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../notification/notification.service';
@@ -220,7 +220,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, AuthorCardModule, TranslateModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatContentModule, AuthorCardModule, TranslatePipe],
   declarations: [AuthorListComponent],
   exports: [AuthorListComponent],
 })

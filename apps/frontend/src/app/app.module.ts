@@ -18,8 +18,8 @@ import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from '@auth0/angular-jwt';
-import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TRANSLATE_HTTP_LOADER_CONFIG, TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslatePipe, provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AuthGuard } from './components/authent/auth.guard';
 import { AuthGuardAdmin } from './components/authent/auth.guard.admin';
 import { AuthentModule } from './components/authent/authent.module';
@@ -65,14 +65,7 @@ registerLocaleData(localeEn, 'en');
         //        whitelistedDomains: new Array(new RegExp('^null$'))
       },
     }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useClass: TranslateHttpLoader,
-      },
-      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler },
-      //       // useDefaultLang: false
-    }),
+    TranslatePipe,
 
     MaterialModule,
     BrowserAnimationsModule,
@@ -97,7 +90,18 @@ registerLocaleData(localeEn, 'en');
       registrationStrategy: 'registerWhenStable:30000'
     }),
   ],
-  providers: [TitleService, NotificationService, WindowService, AuthGuard, AuthGuardToken, AuthGuardAdmin, { provide: TRANSLATE_HTTP_LOADER_CONFIG, useValue: {} }],
+  providers: [
+    TitleService,
+    NotificationService,
+    WindowService,
+    AuthGuard,
+    AuthGuardToken,
+    AuthGuardAdmin,
+    provideTranslateService({
+      loader: provideTranslateHttpLoader(),
+      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: MyMissingTranslationHandler },
+    }),
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {

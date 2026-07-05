@@ -7,7 +7,7 @@ import {Subject, Subscription} from 'rxjs';
 import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from './filter.service';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslatePipe} from '@ngx-translate/core';
 import {HttpClientModule} from '@angular/common/http';
 import {debounceTime} from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
@@ -134,7 +134,7 @@ export class FilterBarComponent implements OnInit, OnDestroy {
     MatButtonToggleModule,
     MatTooltipModule,
     MatMenuModule,
-    TranslateModule,
+    TranslatePipe,
     HttpClientModule
   ],
   declarations: [

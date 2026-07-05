@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { User } from '@my-calibre-server/api-interfaces';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { MatContentModule } from '../../content/content.component';
 import { Filter, FilterService, SortingDirection } from '../../filter-bar/filter.service';
 import { NotificationService } from '../../notification/notification.service';
@@ -182,7 +182,7 @@ export class UsersListComponent implements OnInit {
     MatContentModule,
     MatToolbarModule,
     UserListItemModule,
-    TranslateModule,
+    TranslatePipe,
     // MatInputModule,
     // FlexModule,
     // ScrollDetectorModule,
