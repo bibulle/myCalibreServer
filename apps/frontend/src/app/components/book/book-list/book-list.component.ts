@@ -4,18 +4,13 @@ import { Component, NgModule, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Book } from '@my-calibre-server/api-interfaces';
-import { TranslatePipe } from '@ngx-translate/core';
-import { MatContentModule } from '../../content/content.component';
-import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { BookCardModule } from '../book-card/book-card.component';
 import { BookService } from '../book.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NotificationService } from '../../notification/notification.service';
 
 // const leftPad = require('left-pad');
@@ -37,6 +32,7 @@ export class BookListComponent implements OnInit, OnDestroy {
   fullBooks: Book[] = [];
 
   totalBooksCount = 0;
+  loaded = false;
 
   filter: Filter = new Filter();
   private previousFilterJson = '';
@@ -56,10 +52,27 @@ export class BookListComponent implements OnInit, OnDestroy {
       .replace(/[œ]/g, 'oe');
   }
 
-  constructor(private _bookService: BookService, private _filterService: FilterService, private _notificationService: NotificationService) {
+  constructor(
+    private _bookService: BookService,
+    private _filterService: FilterService,
+    private _notificationService: NotificationService,
+    private _translateService: TranslateService
+  ) {
     while (this.books.length < this.MAX_BOOK) {
       this.books.push(new Book());
     }
+  }
+
+  get isFiltering(): boolean {
+    return !!this.filter.search.trim() || this.filter.lang !== LangAvailable.All;
+  }
+
+  get subtitle(): string {
+    if (this.isFiltering) {
+      return this._translateService.instant('label.library-subtitle-filtered', { count: this.totalBooksCount });
+    }
+    const sortLabel = this._translateService.instant(sortLabelKey(this.filter.sort)).toLowerCase();
+    return this._translateService.instant('label.library-subtitle', { count: this.totalBooksCount, sort: sortLabel });
   }
 
   //noinspection JSUnusedGlobalSymbols
@@ -77,6 +90,7 @@ export class BookListComponent implements OnInit, OnDestroy {
       .getBooks()
       .then((books) => {
         this.fullBooks = books;
+        this.loaded = true;
         this._fillBooks();
       })
       .catch((err) => {
@@ -318,18 +332,10 @@ export class BookListComponent implements OnInit, OnDestroy {
   imports: [
     FormsModule,
     CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
     MatProgressSpinnerModule,
-    MatContentModule,
-    MatToolbarModule,
     BookCardModule,
+    FilterBarModule,
     TranslatePipe,
-    // MatInputModule,
-    // FlexModule,
-    // ScrollDetectorModule,
   ],
   declarations: [BookListComponent],
   exports: [BookListComponent],

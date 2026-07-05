@@ -91,4 +91,24 @@ export enum LangAvailable {
   All, Fra, Eng
 }
 
+/**
+ * Translation key for a given sort type, shared by the toolbar's sort menu
+ * and the library subtitle ("... sorted by X").
+ */
+export function sortLabelKey(sort: SortType): string {
+  switch (sort) {
+    case SortType.PublishDate:
+      return 'label.publish_date';
+    case SortType.Author:
+      return 'label.author';
+    case SortType.PublicRating:
+      return 'label.rating-public';
+    case SortType.ReaderRating:
+      return 'label.rating-reader';
+    case SortType.Name:
+    default:
+      return 'label.name';
+  }
+}
+
 

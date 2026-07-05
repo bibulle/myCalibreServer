@@ -1,46 +1,61 @@
-@use '../../shared/variables' as *;
-@use '../../shared/layout';
-
 :host {
   display: flex;
-  flex: 100%;
   align-items: center;
-  div.container {
-    display: flex;
-    flex: 100%;
-    align-items: center;
-    justify-content: end;
-  }
+}
 
-  mat-form-field {
-    flex-grow: 1;
-    max-width: 75%;
-    font-size: 1.2em;
-  }
+.rl-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 0 0 auto;
+}
 
-  mat-icon {
-    font-size: 1.4em;
-    height: 1em;
-    width: 1em;
-  }
+.sort-toggle {
+  display: inline-block;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--muted-2);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  white-space: nowrap;
+}
 
-  ::ng-deep .mat-input-element {
-    // deprecated ? moved to style
-    caret-color: currentColor;
-  }
+.lang-toggle {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
 
-  @media screen and (max-width: $layout-breakpoint-md) {
-    .mat-mdc-form-field {
-      width: calc($layout-breakpoint-md/8);
-      font-size: calc($display-2-font-size-base/4);
+  span {
+    padding: 8px 13px;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--faint);
+
+    &.active {
+      color: #fff;
+      background: var(--accent);
     }
-    ::ng-deep .mdc-button {
-      min-width: 0;
-    }
-
   }
+}
 
-  .flags button {
-    margin: 0;
+::ng-deep .sort-menu {
+  .mat-mdc-menu-item {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    min-height: 40px;
+
+    &.active {
+      color: var(--accent);
+      font-weight: 600;
+      background: var(--surface-2);
+    }
   }
 }

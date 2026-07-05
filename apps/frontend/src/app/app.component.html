@@ -57,7 +57,7 @@
     </div>
   </header>
 
-  @if (title.title) {
+  @if (title.title && !hidePageTitle) {
     <div class="page-title-bar">
       @if (title.backUrl) {
         <button mat-icon-button (click)="goBack()" aria-label="Back">

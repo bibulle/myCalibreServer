@@ -135,6 +135,25 @@ describe('FilterBarComponent', () => {
     });
   });
 
+  describe('sortLabel', () => {
+    it('should return the translation key for the current sort type', () => {
+      component.filter.sort = SortType.Name;
+      expect(component.sortLabel).toBe('label.name');
+
+      component.filter.sort = SortType.PublishDate;
+      expect(component.sortLabel).toBe('label.publish_date');
+
+      component.filter.sort = SortType.Author;
+      expect(component.sortLabel).toBe('label.author');
+
+      component.filter.sort = SortType.PublicRating;
+      expect(component.sortLabel).toBe('label.rating-public');
+
+      component.filter.sort = SortType.ReaderRating;
+      expect(component.sortLabel).toBe('label.rating-reader');
+    });
+  });
+
   describe('toggleSort', () => {
     beforeEach(() => {
       component.ngOnInit();

@@ -1,50 +1,42 @@
 @if (book.book_title) {
-  <mat-card class="book-card" (click)="openBook($event)">
-    <div class="cover">
+  <div class="rl-card" (click)="openBook($event)">
+    <div class="rl-cover">
       <my-calibre-server-image-sprites [type]="0" [id]="book.book_id"></my-calibre-server-image-sprites>
-      @if (book.lang_code === 'eng') {
-        <mat-icon class="flag" svgIcon="flag_us"></mat-icon>
-      }
     </div>
-    <div class="text">
-      <div class="top-right">
-        @if (book.rating) {
-          <my-calibre-server-mat-rating
-            [rating]="+book.rating / 2"
-            color="primary"
-            [disabled]="true"
-            title="{{ 'label.rating-public' | translate }}"
-            [matTooltip]="(+book.rating / 2).toString()"
-            matTooltipPosition="left"
-          ></my-calibre-server-mat-rating>
+    <div class="rl-info">
+      @if (book.series_name) {
+        <div class="series-eyebrow">{{ book.series_name }} · {{ 'label.tome' | translate }} {{ book.book_series_index }}</div>
+      }
+      <div class="title">{{ book.book_title }}</div>
+      <div class="author">{{ book.author_name }}</div>
+      <div class="meta">
+        @if (book.book_date && book.book_date.getFullYear() > 1850) {
+          <span>{{ book.book_date | date : 'yyyy' }}</span>
+          <span class="dot">·</span>
         }
-        @if (!book.rating) {
-          <div class="empty-rating">&nbsp;</div>
+        <span class="lang-badge">{{ book.lang_code === 'eng' ? 'EN' : 'FR' }}</span>
+      </div>
+
+      <span class="rl-spacer"></span>
+
+      <div class="footer-row">
+        @if (book.rating) {
+          <span class="rating-pill" [matTooltip]="(+book.rating / 2).toString()" matTooltipPosition="above">
+            {{ 'label.rating-public' | translate }} <span class="star">★</span> {{ (+book.rating / 2).toFixed(1) }}
+          </span>
         }
         @if (book.readerRating) {
-          <my-calibre-server-mat-rating
-            [rating]="book.readerRating / 2"
-            color="primary"
-            [disabled]="true"
-            title="{{ 'label.rating-reader' | translate }} ({{ book.readerRatingCount }})"
-            [matTooltip]="(+book.readerRating / 2).toString()"
-            matTooltipPosition="left"
-          ></my-calibre-server-mat-rating>
+          <span class="rating-pill" [matTooltip]="'' + (book.readerRating / 2) + ' (' + book.readerRatingCount + ')'" matTooltipPosition="above">
+            {{ 'label.rating-reader' | translate }} <span class="star">★</span> {{ (book.readerRating / 2).toFixed(1) }}
+          </span>
         }
-        @if (!book.readerRating) {
-          <div class="empty-rating">&nbsp;</div>
+
+        <span class="rl-spacer"></span>
+
+        @if (hasEpub || hasMobi) {
+          <button type="button" class="download" (click)="download($event)" [matTooltip]="(hasEpub ? 'label.epub-format' : 'label.mobi-format') | translate">↓</button>
         }
       </div>
-      <mat-card-title>
-        @if (book.series_name) {
-          <span>{{ book.series_name }} - {{ book.book_series_index }} - </span>
-        }
-        <!-- ({{index}}) -->
-        {{ book.book_title }} @if (book.book_date && book.book_date.getFullYear() > 1850) {
-        <span class="date">{{ book.book_date | date : 'yyyy' }}</span>
-      }
-    </mat-card-title>
-    <mat-card-subtitle>{{ book.author_name }}</mat-card-subtitle>
+    </div>
   </div>
-</mat-card>
 }
