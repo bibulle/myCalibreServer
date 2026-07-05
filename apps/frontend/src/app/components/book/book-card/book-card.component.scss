@@ -1,106 +1,149 @@
-@use "../../../shared/variables" as *;
-
 :host {
+  display: block;
+}
+
+.rl-card {
   display: flex;
-  mat-card {
-    padding: 0;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card-lg);
+  padding: 15px;
+  box-shadow: var(--shadow-card);
+  transition: transform .18s ease, box-shadow .18s ease;
+  cursor: pointer;
+  height: 100%;
+  box-sizing: border-box;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .16);
+  }
+}
+
+.rl-cover {
+  position: relative;
+  width: 100px;
+  aspect-ratio: 2 / 3;
+  flex: 0 0 100px;
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: var(--shadow-cover-sm);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // my-calibre-server-image-sprites sizes and positions its background
+  // image itself (background-position-x is a raw pixel offset computed
+  // for its native 80x80 sprite-sheet cell) - changing its width/height/
+  // background-size breaks that offset. A `transform: scale()` is safe
+  // instead: it's a post-layout visual effect that doesn't touch the
+  // element's box or its background positioning math. Scale up to fill
+  // this slot's height (cropping the sides, which eat into the sprite
+  // cell's transparent letterboxing before the real cover art).
+  my-calibre-server-image-sprites {
+    flex: 0 0 auto;
+    transform: scale(1.875); // 150px (this slot's height) / 80px (native cell)
+  }
+}
+
+.rl-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.series-eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.title {
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 1.2;
+  color: var(--text);
+}
+
+.author {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 9px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--faint);
+
+  .dot {
+    opacity: .4;
   }
 
-  mat-card-title {
-    font-size: 1.5em;
+  .lang-badge {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: var(--muted);
+  }
+}
+
+.rl-spacer {
+  flex: 1;
+  min-height: 12px;
+}
+
+.footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+
+  .rating-pill {
+    font-family: var(--font-ui);
     font-weight: 500;
-    .date {
-      font-size: 0.6em;
-    }
-    @media screen and (max-width: $layout-breakpoint-sm) {
-      padding-right: 2.8em;
+    font-size: 11px;
+    color: var(--muted-2);
+    background: var(--surface-2);
+    border-radius: var(--radius-pill);
+    padding: 4px 10px;
+    white-space: nowrap;
+
+    .star {
+      color: var(--accent);
     }
   }
 
-  mat-card-subtitle {
-    margin-bottom: 0;
-    color: #0000008a;
-    .other {
-      font-size: 0.6em;
-    }
-  }
-
-  mat-card.book-card {
+  .download {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--accent);
+    font-size: 16px;
     display: flex;
-    flex-grow: 1;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: stretch;
-    .cover {
-      width: 80px;
-      height: 80px;
-      flex-shrink: 0;
-      flex-grow: 0;
-      padding: 3px;
-      position: relative;
-      [mat-card-sm-image] {
-        display: block;
-        height: auto;
-        width: auto;
-        max-width: 80px;
-        max-height: 80px;
-        border-radius: inherit;
-        margin: 0 auto;
-      }
-      .flag {
-        position: absolute;
-        right: 15px;
-        bottom: 1px;
-        width: 18px;
-        height: auto;
-      }
-    }
-    .text {
-      margin-left: 1em;
-      flex: 100%;
-      justify-content: center;
-      display: flex;
-      flex-direction: column;
-      border-bottom-width: 0;
-
-    }
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    box-sizing: border-box;
   }
 }
-
-:host:not([class*=has-shadow]) mat-card.book-card {
-  box-shadow: none;
-  .text {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-  }
-}
-
-.top-right {
-  position: absolute;
-  top: 1em;
-  right: 2em;
-  display: flex;
-  my-calibre-server-mat-rating, .empty-rating {
-    margin-left: 1em;
-    width: 5em;
-  }
-
-  @media screen and (max-width: $layout-breakpoint-sm) {
-    top: 1.5em;
-    right: 1em;
-    display: block;
-    transform: rotate(90deg);
-    width: 6em;
-    height: 6em;
-    my-calibre-server-mat-rating, .empty-rating {
-      display: block;
-      margin-left: 0;
-      margin-bottom: 3px;
-      height: 1.5em;
-    }
-  }
-
-}
-
-
-

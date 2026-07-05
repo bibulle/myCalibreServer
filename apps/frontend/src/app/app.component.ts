@@ -26,6 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   filter = new Filter();
   title = new Title();
   hideHeader = false;
+  hidePageTitle = false;
 
   private _currentUserSubscription: Subscription | undefined;
   private _currentFilterSubscription: Subscription | undefined;
@@ -104,6 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
           route = route.firstChild;
         }
         this.hideHeader = route.data['hideHeader'] === true;
+        this.hidePageTitle = route.data['hidePageTitle'] === true;
       });
 
     this._searchSubscription = this._searchSubject

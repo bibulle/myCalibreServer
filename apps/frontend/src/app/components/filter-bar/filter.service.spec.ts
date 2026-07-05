@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from './filter.service';
+import { Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from './filter.service';
 
 describe('FilterService', () => {
   let service: FilterService;
@@ -426,6 +426,16 @@ describe('Enums', () => {
       expect(LangAvailable.All).toBeDefined();
       expect(LangAvailable.Fra).toBeDefined();
       expect(LangAvailable.Eng).toBeDefined();
+    });
+  });
+
+  describe('sortLabelKey', () => {
+    it('should map each sort type to its translation key', () => {
+      expect(sortLabelKey(SortType.Name)).toBe('label.name');
+      expect(sortLabelKey(SortType.PublishDate)).toBe('label.publish_date');
+      expect(sortLabelKey(SortType.Author)).toBe('label.author');
+      expect(sortLabelKey(SortType.PublicRating)).toBe('label.rating-public');
+      expect(sortLabelKey(SortType.ReaderRating)).toBe('label.rating-reader');
     });
   });
 });

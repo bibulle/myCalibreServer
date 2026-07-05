@@ -27,7 +27,7 @@ const routes: Routes = [
   { path: 'connect/local',  component: ConnectLocalComponent         , canActivate: [AuthGuard],      data: {label: 'route.connect' , menu: false}},
   { path: 'changepassword', component: ChangePasswordComponent       , canActivate: [AuthGuardToken, AuthGuard],      data: {label: 'route.changepw', menu: false}},
   { path: 'home',           component: HomeComponent                 , canActivate: [AuthGuard],      data: {label: 'route.news'    , menu: true}},
-  { path: 'books',          component: BookListComponent             , canActivate: [AuthGuard],      data: {label: 'route.books'   , menu: true}},
+  { path: 'books',          component: BookListComponent             , canActivate: [AuthGuard],      data: {label: 'route.books'   , menu: true, hidePageTitle: true}},
   { path: 'series',         component: SeriesListComponent           , canActivate: [AuthGuard],      data: {label: 'route.series'  , menu: true}},
   { path: 'authors',        component: AuthorListComponent           , canActivate: [AuthGuard],      data: {label: 'route.authors' , menu: true}},
   { path: 'tags',           component: TagListComponent              , canActivate: [AuthGuard],      data: {label: 'route.tags'    , menu: true}},

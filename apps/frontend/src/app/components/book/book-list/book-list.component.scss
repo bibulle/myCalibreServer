@@ -1,4 +1,58 @@
-//@import "../../../shared/styles";
+:host {
+  display: block;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 34px) clamp(18px, 4vw, 34px) 60px;
+}
+
+.library-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-serif-title);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--text);
+  }
+
+  .subtitle {
+    margin-top: 5px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+.empty-state {
+  padding: 70px 20px;
+  text-align: center;
+
+  .empty-title {
+    font-family: var(--font-serif-title);
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--text);
+  }
+
+  .empty-subtitle {
+    margin-top: 6px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 16px;
+}
 
 mat-spinner {
   width: 50px;
@@ -8,5 +62,6 @@ mat-spinner {
 
 .max-reached {
   padding: 1.5em;
+  text-align: center;
+  color: var(--muted);
 }
-

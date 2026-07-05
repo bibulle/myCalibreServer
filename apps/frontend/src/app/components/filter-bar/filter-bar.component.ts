@@ -1,19 +1,13 @@
 import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
 
 import {Subject, Subscription} from 'rxjs';
 
-import {Filter, FilterService, LangAvailable, SortingDirection, SortType} from './filter.service';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import {Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType} from './filter.service';
 import { MatIconModule } from '@angular/material/icon';
 import {TranslatePipe} from '@ngx-translate/core';
-import {HttpClientModule} from '@angular/common/http';
 import {debounceTime} from 'rxjs/operators';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
     selector: 'my-calibre-server-filter-bar',
@@ -71,6 +65,10 @@ export class FilterBarComponent implements OnInit, OnDestroy {
   }
 
 
+  get sortLabel(): string {
+    return sortLabelKey(this.filter.sort);
+  }
+
   toggleSort(sortType: SortType) {
     if (this.filter.sort === sortType) {
       this.filter.sorting_direction = (this.filter.sorting_direction + 1) % 2;
@@ -127,15 +125,9 @@ export class FilterBarComponent implements OnInit, OnDestroy {
 @NgModule({
   imports: [
     CommonModule,
-    FormsModule,
     MatIconModule,
-    MatInputModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatTooltipModule,
     MatMenuModule,
     TranslatePipe,
-    HttpClientModule
   ],
   declarations: [
     FilterBarComponent

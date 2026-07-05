@@ -260,6 +260,27 @@ describe('AppComponent', () => {
 
       expect(component.hideHeader).toBe(false);
     });
+
+    it('should not hide the page title when the resolved route has no hidePageTitle flag', () => {
+      mockActivatedRoute.snapshot = { firstChild: null, data: {} } as any;
+      component.ngOnInit();
+
+      routerEventsSubject.next(new NavigationEnd(1, '/series', '/series'));
+
+      expect(component.hidePageTitle).toBe(false);
+    });
+
+    it('should hide the page title when the deepest resolved route has hidePageTitle: true', () => {
+      mockActivatedRoute.snapshot = {
+        firstChild: { firstChild: null, data: { hidePageTitle: true } },
+        data: {},
+      } as any;
+      component.ngOnInit();
+
+      routerEventsSubject.next(new NavigationEnd(1, '/books', '/books'));
+
+      expect(component.hidePageTitle).toBe(true);
+    });
   });
 
   describe('Navigation', () => {

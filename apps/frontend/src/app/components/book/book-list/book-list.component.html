@@ -1,14 +1,30 @@
 @if (books) {
-  <mat-content>
+  <div class="library-toolbar">
+    <div>
+      <h1>{{ 'label.my-library' | translate }}</h1>
+      <div class="subtitle">{{ subtitle }}</div>
+    </div>
+    <my-calibre-server-filter-bar></my-calibre-server-filter-bar>
+  </div>
+
+  @if (loaded && totalBooksCount === 0) {
+    <div class="empty-state">
+      <div class="empty-title">{{ 'label.empty-title' | translate }}</div>
+      <div class="empty-subtitle">{{ 'label.empty-subtitle' | translate }}</div>
+    </div>
+  }
+
+  <div class="book-grid">
     @for (book of books; track book; let index = $index) {
-      <my-calibre-server-book-card [book]="book"  [index]="index" class="has-shadow"> </my-calibre-server-book-card>
+      <my-calibre-server-book-card [book]="book" [index]="index"></my-calibre-server-book-card>
     }
-    @if (books.length === MAX_BOOK) {
-      <div class="max-reached">
-        <span>{{ 'label.limited' | translate: param }}</span>
-      </div>
-    }
-  </mat-content>
+  </div>
+
+  @if (books.length === MAX_BOOK) {
+    <div class="max-reached">
+      <span>{{ 'label.limited' | translate: param }}</span>
+    </div>
+  }
 }
 @if (!books) {
   <mat-spinner></mat-spinner>
