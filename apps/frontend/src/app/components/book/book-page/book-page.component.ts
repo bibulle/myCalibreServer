@@ -3,26 +3,21 @@ import { FilterService } from '../../filter-bar/filter.service';
 import { Book, ReaderRatingTotal } from '@my-calibre-server/api-interfaces';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from '../book.service';
-import { MatContentModule } from '../../content/content.component';
 import { CommonModule } from '@angular/common';
 import { TitleService } from '../../../app/title.service';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { FormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatIconModule } from '@angular/material/icon';
 import { KindleDialogComponent, KindleDialogReturn } from './kindle-dialog/kindle-dialog.component';
 import { NotificationService } from '../../notification/notification.service';
 import { LocalizedDateModule } from '../../../directives/localized-date.pipe';
 import { MatRatingModule } from '../../rating/rating.component';
 import { UserService } from '../../authent/user.service';
 import { MatButtonModule } from '@angular/material/button';
-import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'my-calibre-server-book-page',
@@ -120,6 +115,10 @@ export class BookPageComponent implements OnInit {
         console.log(err);
         this._notificationService.error(err);
       });
+  }
+
+  goBack() {
+    this._titleService.goBack();
   }
 
   /**
@@ -243,16 +242,11 @@ export class BookPageComponent implements OnInit {
     CommonModule,
     FormsModule,
     MatButtonModule,
-    MatRadioModule,
-    MatIconModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    MatContentModule,
     MatCardModule,
-    MatMenuModule,
     MatAutocompleteModule,
     MatDialogModule,
-    MatTooltipModule,
     TranslatePipe,
     LocalizedDateModule,
     MatRatingModule,

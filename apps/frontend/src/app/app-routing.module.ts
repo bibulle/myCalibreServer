@@ -31,7 +31,7 @@ const routes: Routes = [
   { path: 'series',         component: SeriesListComponent           , canActivate: [AuthGuard],      data: {label: 'route.series'  , menu: true}},
   { path: 'authors',        component: AuthorListComponent           , canActivate: [AuthGuard],      data: {label: 'route.authors' , menu: true}},
   { path: 'tags',           component: TagListComponent              , canActivate: [AuthGuard],      data: {label: 'route.tags'    , menu: true}},
-  { path: 'book/:id',       component: BookPageComponent             , canActivate: [AuthGuard],      data: {label: 'route.book'    , menu: false}},
+  { path: 'book/:id',       component: BookPageComponent             , canActivate: [AuthGuard],      data: {label: 'route.book'    , menu: false, hidePageTitle: true}},
   // Show the 404 page for any routes that don't exist.
   { path: '**',           component: NotFoundComponent, data: {label: 'route.not-found', menu: false} }
 ];
