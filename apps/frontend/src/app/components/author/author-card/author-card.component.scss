@@ -83,11 +83,17 @@
 
 .books-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(190px, 230px));
+  justify-content: start;
   gap: 16px;
   padding: 4px clamp(16px, 3vw, 22px) 20px;
   border-top: 1px solid var(--border-soft);
   margin-top: 2px;
+
+  @media screen and (max-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    justify-content: center;
+  }
 }
 
 .mini-book {
