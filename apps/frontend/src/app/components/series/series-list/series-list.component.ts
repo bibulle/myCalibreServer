@@ -2,6 +2,7 @@ import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { SeriesService } from '../series.service';
 import { CommonModule } from '@angular/common';
+import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { SeriesCardModule } from '../series-card/series-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -244,7 +245,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, SeriesCardModule, TranslatePipe],
+  imports: [CommonModule, MatProgressSpinnerModule, SeriesCardModule, FilterBarModule, TranslatePipe],
   declarations: [SeriesListComponent],
   exports: [SeriesListComponent],
 })
