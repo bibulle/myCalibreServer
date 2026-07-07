@@ -1,4 +1,39 @@
-//@import "../../../shared/styles";
+:host {
+  display: block;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 34px) clamp(18px, 4vw, 34px) 70px;
+}
+
+.rl-titlerow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-serif-title);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--text);
+  }
+
+  .subtitle {
+    margin-top: 5px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+.author-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
 
 mat-spinner {
   width: 50px;
@@ -8,4 +43,6 @@ mat-spinner {
 
 .max-reached {
   padding: 1.5em;
+  text-align: center;
+  color: var(--muted);
 }

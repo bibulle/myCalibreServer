@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 import { Series } from '@my-calibre-server/api-interfaces';
-import { BookCardModule } from '../../book/book-card/book-card.component';
+import { TranslatePipe } from '@ngx-translate/core';
 import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
+
+const DOT_PALETTE = ['#0d3b3b', '#b0472f', '#23306e', '#2f3d33', '#5c1a24', '#3a4a63', '#8a5a1e', '#155454'];
 
 @Component({
     selector: 'my-calibre-server-series-card',
@@ -17,19 +17,23 @@ export class SeriesCardComponent {
   @Input()
   series?: Series;
 
-  thumbnailUrlBase = `/api/series/thumbnail`;
-
   @Input()
-  booksClosed = true;
+  index = 0;
 
+  constructor(private _router: Router) {}
 
-  toggleBooksClosed() {
-    this.booksClosed = !this.booksClosed;
+  get dotColor(): string {
+    return DOT_PALETTE[this.index % DOT_PALETTE.length];
+  }
+
+  openBook(event: Event, bookId: number) {
+    event.stopPropagation();
+    this._router.navigate(['/book', bookId]);
   }
 }
 
 @NgModule({
-  imports: [CommonModule, MatCardModule, MatIconModule, BookCardModule, MatButtonModule, ImageSpritesModule],
+  imports: [CommonModule, TranslatePipe, ImageSpritesModule],
   declarations: [SeriesCardComponent],
   exports: [SeriesCardComponent],
 })

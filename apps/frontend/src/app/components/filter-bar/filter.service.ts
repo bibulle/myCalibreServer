@@ -40,6 +40,14 @@ export class FilterService {
   updateLimitTo (limit_to: SortType[]) {
     if (this.lastFilter.limit_to !== limit_to) {
       this.lastFilter.limit_to = limit_to;
+      // The current sort (and its search/lang) is kept across page
+      // navigations on purpose, but if the new page doesn't support the
+      // previous page's sort type, fall back to that page's own default
+      // (its first, preferred option) instead of keeping an invalid one.
+      if (limit_to.length > 0 && !limit_to.includes(this.lastFilter.sort)) {
+        this.lastFilter.sort = limit_to[0];
+        this.lastFilter.sorting_direction = defaultSortingDirection(limit_to[0]);
+      }
       this.currentFilterSubject.next(this.lastFilter)
     }
   }
@@ -82,13 +90,23 @@ export class Filter {
 }
 
 export enum SortType {
-  Name, PublishDate, Author, PublicRating, ReaderRating
+  Name, PublishDate, Author, PublicRating, ReaderRating, Count
 }
 export enum SortingDirection {
   Asc, Desc
 }
 export enum LangAvailable {
   All, Fra, Eng
+}
+
+/**
+ * The direction a sort type should start in the first time it's selected.
+ * Count reads as "popularity" (most books first) so it defaults to
+ * descending; every other type keeps the existing ascending default
+ * (A-Z, oldest first, etc).
+ */
+export function defaultSortingDirection(sort: SortType): SortingDirection {
+  return sort === SortType.Count ? SortingDirection.Desc : SortingDirection.Asc;
 }
 
 /**
@@ -105,6 +123,8 @@ export function sortLabelKey(sort: SortType): string {
       return 'label.rating-public';
     case SortType.ReaderRating:
       return 'label.rating-reader';
+    case SortType.Count:
+      return 'label.sort-count';
     case SortType.Name:
     default:
       return 'label.name';

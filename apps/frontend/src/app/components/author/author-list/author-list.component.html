@@ -1,15 +1,24 @@
 @if (authors) {
-  <mat-content>
-    @for (author of authors; track author) {
-      <my-calibre-server-author-card [author]="author" [booksClosed]="author.author_id !== selectedId">
+  <div class="rl-titlerow">
+    <div>
+      <h1>{{ 'route.authors' | translate }}</h1>
+      <div class="subtitle">{{ subtitle }}</div>
+    </div>
+    <my-calibre-server-filter-bar></my-calibre-server-filter-bar>
+  </div>
+
+  <div class="author-sections">
+    @for (author of authors; track author; let i = $index) {
+      <my-calibre-server-author-card [author]="author" [index]="i" [booksClosed]="author.author_id !== selectedId">
       </my-calibre-server-author-card>
     }
-    @if (authors.length === MAX_AUTHORS) {
-      <div class="max-reached">
-        <span>{{ 'label.limited' | translate:param }}</span>
-      </div>
-    }
-  </mat-content>
+  </div>
+
+  @if (authors.length === MAX_AUTHORS) {
+    <div class="max-reached">
+      <span>{{ 'label.limited' | translate:param }}</span>
+    </div>
+  }
 }
 @if (!authors) {
   <mat-spinner></mat-spinner>

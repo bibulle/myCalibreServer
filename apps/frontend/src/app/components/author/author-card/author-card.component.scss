@@ -1,50 +1,148 @@
-mat-card {
-  display: flex;
-  flex-direction: column;  
-}
-mat-card-title {
-  flex-grow: 1;
-  font-size: 24px;
-  font-weight: 500;
-}
-mat-card-title .date {
-  font-size: 0.6em;
-}
-
-mat-card-title button {
-  float: right;
-}
-
-//mat-card-title mat-icon {
-  //margin-top: 10px;
-//}
-
-.author-card {
-  margin-top: 2px;
-  margin-bottom: 6px;
-  padding: 16px 16px 12px 16px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: stretch;
-
-}
-
-.author-card mat-card-subtitle, .author-card .date {
-  display: none;
-}
-
-.author-card.books-closed {
-  margin: 0;
-}
-
-.author-card.books-closed mat-card-subtitle {
+:host {
   display: block;
 }
 
-.author-card.books-closed .date {
-  display: inline;
+.author-section {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
-.author-card.books-closed my-calibre-server-book-card {
-  display: none !important;
+.author-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px clamp(16px, 3vw, 22px);
+  cursor: pointer;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+}
+
+.author-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.author-name {
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text);
+  line-height: 1.15;
+}
+
+.author-meta {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.rl-spacer {
+  flex: 1;
+}
+
+.count-pill {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: .05em;
+  color: var(--accent);
+  background: var(--surface-2);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.chevron {
+  font-size: 20px;
+  color: var(--faint);
+  flex: 0 0 auto;
+  transition: transform .2s ease;
+}
+
+.author-section:not(.collapsed) .chevron {
+  transform: rotate(180deg);
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 230px));
+  justify-content: start;
+  gap: 16px;
+  padding: 4px clamp(16px, 3vw, 22px) 20px;
+  border-top: 1px solid var(--border-soft);
+  margin-top: 2px;
+
+  @media screen and (max-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    justify-content: center;
+  }
+}
+
+.mini-book {
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding-top: 16px;
+}
+
+.mini-cover {
+  position: relative;
+  width: 60px;
+  aspect-ratio: 2 / 3;
+  flex: 0 0 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .28);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // see book-card.component.scss for why transform: scale() is the safe
+  // way to resize the sprite-sheet cover without breaking its pixel-based
+  // background-position math. 90px (60 * 1.5 slot height) / 80px (native cell).
+  my-calibre-server-image-sprites {
+    flex: 0 0 auto;
+    transform: scale(1.125);
+  }
+}
+
+.mini-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-title {
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.mini-meta {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--faint);
+  margin-top: 3px;
 }

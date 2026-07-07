@@ -1,11 +1,143 @@
-//@import "../../../shared/styles";
-//@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.scss';
-
-
-.spinner {
-  background-color: lightcyan;
-  height: 100px
+:host {
+  display: block;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 34px) clamp(18px, 4vw, 34px) 70px;
 }
+
+.rl-titlerow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-serif-title);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--text);
+  }
+
+  .subtitle {
+    margin-top: 5px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.clear-filter {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--muted-2);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.section-label {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 14px;
+}
+
+.filtered-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 170px));
+  justify-content: start;
+  gap: 18px;
+
+  @media screen and (max-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 150px));
+    justify-content: center;
+  }
+}
+
+.filtered-book {
+  cursor: pointer;
+
+  &:hover .filtered-cover {
+    transform: translateY(-4px);
+  }
+}
+
+.filtered-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 9px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+  transition: transform .18s ease;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // The sprite-sheet cover has a fixed native 80x80 cell (see
+  // book-card.component.scss for why transform: scale() - not
+  // width/height - is the safe way to resize it without breaking its
+  // pixel-based background-position math). The grid track is a
+  // flexible minmax() range, so scale for the largest possible track
+  // width: conservative, since it only ever over-crops at the low end
+  // of the range instead of under-covering and showing letterboxing.
+  // 255px (170 * 1.5 slot height) / 80px (native cell) = 3.1875.
+  my-calibre-server-image-sprites {
+    flex: 0 0 auto;
+    transform: scale(3.1875);
+  }
+
+  @media screen and (max-width: 640px) {
+    // 225px (150 * 1.5 slot height) / 80px (native cell) = 2.8125.
+    my-calibre-server-image-sprites {
+      transform: scale(2.8125);
+    }
+  }
+}
+
+.filtered-title {
+  margin-top: 9px;
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.filtered-author {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--faint);
+  margin-top: 3px;
+}
+
 mat-spinner {
   width: 50px;
   margin-left: auto;
@@ -14,6 +146,6 @@ mat-spinner {
 
 .max-reached {
   padding: 1.5em;
-  //color: mat-color(map-get($theme,foreground), secondary-text);
-
+  text-align: center;
+  color: var(--muted);
 }

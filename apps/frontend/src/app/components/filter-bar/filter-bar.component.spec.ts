@@ -151,6 +151,30 @@ describe('FilterBarComponent', () => {
 
       component.filter.sort = SortType.ReaderRating;
       expect(component.sortLabel).toBe('label.rating-reader');
+
+      component.filter.sort = SortType.Count;
+      expect(component.sortLabel).toBe('label.sort-count');
+    });
+  });
+
+  describe('sortOptions', () => {
+    it('should fall back to the default fixed order when limit_to is empty', () => {
+      component.filter.limit_to = [];
+
+      expect(component.sortOptions).toEqual([SortType.Name, SortType.PublishDate, SortType.Author, SortType.PublicRating, SortType.ReaderRating]);
+    });
+
+    it("should use the page-provided order when limit_to is set (each page's own SORT_CONFIGS order)", () => {
+      component.filter.limit_to = [SortType.Count, SortType.Name];
+
+      expect(component.sortOptions).toEqual([SortType.Count, SortType.Name]);
+    });
+  });
+
+  describe('sortOptionLabelKey', () => {
+    it('should delegate to sortLabelKey', () => {
+      expect(component.sortOptionLabelKey(SortType.Count)).toBe('label.sort-count');
+      expect(component.sortOptionLabelKey(SortType.Author)).toBe('label.author');
     });
   });
 
@@ -199,6 +223,25 @@ describe('FilterBarComponent', () => {
       component.toggleSort(SortType.PublicRating);
 
       expect(filterListSpy).toHaveBeenCalled();
+    });
+
+    it('should default Count to descending (most books first) instead of ascending', (done) => {
+      component.filter.sort = SortType.Name;
+      component.filter.sorting_direction = SortingDirection.Asc;
+
+      component.toggleSort(SortType.Count);
+
+      expect(component.filter.sort).toBe(SortType.Count);
+      expect(component.filter.sorting_direction).toBe(SortingDirection.Desc);
+
+      // clicking it again still toggles normally, back to ascending
+      component.toggleSort(SortType.Count);
+      expect(component.filter.sorting_direction).toBe(SortingDirection.Asc);
+
+      setTimeout(() => {
+        expect(mockFilterService.update).toHaveBeenCalled();
+        done();
+      }, 600);
     });
   });
 

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from './filter.service';
+import { defaultSortingDirection, Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from './filter.service';
 
 describe('FilterService', () => {
   let service: FilterService;
@@ -262,6 +262,82 @@ describe('FilterService', () => {
         done();
       }, 50);
     });
+
+    it("should reset sort to the new page's first option when the current sort isn't supported there", (done) => {
+      // e.g. navigating from a page sorted by PublicRating to one that
+      // doesn't offer that sort type at all (like the series page).
+      const newFilter = new Filter();
+      newFilter.sort = SortType.PublicRating;
+      service.update(newFilter);
+
+      let emissionCount = 0;
+      service.currentFilterObservable().subscribe((filter) => {
+        emissionCount++;
+        if (emissionCount === 2) {
+          expect(filter.sort).toBe(SortType.PublishDate);
+          expect(filter.sorting_direction).toBe(SortingDirection.Asc);
+          done();
+        }
+      });
+
+      service.updateLimitTo([SortType.PublishDate, SortType.Name, SortType.Author, SortType.Count]);
+    });
+
+    it('should keep the current sort when the new page still supports it', (done) => {
+      const newFilter = new Filter();
+      newFilter.sort = SortType.Author;
+      newFilter.sorting_direction = SortingDirection.Desc;
+      service.update(newFilter);
+
+      let emissionCount = 0;
+      service.currentFilterObservable().subscribe((filter) => {
+        emissionCount++;
+        if (emissionCount === 2) {
+          expect(filter.sort).toBe(SortType.Author);
+          expect(filter.sorting_direction).toBe(SortingDirection.Desc);
+          done();
+        }
+      });
+
+      service.updateLimitTo([SortType.Name, SortType.Author]);
+    });
+
+    it('should not reset sort when limit_to is empty (no restriction)', (done) => {
+      const newFilter = new Filter();
+      newFilter.sort = SortType.ReaderRating;
+      service.update(newFilter);
+
+      let emissionCount = 0;
+      service.currentFilterObservable().subscribe((filter) => {
+        emissionCount++;
+        if (emissionCount === 2) {
+          expect(filter.sort).toBe(SortType.ReaderRating);
+          done();
+        }
+      });
+
+      service.updateLimitTo([]);
+    });
+
+    it("should reset to descending when the new page's first (preferred) option is Count", (done) => {
+      // e.g. navigating to the Tags page, whose SORT_CONFIGS lists
+      // "Popularité" (Count) first - it should read as most-popular-first.
+      const newFilter = new Filter();
+      newFilter.sort = SortType.Name;
+      service.update(newFilter);
+
+      let emissionCount = 0;
+      service.currentFilterObservable().subscribe((filter) => {
+        emissionCount++;
+        if (emissionCount === 2) {
+          expect(filter.sort).toBe(SortType.Count);
+          expect(filter.sorting_direction).toBe(SortingDirection.Desc);
+          done();
+        }
+      });
+
+      service.updateLimitTo([SortType.Count, SortType.Author]);
+    });
   });
 
   describe('currentFilterObservable', () => {
@@ -411,6 +487,7 @@ describe('Enums', () => {
       expect(SortType.Author).toBeDefined();
       expect(SortType.PublicRating).toBeDefined();
       expect(SortType.ReaderRating).toBeDefined();
+      expect(SortType.Count).toBeDefined();
     });
   });
 
@@ -436,6 +513,21 @@ describe('Enums', () => {
       expect(sortLabelKey(SortType.Author)).toBe('label.author');
       expect(sortLabelKey(SortType.PublicRating)).toBe('label.rating-public');
       expect(sortLabelKey(SortType.ReaderRating)).toBe('label.rating-reader');
+      expect(sortLabelKey(SortType.Count)).toBe('label.sort-count');
+    });
+  });
+
+  describe('defaultSortingDirection', () => {
+    it('should default Count to descending (most books first)', () => {
+      expect(defaultSortingDirection(SortType.Count)).toBe(SortingDirection.Desc);
+    });
+
+    it('should default every other sort type to ascending', () => {
+      expect(defaultSortingDirection(SortType.Name)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.PublishDate)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.Author)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.PublicRating)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.ReaderRating)).toBe(SortingDirection.Asc);
     });
   });
 });

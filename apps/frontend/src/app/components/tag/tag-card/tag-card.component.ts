@@ -1,10 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, EventEmitter, Input, NgModule, Output } from '@angular/core';
 import { Tag } from '@my-calibre-server/api-interfaces';
-import { BookCardModule } from '../../book/book-card/book-card.component';
 
 @Component({
     selector: 'my-calibre-server-tag-card',
@@ -13,36 +9,25 @@ import { BookCardModule } from '../../book/book-card/book-card.component';
     standalone: false
 })
 export class TagCardComponent {
-
   @Input()
   tag?: Tag;
 
   @Input()
-  booksClosed = true;
+  active = false;
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor () { }
+  @Input()
+  weight = 500;
 
-  toggleBooksClosed () {
-    this.booksClosed = !this.booksClosed;
-  }
+  @Input()
+  fontSize = '13px';
 
+  @Output()
+  selected = new EventEmitter<void>();
 }
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    BookCardModule,
-    MatButtonModule
-  ],
-  declarations: [
-    TagCardComponent
-  ],
-  exports: [
-    TagCardComponent
-  ]
+  imports: [CommonModule],
+  declarations: [TagCardComponent],
+  exports: [TagCardComponent],
 })
-export class TagCardModule {
-}
+export class TagCardModule {}
