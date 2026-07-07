@@ -13,6 +13,8 @@ import { NotificationService } from '../notification/notification.service';
 export enum NewsGroupType {
   Today,
   ThisWeek,
+  ThisMonth,
+  ThisYear,
   Earlier,
 }
 
@@ -66,6 +68,10 @@ export class HomeComponent implements OnInit {
         return this._translateService.instant('label.news-today');
       case NewsGroupType.ThisWeek:
         return this._translateService.instant('label.news-this-week');
+      case NewsGroupType.ThisMonth:
+        return this._translateService.instant('label.news-this-month');
+      case NewsGroupType.ThisYear:
+        return this._translateService.instant('label.news-this-year');
       default:
         return this._translateService.instant('label.news-earlier');
     }
@@ -107,6 +113,8 @@ export class HomeComponent implements OnInit {
     const groups: NewsGroup[] = [
       { type: NewsGroupType.Today, books: [] },
       { type: NewsGroupType.ThisWeek, books: [] },
+      { type: NewsGroupType.ThisMonth, books: [] },
+      { type: NewsGroupType.ThisYear, books: [] },
       { type: NewsGroupType.Earlier, books: [] },
     ];
 
@@ -116,8 +124,12 @@ export class HomeComponent implements OnInit {
         groups[0].books.push(book);
       } else if (days <= 6) {
         groups[1].books.push(book);
-      } else {
+      } else if (days <= 29) {
         groups[2].books.push(book);
+      } else if (days <= 364) {
+        groups[3].books.push(book);
+      } else {
+        groups[4].books.push(book);
       }
     });
 

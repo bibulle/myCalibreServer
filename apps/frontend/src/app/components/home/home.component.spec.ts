@@ -71,20 +71,30 @@ describe('HomeComponent', () => {
   });
 
   describe('grouping', () => {
-    it('should bucket books added today, this week and earlier into separate groups', async () => {
+    it('should bucket books into today, this week, this month, this year and earlier', async () => {
       mockBookService.getNewBooks.mockResolvedValue([
         makeBook(1, daysAgo(0)),
         makeBook(2, daysAgo(3)),
-        makeBook(3, daysAgo(10)),
+        makeBook(3, daysAgo(15)),
+        makeBook(4, daysAgo(100)),
+        makeBook(5, daysAgo(400)),
       ]);
 
       component.ngOnInit();
       await Promise.resolve();
 
-      expect(component.groups.map(g => g.type)).toEqual([NewsGroupType.Today, NewsGroupType.ThisWeek, NewsGroupType.Earlier]);
+      expect(component.groups.map(g => g.type)).toEqual([
+        NewsGroupType.Today,
+        NewsGroupType.ThisWeek,
+        NewsGroupType.ThisMonth,
+        NewsGroupType.ThisYear,
+        NewsGroupType.Earlier,
+      ]);
       expect(component.groups[0].books.map(b => b.book_id)).toEqual([1]);
       expect(component.groups[1].books.map(b => b.book_id)).toEqual([2]);
       expect(component.groups[2].books.map(b => b.book_id)).toEqual([3]);
+      expect(component.groups[3].books.map(b => b.book_id)).toEqual([4]);
+      expect(component.groups[4].books.map(b => b.book_id)).toEqual([5]);
     });
 
     it('should skip empty groups', async () => {
@@ -135,6 +145,14 @@ describe('HomeComponent', () => {
 
     it('should translate the ThisWeek group', () => {
       expect(component.groupLabel(NewsGroupType.ThisWeek)).toBe('label.news-this-week');
+    });
+
+    it('should translate the ThisMonth group', () => {
+      expect(component.groupLabel(NewsGroupType.ThisMonth)).toBe('label.news-this-month');
+    });
+
+    it('should translate the ThisYear group', () => {
+      expect(component.groupLabel(NewsGroupType.ThisYear)).toBe('label.news-this-year');
     });
 
     it('should translate the Earlier group', () => {

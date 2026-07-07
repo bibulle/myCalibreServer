@@ -44,7 +44,7 @@
               } @else if (daysSinceAdded(book) <= 6) {
                 <span class="news-added">{{ 'label.news-added-days' | translate: { count: daysSinceAdded(book) } }}</span>
               } @else {
-                <span class="news-added">{{ addedDate(book) | localizedDate: 'd MMM' }}</span>
+                <span class="news-added">{{ addedDate(book) | localizedDate: 'd MMM y' }}</span>
               }
               <span class="lang-badge">{{ book.lang_code === 'eng' ? 'EN' : 'FR' }}</span>
             </div>
