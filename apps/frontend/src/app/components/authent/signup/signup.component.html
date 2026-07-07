@@ -1,27 +1,62 @@
-<div class="mat-content">
-  <mat-card>
-    <form role="form" (submit)="signup($event, username.value, password.value, firstname.value, lastname.value, email.value)">
-      <mat-card-content>
-        <mat-form-field>
-          <input matInput placeholder="Username" required #username />
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Password" required type="password" #password />
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Firstname" #firstname />
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="Lastname" #lastname />
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="email" type="email" #email />
-        </mat-form-field>
-      </mat-card-content>
-      <mat-card-actions align="end">
-        <a mat-raised-button (click)="login()">Login</a>
-        <button mat-raised-button color="primary" type="submit">SIGNUP</button>
-      </mat-card-actions>
-    </form>
-  </mat-card>
+<div class="auth-page">
+  <div class="auth-container">
+    <div class="brand">
+      <span class="logo-mark">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff5ee" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 6.5C10.6 5.4 8.6 4.8 6 4.8c-1.1 0-2.1.1-3 .3v13.4c.9-.2 1.9-.3 3-.3 2.6 0 4.6.6 6 1.7"/>
+          <path d="M12 6.5c1.4-1.1 3.4-1.7 6-1.7 1.1 0 2.1.1 3 .3v13.4c-.9-.2-1.9-.3-3-.3-2.6 0-4.6.6-6 1.7z"/>
+          <path d="M12 6.5V20"/>
+        </svg>
+      </span>
+      <div class="brand-title">
+        <span class="brand-name">{{ 'title' | translate }}</span>
+        @if (version.version) {
+          <span class="brand-version">
+            v{{ version.version }}
+            @if (isVersionBeta()) {
+              <span class="beta">{{ 'label.beta' | translate }}</span>
+            }
+          </span>
+        }
+      </div>
+      <div class="tagline">{{ 'label.login-tagline' | translate }}</div>
+    </div>
+
+    <div class="auth-card">
+      <form role="form" (submit)="signup($event, username.value, password.value, firstname.value, lastname.value, email.value)">
+        <label class="field-label" for="signup-username">{{ 'label.username' | translate }}</label>
+        <div class="field">
+          <span class="field-icon">◍</span>
+          <input id="signup-username" placeholder="{{ 'label.username' | translate }}" required #username autocorrect="off" autocapitalize="off" spellcheck="false" autocomplete="username"/>
+        </div>
+
+        <label class="field-label" for="signup-password">{{ 'label.password' | translate }}</label>
+        <div class="field">
+          <span class="field-icon">⚿</span>
+          <input id="signup-password" placeholder="{{ 'label.password' | translate }}" required type="password" #password autocomplete="new-password"/>
+        </div>
+
+        <label class="field-label" for="signup-firstname">{{ 'label.first-name' | translate }}</label>
+        <div class="field">
+          <input id="signup-firstname" placeholder="{{ 'label.first-name' | translate }}" #firstname autocomplete="given-name"/>
+        </div>
+
+        <label class="field-label" for="signup-lastname">{{ 'label.last-name' | translate }}</label>
+        <div class="field">
+          <input id="signup-lastname" placeholder="{{ 'label.last-name' | translate }}" #lastname autocomplete="family-name"/>
+        </div>
+
+        <label class="field-label" for="signup-email">{{ 'label.email' | translate }}</label>
+        <div class="field">
+          <input id="signup-email" placeholder="{{ 'label.email' | translate }}" type="email" #email autocomplete="email"/>
+        </div>
+
+        <button type="submit" class="submit-btn">{{ 'label.signup' | translate | uppercase }}</button>
+      </form>
+    </div>
+
+    <div class="switch-auth">
+      {{ 'label.have-account' | translate }} <span class="link" (click)="login()">{{ 'label.login' | translate }}</span>
+    </div>
+  </div>
 </div>
