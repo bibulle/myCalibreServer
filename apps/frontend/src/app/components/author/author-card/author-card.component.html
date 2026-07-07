@@ -24,7 +24,7 @@
               <div class="mini-title">{{ book.book_title }}</div>
               <div class="mini-meta">
                 {{ book.book_date | date : 'yyyy' }}
-                @if (book.tag_name[0]) {
+                @if (book.tag_name && book.tag_name[0]) {
                   <span> · {{ book.tag_name[0] }}</span>
                 }
               </div>
