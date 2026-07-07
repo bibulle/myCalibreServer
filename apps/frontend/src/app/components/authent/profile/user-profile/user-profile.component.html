@@ -96,6 +96,8 @@
     </div>
   </section>
 
+  <ng-content select="[profile-password-slot]"></ng-content>
+
   <section class="card">
     <div class="card-label">{{ 'label.recent-downloads' | translate }}</div>
     @if (!user.history.downloadedBooks || user.history.downloadedBooks.length === 0) {

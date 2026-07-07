@@ -21,10 +21,11 @@
   </div>
 
   <div class="cards-grid">
-    <my-calibre-server-user-profile [user]="user" urlToRedirect="/profile"></my-calibre-server-user-profile>
-    <section class="card password-card">
-      <div class="card-label">{{ 'label.password' | translate }}</div>
-      <button type="button" class="pill pill-outline" (click)="changepw()">{{ 'label.changepw' | translate }}</button>
-    </section>
+    <my-calibre-server-user-profile [user]="user" urlToRedirect="/profile">
+      <section profile-password-slot class="card password-card">
+        <div class="card-label">{{ 'label.password' | translate }}</div>
+        <button type="button" class="pill pill-outline" (click)="changepw()">{{ 'label.changepw' | translate }}</button>
+      </section>
+    </my-calibre-server-user-profile>
   </div>
 </div>
