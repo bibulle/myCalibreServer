@@ -1,11 +1,59 @@
-@if (books) {
-  <mat-card class="new-book">
-    <mat-card-title class="title">{{ 'label.news' | translate : param }}</mat-card-title>
-    @for (book of books; track book) {
-      <my-calibre-server-book-card [book]="book"> </my-calibre-server-book-card>
+@if (groups) {
+  <div class="page-header">
+    <h1>{{ 'route.news' | translate }}</h1>
+    <div class="subtitle">{{ 'label.news-subtitle' | translate }}</div>
+  </div>
+
+  <div class="news-groups">
+    @for (group of groups; track group.type) {
+      <section class="news-group">
+        <div class="group-header">
+          <span class="dot"></span>
+          <h2>{{ groupLabel(group.type) }}</h2>
+          <span class="divider"></span>
+          <span class="count">{{ 'label.books-count' | translate: { count: group.books.length } }}</span>
+        </div>
+
+        <div class="news-list">
+          @for (book of group.books; track book.book_id) {
+            <div class="news-row" (click)="openBook(book.book_id)">
+              <div class="news-cover">
+                <my-calibre-server-image-sprites [id]="book.book_id"></my-calibre-server-image-sprites>
+              </div>
+              <div class="news-info">
+                @if (book.series_name) {
+                  <div class="series-eyebrow">{{ book.series_name }} · {{ 'label.tome' | translate }} {{ book.book_series_index }}</div>
+                }
+                <div class="news-title">{{ book.book_title }}</div>
+                <div class="news-meta">
+                  <span>{{ book.author_name }}</span>
+                  @if (book.book_date && book.book_date.getFullYear() > 1850) {
+                    <span class="dot-sep">·</span>
+                    <span>{{ book.book_date | date: 'yyyy' }}</span>
+                  }
+                  @if (book.tag_name && book.tag_name[0]) {
+                    <span class="dot-sep">·</span>
+                    <span>{{ book.tag_name[0] }}</span>
+                  }
+                </div>
+              </div>
+              @if (daysSinceAdded(book) <= 0) {
+                <span class="news-added">{{ 'label.news-added-today' | translate }}</span>
+              } @else if (daysSinceAdded(book) === 1) {
+                <span class="news-added">{{ 'label.news-added-yesterday' | translate }}</span>
+              } @else if (daysSinceAdded(book) <= 6) {
+                <span class="news-added">{{ 'label.news-added-days' | translate: { count: daysSinceAdded(book) } }}</span>
+              } @else {
+                <span class="news-added">{{ addedDate(book) | localizedDate: 'd MMM' }}</span>
+              }
+              <span class="lang-badge">{{ book.lang_code === 'eng' ? 'EN' : 'FR' }}</span>
+            </div>
+          }
+        </div>
+      </section>
     }
-  </mat-card>
+  </div>
 }
-@if (!books) {
+@if (!groups) {
   <mat-spinner></mat-spinner>
 }
