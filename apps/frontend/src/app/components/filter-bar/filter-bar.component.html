@@ -4,50 +4,10 @@
       {{ 'label.sort-by' | translate }}: {{ sortLabel | translate }} ▾
     </button>
     <mat-menu xPosition="before" yPosition="below" #sortmenu="matMenu" class="sort-menu">
-      @if (filter.isAvailable(0)) {
-        <button mat-menu-item (click)="toggleSort(0)" [class.active]="filter.sort === 0">
-          <span>{{ 'label.name' | translate }}</span>
-          @if (filter.sort === 0) {
-            <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-          }
-        </button>
-      }
-      @if (filter.isAvailable(1)) {
-        <button mat-menu-item (click)="toggleSort(1)" [class.active]="filter.sort === 1">
-          <span>{{ 'label.publish_date' | translate }}</span>
-          @if (filter.sort === 1) {
-            <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-          }
-        </button>
-      }
-      @if (filter.isAvailable(2)) {
-        <button mat-menu-item (click)="toggleSort(2)" [class.active]="filter.sort === 2">
-          <span>{{ 'label.author' | translate }}</span>
-          @if (filter.sort === 2) {
-            <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-          }
-        </button>
-      }
-      @if (filter.isAvailable(3)) {
-        <button mat-menu-item (click)="toggleSort(3)" [class.active]="filter.sort === 3">
-          <span>{{ 'label.rating-public' | translate }}</span>
-          @if (filter.sort === 3) {
-            <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-          }
-        </button>
-      }
-      @if (filter.isAvailable(4)) {
-        <button mat-menu-item (click)="toggleSort(4)" [class.active]="filter.sort === 4">
-          <span>{{ 'label.rating-reader' | translate }}</span>
-          @if (filter.sort === 4) {
-            <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
-          }
-        </button>
-      }
-      @if (filter.isAvailable(5)) {
-        <button mat-menu-item (click)="toggleSort(5)" [class.active]="filter.sort === 5">
-          <span>{{ 'label.sort-count' | translate }}</span>
-          @if (filter.sort === 5) {
+      @for (sortType of sortOptions; track sortType) {
+        <button mat-menu-item (click)="toggleSort(sortType)" [class.active]="filter.sort === sortType">
+          <span>{{ sortOptionLabelKey(sortType) | translate }}</span>
+          @if (filter.sort === sortType) {
             <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
           }
         </button>

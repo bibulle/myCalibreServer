@@ -121,7 +121,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._filterService.updateNotDisplayed(false);
-    this._filterService.updateLimitTo([SortType.Name, SortType.Count]);
+    this._filterService.updateLimitTo([SortType.Count, SortType.Name]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
       // console.log(filter);
       this.filter = filter;

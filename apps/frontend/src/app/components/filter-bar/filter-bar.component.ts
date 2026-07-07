@@ -65,8 +65,24 @@ export class FilterBarComponent implements OnInit, OnDestroy {
   }
 
 
+  private static readonly DEFAULT_SORT_OPTIONS = [SortType.Name, SortType.PublishDate, SortType.Author, SortType.PublicRating, SortType.ReaderRating];
+
   get sortLabel(): string {
     return sortLabelKey(this.filter.sort);
+  }
+
+  /**
+   * The sort options to display, in order. Each page controls its own
+   * order via FilterService.updateLimitTo() (see the "Reliure" handoff's
+   * per-page SORT_CONFIGS); an empty limit_to (no restriction) falls back
+   * to the original fixed order.
+   */
+  get sortOptions(): SortType[] {
+    return this.filter.limit_to.length > 0 ? this.filter.limit_to : FilterBarComponent.DEFAULT_SORT_OPTIONS;
+  }
+
+  sortOptionLabelKey(sortType: SortType): string {
+    return sortLabelKey(sortType);
   }
 
   toggleSort(sortType: SortType) {

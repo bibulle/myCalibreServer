@@ -157,6 +157,27 @@ describe('FilterBarComponent', () => {
     });
   });
 
+  describe('sortOptions', () => {
+    it('should fall back to the default fixed order when limit_to is empty', () => {
+      component.filter.limit_to = [];
+
+      expect(component.sortOptions).toEqual([SortType.Name, SortType.PublishDate, SortType.Author, SortType.PublicRating, SortType.ReaderRating]);
+    });
+
+    it("should use the page-provided order when limit_to is set (each page's own SORT_CONFIGS order)", () => {
+      component.filter.limit_to = [SortType.Count, SortType.Name];
+
+      expect(component.sortOptions).toEqual([SortType.Count, SortType.Name]);
+    });
+  });
+
+  describe('sortOptionLabelKey', () => {
+    it('should delegate to sortLabelKey', () => {
+      expect(component.sortOptionLabelKey(SortType.Count)).toBe('label.sort-count');
+      expect(component.sortOptionLabelKey(SortType.Author)).toBe('label.author');
+    });
+  });
+
   describe('toggleSort', () => {
     beforeEach(() => {
       component.ngOnInit();

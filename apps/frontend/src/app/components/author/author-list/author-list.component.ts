@@ -74,7 +74,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this._filterService.updateNotDisplayed(false);
-    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate, SortType.Count]);
+    this._filterService.updateLimitTo([SortType.Name, SortType.Count, SortType.PublishDate]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
       // console.log(filter);
       this.filter = filter;

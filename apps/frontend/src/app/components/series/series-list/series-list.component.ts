@@ -74,7 +74,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._filterService.updateNotDisplayed(false);
-    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate, SortType.Author, SortType.Count]);
+    this._filterService.updateLimitTo([SortType.PublishDate, SortType.Name, SortType.Author, SortType.Count]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
       // console.log(filter);
       this.filter = filter;
