@@ -1,19 +1,180 @@
 :host {
-  mat-card {
-    padding: 16px;
-    mat-card-title {
-      font-size: 24px;
-      font-weight: 500;
-      margin-bottom: 0.5em;
-    }
-    mat-spinner {
-      width: 50px;
-      margin-left: auto;
-      margin-right: auto;
-    }
+  display: block;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 34px) clamp(18px, 4vw, 34px) 60px;
+}
 
-    mat-content h3 {
-      padding-left: 20px;
-    }
+.page-header {
+  margin-bottom: 28px;
+
+  h1 {
+    margin: 0;
+    font-family: var(--font-serif-title);
+    font-weight: 600;
+    font-size: clamp(26px, 4vw, 36px);
+    color: var(--text);
   }
+
+  .subtitle {
+    margin-top: 5px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+.news-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex: 0 0 auto;
+  }
+
+  h2 {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border-soft);
+    flex: 1;
+  }
+
+  .count {
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 11.5px;
+    color: var(--faint);
+  }
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.news-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: 13px;
+  padding: 12px 15px;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .14);
+  }
+}
+
+.news-cover {
+  position: relative;
+  width: 52px;
+  flex: 0 0 52px;
+  aspect-ratio: 2 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 11px rgba(0, 0, 0, .28);
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Same sprite-scaling technique as book-card/series-card/profile downloads:
+  // scale the fixed 80x80 native sprite cell to cover this slot's height
+  // without touching width/height/background-size (see book-card.component.scss).
+  // 78px (slot height, 52 * 1.5) / 80px (native cell) = .975.
+  my-calibre-server-image-sprites {
+    flex: 0 0 auto;
+    transform: scale(.975);
+  }
+}
+
+.news-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.series-eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 3px;
+}
+
+.news-title {
+  font-family: var(--font-serif-title);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.news-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-top: 3px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--muted);
+
+  .dot-sep {
+    opacity: .4;
+  }
+}
+
+.news-added {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 11.5px;
+  color: var(--faint);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.lang-badge {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 7px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 10px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+mat-spinner {
+  width: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
