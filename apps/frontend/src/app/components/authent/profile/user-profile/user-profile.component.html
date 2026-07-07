@@ -1,22 +1,18 @@
 <section class="card account-card">
   <div class="card-label">{{ 'label.account' | translate }}</div>
   <div class="account-fields">
-    <mat-form-field class="field full">
-      <mat-label>{{ 'label.username' | translate }}</mat-label>
-      <input matInput required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()" />
-    </mat-form-field>
-    <mat-form-field class="field">
-      <mat-label>{{ 'label.first-name' | translate }}</mat-label>
-      <input matInput [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()" />
-    </mat-form-field>
-    <mat-form-field class="field">
-      <mat-label>{{ 'label.last-name' | translate }}</mat-label>
-      <input matInput [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()" />
-    </mat-form-field>
-    <mat-form-field class="field full">
-      <mat-label>{{ 'label.email' | translate }}</mat-label>
-      <input matInput type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()" />
-    </mat-form-field>
+    <label class="field-label full">{{ 'label.username' | translate }}
+      <input class="field-input" required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+    <label class="field-label">{{ 'label.first-name' | translate }}
+      <input class="field-input" [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+    <label class="field-label">{{ 'label.last-name' | translate }}
+      <input class="field-input" [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+    <label class="field-label full">{{ 'label.email' | translate }}
+      <input class="field-input" type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()" />
+    </label>
   </div>
 
   <div class="card-label section-spacing">{{ 'label.kindle-section' | translate }}</div>
@@ -29,9 +25,7 @@
       </div>
     }
     <div class="kindle-add-row">
-      <mat-form-field class="field kindle-input">
-        <input matInput type="email" [(ngModel)]="amazonEmail" placeholder="{{ 'label.kindle-add-placeholder' | translate }}" />
-      </mat-form-field>
+      <input class="field-input" type="email" [(ngModel)]="amazonEmail" placeholder="{{ 'label.kindle-add-placeholder' | translate }}" />
       <button type="button" class="round-btn round-btn-accent" (click)="addEmail()" matTooltip="{{ 'label.amazon-emails-add' | translate }}">+</button>
     </div>
   </div>

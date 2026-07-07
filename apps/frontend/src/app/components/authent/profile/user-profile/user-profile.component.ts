@@ -1,12 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, NgModule, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { User } from '@my-calibre-server/api-interfaces';
@@ -248,13 +242,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
 @NgModule({
   imports: [
     CommonModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatCheckboxModule,
-    MatProgressSpinnerModule,
     FormsModule,
-    MatInputModule,
     MatTooltipModule,
     TranslatePipe,
     LocalizedDateModule,

@@ -105,30 +105,3 @@
   gap: 16px;
   align-items: start;
 }
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-card-lg);
-  box-shadow: var(--shadow-card);
-  padding: 22px clamp(18px, 3vw, 24px);
-}
-
-.password-card {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-
-  .pill {
-    align-self: flex-start;
-  }
-}
-
-.card-label {
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 10px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--faint);
-}

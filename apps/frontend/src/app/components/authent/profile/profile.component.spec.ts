@@ -55,13 +55,6 @@ describe('ProfileComponent', () => {
     });
   });
 
-  describe('changepw', () => {
-    it('should navigate to the change-password page', () => {
-      component.changepw();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/changepassword']);
-    });
-  });
-
   describe('isAdmin', () => {
     it('should reflect UserService.isUserAdmin', () => {
       mockUserService.isUserAdmin.mockReturnValue(true);

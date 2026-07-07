@@ -44,13 +44,6 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/home'])
   }
 
-  /**
-   * Change pawwsord
-   */
-   changepw() {
-    this._router.navigate(['/changepassword'])
-  }
-
   isAdmin(): boolean {
     return this._userService.isUserAdmin();
   }

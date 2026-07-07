@@ -27,11 +27,33 @@
 .account-fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px 14px;
+  gap: 14px;
 
-  .field.full {
+  .field-label.full {
     grid-column: 1 / -1;
   }
+}
+
+.field-label {
+  display: block;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.field-input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--text-2);
+  outline: none;
 }
 
 .kindle-list {
@@ -68,8 +90,9 @@
   gap: 10px;
   margin-top: 2px;
 
-  .kindle-input {
+  .field-input {
     flex: 1;
+    margin-top: 0;
   }
 }
 
@@ -235,8 +258,12 @@
   // Same sprite-scaling technique as book-card/series-card: scale a fixed
   // 80x80 native sprite cell to cover this 32x48 (2:3) slot without
   // touching width/height/background-size (see book-card.component.scss).
-  // 48px (slot height) / 80px (native cell) = 0.6.
+  // 48px (slot height) / 80px (native cell) = 0.6. `flex: 0 0 auto` keeps
+  // the sprite's 80x80 layout box intact - without it, the flex container
+  // shrinks the item to fit before the transform applies, corrupting the
+  // sprite-sheet's pixel-based background-position math.
   my-calibre-server-image-sprites {
+    flex: 0 0 auto;
     transform: scale(0.6);
   }
 }

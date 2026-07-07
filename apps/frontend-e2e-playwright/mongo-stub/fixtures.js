@@ -40,8 +40,8 @@ const testUsers = [
     history: {
       downloadedBooks: [
         {
-          book_id: 1,
-          book_title: 'Test Book 1',
+          id: 1,
+          data: { data_id: 1, data_format: 'EPUB', data_size: 1234, data_name: 'Test Book 1' },
           date: new Date('2024-01-10T15:20:00.000Z'),
         },
       ],
