@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 
 import {Subject, Subscription} from 'rxjs';
 
-import {Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType} from './filter.service';
+import {defaultSortingDirection, Filter, FilterService, LangAvailable, sortLabelKey, SortType} from './filter.service';
 import { MatIconModule } from '@angular/material/icon';
 import {TranslatePipe} from '@ngx-translate/core';
 import {debounceTime} from 'rxjs/operators';
@@ -90,7 +90,7 @@ export class FilterBarComponent implements OnInit, OnDestroy {
       this.filter.sorting_direction = (this.filter.sorting_direction + 1) % 2;
     } else {
       this.filter.sort = sortType;
-      this.filter.sorting_direction = SortingDirection.Asc;
+      this.filter.sorting_direction = defaultSortingDirection(sortType);
     }
     this.filterList();
   }

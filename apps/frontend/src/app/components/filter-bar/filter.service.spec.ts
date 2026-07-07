@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from './filter.service';
+import { defaultSortingDirection, Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from './filter.service';
 
 describe('FilterService', () => {
   let service: FilterService;
@@ -318,6 +318,26 @@ describe('FilterService', () => {
 
       service.updateLimitTo([]);
     });
+
+    it("should reset to descending when the new page's first (preferred) option is Count", (done) => {
+      // e.g. navigating to the Tags page, whose SORT_CONFIGS lists
+      // "Popularité" (Count) first - it should read as most-popular-first.
+      const newFilter = new Filter();
+      newFilter.sort = SortType.Name;
+      service.update(newFilter);
+
+      let emissionCount = 0;
+      service.currentFilterObservable().subscribe((filter) => {
+        emissionCount++;
+        if (emissionCount === 2) {
+          expect(filter.sort).toBe(SortType.Count);
+          expect(filter.sorting_direction).toBe(SortingDirection.Desc);
+          done();
+        }
+      });
+
+      service.updateLimitTo([SortType.Count, SortType.Author]);
+    });
   });
 
   describe('currentFilterObservable', () => {
@@ -494,6 +514,20 @@ describe('Enums', () => {
       expect(sortLabelKey(SortType.PublicRating)).toBe('label.rating-public');
       expect(sortLabelKey(SortType.ReaderRating)).toBe('label.rating-reader');
       expect(sortLabelKey(SortType.Count)).toBe('label.sort-count');
+    });
+  });
+
+  describe('defaultSortingDirection', () => {
+    it('should default Count to descending (most books first)', () => {
+      expect(defaultSortingDirection(SortType.Count)).toBe(SortingDirection.Desc);
+    });
+
+    it('should default every other sort type to ascending', () => {
+      expect(defaultSortingDirection(SortType.Name)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.PublishDate)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.Author)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.PublicRating)).toBe(SortingDirection.Asc);
+      expect(defaultSortingDirection(SortType.ReaderRating)).toBe(SortingDirection.Asc);
     });
   });
 });

@@ -224,6 +224,25 @@ describe('FilterBarComponent', () => {
 
       expect(filterListSpy).toHaveBeenCalled();
     });
+
+    it('should default Count to descending (most books first) instead of ascending', (done) => {
+      component.filter.sort = SortType.Name;
+      component.filter.sorting_direction = SortingDirection.Asc;
+
+      component.toggleSort(SortType.Count);
+
+      expect(component.filter.sort).toBe(SortType.Count);
+      expect(component.filter.sorting_direction).toBe(SortingDirection.Desc);
+
+      // clicking it again still toggles normally, back to ascending
+      component.toggleSort(SortType.Count);
+      expect(component.filter.sorting_direction).toBe(SortingDirection.Asc);
+
+      setTimeout(() => {
+        expect(mockFilterService.update).toHaveBeenCalled();
+        done();
+      }, 600);
+    });
   });
 
   describe('toggleLang', () => {

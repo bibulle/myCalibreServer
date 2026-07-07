@@ -46,7 +46,7 @@ export class FilterService {
       // (its first, preferred option) instead of keeping an invalid one.
       if (limit_to.length > 0 && !limit_to.includes(this.lastFilter.sort)) {
         this.lastFilter.sort = limit_to[0];
-        this.lastFilter.sorting_direction = SortingDirection.Asc;
+        this.lastFilter.sorting_direction = defaultSortingDirection(limit_to[0]);
       }
       this.currentFilterSubject.next(this.lastFilter)
     }
@@ -97,6 +97,16 @@ export enum SortingDirection {
 }
 export enum LangAvailable {
   All, Fra, Eng
+}
+
+/**
+ * The direction a sort type should start in the first time it's selected.
+ * Count reads as "popularity" (most books first) so it defaults to
+ * descending; every other type keeps the existing ascending default
+ * (A-Z, oldest first, etc).
+ */
+export function defaultSortingDirection(sort: SortType): SortingDirection {
+  return sort === SortType.Count ? SortingDirection.Desc : SortingDirection.Asc;
 }
 
 /**
