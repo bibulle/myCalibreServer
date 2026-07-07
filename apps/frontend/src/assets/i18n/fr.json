@@ -72,6 +72,7 @@
   "label.series-subtitle": "{{count}} collections dans votre bibliothèque",
 	"label.signup": "Inscription",
 	"label.sort-by": "Trier",
+  "label.sort-count": "Nombre de livres",
 	"label.tags": "Etiquettes",
   "label.tags-books-section": "Livres · {{name}}",
   "label.tags-clear-filter": "Effacer le filtre",

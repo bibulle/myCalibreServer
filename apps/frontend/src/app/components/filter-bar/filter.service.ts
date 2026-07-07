@@ -82,7 +82,7 @@ export class Filter {
 }
 
 export enum SortType {
-  Name, PublishDate, Author, PublicRating, ReaderRating
+  Name, PublishDate, Author, PublicRating, ReaderRating, Count
 }
 export enum SortingDirection {
   Asc, Desc
@@ -105,6 +105,8 @@ export function sortLabelKey(sort: SortType): string {
       return 'label.rating-public';
     case SortType.ReaderRating:
       return 'label.rating-reader';
+    case SortType.Count:
+      return 'label.sort-count';
     case SortType.Name:
     default:
       return 'label.name';

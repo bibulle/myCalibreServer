@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Author } from '@my-calibre-server/api-interfaces';
 import { AuthorListComponent } from './author-list.component';
 import { AuthorService } from '../author.service';
-import { Filter, FilterService } from '../../filter-bar/filter.service';
+import { Filter, FilterService, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { NotificationService } from '../../notification/notification.service';
 
 describe('AuthorListComponent', () => {
@@ -64,6 +64,36 @@ describe('AuthorListComponent', () => {
 
       expect(component.subtitle).toBe('label.authors-subtitle:{"count":12}');
       expect(mockTranslateService.instant).toHaveBeenCalledWith('label.authors-subtitle', { count: 12 });
+    });
+  });
+
+  describe('_filterAndSortAuthors with SortType.Count', () => {
+    beforeEach(() => {
+      component.fullAuthors = [
+        makeAuthor({ author_id: 1, author_name: 'Small', books: [{} as never] }),
+        makeAuthor({ author_id: 2, author_name: 'Big', books: [{} as never, {} as never, {} as never] }),
+        makeAuthor({ author_id: 3, author_name: 'Medium', books: [{} as never, {} as never] }),
+      ];
+    });
+
+    it('should sort ascending by number of books', () => {
+      component.filter = new Filter();
+      component.filter.sort = SortType.Count;
+      component.filter.sorting_direction = SortingDirection.Asc;
+
+      const result = component._filterAndSortAuthors();
+
+      expect(result?.map((a) => a.author_name)).toEqual(['Small', 'Medium', 'Big']);
+    });
+
+    it('should sort descending by number of books', () => {
+      component.filter = new Filter();
+      component.filter.sort = SortType.Count;
+      component.filter.sorting_direction = SortingDirection.Desc;
+
+      const result = component._filterAndSortAuthors();
+
+      expect(result?.map((a) => a.author_name)).toEqual(['Big', 'Medium', 'Small']);
     });
   });
 

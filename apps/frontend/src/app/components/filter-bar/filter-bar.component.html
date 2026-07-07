@@ -44,6 +44,14 @@
           }
         </button>
       }
+      @if (filter.isAvailable(5)) {
+        <button mat-menu-item (click)="toggleSort(5)" [class.active]="filter.sort === 5">
+          <span>{{ 'label.sort-count' | translate }}</span>
+          @if (filter.sort === 5) {
+            <mat-icon>{{ filter.sorting_direction === 0 ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+          }
+        </button>
+      }
     </mat-menu>
 
     <div class="lang-toggle">

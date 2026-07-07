@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { SeriesListComponent } from './series-list.component';
 import { SeriesService } from '../series.service';
-import { Filter, FilterService } from '../../filter-bar/filter.service';
+import { Filter, FilterService, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { NotificationService } from '../../notification/notification.service';
 
 describe('SeriesListComponent', () => {
@@ -73,6 +73,36 @@ describe('SeriesListComponent', () => {
 
       expect(component.subtitle).toBe('label.series-subtitle:{"count":5}');
       expect(mockTranslateService.instant).toHaveBeenCalledWith('label.series-subtitle', { count: 5 });
+    });
+  });
+
+  describe('_filterAndSortSeries with SortType.Count', () => {
+    beforeEach(() => {
+      component.fullSeries = [
+        makeSeries({ series_id: 1, series_name: 'Small', books: [{} as never] }),
+        makeSeries({ series_id: 2, series_name: 'Big', books: [{} as never, {} as never, {} as never] }),
+        makeSeries({ series_id: 3, series_name: 'Medium', books: [{} as never, {} as never] }),
+      ];
+    });
+
+    it('should sort ascending by number of volumes', () => {
+      component.filter = new Filter();
+      component.filter.sort = SortType.Count;
+      component.filter.sorting_direction = SortingDirection.Asc;
+
+      const result = component._filterAndSortSeries();
+
+      expect(result?.map((s) => s.series_name)).toEqual(['Small', 'Medium', 'Big']);
+    });
+
+    it('should sort descending by number of volumes', () => {
+      component.filter = new Filter();
+      component.filter.sort = SortType.Count;
+      component.filter.sorting_direction = SortingDirection.Desc;
+
+      const result = component._filterAndSortSeries();
+
+      expect(result?.map((s) => s.series_name)).toEqual(['Big', 'Medium', 'Small']);
     });
   });
 

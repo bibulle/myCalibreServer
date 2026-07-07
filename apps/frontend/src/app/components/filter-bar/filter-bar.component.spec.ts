@@ -151,6 +151,9 @@ describe('FilterBarComponent', () => {
 
       component.filter.sort = SortType.ReaderRating;
       expect(component.sortLabel).toBe('label.rating-reader');
+
+      component.filter.sort = SortType.Count;
+      expect(component.sortLabel).toBe('label.sort-count');
     });
   });
 

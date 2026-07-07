@@ -121,7 +121,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._filterService.updateNotDisplayed(false);
-    this._filterService.updateLimitTo([SortType.Name]);
+    this._filterService.updateLimitTo([SortType.Name, SortType.Count]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
       // console.log(filter);
       this.filter = filter;
@@ -233,6 +233,11 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
         return t.books.length !== 0;
       })
       .sort((b1: Tag, b2: Tag) => {
+        if (this.filter.sort === SortType.Count) {
+          const diff = b1.books.length - b2.books.length;
+          return this.filter.sorting_direction === SortingDirection.Asc ? diff : -diff;
+        }
+
         // console.log(b1);
         // console.log(b2);
 

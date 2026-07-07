@@ -411,6 +411,7 @@ describe('Enums', () => {
       expect(SortType.Author).toBeDefined();
       expect(SortType.PublicRating).toBeDefined();
       expect(SortType.ReaderRating).toBeDefined();
+      expect(SortType.Count).toBeDefined();
     });
   });
 
@@ -436,6 +437,7 @@ describe('Enums', () => {
       expect(sortLabelKey(SortType.Author)).toBe('label.author');
       expect(sortLabelKey(SortType.PublicRating)).toBe('label.rating-public');
       expect(sortLabelKey(SortType.ReaderRating)).toBe('label.rating-reader');
+      expect(sortLabelKey(SortType.Count)).toBe('label.sort-count');
     });
   });
 });

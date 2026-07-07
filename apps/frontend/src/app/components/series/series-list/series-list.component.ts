@@ -74,7 +74,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this._filterService.updateNotDisplayed(false);
-    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate, SortType.Author]);
+    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate, SortType.Author, SortType.Count]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
       // console.log(filter);
       this.filter = filter;
@@ -191,6 +191,11 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
         return s.books.length !== 0;
       })
       .sort((b1: Series, b2: Series) => {
+        if (this.filter.sort === SortType.Count) {
+          const diff = b1.books.length - b2.books.length;
+          return this.filter.sorting_direction === SortingDirection.Asc ? diff : -diff;
+        }
+
         let v1: string;
         let v2: string;
         v1 = b1.series_sort;

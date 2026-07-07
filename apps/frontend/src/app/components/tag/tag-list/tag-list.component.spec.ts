@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Book, Tag } from '@my-calibre-server/api-interfaces';
 import { TagListComponent } from './tag-list.component';
 import { TagService } from '../tag.service';
-import { Filter, FilterService } from '../../filter-bar/filter.service';
+import { Filter, FilterService, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { NotificationService } from '../../notification/notification.service';
 
 describe('TagListComponent', () => {
@@ -158,6 +158,36 @@ describe('TagListComponent', () => {
     it('should navigate to the book page', () => {
       component.openBook(42);
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/book', 42]);
+    });
+  });
+
+  describe('_filterAndSortTags with SortType.Count', () => {
+    beforeEach(() => {
+      component.fullTags = [
+        makeTag({ tag_id: 1, tag_name: 'Small', books: [makeBook()] }),
+        makeTag({ tag_id: 2, tag_name: 'Big', books: [makeBook(), makeBook(), makeBook()] }),
+        makeTag({ tag_id: 3, tag_name: 'Medium', books: [makeBook(), makeBook()] }),
+      ];
+    });
+
+    it('should sort ascending by number of books', () => {
+      component.filter = new Filter();
+      component.filter.sort = SortType.Count;
+      component.filter.sorting_direction = SortingDirection.Asc;
+
+      const result = component._filterAndSortTags();
+
+      expect(result?.map((t) => t.tag_name)).toEqual(['Small', 'Medium', 'Big']);
+    });
+
+    it('should sort descending by number of books', () => {
+      component.filter = new Filter();
+      component.filter.sort = SortType.Count;
+      component.filter.sorting_direction = SortingDirection.Desc;
+
+      const result = component._filterAndSortTags();
+
+      expect(result?.map((t) => t.tag_name)).toEqual(['Big', 'Medium', 'Small']);
     });
   });
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, NgModule, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Filter, FilterService, SortType, SortingDirection, LangAvailable } from '../../filter-bar/filter.service';
+import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { AuthorService } from '../author.service';
 import { AuthorCardModule } from '../author-card/author-card.component';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -73,7 +74,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this._filterService.updateNotDisplayed(false);
-    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate]);
+    this._filterService.updateLimitTo([SortType.Name, SortType.PublishDate, SortType.Count]);
     this._currentFilterSubscription = this._filterService.currentFilterObservable().subscribe((filter: Filter) => {
       // console.log(filter);
       this.filter = filter;
@@ -185,6 +186,11 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
         return a.books.length !== 0;
       })
       .sort((b1: Author, b2: Author) => {
+        if (this.filter.sort === SortType.Count) {
+          const diff = b1.books.length - b2.books.length;
+          return this.filter.sorting_direction === SortingDirection.Asc ? diff : -diff;
+        }
+
         // console.log(b1);
         // console.log(b2);
 
@@ -229,7 +235,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, AuthorCardModule, TranslatePipe],
+  imports: [CommonModule, MatProgressSpinnerModule, AuthorCardModule, FilterBarModule, TranslatePipe],
   declarations: [AuthorListComponent],
   exports: [AuthorListComponent],
 })

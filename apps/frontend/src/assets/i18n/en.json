@@ -72,6 +72,7 @@
   "label.series-subtitle": "{{count}} collections in your library",
 	"label.signup": "Signup",
 	"label.sort-by": "Sort by",
+  "label.sort-count": "Number of books",
 	"label.tags": "Tags",
   "label.tags-books-section": "Books · {{name}}",
   "label.tags-clear-filter": "Clear filter",
