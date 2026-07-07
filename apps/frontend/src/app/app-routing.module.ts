@@ -21,7 +21,7 @@ import { TagListComponent } from './components/tag/tag-list/tag-list.component';
 const routes: Routes = [
   { path: '',               redirectTo: '/home', pathMatch: 'full'},
   { path: 'login',          component: LoginComponent                ,                                data: {label: 'route.login'   , menu: false, hideHeader: true}},
-  { path: 'signup',         component: SignupComponent               ,                                data: {label: 'route.signup'  , menu: false}},
+  { path: 'signup',         component: SignupComponent               ,                                data: {label: 'route.signup'  , menu: false, hideHeader: true}},
   { path: 'profile',        component: ProfileComponent              , canActivate: [AuthGuard],      data: {label: 'route.profile' , menu: false}},
   { path: 'users',          component: UsersListComponent            , canActivate: [AuthGuardAdmin], data: {label: 'route.users'   , menu: false , admin: true}},
   { path: 'connect/local',  component: ConnectLocalComponent         , canActivate: [AuthGuard],      data: {label: 'route.connect' , menu: false}},

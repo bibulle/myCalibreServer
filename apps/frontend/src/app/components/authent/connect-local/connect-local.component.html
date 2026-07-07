@@ -1,17 +1,17 @@
-<div class="mat-content"   >
-  <mat-card >
+<div class="connect-local-page">
+  <div class="form-card">
     <form role="form" (submit)="connect($event, username.value, password.value)">
-      <mat-card-content>
-        <mat-form-field>
-          <input matInput placeholder="{{'label.username' | translate}}"  required                 #username>
-        </mat-form-field>
-        <mat-form-field>
-          <input matInput placeholder="{{'label.password' | translate}}"  required type="password" #password>
-        </mat-form-field>
-      </mat-card-content>
-      <mat-card-actions align="end">
-        <button mat-raised-button color="primary" type="submit">Add/connect a local account</button>
-      </mat-card-actions>
+      <label class="field-label" for="connect-local-username">{{ 'label.username' | translate }}</label>
+      <div class="field">
+        <input id="connect-local-username" placeholder="{{ 'label.username' | translate }}" required #username autocomplete="username"/>
+      </div>
+
+      <label class="field-label" for="connect-local-password">{{ 'label.password' | translate }}</label>
+      <div class="field">
+        <input id="connect-local-password" placeholder="{{ 'label.password' | translate }}" required type="password" #password autocomplete="new-password"/>
+      </div>
+
+      <button type="submit" class="submit-btn">{{ 'label.connect-local-submit' | translate | uppercase }}</button>
     </form>
-  </mat-card>
+  </div>
 </div>

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Version } from '@my-calibre-server/api-interfaces';
 import { Filter, FilterService } from '../../filter-bar/filter.service';
 import { NotificationService } from '../../notification/notification.service';
+import { TitleService } from '../../../app/title.service';
 import { UserService } from '../user.service';
 
 @Component({
@@ -12,14 +14,25 @@ import { UserService } from '../user.service';
 })
 export class LoginComponent implements OnInit {
 
+  version: Version = new Version();
+
   constructor(private _filterService: FilterService,
               private _userService: UserService,
               private _notificationService: NotificationService,
+              private _titleService: TitleService,
               private _router: Router) {
   }
 
   ngOnInit() {
     this._filterService.update(new Filter({not_displayed: true}));
+
+    this._titleService.getVersion().then((v) => {
+      this.version = v;
+    });
+  }
+
+  isVersionBeta(): boolean {
+    return this.version.version.startsWith('0.');
   }
 
   login(event: Event, username:string, password:string) {
