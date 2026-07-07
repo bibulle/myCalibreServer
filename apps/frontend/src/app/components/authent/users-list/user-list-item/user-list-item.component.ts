@@ -1,18 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, NgModule, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { User } from '@my-calibre-server/api-interfaces';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDateModule } from '../../../../directives/localized-date.pipe';
 import { NotificationService } from '../../../notification/notification.service';
-import { UserProfileModule } from '../../profile/user-profile/user-profile.component';
 import { UserService } from '../../user.service';
 
 @Component({
@@ -101,15 +94,8 @@ export class UserListItemComponent {
 @NgModule({
   imports: [
     CommonModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
     MatSlideToggleModule,
-    MatCheckboxModule,
     MatTooltipModule,
-    FormsModule,
-    MatInputModule,
-    UserProfileModule,
     TranslatePipe,
     LocalizedDateModule
   ],

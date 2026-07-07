@@ -1,5 +1,8 @@
 {
 	"label.account": "Compte",
+	"label.activity": "Activité",
+  "label.activity-downloads": "{{count}} téléch.",
+  "label.activity-ratings": "{{count}} notes",
 	"label.admin": "Admin",
 	"label.administration": "Administration",
 	"label.amazon-emails-add": "Ajouter un e-mail à la liste",
@@ -46,6 +49,7 @@
 	"label.google-unlink": "Deconnecter un compte Google",
   "label.have-account": "Vous avez déjà un compte ?",
   "label.kindle-add-placeholder": "ajouter une adresse @kindle.com…",
+  "label.kindle-addresses": "Adresses Kindle",
   "label.kindle-section": "Adresses Kindle / Amazon",
 	"label.kindle.enter-email": "Entrez votre adresse e-mail Kindle pour synchroniser ce livre sur votre appareil.",
 	"label.kindle.send-to": "Envoyer sur votre Kindle",
