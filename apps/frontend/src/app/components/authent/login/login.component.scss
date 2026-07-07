@@ -170,7 +170,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  // near-zero gap: the icon visually replaces the word's first letter
+  // ("[G-logo]oogle" / "[F-logo]acebook"), not a separate icon + word.
+  gap: 2px;
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 13px;
@@ -180,6 +182,10 @@
   border-radius: 11px;
   padding: 11px;
   cursor: pointer;
+
+  svg {
+    flex: 0 0 auto;
+  }
 }
 
 .switch-auth {
