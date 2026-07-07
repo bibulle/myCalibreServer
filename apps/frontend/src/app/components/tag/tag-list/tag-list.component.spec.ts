@@ -81,6 +81,16 @@ describe('TagListComponent', () => {
       expect(component.selectedTag?.tag_name).toBe('Sci-Fi');
       expect(component.selectedTagBooks).toEqual([book]);
     });
+
+    it('should report no selection when the selected id no longer matches a filtered tag', () => {
+      // e.g. a language filter change excludes the previously selected tag
+      component.tags = [];
+      component.selectedId = 1;
+
+      expect(component.tagSelected).toBe(false);
+      expect(component.selectedTag).toBeUndefined();
+      expect(component.selectedTagBooks).toEqual([]);
+    });
   });
 
   describe('subtitle', () => {

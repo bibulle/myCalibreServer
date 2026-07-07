@@ -29,6 +29,14 @@
   }
 }
 
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .clear-filter {
   font-family: var(--font-ui);
   font-weight: 500;

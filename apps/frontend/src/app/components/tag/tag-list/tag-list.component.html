@@ -4,9 +4,12 @@
       <h1>{{ 'route.tags' | translate }}</h1>
       <div class="subtitle">{{ subtitle }}</div>
     </div>
-    @if (tagSelected) {
-      <span class="clear-filter" (click)="clearTagFilter()">✕ {{ 'label.tags-clear-filter' | translate }}</span>
-    }
+    <div class="toolbar-actions">
+      @if (tagSelected) {
+        <span class="clear-filter" (click)="clearTagFilter()">✕ {{ 'label.tags-clear-filter' | translate }}</span>
+      }
+      <my-calibre-server-filter-bar></my-calibre-server-filter-bar>
+    </div>
   </div>
 
   <div class="tag-cloud">

@@ -7,6 +7,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { TagCardModule } from '../tag-card/tag-card.component';
 import { TagService } from '../tag.service';
 import { NotificationService } from '../../notification/notification.service';
@@ -59,7 +60,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
   ) {}
 
   get tagSelected(): boolean {
-    return !!this.selectedId;
+    return !!this.selectedTag;
   }
 
   get selectedTag(): Tag | undefined {
@@ -263,7 +264,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
 }
 
 @NgModule({
-  imports: [CommonModule, MatProgressSpinnerModule, TagCardModule, TranslatePipe, ImageSpritesModule],
+  imports: [CommonModule, MatProgressSpinnerModule, TagCardModule, TranslatePipe, ImageSpritesModule, FilterBarModule],
   declarations: [TagListComponent],
   exports: [TagListComponent],
 })
