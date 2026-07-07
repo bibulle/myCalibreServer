@@ -55,13 +55,6 @@ describe('ProfileComponent', () => {
     });
   });
 
-  describe('changepw', () => {
-    it('should navigate to the change-password page', () => {
-      component.changepw();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/changepassword']);
-    });
-  });
-
   describe('isAdmin', () => {
     it('should reflect UserService.isUserAdmin', () => {
       mockUserService.isUserAdmin.mockReturnValue(true);
@@ -76,6 +69,37 @@ describe('ProfileComponent', () => {
     it('should navigate to the users administration page', () => {
       component.openAdmin();
       expect(mockRouter.navigate).toHaveBeenCalledWith(['/users']);
+    });
+  });
+
+  describe('goLibrary', () => {
+    it('should navigate to the home page', () => {
+      component.goLibrary();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/home']);
+    });
+  });
+
+  describe('initials', () => {
+    it('should use firstname/lastname initials when available', () => {
+      component.user = { local: { username: 'jdoe', firstname: 'John', lastname: 'Doe' } } as User;
+      expect(component.initials()).toBe('JD');
+    });
+
+    it('should fall back to the username initial', () => {
+      component.user = { local: { username: 'jdoe' } } as User;
+      expect(component.initials()).toBe('J');
+    });
+  });
+
+  describe('displayName', () => {
+    it('should use firstname/lastname when available', () => {
+      component.user = { local: { username: 'jdoe', firstname: 'John', lastname: 'Doe' } } as User;
+      expect(component.displayName()).toBe('John Doe');
+    });
+
+    it('should fall back to the username', () => {
+      component.user = { local: { username: 'jdoe' } } as User;
+      expect(component.displayName()).toBe('jdoe');
     });
   });
 });

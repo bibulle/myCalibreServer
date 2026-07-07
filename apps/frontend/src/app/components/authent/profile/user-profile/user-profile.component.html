@@ -1,109 +1,134 @@
-<mat-card-content>
-  <div class="provider">{{ 'label.account' | translate }} :</div>
-  <mat-form-field class="info">
-    <mat-label>{{ 'label.username' | translate }}</mat-label>
-    <input matInput required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()" />
-  </mat-form-field>
-  <mat-form-field class="info">
-    <mat-label>{{ 'label.first-name' | translate }}</mat-label>
-    <input matInput [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()" />
-  </mat-form-field>
-  <mat-form-field class="info">
-    <mat-label>{{ 'label.last-name' | translate }}</mat-label>
-    <input matInput [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()" />
-  </mat-form-field>
-  <mat-form-field class="info">
-    <mat-label>{{ 'label.email' | translate }}</mat-label>
-    <input matInput type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()" />
-  </mat-form-field>
-  <mat-form-field class="info">
-    <mat-label>{{ 'label.amazon-emails' | translate }}</mat-label>
-    <input matInput type="email" [(ngModel)]="amazonEmail" />
-  </mat-form-field>
-  <a class="add_email" mat-mini-fab (click)="addEmail()" matTooltip="{{ 'label.amazon-emails-add' | translate }}"><mat-icon>add</mat-icon></a>
-  <div class="info emails">
-    @for (amazonEmail of user.local.amazonEmails; track amazonEmail) {
-      <div>
-        {{ amazonEmail }}
-        <a class="del_email" mat-mini-fab (click)="delEmail(amazonEmail)" matTooltip="{{ 'label.amazon-emails-remove' | translate }}"><mat-icon>remove</mat-icon></a>
+<section class="card account-card">
+  <div class="card-label">{{ 'label.account' | translate }}</div>
+  <div class="account-fields">
+    <label class="field-label full">{{ 'label.username' | translate }}
+      <input class="field-input" required maxlength="20" minlength="3" [(ngModel)]="user.local.username" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+    <label class="field-label">{{ 'label.first-name' | translate }}
+      <input class="field-input" [(ngModel)]="user.local.firstname" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+    <label class="field-label">{{ 'label.last-name' | translate }}
+      <input class="field-input" [(ngModel)]="user.local.lastname" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+    <label class="field-label full">{{ 'label.email' | translate }}
+      <input class="field-input" type="email" [(ngModel)]="user.local.email" (change)="userChange()" (keyup)="userChange()" />
+    </label>
+  </div>
+
+  <div class="card-label section-spacing">{{ 'label.kindle-section' | translate }}</div>
+  <div class="kindle-list">
+    @for (email of user.local.amazonEmails; track email) {
+      <div class="kindle-row">
+        <span class="kindle-icon">✉</span>
+        <span class="kindle-email">{{ email }}</span>
+        <button type="button" class="round-btn" (click)="delEmail(email)" matTooltip="{{ 'label.amazon-emails-remove' | translate }}">−</button>
       </div>
     }
-  </div>
-  <div class="dates">
-    <div>
-      <div class="label">{{ 'label.created' | translate }} :</div>
-      <div class="date">{{ user.created | localizedDate: 'medium' }}</div>
-    </div>
-    <div>
-      <div class="last-connection">{{ 'label.last-connection' | translate }} :</div>
-      <div class="date">{{ user.history.lastConnection | localizedDate: 'medium' }}</div>
+    <div class="kindle-add-row">
+      <input class="field-input" type="email" [(ngModel)]="amazonEmail" placeholder="{{ 'label.kindle-add-placeholder' | translate }}" />
+      <button type="button" class="round-btn round-btn-accent" (click)="addEmail()" matTooltip="{{ 'label.amazon-emails-add' | translate }}">+</button>
     </div>
   </div>
-</mat-card-content>
-<mat-card-content>
-  <div class="provider">{{ 'label.facebook' | translate }} :</div>
-  @if (user.facebook.name) {
-    <div class="info name">{{ user.facebook.name }}</div>
-  }
-  @if (!user.facebook.name) {
-    <div class="info name">{{ 'label.none' | translate }}</div>
-  }
-  @if (user.facebook.name) {
-    <div class="info email">{{ user.facebook.email }}</div>
-  }
-  @if (!user.facebook.name) {
-    <a class="connect fa fa-facebook" mat-mini-fab (click)="connectFacebook()" matTooltip="{{ 'label.facebook-connect' | translate }}" matTooltipPosition="before"></a>
-  }
-  @if (user.facebook.name) {
-    <a class="unlink fa fa-facebook" mat-mini-fab (click)="unlinkFacebook()" matTooltip="{{ 'label.facebook-unlink' | translate }}" matTooltipPosition="before"
-      ><mat-icon>clear</mat-icon></a
-      >
-    }
-  </mat-card-content>
-  <mat-card-content>
-    <div class="provider">{{ 'label.google' | translate }} :</div>
-    @if (user.google.name) {
-      <div class="info name">{{ user.google.name }}</div>
-    }
-    @if (!user.google.name) {
-      <div class="info name">{{ 'label.none' | translate }}</div>
-    }
-    @if (user.google.name) {
-      <div class="info email">{{ user.google.email }}</div>
-    }
-    @if (!user.google.name) {
-      <a class="connect fa fa-google" mat-mini-fab (click)="connectGoogle()" matTooltip="{{ 'label.google-connect' | translate }}" matTooltipPosition="before"></a>
-    }
-    @if (user.google.name) {
-      <a class="unlink fa fa-google" mat-mini-fab (click)="unlinkGoogle()" matTooltip="{{ 'label.google-unlink' | translate }}" matTooltipPosition="before"
-        ><mat-icon>clear</mat-icon></a
-        >
+
+  <div class="dates-footer">
+    <div>
+      <div class="dates-label">{{ 'label.created-on' | translate }}</div>
+      <div class="dates-value">{{ user.created | localizedDate: 'medium' }}</div>
+    </div>
+    <div>
+      <div class="dates-label">{{ 'label.last-connection' | translate }}</div>
+      <div class="dates-value">{{ user.history.lastConnection | localizedDate: 'medium' }}</div>
+    </div>
+  </div>
+</section>
+
+<div class="right-column">
+  <section class="card">
+    <div class="card-label">{{ 'label.linked-accounts' | translate }}</div>
+
+    <div class="linked-row">
+      <svg width="22" height="22" viewBox="0 0 48 48" class="linked-icon">
+        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571.001-.001.002-.001.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+      </svg>
+      <div class="linked-info">
+        <div class="linked-name">{{ 'label.google' | translate }}</div>
+        @if (user.google.name) {
+          <div class="linked-detail">{{ user.google.email }}</div>
+        } @else {
+          <div class="linked-detail muted">{{ 'label.not-connected' | translate }}</div>
+        }
+      </div>
+      @if (user.google.name) {
+        <button type="button" class="pill pill-outline" (click)="unlinkGoogle()" matTooltip="{{ 'label.google-unlink' | translate }}">{{ 'label.unlink' | translate }}</button>
+      } @else {
+        <button type="button" class="pill pill-google" (click)="connectGoogle()" matTooltip="{{ 'label.google-connect' | translate }}">{{ 'label.connect-short' | translate }}</button>
       }
-    </mat-card-content>
-    <mat-card-content>
-      <div class="provider">{{ 'label.downloaded-books' | translate }} :</div>
-      @if (!user.history.downloadedBooks) {
-        <div class="info book">{{ 'label.none' | translate }}</div>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="linked-row">
+      <svg width="22" height="22" viewBox="0 0 24 24" class="linked-icon">
+        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+      </svg>
+      <div class="linked-info">
+        <div class="linked-name">{{ 'label.facebook' | translate }}</div>
+        @if (user.facebook.name) {
+          <div class="linked-detail">{{ user.facebook.email }}</div>
+        } @else {
+          <div class="linked-detail muted">{{ 'label.not-connected' | translate }}</div>
+        }
+      </div>
+      @if (user.facebook.name) {
+        <button type="button" class="pill pill-outline" (click)="unlinkFacebook()" matTooltip="{{ 'label.facebook-unlink' | translate }}">{{ 'label.unlink' | translate }}</button>
+      } @else {
+        <button type="button" class="pill pill-facebook" (click)="connectFacebook()" matTooltip="{{ 'label.facebook-connect' | translate }}">{{ 'label.connect-short' | translate }}</button>
       }
+    </div>
+  </section>
+
+  <ng-content select="[profile-password-slot]"></ng-content>
+
+  <section class="card">
+    <div class="card-label">{{ 'label.recent-downloads' | translate }}</div>
+    @if (!user.history.downloadedBooks || user.history.downloadedBooks.length === 0) {
+      <div class="empty-row">{{ 'label.none' | translate }}</div>
+    }
+    <div class="history-list">
       @for (book of user.history.downloadedBooks; track book.id) {
-        <div class="info book" (click)="openBook(book.id)">
-          <div class="date">{{ book.date | localizedDate: 'medium' }}</div>
-          <a
-            ><div class="title" title="Id: {{ book.id }}">{{ book.data?.data_name }}</div></a
-            >
+        <div class="history-row" (click)="openBook(book.id)">
+          <div class="history-cover">
+            <my-calibre-server-image-sprites [id]="book.id"></my-calibre-server-image-sprites>
           </div>
-        }
-      </mat-card-content>
-      <mat-card-content>
-        <div class="provider">{{ 'label.rating-books' | translate }} :</div>
-        @if (!user.history.ratings) {
-          <div class="info book">{{ 'label.none' | translate }}</div>
-        }
-        @for (rating of user.history.ratings; track rating.book_id) {
-          <div class="info book" (click)="openBook(rating.book_id)">
-            <div class="date">{{ rating.date | localizedDate: 'medium' }}</div>
-            <div class="rating">{{ rating.rating }}/10</div>
-            <div class="title" title="Id: {{ rating.book_id }}">{{ rating.book_name }}</div>
+          <div class="history-info">
+            <div class="history-title" title="Id: {{ book.id }}">{{ book.data?.data_name }}</div>
+            <div class="history-date">{{ book.date | localizedDate: 'medium' }}</div>
           </div>
-        }
-      </mat-card-content>
+          <span class="history-arrow">↗</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-label">{{ 'label.my-ratings' | translate }}</div>
+    @if (!user.history.ratings || user.history.ratings.length === 0) {
+      <div class="empty-row">{{ 'label.none' | translate }}</div>
+    }
+    <div class="history-list">
+      @for (rating of user.history.ratings; track rating.book_id) {
+        <div class="history-row" (click)="openBook(rating.book_id)">
+          <span class="rating-score">{{ rating.rating }}/10</span>
+          <div class="history-info">
+            <div class="history-title" title="Id: {{ rating.book_id }}">{{ rating.book_name }}</div>
+            <div class="history-date">{{ rating.date | localizedDate: 'medium' }}</div>
+          </div>
+          <span class="history-arrow">↗</span>
+        </div>
+      }
+    </div>
+  </section>
+</div>

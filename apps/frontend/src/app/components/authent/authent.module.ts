@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ChangePasswordComponent } from './change-password/change-password.component';
 import { ConnectLocalComponent } from './connect-local/connect-local.component';
+import { LocalizedDateModule } from '../../directives/localized-date.pipe';
 import { LoginComponent } from './login/login.component';
 import { ProfileButtonComponent } from './profile-button/profile-button.component';
 import { ProfileComponent } from './profile/profile.component';
@@ -30,6 +31,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     UsersListModule,
     UserProfileModule,
     TranslatePipe,
+    LocalizedDateModule,
   ],
   declarations: [LoginComponent, SignupComponent, ProfileButtonComponent, ProfileComponent, ConnectLocalComponent, ChangePasswordComponent],
   providers: [UserService],

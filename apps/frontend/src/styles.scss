@@ -1,9 +1,6 @@
 @use '@angular/material' as mat;
 @use 'app/shared/theme' as theme;
 @use 'app/shared/tokens';
-@use 'app/components/authent/users-list/users-list.component.theme' as usersListTheme;
-@use 'app/components/authent/users-list/user-list-item/user-list-item.component.theme' as userListItemTheme;
-@use 'app/components/authent/profile/user-profile/user-profile.component.theme' as userProfileTheme;
 @use 'app/components/not-found/not-found.component.theme' as notFoundTheme;
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic);
@@ -25,9 +22,6 @@
 
 @mixin custom-components-theme($theme) {
   @include notFoundTheme.not-found-component-theme($theme);
-  @include userProfileTheme.user-profile-component-theme($theme);
-  @include usersListTheme.users-list-component-theme($theme);
-  @include userListItemTheme.user-list-item-component-theme($theme);
 }
 
 
@@ -112,19 +106,6 @@ snack-bar-container.warn {
 snack-bar-container.error {
   //background-color: mat-color(map-get($theme, warn));
   //font-weight: bolder;
-}
-
-// Change of label position
-.user-card {
-  .admin label {
-    justify-content: center;
-    margin: 0;
-  }
-  .local, .facebook, .google {
-    .mat-checkbox-inner-container {
-      margin-right: auto;
-    }
-  }
 }
 
 my-calibre-server-filter-bar {
