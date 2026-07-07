@@ -1,14 +1,30 @@
-<div class="md-content">
-  <mat-card>
-    <my-calibre-server-user-profile [user]="user" urlToRedirect="/profile"></my-calibre-server-user-profile>
-    <mat-card-actions>
+<div class="profile-page">
+  <div class="back-link" (click)="goLibrary()">← {{ 'label.back-to-library' | translate }}</div>
+
+  <div class="identity-banner">
+    <span class="avatar">{{ initials() }}</span>
+    <div class="identity-info">
+      <h1>{{ displayName() }}</h1>
+      <div class="meta">
+        @if (user.local && user.local.username) {
+          <span>&#64;{{ user.local.username }} · </span>
+        }
+        {{ 'label.member-since' | translate: { date: (user.created | localizedDate: 'MMMM y') } }}
+      </div>
+    </div>
+    <div class="identity-actions">
       @if (isAdmin()) {
-        <button class="admin" mat-raised-button (click)="openAdmin()">{{ 'label.admin' | translate }}</button>
+        <button type="button" class="pill pill-accent" (click)="openAdmin()">⚙ {{ 'label.administration' | translate }}</button>
       }
-      <button class="change-pw" mat-raised-button (click)="changepw()">{{ 'label.changepw' | translate }}</button>
-      <button class="logout" mat-raised-button (click)="logout()">{{ 'label.logout' | translate }}</button>
-      <!--<a class="connect" md-raised-button (click)="connectLocal()" *ngIf="!user?.local?.username">Connect local</a>-->
-      <!--<a class="unlink" md-raised-button (click)="unlinkLocal()" *ngIf="user?.local?.username">Unlink local</a>-->
-    </mat-card-actions>
-  </mat-card>
+      <button type="button" class="pill pill-outline" (click)="logout()">{{ 'label.logout' | translate }}</button>
+    </div>
+  </div>
+
+  <div class="cards-grid">
+    <my-calibre-server-user-profile [user]="user" urlToRedirect="/profile"></my-calibre-server-user-profile>
+    <section class="card password-card">
+      <div class="card-label">{{ 'label.password' | translate }}</div>
+      <button type="button" class="pill pill-outline" (click)="changepw()">{{ 'label.changepw' | translate }}</button>
+    </section>
+  </div>
 </div>

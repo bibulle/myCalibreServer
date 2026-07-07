@@ -63,4 +63,27 @@ export class ProfileComponent implements OnInit {
     this._router.navigate(['/users']);
   }
 
+  goLibrary() {
+    this._router.navigate(['/home']);
+  }
+
+  /**
+   * One or two initials shown in the identity banner avatar.
+   */
+  initials(): string {
+    const { firstname, lastname, username } = this.user.local ?? {};
+    if (firstname || lastname) {
+      return `${(firstname ?? '').charAt(0)}${(lastname ?? '').charAt(0)}`.toUpperCase();
+    }
+    return (username ?? '').charAt(0).toUpperCase();
+  }
+
+  displayName(): string {
+    const { firstname, lastname, username } = this.user.local ?? {};
+    if (firstname || lastname) {
+      return `${firstname ?? ''} ${lastname ?? ''}`.trim();
+    }
+    return username ?? '';
+  }
+
 }

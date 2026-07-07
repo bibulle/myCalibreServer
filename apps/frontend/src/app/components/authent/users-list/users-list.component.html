@@ -1,144 +1,69 @@
 @if (users) {
-  <mat-content>
-    <div class="user-list-header">
-      <div class="marge"></div>
-      <div class="username" (click)="toggleSort(SortType.UserName)">
-        {{ 'label.username' | translate }}
-        @if (sort === SortType.UserName && sort_direction === SortingDirection.Asc) {
-          <mat-icon>keyboard_arrow_up</mat-icon>
-        }
-        @if (sort === SortType.UserName && sort_direction === SortingDirection.Desc) {
-          <mat-icon>keyboard_arrow_down</mat-icon>
-        }
-        @if (sort !== SortType.UserName) {
-          <mat-icon></mat-icon>
-        }
+  <div class="admin-page">
+    <a class="back-link" [routerLink]="['/profile']">← {{ 'label.back-to-profile' | translate }}</a>
+
+    <div class="title-row">
+      <div>
+        <h1>{{ 'label.administration' | translate }}</h1>
+        <div class="subtitle">{{ 'label.users-count' | translate: { count: users.length, adminCount: adminCount } }}</div>
       </div>
-      <div class="firstname" (click)="toggleSort(SortType.FirstName)">
-        {{ 'label.first-name' | translate }}
-        @if (sort === SortType.FirstName && sort_direction === SortingDirection.Asc) {
-          <mat-icon>keyboard_arrow_up</mat-icon>
-        }
-        @if (sort === SortType.FirstName && sort_direction === SortingDirection.Desc) {
-          <mat-icon>keyboard_arrow_down</mat-icon>
-        }
-        @if (sort !== SortType.FirstName) {
-          <mat-icon></mat-icon>
-        }
-      </div>
-      <div class="lastname" (click)="toggleSort(SortType.LastName)">
-        {{ 'label.last-name' | translate }}
-        @if (sort === SortType.LastName && sort_direction === SortingDirection.Asc) {
-          <mat-icon>keyboard_arrow_up</mat-icon>
-        }
-        @if (sort === SortType.LastName && sort_direction === SortingDirection.Desc) {
-          <mat-icon>keyboard_arrow_down</mat-icon>
-        }
-        @if (sort !== SortType.LastName) {
-          <mat-icon></mat-icon>
-        }
-      </div>
-      <div class="email" (click)="toggleSort(SortType.Mail)">
-        {{ 'label.email' | translate }}
-        @if (sort === SortType.Mail && sort_direction === SortingDirection.Asc) {
-          <mat-icon>keyboard_arrow_up</mat-icon>
-        }
-        @if (sort === SortType.Mail && sort_direction === SortingDirection.Desc) {
-          <mat-icon>keyboard_arrow_down</mat-icon>
-        }
-        @if (sort !== SortType.Mail) {
-          <mat-icon></mat-icon>
-        }
-      </div>
-      <div class="last-connection">
-        <span (click)="toggleSort(SortType.LastActionDate)"
-          >
-          <mat-icon></mat-icon>
-          {{ 'label.last-connection' | translate }} /
-          @if (sort === SortType.LastActionDate && sort_direction === SortingDirection.Asc) {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          }
-          @if (sort === SortType.LastActionDate && sort_direction === SortingDirection.Desc) {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-          @if (sort !== SortType.LastActionDate) {
-            <mat-icon></mat-icon>
-            } </span
-            ><span (click)="toggleSort(SortType.DownloadCount)"
-            >
-            <mat-icon></mat-icon>
-            {{ 'label.downloaded' | translate }}
-            @if (sort === SortType.DownloadCount && sort_direction === SortingDirection.Asc) {
-              <mat-icon>keyboard_arrow_up</mat-icon>
-            }
-            @if (sort === SortType.DownloadCount && sort_direction === SortingDirection.Desc) {
-              <mat-icon>keyboard_arrow_down</mat-icon>
-            }
-            @if (sort !== SortType.DownloadCount) {
-              <mat-icon></mat-icon>
-            }
-          </span>
+      @if (selectedMergeUser) {
+        <div class="merge-indicator">
+          <span>{{ 'label.merge-in-progress' | translate: { name: selectedMergeUser.local.username } }}</span>
+          <button type="button" class="pill pill-outline" (click)="cancelMerge()">{{ 'label.cancel' | translate }}</button>
         </div>
-        <div class="admin" (click)="toggleSort(SortType.IsAdmin)">
-          <mat-icon></mat-icon>
-          {{ 'label.admin' | translate }} ?
-          @if (sort === SortType.IsAdmin && sort_direction === SortingDirection.Asc) {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          }
-          @if (sort === SortType.IsAdmin && sort_direction === SortingDirection.Desc) {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-          @if (sort !== SortType.IsAdmin) {
-            <mat-icon></mat-icon>
-          }
-        </div>
-        <div class="local">
-          <mat-icon></mat-icon>
-          <button class="fa fa-home" mat-mini-fab (click)="toggleSort(SortType.LoginLocal)"></button>
-          @if (sort === SortType.LoginLocal && sort_direction === SortingDirection.Asc) {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          }
-          @if (sort === SortType.LoginLocal && sort_direction === SortingDirection.Desc) {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-          @if (sort !== SortType.LoginLocal) {
-            <mat-icon></mat-icon>
-          }
-        </div>
-        <div class="facebook">
-          <mat-icon></mat-icon>
-          <button class="fa fa-facebook" mat-mini-fab (click)="toggleSort(SortType.LoginFacebook)"></button>
-          @if (sort === SortType.LoginFacebook && sort_direction === SortingDirection.Asc) {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          }
-          @if (sort === SortType.LoginFacebook && sort_direction === SortingDirection.Desc) {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-          @if (sort !== SortType.LoginFacebook) {
-            <mat-icon></mat-icon>
-          }
-        </div>
-        <div class="google">
-          <mat-icon></mat-icon>
-          <button class="fa fa-google" mat-mini-fab (click)="toggleSort(SortType.LoginGoogle)"></button>
-          @if (sort === SortType.LoginGoogle && sort_direction === SortingDirection.Asc) {
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          }
-          @if (sort === SortType.LoginGoogle && sort_direction === SortingDirection.Desc) {
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          }
-          @if (sort !== SortType.LoginGoogle) {
-            <mat-icon></mat-icon>
-          }
-        </div>
-      </div>
-      @for (user of users; track user) {
-        <my-calibre-server-user-list-item
-          [user]="user"
-          (listChanged)="loadUsers()"
-          (mergeUser)="mergeUsers(user)"
-          [selectedMergeUser]="selectedMergeUser"
-        ></my-calibre-server-user-list-item>
       }
-    </mat-content>
-  }
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <div class="table-inner">
+          <div class="table-header">
+            <span class="col-chevron"></span>
+            <span class="col-username sortable" (click)="toggleSort(SortType.UserName)">
+              {{ 'label.username' | translate }}
+              @if (sort === SortType.UserName) {
+                <mat-icon>{{ sort_direction === SortingDirection.Asc ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+              }
+            </span>
+            <span class="col-email sortable" (click)="toggleSort(SortType.Mail)">
+              {{ 'label.email-short' | translate }}
+              @if (sort === SortType.Mail) {
+                <mat-icon>{{ sort_direction === SortingDirection.Asc ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+              }
+            </span>
+            <span class="col-last-connection sortable" (click)="toggleSort(SortType.LastActionDate)">
+              {{ 'label.last-connection' | translate }}
+              @if (sort === SortType.LastActionDate) {
+                <mat-icon>{{ sort_direction === SortingDirection.Asc ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+              }
+            </span>
+            <span class="col-downloads sortable" (click)="toggleSort(SortType.DownloadCount)">
+              {{ 'label.downloaded-short' | translate }}
+              @if (sort === SortType.DownloadCount) {
+                <mat-icon>{{ sort_direction === SortingDirection.Asc ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+              }
+            </span>
+            <span class="col-connections">{{ 'label.connections' | translate }}</span>
+            <span class="col-admin sortable" (click)="toggleSort(SortType.IsAdmin)">
+              {{ 'label.admin' | translate }}
+              @if (sort === SortType.IsAdmin) {
+                <mat-icon>{{ sort_direction === SortingDirection.Asc ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}</mat-icon>
+              }
+            </span>
+          </div>
+
+          @for (user of users; track user) {
+            <my-calibre-server-user-list-item
+              [user]="user"
+              (listChanged)="loadUsers()"
+              (mergeUser)="mergeUsers(user)"
+              [selectedMergeUser]="selectedMergeUser"
+            ></my-calibre-server-user-list-item>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="tip">{{ 'label.tip-admin' | translate }}</div>
+  </div>
+}

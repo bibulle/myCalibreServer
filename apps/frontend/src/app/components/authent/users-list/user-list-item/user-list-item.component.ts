@@ -7,6 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { User } from '@my-calibre-server/api-interfaces';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LocalizedDateModule } from '../../../../directives/localized-date.pipe';
@@ -105,6 +106,7 @@ export class UserListItemComponent {
     MatIconModule,
     MatSlideToggleModule,
     MatCheckboxModule,
+    MatTooltipModule,
     FormsModule,
     MatInputModule,
     UserProfileModule,

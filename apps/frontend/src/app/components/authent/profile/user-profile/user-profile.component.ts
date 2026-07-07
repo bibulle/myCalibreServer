@@ -14,6 +14,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { LocalizedDateModule } from '../../../../directives/localized-date.pipe';
+import { ImageSpritesModule } from '../../../image-sprites/image-sprites.component';
 import { NotificationService } from '../../../notification/notification.service';
 import { UserService } from '../../user.service';
 
@@ -257,6 +258,7 @@ export class UserProfileComponent implements OnInit, OnChanges {
     MatTooltipModule,
     TranslatePipe,
     LocalizedDateModule,
+    ImageSpritesModule,
   ],
   declarations: [UserProfileComponent],
   exports: [UserProfileComponent],
