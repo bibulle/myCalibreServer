@@ -40,6 +40,14 @@ export class FilterService {
   updateLimitTo (limit_to: SortType[]) {
     if (this.lastFilter.limit_to !== limit_to) {
       this.lastFilter.limit_to = limit_to;
+      // The current sort (and its search/lang) is kept across page
+      // navigations on purpose, but if the new page doesn't support the
+      // previous page's sort type, fall back to that page's own default
+      // (its first, preferred option) instead of keeping an invalid one.
+      if (limit_to.length > 0 && !limit_to.includes(this.lastFilter.sort)) {
+        this.lastFilter.sort = limit_to[0];
+        this.lastFilter.sorting_direction = SortingDirection.Asc;
+      }
       this.currentFilterSubject.next(this.lastFilter)
     }
   }
