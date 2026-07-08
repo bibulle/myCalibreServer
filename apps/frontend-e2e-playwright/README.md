@@ -9,6 +9,38 @@ API and frontend dev servers and covers:
 - Books, series, authors, and tags browsing, search, filtering, sorting
 - Book ratings
 
+Most of the above (`app.spec.ts`, `authentication.spec.ts`, `books.spec.ts`,
+`series-authors-tags.spec.ts`, `api-readonly.spec.ts`) drive the API directly
+over HTTP rather than through the browser UI. The `ui-*.spec.ts` files
+complement that with real, browser-driven interaction through the rendered
+"Reliure" UI:
+
+- `ui-auth.spec.ts` - login/signup/logout through the actual forms
+- `ui-navigation.spec.ts` - header nav tabs, search box, theme toggle, sort menu
+- `ui-book-detail.spec.ts` - opening a book, rating it, author/tag pill links,
+  EPUB/MOBI/Kindle download affordances
+- `ui-library-lists.spec.ts` - series volumes, author accordion, tag filtering
+- `ui-profile.spec.ts` - identity banner, admin-only button, linked-accounts
+  buttons, password field validation states
+- `ui-admin.spec.ts` - access control, sorting, the expandable read-only
+  summary row, merge selection toggle, and a dedicated `deletableuser`
+  fixture's full lifecycle (profile edit, Kindle address, password change,
+  admin toggle, delete)
+- `ui-news-home.spec.ts` - grouped news/home sections and opening a book from
+  a row
+
+The `ui-admin.spec.ts` lifecycle test intentionally does not click the admin
+"Reset password" button (it emails via a real, unconfigured SMTP dependency)
+or the OAuth "Connect" buttons (they open a real external popup with no
+configured OAuth credentials in this environment) - only their presence is
+checked. It also doesn't complete a real user merge, only the select/unselect
+toggle. It types the firstname field but doesn't assert that the debounced
+autosave commits: `UserService` polls `checkAuthent()` every 3 seconds for the
+lifetime of the page and unconditionally rebuilds the in-memory user object
+from the JWT, which can race the 500ms autosave debounce and drop an in-flight
+edit before it reaches the backend - a pre-existing timing issue in the app,
+out of scope for this test-coverage change.
+
 ## No MongoDB required, anywhere
 
 The API's `mongodb` driver is swapped for a small in-memory stub (see

@@ -23,6 +23,7 @@ function hashPassword(password, salt) {
 const TEST_PASSWORD = 'password123';
 const testUserSalt = 'e2e-test-salt-user';
 const adminUserSalt = 'e2e-test-salt-admin';
+const deletableUserSalt = 'e2e-test-salt-deletable';
 
 const testUsers = [
   {
@@ -75,6 +76,27 @@ const testUsers = [
           date: new Date('2024-01-05T10:00:00.000Z'),
         },
       ],
+    },
+  },
+  {
+    // Dedicated throwaway account for e2e tests exercising destructive admin
+    // actions (reset password, delete) - never used for login elsewhere, so
+    // mutating/removing it can't break other tests.
+    id: 'e2e-user-3',
+    local: {
+      username: 'deletableuser',
+      salt: deletableUserSalt,
+      hashedPassword: hashPassword(TEST_PASSWORD, deletableUserSalt),
+      isAdmin: false,
+      email: 'deletable@example.com',
+    },
+    email: 'deletable@example.com',
+    roles: ['user'],
+    created: new Date('2024-02-01T00:00:00.000Z'),
+    updated: new Date('2024-02-01T00:00:00.000Z'),
+    history: {
+      downloadedBooks: [],
+      ratings: [],
     },
   },
 ];
