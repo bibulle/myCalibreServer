@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.13.0](https://github.com/bibulle/myCalibreServer/compare/v0.12.22...v0.13.0) (2026-07-08)
+
+
+### Features
+
+* **frontend:** add design tokens and dark theme foundation for the Reliure redesign ([cae391a](https://github.com/bibulle/myCalibreServer/commit/cae391afb3cd9afb5bfa445e8fa6dfb652840503))
+* **frontend:** design tokens and dark theme foundation (Reliure redesign, PR 1/7) ([68d7062](https://github.com/bibulle/myCalibreServer/commit/68d7062254ff96f21688b26202e28f8733c89425))
+* **frontend:** replace sidenav/hamburger with a sticky header nav (Reliure redesign) ([3272bfd](https://github.com/bibulle/myCalibreServer/commit/3272bfd5ce1bc64963d17614573799f3b38778e9))
+* **frontend:** restyle library (book list + card, Reliure redesign, PR 3/7) ([0fd1149](https://github.com/bibulle/myCalibreServer/commit/0fd114935803b297aea1f7a526e8496f3fd64b93))
+* **frontend:** restyle the library (book list + book card) per the Reliure design ([f5579ef](https://github.com/bibulle/myCalibreServer/commit/f5579ef025727634c6a199f0b75b4e02c6ea2869))
+* **frontend:** sticky header nav shell (Reliure redesign, PR 2/7) ([4c39c2a](https://github.com/bibulle/myCalibreServer/commit/4c39c2a478b62ff0e04a8817242f21440e829533))
+* **frontend:** update header logo mark and reintroduce a version/beta badge ([bd108f8](https://github.com/bibulle/myCalibreServer/commit/bd108f8057642325febd87c42ef2aeef504e2b71))
+* redesign book detail page per Reliure design handoff ([#220](https://github.com/bibulle/myCalibreServer/issues/220)) ([0f9fd9a](https://github.com/bibulle/myCalibreServer/commit/0f9fd9ad230203030379d09d80c9766087cbe61f))
+* redesign login, signup and connect-local screens ("Reliure") ([#222](https://github.com/bibulle/myCalibreServer/issues/222)) ([16c0e7b](https://github.com/bibulle/myCalibreServer/commit/16c0e7b8ab15e8a932129343e1862c1471a1963d))
+* redesign profile and admin screens ("Reliure") ([#223](https://github.com/bibulle/myCalibreServer/issues/223)) ([a95ce55](https://github.com/bibulle/myCalibreServer/commit/a95ce55f6aae07f05591db60924236c1794bb0de))
+* redesign series, authors and tags pages ("Reliure") ([#221](https://github.com/bibulle/myCalibreServer/issues/221)) ([aae77cc](https://github.com/bibulle/myCalibreServer/commit/aae77cc83546cbb98c245abe522e2ca024060d43))
+* redesign the news/home screen ("Reliure") ([#224](https://github.com/bibulle/myCalibreServer/issues/224)) ([b9d5abb](https://github.com/bibulle/myCalibreServer/commit/b9d5abbd3f33afc2b6cd27945ff96972a20c6e58))
+
+
+### Bug Fixes
+
+* **frontend:** align header with the Reliure mockup, drop version badge ([ae123e3](https://github.com/bibulle/myCalibreServer/commit/ae123e3f784b877ce67e1d4d95fb8e03bf48f106))
+* **frontend:** fix cover thumbnail not rendering in the book card ([296188b](https://github.com/bibulle/myCalibreServer/commit/296188b5cb3a8c1fb4bd57c82db322fa105b06a2))
+* **frontend:** fix header dark background, search width and icon weight ([bdefd09](https://github.com/bibulle/myCalibreServer/commit/bdefd09802b90b9cdff4ef1a0dfd7a23da60eae2))
+* **frontend:** fix nav tab font-weight and make the theme icon robust ([df90870](https://github.com/bibulle/myCalibreServer/commit/df90870de6c9302768a29a58a82b83f0c59b449a))
+* **frontend:** hide the header search on pages that don't support it ([51e529a](https://github.com/bibulle/myCalibreServer/commit/51e529a10b9b1ca67cf6e729e24c5d5630d67171))
+* **frontend:** keep original primary/accent palettes in this PR ([b403cc8](https://github.com/bibulle/myCalibreServer/commit/b403cc8d9470b6ffe6868b4bffe64fedc7bb5402))
+* **frontend:** move admin/users out of the main nav, fix header spacing and mobile layout ([44f8f81](https://github.com/bibulle/myCalibreServer/commit/44f8f81ee6e73d6267704eced811d9db8364ebc9))
+* **frontend:** rebuild the header search and chrome to match the mockup ([b9a7735](https://github.com/bibulle/myCalibreServer/commit/b9a77352fc570759c1ab0d785a628b6b90b8491f))
+* **frontend:** scale the cover thumbnail to fill its slot ([fc16a79](https://github.com/bibulle/myCalibreServer/commit/fc16a7967a916618b3db36d89f6697f6bd079628))
+
+
+### Tests
+
+* add browser-driven UI e2e coverage for the "Reliure" redesign ([#225](https://github.com/bibulle/myCalibreServer/issues/225)) ([d418690](https://github.com/bibulle/myCalibreServer/commit/d418690403284e5a7818b71eca53f12fced4928c))
+
 ## [0.12.22](https://github.com/bibulle/myCalibreServer/compare/v0.12.21...v0.12.22) (2026-07-05)
 
 
