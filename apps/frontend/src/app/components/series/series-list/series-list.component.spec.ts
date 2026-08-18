@@ -106,6 +106,40 @@ describe('SeriesListComponent', () => {
     });
   });
 
+  describe('_filterAndSortSeries with a text search', () => {
+    beforeEach(() => {
+      component.fullSeries = [
+        makeSeries({ series_id: 1, series_name: 'Dune Saga', author_name: ['Frank Herbert'], books: [{} as never] }),
+        makeSeries({ series_id: 2, series_name: 'Fondation', author_name: ['Isaac Asimov'], books: [{} as never] }),
+      ];
+      component.filter = new Filter();
+    });
+
+    it('should match every word of the search independently of the order', () => {
+      component.filter.search = 'saga dune';
+
+      const result = component._filterAndSortSeries();
+
+      expect(result?.map((s) => s.series_name)).toEqual(['Dune Saga']);
+    });
+
+    it('should match words spread across the series name and the author name', () => {
+      component.filter.search = 'dune herbert';
+
+      const result = component._filterAndSortSeries();
+
+      expect(result?.map((s) => s.series_name)).toEqual(['Dune Saga']);
+    });
+
+    it('should not match when one of the words is missing', () => {
+      component.filter.search = 'dune asimov';
+
+      const result = component._filterAndSortSeries();
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('ngOnDestroy', () => {
     it('should unsubscribe from the filter subscription', () => {
       component.ngOnInit();

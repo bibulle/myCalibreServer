@@ -38,6 +38,27 @@ test.describe('UI - Navigation', () => {
     await expect(page.locator('.empty-title')).toBeVisible();
   });
 
+  test('should match every search word independently of the order (issue #241)', async ({ page }) => {
+    await loginViaUi(page, testUser.username, testUser.password);
+    await page.locator('.nav-tabs a[href="/books"]').click();
+    await expect(page).toHaveURL(/\/books/);
+
+    // "Test Book 2" (author "John Doe") must be found whatever the word
+    // order or case, including with words spread across title and author.
+    for (const search of ['2 book', 'book DOE', 'doe 2']) {
+      await page.locator('.search input').fill(search);
+      await page.waitForTimeout(600);
+
+      await expect(page.locator('.rl-card .title', { hasText: 'Test Book 2' }).first()).toBeVisible();
+      await expect(page.locator('.rl-card .title', { hasText: 'Test Book 1' })).toHaveCount(0);
+    }
+
+    // ... but a word matching no book still yields no result
+    await page.locator('.search input').fill('book zzz_nonexistent');
+    await page.waitForTimeout(600);
+    await expect(page.locator('.empty-title')).toBeVisible();
+  });
+
   test('should toggle the dark theme', async ({ page }) => {
     await loginViaUi(page, testUser.username, testUser.password);
 

@@ -1,6 +1,7 @@
 import { Component, OnInit, NgModule, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Filter, FilterService, SortType, SortingDirection, LangAvailable } from '../../filter-bar/filter.service';
+import { matchesSearch } from '../../filter-bar/search-util';
 import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { AuthorService } from '../author.service';
 import { AuthorCardModule } from '../author-card/author-card.component';
@@ -36,18 +37,6 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
   filterCount = 0;
 
   private _currentFilterSubscription?: Subscription;
-
-  static _cleanAccent(str: string): string {
-    return str
-      .toLowerCase()
-      .replace(/[àâªáäãåā]/g, 'a')
-      .replace(/[èéêëęėē]/g, 'e')
-      .replace(/[iïìíįī]/g, 'i')
-      .replace(/[ôºöòóõøō]/g, 'o')
-      .replace(/[ûùüúū]/g, 'u')
-      .replace(/[æ]/g, 'ae')
-      .replace(/[œ]/g, 'oe');
-  }
 
   constructor(
     private _authorService: AuthorService,
@@ -171,7 +160,7 @@ export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {
       .filter((a: Author) => {
         const strToSearch = a.author_name + ' ' + a.author_sort;
 
-        return AuthorListComponent._cleanAccent(strToSearch).includes(AuthorListComponent._cleanAccent(this.filter.search.trim()));
+        return matchesSearch(strToSearch, this.filter.search);
       })
       // filter on language
       .filter((a: Author) => {
