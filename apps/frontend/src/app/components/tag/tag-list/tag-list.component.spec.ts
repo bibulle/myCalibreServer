@@ -191,6 +191,32 @@ describe('TagListComponent', () => {
     });
   });
 
+  describe('_filterAndSortTags with a text search', () => {
+    beforeEach(() => {
+      component.fullTags = [
+        makeTag({ tag_id: 1, tag_name: 'Science Fiction', books: [makeBook()] }),
+        makeTag({ tag_id: 2, tag_name: 'Histoire', books: [makeBook()] }),
+      ];
+      component.filter = new Filter();
+    });
+
+    it('should match every word of the search independently of the order', () => {
+      component.filter.search = 'fiction science';
+
+      const result = component._filterAndSortTags();
+
+      expect(result?.map((t) => t.tag_name)).toEqual(['Science Fiction']);
+    });
+
+    it('should not match when one of the words is missing', () => {
+      component.filter.search = 'science histoire';
+
+      const result = component._filterAndSortTags();
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('ngOnDestroy', () => {
     it('should unsubscribe from the filter subscription', () => {
       component.ngOnInit();

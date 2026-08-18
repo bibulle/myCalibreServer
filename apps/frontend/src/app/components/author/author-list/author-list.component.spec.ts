@@ -97,6 +97,32 @@ describe('AuthorListComponent', () => {
     });
   });
 
+  describe('_filterAndSortAuthors with a text search', () => {
+    beforeEach(() => {
+      component.fullAuthors = [
+        makeAuthor({ author_id: 1, author_name: 'Isaac Asimov', books: [{} as never] }),
+        makeAuthor({ author_id: 2, author_name: 'Frank Herbert', books: [{} as never] }),
+      ];
+      component.filter = new Filter();
+    });
+
+    it('should match every word of the search independently of the order', () => {
+      component.filter.search = 'asimov isaac';
+
+      const result = component._filterAndSortAuthors();
+
+      expect(result?.map((a) => a.author_name)).toEqual(['Isaac Asimov']);
+    });
+
+    it('should not match when one of the words belongs to another author', () => {
+      component.filter.search = 'isaac herbert';
+
+      const result = component._filterAndSortAuthors();
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('ngOnDestroy', () => {
     it('should unsubscribe from the filter subscription', () => {
       component.ngOnInit();

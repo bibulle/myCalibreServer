@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Book } from '@my-calibre-server/api-interfaces';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Filter, FilterService, LangAvailable, sortLabelKey, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { matchesSearch } from '../../filter-bar/search-util';
 import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { BookCardModule } from '../book-card/book-card.component';
 import { BookService } from '../book.service';
@@ -39,18 +40,6 @@ export class BookListComponent implements OnInit, OnDestroy {
   filterCount = 0;
 
   private _currentFilterSubscription: Subscription | undefined;
-
-  static _cleanAccent(str: string): string {
-    return str
-      .toLowerCase()
-      .replace(/[àâªáäãåā]/g, 'a')
-      .replace(/[èéêëęėē]/g, 'e')
-      .replace(/[iïìíįī]/g, 'i')
-      .replace(/[ôºöòóõøō]/g, 'o')
-      .replace(/[ûùüúū]/g, 'u')
-      .replace(/[æ]/g, 'ae')
-      .replace(/[œ]/g, 'oe');
-  }
 
   constructor(
     private _bookService: BookService,
@@ -247,7 +236,7 @@ export class BookListComponent implements OnInit, OnDestroy {
           .concat(b.comment)
           .concat('' + b.author_name);
 
-        return BookListComponent._cleanAccent(strToSearch).includes(BookListComponent._cleanAccent(this.filter.search.trim()));
+        return matchesSearch(strToSearch, this.filter.search);
       })
       // then filter on language
       .filter((b) => {

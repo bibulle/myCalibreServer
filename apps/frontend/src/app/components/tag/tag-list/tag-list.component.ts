@@ -7,6 +7,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { matchesSearch } from '../../filter-bar/search-util';
 import { FilterBarModule } from '../../filter-bar/filter-bar.component';
 import { TagCardModule } from '../tag-card/tag-card.component';
 import { TagService } from '../tag.service';
@@ -37,18 +38,6 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
   filterCount = 0;
 
   private _currentFilterSubscription?: Subscription;
-
-  static _cleanAccent(str: string): string {
-    return str
-      .toLowerCase()
-      .replace(/[àâªáäãåā]/g, 'a')
-      .replace(/[èéêëęėē]/g, 'e')
-      .replace(/[iïìíįī]/g, 'i')
-      .replace(/[ôºöòóõøō]/g, 'o')
-      .replace(/[ûùüúū]/g, 'u')
-      .replace(/[æ]/g, 'ae')
-      .replace(/[œ]/g, 'oe');
-  }
 
   constructor(
     private _tagService: TagService,
@@ -218,7 +207,7 @@ export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {
       .filter((t: Tag) => {
         const strToSearch = t.tag_name;
 
-        return TagListComponent._cleanAccent(strToSearch).includes(TagListComponent._cleanAccent(this.filter.search.trim()));
+        return matchesSearch(strToSearch, this.filter.search);
       })
       // filter on language
       .filter((t: Tag) => {

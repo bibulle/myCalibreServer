@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/core';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
+import { matchesSearch } from '../../filter-bar/search-util';
 import { SeriesService } from '../series.service';
 import { CommonModule } from '@angular/common';
 import { FilterBarModule } from '../../filter-bar/filter-bar.component';
@@ -36,18 +37,6 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
   filterCount = 0;
 
   private _currentFilterSubscription?: Subscription;
-
-  static _cleanAccent(str: string): string {
-    return str
-      .toLowerCase()
-      .replace(/[àâªáäãåā]/g, 'a')
-      .replace(/[èéêëęėē]/g, 'e')
-      .replace(/[iïìíįī]/g, 'i')
-      .replace(/[ôºöòóõøō]/g, 'o')
-      .replace(/[ûùüúū]/g, 'u')
-      .replace(/[æ]/g, 'ae')
-      .replace(/[œ]/g, 'oe');
-  }
 
   constructor(
     private _seriesService: SeriesService,
@@ -176,7 +165,7 @@ export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {
           }, '')
         );
 
-        return SeriesListComponent._cleanAccent(strToSearch).includes(SeriesListComponent._cleanAccent(this.filter.search.trim()));
+        return matchesSearch(strToSearch, this.filter.search);
       })
       // filter on language
       .filter((s: Series) => {
