@@ -7,15 +7,17 @@
  */
 
 export function cleanAccent(str: string): string {
+  // NFKD splits every accented letter into its base letter plus combining
+  // marks (U+0300-U+036F), which are then stripped: this covers î, ç, ñ, ÿ,
+  // ā... without maintaining a hand-written list. Ligatures (æ, œ) and ø
+  // have no Unicode decomposition, so they keep explicit replacements.
   return str
     .toLowerCase()
-    .replace(/[àâªáäãåā]/g, 'a')
-    .replace(/[èéêëęėē]/g, 'e')
-    .replace(/[iïìíįī]/g, 'i')
-    .replace(/[ôºöòóõøō]/g, 'o')
-    .replace(/[ûùüúū]/g, 'u')
     .replace(/[æ]/g, 'ae')
-    .replace(/[œ]/g, 'oe');
+    .replace(/[œ]/g, 'oe')
+    .replace(/[ø]/g, 'o')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '');
 }
 
 export function matchesSearch(strToSearch: string, search: string): boolean {

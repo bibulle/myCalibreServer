@@ -10,8 +10,12 @@ describe('search-util', () => {
       expect(cleanAccent('àâáäèéêëïìôöùûü')).toBe('aaaaeeeeiioouuu');
     });
 
-    it('should replace ligatures', () => {
-      expect(cleanAccent('Æneid Œuvre')).toBe('aeneid oeuvre');
+    it('should replace î, ç and the other characters the old hand-written list missed', () => {
+      expect(cleanAccent('île français señor L’haÿ Nº')).toBe('ile francais senor l’hay no');
+    });
+
+    it('should replace ligatures and ø', () => {
+      expect(cleanAccent('Æneid Œuvre Møre')).toBe('aeneid oeuvre more');
     });
   });
 
@@ -54,6 +58,15 @@ describe('search-util', () => {
 
     it('should still match partial words (substring per word)', () => {
       expect(matchesSearch(title, 'clam tata')).toBe(true);
+    });
+
+    it('should match titles containing î or ç with an unaccented search', () => {
+      expect(matchesSearch("L'Île mystérieuse", 'ile mysterieuse')).toBe(true);
+      expect(matchesSearch('Le Français', 'francais')).toBe(true);
+    });
+
+    it('should match an accented search against an unaccented title', () => {
+      expect(matchesSearch('Ile mysterieuse', 'île mystérieuse')).toBe(true);
     });
   });
 });
