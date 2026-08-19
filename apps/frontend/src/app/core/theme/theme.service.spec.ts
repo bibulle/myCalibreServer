@@ -19,9 +19,19 @@ function mockMatchMedia(matchesDark: boolean) {
 
 describe('ThemeService', () => {
 
+  function themeColorMeta(): HTMLMetaElement {
+    return document.querySelector('meta[name="theme-color"]') as HTMLMetaElement;
+  }
+
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.classList.remove('dark-theme');
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.remove());
+    // index.html ships the light value as the pre-bootstrap default
+    const meta = document.createElement('meta');
+    meta.setAttribute('name', 'theme-color');
+    meta.setAttribute('content', '#fffdf8');
+    document.head.appendChild(meta);
   });
 
   it('should default to light when the system prefers light and nothing is stored', () => {
@@ -85,5 +95,50 @@ describe('ThemeService', () => {
     service.toggle();
     expect(service.mode).toBe('light');
     expect(document.documentElement.classList.contains('dark-theme')).toBe(false);
+  });
+
+  describe('PWA theme-color (issue #242)', () => {
+    it('should set the light chrome colour when starting in light mode', () => {
+      mockMatchMedia(false);
+
+      new ThemeService();
+
+      expect(themeColorMeta().getAttribute('content')).toBe('#fffdf8');
+    });
+
+    it('should set the dark chrome colour when starting in dark mode', () => {
+      mockMatchMedia(true);
+
+      new ThemeService();
+
+      expect(themeColorMeta().getAttribute('content')).toBe('#191511');
+    });
+
+    it('should follow the theme when the user toggles it', () => {
+      mockMatchMedia(false);
+      const service = new ThemeService();
+
+      service.toggle();
+      expect(themeColorMeta().getAttribute('content')).toBe('#191511');
+
+      service.toggle();
+      expect(themeColorMeta().getAttribute('content')).toBe('#fffdf8');
+    });
+
+    it('should never fall back to the old green accent', () => {
+      mockMatchMedia(true);
+      const service = new ThemeService();
+
+      service.setMode('light');
+
+      expect(themeColorMeta().getAttribute('content')).not.toBe('#4caf50');
+    });
+
+    it('should not crash when the page has no theme-color meta', () => {
+      mockMatchMedia(false);
+      themeColorMeta().remove();
+
+      expect(() => new ThemeService()).not.toThrow();
+    });
   });
 });
