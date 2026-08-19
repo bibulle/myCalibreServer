@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.13.1](https://github.com/bibulle/myCalibreServer/compare/v0.13.0...v0.13.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* la recherche matche chaque mot indépendamment de l'ordre ([#243](https://github.com/bibulle/myCalibreServer/issues/243)) ([c34227e](https://github.com/bibulle/myCalibreServer/commit/c34227ee8edc11165510cab75e2b62787f3d21e9))
+
 ## [0.13.0](https://github.com/bibulle/myCalibreServer/compare/v0.12.22...v0.13.0) (2026-07-08)
 
 
