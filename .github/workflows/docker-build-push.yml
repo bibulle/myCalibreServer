@@ -20,6 +20,9 @@ jobs:
   test:
     name: Run unit and e2e tests
     runs-on: ubuntu-latest
+    # The whole job runs in ~4 minutes; without this it would inherit the
+    # 6h default and burn a runner before failing.
+    timeout-minutes: 30
 
     services:
       mongodb:
@@ -45,8 +48,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # No `--with-deps`: the ubuntu-latest runner image already ships the
+      # system libraries Chromium needs, and `--with-deps` shells out to
+      # `apt-get`, which waits indefinitely when the dpkg lock is held by the
+      # image's background upgrades - that hung this step for 6h (the job's
+      # hard limit) on the 0.13.1 release run. The timeout keeps any future
+      # hang cheap: this step takes ~1 minute when healthy.
       - name: Install Playwright's Chromium browser
-        run: npx playwright install --with-deps chromium
+        timeout-minutes: 10
+        run: npx playwright install chromium
 
       - name: Run unit tests (frontend + backend)
         run: npm run test
