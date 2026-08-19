@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {FilterService, Filter} from '../../filter-bar/filter.service';
 import {UserService} from '../user.service';
 import {Router} from '@angular/router';
@@ -10,6 +10,7 @@ import {Version} from '@my-calibre-server/api-interfaces';
     selector: 'my-calibre-server-signup',
     templateUrl: './signup.component.html',
     styleUrls: ['./signup.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SignupComponent implements OnInit {

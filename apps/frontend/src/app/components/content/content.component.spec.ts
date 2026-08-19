@@ -1,15 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MatContentDirective, MatContentModule } from './content.component';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<mat-content>Test Content</mat-content>',
 })
 class TestHostComponent {}
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: '<mat-content layout-padding>Padded Content</mat-content>',
 })
 class TestHostWithPaddingComponent {}

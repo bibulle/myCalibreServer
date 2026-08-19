@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit } from '@angular/core';
+import { Component, NgModule, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FilterService } from '../../filter-bar/filter.service';
 import { Book, ReaderRatingTotal } from '@my-calibre-server/api-interfaces';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,6 +23,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'my-calibre-server-book-page',
   templateUrl: './book-page.component.html',
   styleUrls: ['./book-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class BookPageComponent implements OnInit {

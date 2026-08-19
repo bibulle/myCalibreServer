@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, NgModule, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Filter, FilterService, LangAvailable, SortingDirection, SortType } from '../../filter-bar/filter.service';
 import { matchesSearch } from '../../filter-bar/search-util';
 import { SeriesService } from '../series.service';
@@ -16,6 +16,7 @@ import { NotificationService } from '../../notification/notification.service';
   selector: 'my-calibre-server-series-list',
   templateUrl: './series-list.component.html',
   styleUrls: ['./series-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class SeriesListComponent implements OnInit, OnDestroy, AfterViewInit {

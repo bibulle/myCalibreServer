@@ -1,4 +1,4 @@
-import { Component, OnInit, NgModule, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, NgModule, AfterViewInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Filter, FilterService, SortType, SortingDirection, LangAvailable } from '../../filter-bar/filter.service';
 import { matchesSearch } from '../../filter-bar/search-util';
@@ -16,6 +16,7 @@ import { NotificationService } from '../../notification/notification.service';
   selector: 'my-calibre-server-author-list',
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class AuthorListComponent implements OnInit, AfterViewInit, OnDestroy {

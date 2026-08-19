@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {UserService} from '../user.service';
 import {User} from '@my-calibre-server/api-interfaces';
 import {Router} from '@angular/router';
@@ -7,6 +7,7 @@ import {Router} from '@angular/router';
     selector: 'my-calibre-server-profile-button',
     templateUrl: './profile-button.component.html',
     styleUrls: ['./profile-button.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProfileButtonComponent implements OnInit {
