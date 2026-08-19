@@ -4,6 +4,9 @@ FROM node:24-trixie AS BUILD
 WORKDIR /usr/src
 
 COPY package*.json ./
+# .npmrc porte legacy-peer-deps, indispensable à la résolution Angular 22 /
+# Jest (Babel 8 vs 7) : sans lui, le `npm install` ci-dessous échoue.
+COPY .npmrc ./
 COPY decorate-angular-cli.js ./
 #COPY angular.json ./
 COPY nx.json ./
