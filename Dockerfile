@@ -4,9 +4,6 @@ FROM node:24-trixie AS BUILD
 WORKDIR /usr/src
 
 COPY package*.json ./
-# .npmrc porte legacy-peer-deps, indispensable à la résolution Angular 22 /
-# Jest (Babel 8 vs 7) : sans lui, le `npm install` ci-dessous échoue.
-COPY .npmrc ./
 COPY decorate-angular-cli.js ./
 #COPY angular.json ./
 COPY nx.json ./
@@ -32,8 +29,6 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
 WORKDIR /usr/src
 
 COPY --from=BUILD /usr/src/package*.json ./
-# idem pour l'image finale : son `npm ci` ci-dessous a besoin du même réglage
-COPY --from=BUILD /usr/src/.npmrc ./
 COPY --from=BUILD /usr/src/dist dist/ 
 
 RUN npm ci --only=production --ignore-scripts --omit=dev
