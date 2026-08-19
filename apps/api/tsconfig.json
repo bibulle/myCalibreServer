@@ -2,6 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
+  "compilerOptions": {
+    // TypeScript 6 active `strict` par défaut ; l'API a toujours compilé sans,
+    // et l'y passer demanderait de retyper ~218 emplacements. On garde donc le
+    // comportement historique, désormais explicite. Le frontend, lui, est
+    // strict depuis toujours (voir apps/frontend/tsconfig.json).
+    "strict": false,
+    // Idem pour `esModuleInterop`, que TS 6 active par défaut : l'API importe
+    // sharp, express-session et passport en `import * as x` puis les appelle,
+    // ce que l'interop moderne interdit.
+    "esModuleInterop": false
+  },
   "references": [
     {
       "path": "./tsconfig.app.json"
