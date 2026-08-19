@@ -32,6 +32,8 @@ RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
 WORKDIR /usr/src
 
 COPY --from=BUILD /usr/src/package*.json ./
+# idem pour l'image finale : son `npm ci` ci-dessous a besoin du même réglage
+COPY --from=BUILD /usr/src/.npmrc ./
 COPY --from=BUILD /usr/src/dist dist/ 
 
 RUN npm ci --only=production --ignore-scripts --omit=dev
