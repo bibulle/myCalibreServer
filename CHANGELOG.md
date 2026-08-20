@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.13.3](https://github.com/bibulle/myCalibreServer/compare/v0.13.2...v0.13.3) (2026-08-20)
+
+
+### Bug Fixes
+
+* **deps:** monter Angular en 22.1.2 et TypeScript en 6.0.3 ([#252](https://github.com/bibulle/myCalibreServer/issues/252)) ([5c8935e](https://github.com/bibulle/myCalibreServer/commit/5c8935e000e6e6e2ef44a0d86eb8779e1ec58e6d))
+* **deps:** monter sharp en 0.35.3 (4 CVE libvips) ([#253](https://github.com/bibulle/myCalibreServer/issues/253)) ([0bcd4b5](https://github.com/bibulle/myCalibreServer/commit/0bcd4b535e4821ac92f8f560ea364a3cd9a5e7b1))
+
 ## [0.13.2](https://github.com/bibulle/myCalibreServer/compare/v0.13.1...v0.13.2) (2026-08-19)
 
 
