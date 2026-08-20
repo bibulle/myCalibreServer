@@ -12,7 +12,12 @@ import { promises as fsPromises } from 'fs';
 import { mkdtempSync, rmSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
-import * as sharp from 'sharp';
+import * as sharpNs from 'sharp';
+// sharp 0.35 publie des types ESM (`export default`) que la résolution `node`
+// du monorepo charge même en CommonJS : le namespace n'y est plus appelable.
+// À l'exécution, `require('sharp')` reste la fonction elle-même ; cet alias
+// rétablit donc le typage sans rien changer au code émis.
+const sharp = sharpNs as unknown as typeof sharpNs.default;
 
 describe('BooksService', () => {
   let service: BooksService;
