@@ -2,7 +2,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
-import { Book, BookData, User } from '@my-calibre-server/api-interfaces';
+import { Book, BookData, findBookFormat, User } from '@my-calibre-server/api-interfaces';
 import { BookPageComponent } from './book-page.component';
 import { BookService } from '../book.service';
 import { FilterService } from '../../filter-bar/filter.service';
@@ -35,8 +35,7 @@ describe('BookPageComponent', () => {
       getBook: jest.fn(() => Promise.resolve(makeBook())),
       updateReaderRating: jest.fn(() => ({ rating: 8, count: 3, yourRating: 4 })),
       updateRating: jest.fn(() => Promise.resolve('SAVED')),
-      getEpubUrl: jest.fn(() => Promise.resolve('http://example.com/book.epub')),
-      getMobiUrl: jest.fn(() => Promise.resolve('http://example.com/book.mobi')),
+      getDownloadUrl: jest.fn(() => Promise.resolve('http://example.com/book.file')),
       sendKindle: jest.fn(() => Promise.resolve()),
     } as any;
     mockRoute = { snapshot: { params: { id: '42' } } } as any;
@@ -74,26 +73,47 @@ describe('BookPageComponent', () => {
       expect(component.book.book_title).toBe('Dune');
     });
 
-    it('should detect available epub/mobi formats', async () => {
+    it('should list the available formats best first', async () => {
       mockBookService.getBook.mockReturnValue(
-        Promise.resolve(makeBook({ data: [{ data_format: 'EPUB' } as BookData, { data_format: 'MOBI' } as BookData] }))
+        Promise.resolve(makeBook({ data: [{ data_format: 'MOBI' } as BookData, { data_format: 'PDF' } as BookData, { data_format: 'EPUB' } as BookData] }))
       );
 
       component.ngOnInit();
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(component.bookHasEpub).toBe(true);
-      expect(component.bookHasMobi).toBe(true);
+      expect(component.availableFormats.map((f) => f.id)).toEqual(['EPUB', 'PDF', 'MOBI']);
     });
 
-    it('should leave both formats false when neither is available', async () => {
+    it('should list the single format of a PDF-only book', async () => {
+      mockBookService.getBook.mockReturnValue(Promise.resolve(makeBook({ data: [{ data_format: 'PDF' } as BookData] })));
+
       component.ngOnInit();
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(component.bookHasEpub).toBe(false);
-      expect(component.bookHasMobi).toBe(false);
+      expect(component.availableFormats.map((f) => f.id)).toEqual(['PDF']);
+      expect(component.kindleFormat?.id).toBe('PDF');
+    });
+
+    it('should leave the format list empty when the book has no data', async () => {
+      component.ngOnInit();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(component.availableFormats).toEqual([]);
+      expect(component.kindleFormat).toBeUndefined();
+    });
+
+    it('should offer no Kindle format for a MOBI-only book', async () => {
+      mockBookService.getBook.mockReturnValue(Promise.resolve(makeBook({ data: [{ data_format: 'MOBI' } as BookData] })));
+
+      component.ngOnInit();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(component.availableFormats.map((f) => f.id)).toEqual(['MOBI']);
+      expect(component.kindleFormat).toBeUndefined();
     });
 
     it('should compute the reader ratings for the current user and force the title', async () => {
@@ -177,32 +197,22 @@ describe('BookPageComponent', () => {
     });
   });
 
-  describe('downloadEpub / downloadMobi', () => {
-    it('should fetch the epub url and trigger a download', async () => {
+  describe('download', () => {
+    it.each(['EPUB', 'PDF', 'MOBI'])('should fetch the %s url and trigger a download', async (id) => {
       component.book = makeBook();
 
-      component.downloadEpub();
+      component.download(findBookFormat(id));
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(mockBookService.getEpubUrl).toHaveBeenCalledWith(42);
+      expect(mockBookService.getDownloadUrl).toHaveBeenCalledWith(42, expect.objectContaining({ id }));
     });
 
-    it('should fetch the mobi url and trigger a download', async () => {
+    it('should notify an error when the url cannot be fetched', async () => {
+      mockBookService.getDownloadUrl.mockReturnValue(Promise.reject('boom'));
       component.book = makeBook();
 
-      component.downloadMobi();
-      await Promise.resolve();
-      await Promise.resolve();
-
-      expect(mockBookService.getMobiUrl).toHaveBeenCalledWith(42);
-    });
-
-    it('should notify an error when the epub url cannot be fetched', async () => {
-      mockBookService.getEpubUrl.mockReturnValue(Promise.reject('boom'));
-      component.book = makeBook();
-
-      component.downloadEpub();
+      component.download(findBookFormat('EPUB'));
       await Promise.resolve();
       await Promise.resolve();
       await Promise.resolve();

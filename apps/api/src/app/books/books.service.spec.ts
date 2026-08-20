@@ -5,7 +5,7 @@ import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { SeriesService } from '../series/series.service';
-import { Book, BookData } from '@my-calibre-server/api-interfaces';
+import { Book, BookData, findBookFormat } from '@my-calibre-server/api-interfaces';
 import { HttpStatus } from '@nestjs/common';
 import * as fs from 'fs';
 import { promises as fsPromises } from 'fs';
@@ -379,7 +379,7 @@ describe('BooksService', () => {
       jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
 
       try {
-        await service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip');
+        await service.getBookToDownload('valid-token', 1, mockRes, findBookFormat('EPUB'));
       } catch {
         // StreamableFile may throw because there's no real file
       }
@@ -389,6 +389,50 @@ describe('BooksService', () => {
           'Content-Disposition': 'attachment; filename="My Series - 3 - Book_Title.epub"',
         })
       );
+    });
+
+    it('should serve a PDF-only book with the PDF content type', async () => {
+      const mockUser = { id: 1, username: 'testuser' };
+      mockCalibreDbService.getBookPaths.mockResolvedValue({
+        book_id: 4,
+        book_path: 'Author/Pdf Only (4)',
+        book_has_cover: '1',
+        series_name: '',
+        book_series_index: 0,
+        data: [new BookData({ data_id: 4, data_format: 'PDF', data_size: 4000, data_name: 'Pdf_Only' })],
+      });
+      mockUsersService.checkToken.mockResolvedValue(mockUser);
+      mockUsersService.addDownloadedBook.mockResolvedValue(undefined);
+      jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
+
+      try {
+        await service.getBookToDownload('valid-token', 4, mockRes, findBookFormat('PDF'));
+      } catch {
+        // StreamableFile may throw because there's no real file
+      }
+
+      expect(mockRes.set).toHaveBeenCalledWith(
+        expect.objectContaining({
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'attachment; filename="Pdf_Only.pdf"',
+        })
+      );
+    });
+
+    it('should reject a format the book does not have', async () => {
+      mockCalibreDbService.getBookPaths.mockResolvedValue({
+        book_id: 5,
+        book_path: 'Author/Epub Only (5)',
+        book_has_cover: '1',
+        series_name: '',
+        book_series_index: 0,
+        data: [new BookData({ data_id: 5, data_format: 'EPUB', data_size: 5000, data_name: 'Epub_Only' })],
+      });
+      mockUsersService.checkToken.mockResolvedValue({ id: 1, username: 'testuser' });
+
+      await expect(service.getBookToDownload('valid-token', 5, mockRes, findBookFormat('PDF'))).rejects.toMatchObject({
+        status: 404,
+      });
     });
 
     it('should use only data_name in filename when book has no series', async () => {
@@ -406,7 +450,7 @@ describe('BooksService', () => {
       jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
 
       try {
-        await service.getBookToDownload('valid-token', 2, mockRes, 'MOBI', 'application/x-mobipocket-ebook');
+        await service.getBookToDownload('valid-token', 2, mockRes, findBookFormat('MOBI'));
       } catch {
         // StreamableFile may throw because there's no real file
       }
@@ -433,7 +477,7 @@ describe('BooksService', () => {
       jest.spyOn(fsPromises, 'stat').mockResolvedValue({} as any);
 
       try {
-        await service.getBookToDownload('valid-token', 3, mockRes, 'EPUB', 'application/epub+zip');
+        await service.getBookToDownload('valid-token', 3, mockRes, findBookFormat('EPUB'));
       } catch {
         // StreamableFile may throw because there's no real file
       }
@@ -446,7 +490,7 @@ describe('BooksService', () => {
     });
 
     it('should throw BAD_REQUEST when no token is provided', async () => {
-      await expect(service.getBookToDownload('', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+      await expect(service.getBookToDownload('', 1, mockRes, findBookFormat('EPUB'))).rejects.toMatchObject({
         status: HttpStatus.BAD_REQUEST,
       });
     });
@@ -454,7 +498,7 @@ describe('BooksService', () => {
     it('should throw UNAUTHORIZED when token is invalid', async () => {
       mockUsersService.checkToken.mockResolvedValue(null);
 
-      await expect(service.getBookToDownload('invalid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+      await expect(service.getBookToDownload('invalid-token', 1, mockRes, findBookFormat('EPUB'))).rejects.toMatchObject({
         status: HttpStatus.UNAUTHORIZED,
       });
     });
@@ -472,7 +516,7 @@ describe('BooksService', () => {
       mockUsersService.checkToken.mockResolvedValue(mockUser);
       jest.spyOn(fsPromises, 'stat').mockRejectedValue(Object.assign(new Error('Missing file'), { code: 'ENOENT' }));
 
-      await expect(service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+      await expect(service.getBookToDownload('valid-token', 1, mockRes, findBookFormat('EPUB'))).rejects.toMatchObject({
         status: HttpStatus.NOT_FOUND,
       });
     });
@@ -481,7 +525,7 @@ describe('BooksService', () => {
       mockCalibreDbService.getBookPaths.mockResolvedValue({ book_id: 1, book_path: '', data: undefined });
       mockUsersService.checkToken.mockResolvedValue({ id: 1 });
 
-      await expect(service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+      await expect(service.getBookToDownload('valid-token', 1, mockRes, findBookFormat('EPUB'))).rejects.toMatchObject({
         status: HttpStatus.NOT_FOUND,
       });
     });
@@ -494,7 +538,7 @@ describe('BooksService', () => {
       });
       mockUsersService.checkToken.mockResolvedValue({ id: 1 });
 
-      await expect(service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+      await expect(service.getBookToDownload('valid-token', 1, mockRes, findBookFormat('EPUB'))).rejects.toMatchObject({
         status: HttpStatus.NOT_FOUND,
       });
     });
@@ -508,7 +552,7 @@ describe('BooksService', () => {
       mockUsersService.checkToken.mockResolvedValue({ id: 1 });
       jest.spyOn(fsPromises, 'stat').mockRejectedValue(new Error('disk exploded'));
 
-      await expect(service.getBookToDownload('valid-token', 1, mockRes, 'EPUB', 'application/epub+zip')).rejects.toMatchObject({
+      await expect(service.getBookToDownload('valid-token', 1, mockRes, findBookFormat('EPUB'))).rejects.toMatchObject({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
       });
     });

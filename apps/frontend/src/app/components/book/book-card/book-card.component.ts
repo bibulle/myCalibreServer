@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, NgModule, ChangeDetectionStrategy } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { Book } from '@my-calibre-server/api-interfaces';
+import { Book, BookFormat, preferredBookFormat } from '@my-calibre-server/api-interfaces';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ImageSpritesModule } from '../../image-sprites/image-sprites.component';
 import { UserService } from '../../authent/user.service';
 import { NotificationService } from '../../notification/notification.service';
 import { BookService } from '../book.service';
+import { triggerBrowserDownload } from '../download-util';
 
 @Component({
     selector: 'my-calibre-server-book-card',
@@ -46,32 +47,27 @@ export class BookCardComponent {
     this.router.navigate(['/book', this.book.book_id]);
   }
 
-  get hasEpub(): boolean {
-    return this.book.data.some((d) => d.data_format === 'EPUB');
-  }
-
-  get hasMobi(): boolean {
-    return this.book.data.some((d) => d.data_format === 'MOBI');
+  /** Format the quick download would fetch, or undefined when there is none. */
+  get downloadFormat(): BookFormat | undefined {
+    return preferredBookFormat(this.book.data);
   }
 
   /**
-   * Quick-download the book (EPUB, falling back to MOBI) straight from the
+   * Quick-download the book in its best available format straight from the
    * list card. The full format/Kindle picker stays on the book detail page.
    */
   download(event: Event) {
     event.stopPropagation();
 
-    const urlPromise = this.hasEpub ? this._bookService.getEpubUrl(this.book.book_id) : this._bookService.getMobiUrl(this.book.book_id);
+    const format = this.downloadFormat;
+    if (!format) {
+      return;
+    }
 
-    urlPromise
+    this._bookService
+      .getDownloadUrl(this.book.book_id, format)
       .then((url) => {
-        const link = document.createElement('a');
-
-        link.setAttribute('href', url);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        triggerBrowserDownload(url);
         setTimeout(() => {
           this._userService.refreshUser().catch((err) => {
             console.log(err);

@@ -1,6 +1,6 @@
 import { Component, NgModule, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FilterService } from '../../filter-bar/filter.service';
-import { Book, ReaderRatingTotal } from '@my-calibre-server/api-interfaces';
+import { availableBookFormats, Book, BookFormat, preferredKindleFormat, ReaderRatingTotal } from '@my-calibre-server/api-interfaces';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from '../book.service';
 import { CommonModule } from '@angular/common';
@@ -18,6 +18,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { triggerBrowserDownload } from '../download-util';
 
 @Component({
   selector: 'my-calibre-server-book-page',
@@ -31,8 +33,10 @@ export class BookPageComponent implements OnInit {
 
   book: Book = new Book();
 
-  bookHasEpub = false;
-  bookHasMobi = false;
+  /** Formats of this book this server can serve, best first. */
+  availableFormats: BookFormat[] = [];
+  /** Format Amazon would accept, or undefined when the book has none. */
+  kindleFormat?: BookFormat;
   ratings: ReaderRatingTotal = new ReaderRatingTotal();
 
   coverUrlBase = `/api/book/cover`;
@@ -60,13 +64,8 @@ export class BookPageComponent implements OnInit {
         // console.log(book);
         this.book = book;
 
-        this.book.data.forEach((bd) => {
-          if (bd.data_format === 'EPUB') {
-            this.bookHasEpub = true;
-          } else if (bd.data_format === 'MOBI') {
-            this.bookHasMobi = true;
-          }
-        });
+        this.availableFormats = availableBookFormats(this.book.data);
+        this.kindleFormat = preferredKindleFormat(this.book.data);
 
         this.ratings = this._bookService.updateReaderRating(this.book, this._userService.getUser());
 
@@ -184,47 +183,13 @@ export class BookPageComponent implements OnInit {
   }
 
   /**
-   * Methode to download an epub
+   * Download one of the formats the book is available in
    */
-  downloadEpub() {
+  download(format: BookFormat) {
     this._bookService
-      .getEpubUrl(this.book.book_id)
+      .getDownloadUrl(this.book.book_id, format)
       .then((url) => {
-        const link = document.createElement('a');
-
-        link.setAttribute('href', url);
-        // link.setAttribute('download', this.book.book_id+'.epub');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => {
-          this._userService.refreshUser().catch((err) => {
-            console.log(err);
-          });
-        }, 3000);
-      })
-      .catch((err) => {
-        console.log(err);
-        this._notificationService.error(err);
-      });
-  }
-
-  /**
-   * Methode to download an epub
-   */
-  downloadMobi() {
-    this._bookService
-      .getMobiUrl(this.book.book_id)
-      .then((url) => {
-        const link = document.createElement('a');
-
-        link.setAttribute('href', url);
-        // link.setAttribute('download', this.book.book_id+'.mobi');
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        triggerBrowserDownload(url);
         setTimeout(() => {
           this._userService.refreshUser().catch((err) => {
             console.log(err);
@@ -248,6 +213,7 @@ export class BookPageComponent implements OnInit {
     MatCardModule,
     MatAutocompleteModule,
     MatDialogModule,
+    MatMenuModule,
     TranslatePipe,
     LocalizedDateModule,
     MatRatingModule,
