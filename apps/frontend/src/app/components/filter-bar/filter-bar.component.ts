@@ -1,4 +1,4 @@
-import {Component, NgModule, OnDestroy, OnInit} from '@angular/core';
+import {Component, NgModule, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {Subject, Subscription} from 'rxjs';
@@ -13,6 +13,7 @@ import { MatMenuModule } from '@angular/material/menu';
     selector: 'my-calibre-server-filter-bar',
     templateUrl: './filter-bar.component.html',
     styleUrls: ['./filter-bar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FilterBarComponent implements OnInit, OnDestroy {

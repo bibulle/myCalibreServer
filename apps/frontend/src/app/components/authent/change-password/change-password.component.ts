@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from '@my-calibre-server/api-interfaces';
 import { Filter, FilterService } from '../../filter-bar/filter.service';
@@ -9,6 +9,7 @@ import { UserService } from '../user.service';
     selector: 'my-calibre-server-change-password',
     templateUrl: './change-password.component.html',
     styleUrls: ['./change-password.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ChangePasswordComponent implements OnInit {

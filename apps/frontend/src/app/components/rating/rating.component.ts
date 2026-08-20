@@ -6,6 +6,7 @@ import {
   OnInit,
   Output,
   ViewEncapsulation,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +19,7 @@ import { BrowserModule } from '@angular/platform-browser';
     templateUrl: './rating.component.html',
     styleUrls: ['./rating.component.scss'],
     encapsulation: ViewEncapsulation.Emulated,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MatRatingComponent implements OnInit {

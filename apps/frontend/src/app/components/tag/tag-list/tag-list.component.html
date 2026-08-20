@@ -25,7 +25,7 @@
   </div>
 
   @if (tagSelected) {
-    <div class="section-label">{{ 'label.tags-books-section' | translate: { name: selectedTag?.tag_name } }}</div>
+    <div class="section-label">{{ 'label.tags-books-section' | translate: { name: $safeNavigationMigration(selectedTag?.tag_name) } }}</div>
     <div class="filtered-books-grid">
       @for (book of selectedTagBooks; track book.book_id) {
         <div class="filtered-book" (click)="openBook(book.book_id)">

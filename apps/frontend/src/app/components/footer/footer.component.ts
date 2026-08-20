@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Version } from '@my-calibre-server/api-interfaces';
 import { TitleService } from '../../app/title.service';
 
@@ -6,6 +6,7 @@ import { TitleService } from '../../app/title.service';
     selector: 'my-calibre-server-docs-footer',
     templateUrl: './footer.component.html',
     styleUrls: ['./footer.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FooterComponent implements OnInit {

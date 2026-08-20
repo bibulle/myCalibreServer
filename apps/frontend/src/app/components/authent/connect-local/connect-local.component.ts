@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Filter, FilterService } from '../../filter-bar/filter.service';
 import { UserService } from '../user.service';
 import { NotificationService } from '../../notification/notification.service';
@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
     selector: 'my-calibre-server-connect-local',
     templateUrl: './connect-local.component.html',
     styleUrls: ['./connect-local.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConnectLocalComponent implements OnInit {

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, NgModule, Output } from '@angular/core';
+import { Component, EventEmitter, Input, NgModule, Output, ChangeDetectionStrategy } from '@angular/core';
 import { Tag } from '@my-calibre-server/api-interfaces';
 
 @Component({
     selector: 'my-calibre-server-tag-card',
     templateUrl: './tag-card.component.html',
     styleUrls: ['./tag-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TagCardComponent {

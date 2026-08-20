@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule } from '@angular/core';
+import { Component, Input, NgModule, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Author } from '@my-calibre-server/api-interfaces';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -11,6 +11,7 @@ const AVATAR_PALETTE = ['#0d3b3b', '#b0472f', '#23306e', '#2f3d33', '#5c1a24', '
     selector: 'my-calibre-server-author-card',
     templateUrl: './author-card.component.html',
     styleUrls: ['./author-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AuthorCardComponent {
