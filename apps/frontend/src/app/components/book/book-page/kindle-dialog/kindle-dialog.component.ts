@@ -1,4 +1,4 @@
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit, Optional, ChangeDetectionStrategy } from '@angular/core';
 import { UserService } from '../../../authent/user.service';
 import { User } from '@my-calibre-server/api-interfaces';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -11,6 +11,7 @@ export class KindleDialogReturn {
     selector: 'my-calibre-server-kindle-dialog',
     templateUrl: './kindle-dialog.component.html',
     styleUrls: ['./kindle-dialog.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class KindleDialogComponent implements OnInit {

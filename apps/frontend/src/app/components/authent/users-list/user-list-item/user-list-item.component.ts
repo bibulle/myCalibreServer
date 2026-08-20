@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, NgModule, Output } from '@angular/core';
+import { Component, EventEmitter, Input, NgModule, Output, ChangeDetectionStrategy } from '@angular/core';
 import { MatSlideToggleChange, MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { User } from '@my-calibre-server/api-interfaces';
@@ -12,6 +12,7 @@ import { UserService } from '../../user.service';
     selector: 'my-calibre-server-user-list-item',
     templateUrl: './user-list-item.component.html',
     styleUrls: ['./user-list-item.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UserListItemComponent {

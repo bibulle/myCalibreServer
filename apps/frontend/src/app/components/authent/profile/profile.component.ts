@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Filter, FilterService} from '../../filter-bar/filter.service';
 import {UserService} from '../user.service';
 import {User} from '@my-calibre-server/api-interfaces';
@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
     selector: 'my-calibre-server-profile',
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProfileComponent implements OnInit {

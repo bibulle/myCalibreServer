@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, NgModule, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, NgModule, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Book, Tag } from '@my-calibre-server/api-interfaces';
@@ -17,6 +17,7 @@ import { NotificationService } from '../../notification/notification.service';
   selector: 'my-calibre-server-tag-list',
   templateUrl: './tag-list.component.html',
   styleUrls: ['./tag-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class TagListComponent implements OnInit, OnDestroy, AfterViewInit {

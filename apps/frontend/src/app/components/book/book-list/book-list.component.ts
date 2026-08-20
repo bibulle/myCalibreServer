@@ -1,6 +1,6 @@
 // <reference path="../../../../../node_modules/@angular/material/core/core.d.ts"/>
 import { CommonModule } from '@angular/common';
-import { Component, NgModule, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgModule, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -20,6 +20,7 @@ import { NotificationService } from '../../notification/notification.service';
   selector: 'my-calibre-server-book-list',
   templateUrl: './book-list.component.html',
   styleUrls: ['./book-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class BookListComponent implements OnInit, OnDestroy {

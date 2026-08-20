@@ -1,10 +1,11 @@
-import { Component, HostBinding, Input, NgModule } from '@angular/core';
+import { Component, HostBinding, Input, NgModule, ChangeDetectionStrategy } from '@angular/core';
 import { ThumbnailUtils } from '@my-calibre-server/api-interfaces';
 
 @Component({
     selector: 'my-calibre-server-image-sprites',
     templateUrl: './image-sprites.component.html',
     styleUrls: ['./image-sprites.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ImageSpritesComponent {

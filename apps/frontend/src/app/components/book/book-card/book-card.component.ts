@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule } from '@angular/core';
+import { Component, Input, NgModule, ChangeDetectionStrategy } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { Book } from '@my-calibre-server/api-interfaces';
@@ -13,6 +13,7 @@ import { BookService } from '../book.service';
     selector: 'my-calibre-server-book-card',
     templateUrl: './book-card.component.html',
     styleUrls: ['./book-card.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class BookCardComponent {
