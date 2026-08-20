@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { ApiReturn, Book, BookRating, User } from '@my-calibre-server/api-interfaces';
+import { ApiReturn, Book, BookRating, findBookFormat, User } from '@my-calibre-server/api-interfaces';
 import { of, throwError } from 'rxjs';
 import { BookService } from './book.service';
 
@@ -195,49 +195,30 @@ describe('BookService', () => {
     });
   });
 
-  describe('getEpubUrl', () => {
-    it('should resolve with a URL containing the token', async () => {
+  describe('getDownloadUrl', () => {
+    it.each([
+      ['EPUB', 'epub'],
+      ['PDF', 'pdf'],
+      ['MOBI', 'mobi'],
+    ])('should resolve with a %s URL containing the token', async (id, extension) => {
       mockHttpClient.get.mockReturnValue(of({ id_token: 'tok123' } as ApiReturn));
 
-      const result = await service.getEpubUrl(1);
+      const result = await service.getDownloadUrl(1, findBookFormat(id));
 
-      expect(mockHttpClient.get).toHaveBeenCalledWith('/api/book/1/epub/url');
-      expect(result).toEqual('/api/book/1/epub?token=tok123');
+      expect(mockHttpClient.get).toHaveBeenCalledWith(`/api/book/1/${extension}/url`);
+      expect(result).toEqual(`/api/book/1/download/${extension}?token=tok123`);
     });
 
     it('should reject when response has no id_token', async () => {
       mockHttpClient.get.mockReturnValue(of({} as ApiReturn));
 
-      await expect(service.getEpubUrl(1)).rejects.toEqual('Cannot get epub url');
+      await expect(service.getDownloadUrl(1, findBookFormat('PDF'))).rejects.toEqual('Cannot get pdf url');
     });
 
     it('should reject when the request errors', async () => {
       mockHttpClient.get.mockReturnValue(throwError(() => 'network error'));
 
-      await expect(service.getEpubUrl(1)).rejects.toEqual('network error');
-    });
-  });
-
-  describe('getMobiUrl', () => {
-    it('should resolve with a URL containing the token', async () => {
-      mockHttpClient.get.mockReturnValue(of({ id_token: 'tok123' } as ApiReturn));
-
-      const result = await service.getMobiUrl(1);
-
-      expect(mockHttpClient.get).toHaveBeenCalledWith('/api/book/1/mobi/url');
-      expect(result).toEqual('/api/book/1/mobi?token=tok123');
-    });
-
-    it('should reject when response has no id_token', async () => {
-      mockHttpClient.get.mockReturnValue(of({} as ApiReturn));
-
-      await expect(service.getMobiUrl(1)).rejects.toEqual('Cannot get mobi url');
-    });
-
-    it('should reject when the request errors', async () => {
-      mockHttpClient.get.mockReturnValue(throwError(() => 'network error'));
-
-      await expect(service.getMobiUrl(1)).rejects.toEqual('network error');
+      await expect(service.getDownloadUrl(1, findBookFormat('EPUB'))).rejects.toEqual('network error');
     });
   });
 

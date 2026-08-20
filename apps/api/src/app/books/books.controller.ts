@@ -1,4 +1,4 @@
-import { ApiReturn, BookData, BookPath, User } from '@my-calibre-server/api-interfaces';
+import { ApiReturn, BookData, BookPath, findBookFormat, preferredKindleFormat, User } from '@my-calibre-server/api-interfaces';
 import { Body, Controller, Get, Header, Headers, HttpException, Logger, NotFoundException, Param, Post, Query, Req, Res, StreamableFile, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
@@ -7,6 +7,7 @@ import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { ApiBadRequestException } from '../exceptions/api-bad-request.exception';
 import { ApiInternalServerException } from '../exceptions/api-internal-server.exception';
+import { ApiResourceNotFoundException } from '../exceptions/api-resource-not-found.exception';
 import { ApiUnauthorizedException } from '../exceptions/api-unauthorized.exception';
 import { BookNotFoundException } from '../exceptions/book-not-found.exception';
 import { UsersService } from '../users/users.service';
@@ -224,13 +225,29 @@ export class BooksController {
   // ====================================
   // route for downloading book
   // ====================================
+  @Get('/:id/download/:format')
+  async getBookFile(
+    @Param('id') book_id: number,
+    @Param('format') format: string,
+    @Query('token') token: string,
+    @Res({ passthrough: true }) res
+  ): Promise<StreamableFile> {
+    const bookFormat = findBookFormat(format);
+    if (!bookFormat) {
+      throw new ApiResourceNotFoundException(`Format '${format}' is not supported`);
+    }
+    return this._booksService.getBookToDownload(token, book_id, res, bookFormat);
+  }
+
+  // Kept so that URLs already handed out - the service worker caches them -
+  // keep working; new callers go through /download/:format.
   @Get('/:id/epub')
   async getEpub(@Param('id') book_id: number, @Query('token') token: string, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return this._booksService.getBookToDownload(token, book_id, res, 'EPUB', 'application/epub+zip');
+    return this.getBookFile(book_id, 'epub', token, res);
   }
   @Get('/:id/mobi')
   async getMobi(@Param('id') book_id: number, @Query('token') token: string, @Res({ passthrough: true }) res): Promise<StreamableFile> {
-    return this._booksService.getBookToDownload(token, book_id, res, 'MOBI', 'application/x-mobipocket-ebook');
+    return this.getBookFile(book_id, 'mobi', token, res);
   }
 
   // ====================================
@@ -292,8 +309,7 @@ export class BooksController {
 
   @Get(':id/send/kindle')
   @UseGuards(AuthGuard('jwt'))
-  async sendKindle(@Param('id') book_id: number, @Query('mail') mail: string, @Req() req): Promise<ApiReturn> {
-    const format = 'EPUB'; // Only epub can be send to kindle now
+  async sendKindle(@Param('id') book_id: number, @Query('mail') mail: string, @Query('format') wantedFormat: string, @Req() req): Promise<ApiReturn> {
     try {
       const user: User = req.user as User;
       if (!user) {
@@ -302,19 +318,28 @@ export class BooksController {
       if (!mail || !book_id) {
         throw new ApiBadRequestException('Mail and book id are required');
       }
+      if (wantedFormat && !findBookFormat(wantedFormat)) {
+        throw new ApiResourceNotFoundException(`Format '${wantedFormat}' is not supported`);
+      }
       const book = await this._calibreDb.getBookPaths(book_id);
       let fullPath = null;
 
       if (book && book.book_path && book.data) {
+        // Amazon accepts EPUB and PDF but dropped MOBI: pick the best format
+        // the book actually has rather than assuming a single one.
+        const format = wantedFormat ? findBookFormat(wantedFormat) : preferredKindleFormat(book.data);
+        if (!format || !format.kindleCompatible) {
+          throw new ApiBadRequestException(`No Kindle compatible format available for book ${book_id}`);
+        }
         const data = book.data.filter((bd: BookData) => {
-          return bd.data_format == format.toUpperCase();
+          return bd.data_format?.toUpperCase() === format.id;
         });
         if (data && data.length != 0) {
-          fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
+          fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.extension}`);
           const stats = await fsPromises.stat(fullPath);
           if (stats) {
             await this._usersService.addDownloadedBook(user, book_id, data[0]);
-            await this._mailService.sendMail(mail, 'My books', 'This book was sent to you by myCalibre.', `${data[0].data_name}.${format.toLowerCase()}`, `${fullPath}`);
+            await this._mailService.sendMail(mail, 'My books', 'This book was sent to you by myCalibre.', `${data[0].data_name}.${format.extension}`, `${fullPath}`);
             return { ok: 'Book sent' };
           } else {
             throw new BookNotFoundException(book_id);

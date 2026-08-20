@@ -33,8 +33,8 @@
 
         <span class="rl-spacer"></span>
 
-        @if (hasEpub || hasMobi) {
-          <button type="button" class="download" (click)="download($event)" [matTooltip]="(hasEpub ? 'label.epub-format' : 'label.mobi-format') | translate">↓</button>
+        @if (downloadFormat) {
+          <button type="button" class="download" (click)="download($event)" [matTooltip]="downloadFormat.labelKey | translate">↓</button>
         }
       </div>
     </div>
