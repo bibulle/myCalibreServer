@@ -31,9 +31,14 @@ WORKDIR /usr/src
 COPY --from=BUILD /usr/src/package*.json ./
 COPY --from=BUILD /usr/src/dist dist/ 
 
-RUN npm ci --only=production --ignore-scripts --omit=dev
-RUN npm uninstall sqlite3 sharp
-RUN npm install sqlite3 sharp
+RUN npm ci --omit=dev --ignore-scripts
+# `--ignore-scripts` saute le script `install` de sqlite3, qui récupère son
+# binaire natif : on le reconstruit ici, sans quitter les versions figées par
+# le lock (au contraire d'un uninstall/install, qui réinstallait la dernière
+# version satisfaisant le package.json, non testée par le CI).
+# sharp n'a plus besoin de ce traitement : depuis la 0.33 il livre ses
+# binaires en optionalDependencies (@img/sharp-*), qu'aucun script n'installe.
+RUN npm rebuild sqlite3
 
 ENV PORT=3000
 #ENV AUTHENT_JWT_SECRET=authent_jwt_secret

@@ -4,7 +4,12 @@ import { CalibreDb1Service } from '../database/calibre-db1.service';
 import { Series } from '@my-calibre-server/api-interfaces';
 import { CacheService } from '../cache/cache.service';
 import { BooksService } from '../books/books.service';
-import * as sharp from 'sharp';
+import * as sharpNs from 'sharp';
+// sharp 0.35 publie des types ESM (`export default`) que la résolution `node`
+// du monorepo charge même en CommonJS : le namespace n'y est plus appelable.
+// À l'exécution, `require('sharp')` reste la fonction elle-même ; cet alias
+// rétablit donc le typage sans rien changer au code émis.
+const sharp = sharpNs as unknown as typeof sharpNs.default;
 import { existsSync, mkdtempSync, rmSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
