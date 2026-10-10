@@ -1,12 +1,12 @@
 import { User } from '@my-calibre-server/api-interfaces';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 // import { Filter } from 'mongodb';
 import * as mongoDB from 'mongodb';
 
 @Injectable()
-export class MyCalibreDbService {
+export class MyCalibreDbService implements OnModuleDestroy {
   private readonly logger = new Logger(MyCalibreDbService.name);
 
   private static MONGO_URL: string;
@@ -14,6 +14,7 @@ export class MyCalibreDbService {
   private static MONGO_USERS_COL_NAME: string;
 
   private collections: { users?: mongoDB.Collection } = {};
+  private _client: mongoDB.MongoClient | null = null;
   // Connection attempt in progress, shared by all callers (only one MongoClient at a time)
   private _connecting: Promise<mongoDB.Collection> | null = null;
   private _lastConnectionError: string | null = null;
@@ -46,6 +47,7 @@ export class MyCalibreDbService {
           const db: mongoDB.Db = client.db(MyCalibreDbService.MONGO_DB_NAME);
           const usersCollection: mongoDB.Collection = db.collection(MyCalibreDbService.MONGO_USERS_COL_NAME);
 
+          this._client = client;
           this.collections.users = usersCollection;
           this._lastConnectionError = null;
           this.logger.log(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
@@ -62,6 +64,18 @@ export class MyCalibreDbService {
         });
     }
     return this._connecting;
+  }
+
+  /**
+   * Close the Mongo connection when the Nest module is destroyed (app.close(), tests)
+   */
+  async onModuleDestroy(): Promise<void> {
+    const client = this._client;
+    this._client = null;
+    this.collections.users = undefined;
+    if (client) {
+      await client.close().catch((err) => this.logger.warn(`Cannot close Mongo connection : ${err?.message ?? err}`));
+    }
   }
 
   /**

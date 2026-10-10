@@ -94,6 +94,9 @@ describe('BooksService', () => {
   });
 
   afterEach(() => {
+    // The service starts its CronJob itself (the registry is mocked here): stop it, otherwise
+    // the timer keeps the Jest worker alive ("worker process has failed to exit gracefully")
+    mockSchedulerRegistry.addCronJob.mock.calls.forEach(([, job]) => job.stop());
     jest.restoreAllMocks();
     jest.clearAllMocks();
   });

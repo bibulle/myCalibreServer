@@ -24,6 +24,7 @@ describe('MyCalibreDbService', () => {
   let service: MyCalibreDbService;
   let configService: ConfigService;
   let mongoClient: MongoClient;
+  let module: TestingModule;
 
   const mockConfigService = {
     get: jest.fn((key: string) => {
@@ -150,7 +151,7 @@ describe('MyCalibreDbService', () => {
       return;
     }
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [
         MyCalibreDbService,
         {
@@ -174,8 +175,14 @@ describe('MyCalibreDbService', () => {
     }
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    // A new module (and Mongo connection) is created for each test: close it (onModuleDestroy),
+    // otherwise the open sockets keep the Jest worker alive
+    if (module) {
+      await module.close();
+      module = undefined;
+    }
   });
 
   it('should be defined', () => {

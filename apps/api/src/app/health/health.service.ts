@@ -19,7 +19,12 @@ export class HealthService {
    * Wraps a promise with a timeout
    */
   private withTimeout<T>(promise: Promise<T>, timeoutMs: number, defaultValue: T): Promise<T> {
-    return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(defaultValue), timeoutMs))]);
+    let timer: ReturnType<typeof setTimeout>;
+    const timeout = new Promise<T>((resolve) => {
+      timer = setTimeout(() => resolve(defaultValue), timeoutMs);
+    });
+    // Clear the timer as soon as the check answers (it would otherwise stay armed for timeoutMs)
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
   }
 
   async getHealthSattus(): Promise<Status> {
