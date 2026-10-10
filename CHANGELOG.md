@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.14.0](https://github.com/bibulle/myCalibreServer/compare/v0.13.3...v0.14.0) (2026-10-10)
+
+
+### Features
+
+* **book:** permettre le telechargement de tous les formats disponibles ([35549b9](https://github.com/bibulle/myCalibreServer/commit/35549b96cb433088407226ca94fbf811b096908f)), closes [#255](https://github.com/bibulle/myCalibreServer/issues/255)
+* **book:** permettre le téléchargement de tous les formats disponibles ([e6c6869](https://github.com/bibulle/myCalibreServer/commit/e6c68699935fe62105ee671a77bd9b280385aebe))
+
 ## [0.13.3](https://github.com/bibulle/myCalibreServer/compare/v0.13.2...v0.13.3) (2026-08-20)
 
 
