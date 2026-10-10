@@ -2,6 +2,7 @@ import { Status } from '@my-calibre-server/api-interfaces';
 import { Injectable, Logger } from '@nestjs/common';
 import { CacheKey, CacheService } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
+import { MyCalibreDbService } from '../database/my-calibre-db.service';
 
 @Injectable()
 export class HealthService {
@@ -12,7 +13,7 @@ export class HealthService {
   private readonly CACHE_TTL = 30000; // 30 secondes
   private readonly CHECK_TIMEOUT = 5000; // 5 secondes max par vérification
 
-  constructor(private _cacheService: CacheService, private _calibreDb: CalibreDb1Service) {}
+  constructor(private _cacheService: CacheService, private _calibreDb: CalibreDb1Service, private _myCalibreDb: MyCalibreDbService) {}
 
   /**
    * Wraps a promise with a timeout
@@ -47,6 +48,8 @@ export class HealthService {
       ]);
 
       const ret = new Status();
+      // Mongo only holds the users: report it without failing the whole check
+      ret.mongoStatus = this._myCalibreDb.getConnectionStatus();
       results.forEach((r, index) => {
         this.logger.debug(JSON.stringify(r));
         if (r.status === 'fulfilled' && r.value !== null) {

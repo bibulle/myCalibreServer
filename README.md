@@ -72,6 +72,8 @@ npm run start:frontend
 
 The Docker image also sets `MALLOC_ARENA_MAX=2` (limits glibc memory fragmentation caused by the libvips threads, as recommended by sharp) and `LOG_LEVEL=LOG`; both can be overridden in the deployment (e.g. `LOG_LEVEL=DEBUG` to troubleshoot).
 
+`GET /api/health` answers with the status of each dependency: `calibreStatus`, `cacheStatus` and `mongoStatus` (`OK` or `KO : <reason>`). The API keeps running while MongoDB is unreachable (user-related requests fail until it is back, the connection is retried automatically).
+
 The API never stores a session for requests that don't use one (authentication is JWT-based): probes and anonymous clients no longer accumulate sessions in memory.
 
 ### Optional Environment Variables (OAuth)

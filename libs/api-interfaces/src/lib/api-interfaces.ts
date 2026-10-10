@@ -49,6 +49,7 @@ export class Title {
 export class Status {
   calibreStatus = 'OK';
   cacheStatus = 'OK';
+  mongoStatus = 'OK';
   calibreDate?: Date;
   calibreSize = 0;
   cacheAuthor?: Date;
