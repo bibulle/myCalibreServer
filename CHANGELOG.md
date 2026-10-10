@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.14.2](https://github.com/bibulle/myCalibreServer/compare/v0.14.1...v0.14.2) (2026-10-10)
+
+
+### Bug Fixes
+
+* **api:** bound sharp/libvips memory and CPU usage ([e210523](https://github.com/bibulle/myCalibreServer/commit/e210523efc7c9d12abda3bda87d3ee1f2c4eedc0))
+* **api:** bound sharp/libvips memory and CPU usage ([0265950](https://github.com/bibulle/myCalibreServer/commit/0265950640864b85120c53ca65dff9da32b5a18c))
+
 ## [0.14.1](https://github.com/bibulle/myCalibreServer/compare/v0.14.0...v0.14.1) (2026-10-10)
 
 
