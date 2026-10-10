@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.14.3](https://github.com/bibulle/myCalibreServer/compare/v0.14.2...v0.14.3) (2026-10-10)
+
+
+### Bug Fixes
+
+* **api:** keep running when MongoDB is unreachable ([9d2ea27](https://github.com/bibulle/myCalibreServer/commit/9d2ea275c47774075605c41e8d9e441f288c5abd))
+* **api:** survive MongoDB outages + slim Docker image ([b08357d](https://github.com/bibulle/myCalibreServer/commit/b08357dc47c04e37fb10789d7889898d5f140c8c))
+
 ## [0.14.2](https://github.com/bibulle/myCalibreServer/compare/v0.14.1...v0.14.2) (2026-10-10)
 
 
