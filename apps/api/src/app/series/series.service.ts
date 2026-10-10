@@ -40,11 +40,11 @@ export class SeriesService {
     return stat ? stat.mtimeMs : 0;
   }
 
-  async calculateSpritesSeriesThumbnail(): Promise<void> {
+  async calculateSpritesSeriesThumbnail(series?: Series[]): Promise<void> {
     // SeriesService.logger.debug('calculateSpritesSeriesThumbnail()');
 
     try {
-      const series = await this._calibreDbService.getAllSeries();
+      series = series ?? (await this._calibreDbService.getAllSeries());
       const spriteList: Sprite[] = [
         ...new Set<Sprite>(
           series
@@ -68,7 +68,7 @@ export class SeriesService {
       for (const i of spriteList) {
         SeriesService.logger.debug(`sprite ${i.id} start`);
 
-        await this.createSpritesSeries(i.id);
+        await this.createSpritesSeries(i.id, series);
 
         SeriesService.logger.debug(`sprite ${i.id} done`);
       }
@@ -80,10 +80,10 @@ export class SeriesService {
     }
   }
 
-  createSpritesSeries(index: number): Promise<void> {
+  createSpritesSeries(index: number, series?: Series[]): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
-      this.getSpritesSeriesOverlay(index)
+      this.getSpritesSeriesOverlay(index, series)
         .then(async (overlay) => {
           const canvasWidth = ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT;
           const safeOverlay = await this.removeOversizedOverlays(overlay, canvasWidth, ThumbnailUtils.THUMBNAIL_HEIGHT);
@@ -152,10 +152,10 @@ export class SeriesService {
     return result;
   }
 
-  async getSpritesSeriesOverlay(index: number): Promise<OverlayOptions[]> {
+  async getSpritesSeriesOverlay(index: number, series?: Series[]): Promise<OverlayOptions[]> {
     try {
       const err_info = await BooksService.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL);
-      const series = await this._calibreDbService.getAllSeries();
+      series = series ?? (await this._calibreDbService.getAllSeries());
       const overlay: Promise<OverlayOptions>[] = series
         .filter((s) => ThumbnailUtils.getSpritesIndex(s.series_id) === index)
         .map(async (s) => {

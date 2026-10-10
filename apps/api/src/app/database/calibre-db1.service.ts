@@ -53,8 +53,19 @@ export class CalibreDb1Service {
         } else {
           // if date change, change Db instance
           if (this._dbDate && stats.mtime.getTime() != this._dbDate.getTime()) {
+            // Close the previous handle (otherwise every call after a single change
+            // to metadata.db would leak a new connection) and remember the new date.
+            const oldDb = this._db;
             this._db = null;
+            this._dbDate = stats.mtime;
             this._db = this._getDb();
+            if (oldDb) {
+              oldDb.close((closeErr) => {
+                if (closeErr) {
+                  this.logger.warn(`Cannot close previous calibre Db handle : ${closeErr}`);
+                }
+              });
+            }
 
             this.logger.debug(stats.mtime);
             resolve(stats.mtime);

@@ -45,8 +45,13 @@ async function bootstrap() {
   app.use(
     expressSession({
       secret: sessionSecret,
-      resave: true,
-      saveUninitialized: true,
+      // No session is ever written by the app (authentication is JWT-based, OAuth
+      // strategies run without `state`): never store untouched sessions, otherwise
+      // the default MemoryStore keeps one per cookie-less request (probes, crawlers…)
+      // forever and the memory grows without bound.
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 60 * 60 * 1000 },
     })
   );
   app.use(passport.initialize());

@@ -105,6 +105,31 @@ describe('CalibreDb1Service', () => {
 
       CalibreDb1Service['DB_FILE'] = originalDbFile;
     });
+
+    it('should close the previous handle and remember the new date when the file changed', async () => {
+      const oldDb = service['_db'];
+      const closeSpy = jest.spyOn(oldDb, 'close');
+      service['_dbDate'] = new Date(0);
+
+      const result = await service.getDbDate();
+
+      expect(closeSpy).toHaveBeenCalledTimes(1);
+      expect(service['_db']).not.toBe(oldDb);
+      expect(service['_dbDate'].getTime()).toBe(result.getTime());
+    });
+
+    it('should keep the same handle on later calls once the new date is known', async () => {
+      service['_dbDate'] = new Date(0);
+      await service.getDbDate();
+      const db = service['_db'];
+      const closeSpy = jest.spyOn(db, 'close');
+
+      await service.getDbDate();
+      await service.getDbDate();
+
+      expect(service['_db']).toBe(db);
+      expect(closeSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('getBooks', () => {

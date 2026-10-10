@@ -27,6 +27,8 @@ describe('BooksService', () => {
 
   const mockCalibreDbService = {
     getBooks: jest.fn(),
+    getAllSeries: jest.fn(),
+    getDbDate: jest.fn(),
     getBookById: jest.fn(),
     getBookPaths: jest.fn(),
   };
@@ -606,6 +608,108 @@ describe('BooksService', () => {
       mockCalibreDbService.getBooks.mockRejectedValue(new Error('db down'));
 
       await expect(service.calculateMissingBookThumbnail()).rejects.toThrow('db down');
+    });
+    it('should use the given books instead of querying the database', async () => {
+      const book = { book_id: 1, book_has_cover: '', book_path: 'Author/Book (1)' } as unknown as Book;
+
+      await service.calculateMissingBookThumbnail([book]);
+
+      expect(mockCalibreDbService.getBooks).not.toHaveBeenCalled();
+    });
+
+    it('should keep going when one cover cannot be resized', async () => {
+      const books = [
+        { book_id: 1, book_has_cover: '1', book_path: 'Author/Broken (1)', book_title: 'Broken' },
+        { book_id: 2, book_has_cover: '1', book_path: 'Author/Fine (2)', book_title: 'Fine' },
+      ] as unknown as Book[];
+      jest.spyOn(fs, 'statSync').mockImplementation((p: any) => {
+        if (String(p).includes('cover.jpg')) {
+          return { mtime: new Date(2023, 0, 2) } as any;
+        }
+        return undefined;
+      });
+      jest.spyOn(fs, 'mkdirSync').mockImplementation(() => undefined);
+      const resizeImageSpy = jest.spyOn(service, 'resizeImage').mockRejectedValueOnce(new Error('corrupted')).mockResolvedValueOnce(undefined);
+
+      await expect(service.calculateMissingBookThumbnail(books)).resolves.toBeUndefined();
+
+      expect(resizeImageSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('runThumbnailJob', () => {
+    const books = [{ book_id: 1 }] as unknown as Book[];
+    const series = [{ series_id: 1, books: [] }] as any[];
+    let passSpies: jest.SpyInstance[];
+
+    beforeEach(() => {
+      (BooksService as any).lastThumbnailDbDate = null;
+      (BooksService as any).lastThumbnailPassTime = 0;
+      (BooksService as any).jobAlreadyRunning = false;
+      jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+      mockCalibreDbService.getDbDate.mockResolvedValue(new Date(2023, 0, 1));
+      mockCalibreDbService.getBooks.mockResolvedValue(books);
+      mockCalibreDbService.getAllSeries.mockResolvedValue(series);
+      mockSeriesService.calculateSpritesSeriesThumbnail.mockResolvedValue(undefined);
+      passSpies = [
+        jest.spyOn(service, 'calculateMissingBookThumbnail').mockResolvedValue(undefined),
+        jest.spyOn(service, 'calculateMissingSeriesThumbnail').mockResolvedValue(undefined),
+        jest.spyOn(service, 'calculateSpritesBookThumbnail').mockResolvedValue(undefined),
+      ];
+    });
+
+    it('should read the library only once per pass and share it between all steps', async () => {
+      await service.runThumbnailJob();
+
+      expect(mockCalibreDbService.getBooks).toHaveBeenCalledTimes(1);
+      expect(mockCalibreDbService.getAllSeries).toHaveBeenCalledTimes(1);
+      expect(passSpies[0]).toHaveBeenCalledWith(books);
+      expect(passSpies[1]).toHaveBeenCalledWith(series);
+      expect(passSpies[2]).toHaveBeenCalledWith(books);
+      expect(mockSeriesService.calculateSpritesSeriesThumbnail).toHaveBeenCalledWith(series);
+    });
+
+    it('should skip the pass while the calibre database is unchanged', async () => {
+      await service.runThumbnailJob();
+      await service.runThumbnailJob();
+
+      expect(mockCalibreDbService.getDbDate).toHaveBeenCalledTimes(2);
+      expect(mockCalibreDbService.getBooks).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run a new pass when the calibre database changed', async () => {
+      await service.runThumbnailJob();
+      mockCalibreDbService.getDbDate.mockResolvedValue(new Date(2023, 0, 2));
+      await service.runThumbnailJob();
+
+      expect(mockCalibreDbService.getBooks).toHaveBeenCalledTimes(2);
+    });
+
+    it('should run a full pass anyway once the check interval has elapsed', async () => {
+      const nowSpy = jest.spyOn(Date, 'now').mockReturnValue(1_000_000);
+      await service.runThumbnailJob();
+      nowSpy.mockReturnValue(1_000_000 + BooksService.THUMBNAIL_FULL_CHECK_INTERVAL_MS);
+      await service.runThumbnailJob();
+
+      expect(mockCalibreDbService.getBooks).toHaveBeenCalledTimes(2);
+    });
+
+    it('should retry on the next run when a pass failed', async () => {
+      passSpies[0].mockRejectedValueOnce(new Error('disk error'));
+
+      await service.runThumbnailJob();
+      await service.runThumbnailJob();
+
+      expect(mockCalibreDbService.getBooks).toHaveBeenCalledTimes(2);
+      expect((BooksService as any).jobAlreadyRunning).toBe(false);
+    });
+
+    it('should do nothing while a previous run is still in progress', async () => {
+      (BooksService as any).jobAlreadyRunning = true;
+
+      await service.runThumbnailJob();
+
+      expect(mockCalibreDbService.getDbDate).not.toHaveBeenCalled();
     });
   });
 

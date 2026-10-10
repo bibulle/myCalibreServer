@@ -158,6 +158,12 @@ describe('SeriesService', () => {
       expect(mockCalibreDbService.getAllSeries).toHaveBeenCalled();
     });
 
+    it('should use the given series instead of querying the database', async () => {
+      await service.calculateSpritesSeriesThumbnail([]);
+
+      expect(mockCalibreDbService.getAllSeries).not.toHaveBeenCalled();
+    });
+
     it('should handle database errors', async () => {
       mockCalibreDbService.getAllSeries.mockRejectedValue(new Error('DB Error'));
 
