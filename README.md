@@ -67,6 +67,10 @@ npm run start:frontend
 |----------|-------------|---------|
 | `CRON_CACHE_RECURRING` | Cron of the JSON cache refresh (rebuilt only when `metadata.db` changed) | `0 */10 * * * *` (every 10 min) |
 | `CRON_Thumbnail_RECURRING` | Cron of the thumbnails/sprites job. Each run only stats `metadata.db`: a full pass (one read of the library, then thumbnails and sprites) happens only when the Calibre database changed, and at least once an hour anyway (e.g. to rebuild deleted cache files). A cover that cannot be resized is logged and skipped. | `*/1 * * * *` (every minute) |
+| `SHARP_CONCURRENCY` | Threads libvips may use per image (sharp). libvips otherwise uses one thread per CPU core of the *node*, ignoring the container CPU limit | `1` |
+| `SHARP_CACHE_MEMORY_MB` | Memory of the libvips operation cache, in MB (`0` disables it; no file handle is ever cached) | `16` |
+
+The Docker image also sets `MALLOC_ARENA_MAX=2` (limits glibc memory fragmentation caused by the libvips threads, as recommended by sharp) and `LOG_LEVEL=LOG`; both can be overridden in the deployment (e.g. `LOG_LEVEL=DEBUG` to troubleshoot).
 
 The API never stores a session for requests that don't use one (authentication is JWT-based): probes and anonymous clients no longer accumulate sessions in memory.
 

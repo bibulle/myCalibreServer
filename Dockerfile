@@ -43,7 +43,11 @@ RUN npm rebuild sqlite3
 ENV PORT=3000
 #ENV AUTHENT_JWT_SECRET=authent_jwt_secret
 #ENV AUTHENT_GOOGLE_CLIENT_ID=
-ENV LOG_LEVEL=DEBUG
+ENV LOG_LEVEL=LOG
+# glibc crée une arène malloc par thread : avec les threads libvips (sharp), la
+# mémoire fragmentée n'est jamais rendue et la RSS du pod ne fait que monter.
+# Recommandation de la doc sharp pour les images basées sur glibc.
+ENV MALLOC_ARENA_MAX=2
 ENV PATH_MY_CALIBRE=/cache
 ENV PATH_BOOKS=/books
 
