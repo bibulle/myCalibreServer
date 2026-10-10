@@ -61,6 +61,15 @@ npm run start:frontend
 | `PATH_MY_CALIBRE` | Cache directory | `/path/to/cache` |
 | `LOG_LEVEL` | Logging level | `LOG`, `DEBUG`, `VERBOSE` |
 
+### Optional Environment Variables (background jobs)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CRON_CACHE_RECURRING` | Cron of the JSON cache refresh (rebuilt only when `metadata.db` changed) | `0 */10 * * * *` (every 10 min) |
+| `CRON_Thumbnail_RECURRING` | Cron of the thumbnails/sprites job. Each run only stats `metadata.db`: a full pass (one read of the library, then thumbnails and sprites) happens only when the Calibre database changed, and at least once an hour anyway (e.g. to rebuild deleted cache files). A cover that cannot be resized is logged and skipped. | `*/1 * * * *` (every minute) |
+
+The API never stores a session for requests that don't use one (authentication is JWT-based): probes and anonymous clients no longer accumulate sessions in memory.
+
 ### Optional Environment Variables (OAuth)
 
 | Variable | Description |

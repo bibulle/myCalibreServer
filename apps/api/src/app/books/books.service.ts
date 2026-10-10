@@ -1,4 +1,4 @@
-import { Book, BookData, BookFormat, BookPath, Sprite, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
+import { Book, BookData, BookFormat, BookPath, Series, Sprite, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
 import { HttpException, Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
 import { createReadStream, promises as fsPromises, mkdirSync, statSync, existsSync } from 'fs';
@@ -33,6 +33,13 @@ export class BooksService {
 
   private static jobAlreadyRunning = false;
 
+  // Thumbnails/sprites only depend on the calibre library: a pass is skipped while
+  // metadata.db is unchanged since the last completed one, with a full pass at least
+  // every THUMBNAIL_FULL_CHECK_INTERVAL_MS anyway (e.g. to recover deleted cache files).
+  static readonly THUMBNAIL_FULL_CHECK_INTERVAL_MS = 60 * 60 * 1000;
+  private static lastThumbnailDbDate: number | null = null;
+  private static lastThumbnailPassTime = 0;
+
   constructor(
     private readonly _configService: ConfigService,
     private _calibreDbService: CalibreDb1Service,
@@ -44,26 +51,47 @@ export class BooksService {
     BooksService.logger.debug(`cronThumbnailRecurrent   : ${BooksService.cronThumbnailRecurrent}`);
 
     const job1 = new CronJob(BooksService.cronThumbnailRecurrent, async () => {
-      if (BooksService.jobAlreadyRunning) {
-        return;
-      }
-      try {
-        BooksService.jobAlreadyRunning = true;
-        if (!existsSync(CacheService.ERR_COVER_THUMBNAIL)) {
-          await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
-        }
-        await this.calculateMissingBookThumbnail();
-        await this.calculateMissingSeriesThumbnail();
-        await this.calculateSpritesBookThumbnail();
-        await this._seriesService.calculateSpritesSeriesThumbnail();
-      } catch (error) {
-        BooksService.logger.error(error);
-      } finally {
-        BooksService.jobAlreadyRunning = false;
-      }
+      await this.runThumbnailJob();
     });
     this._schedulerRegistry.addCronJob('cronThumbnailRecurrent', job1);
     job1.start();
+  }
+
+  /**
+   * One run of the recurring thumbnail job. Does nothing (beyond a stat of metadata.db)
+   * when the library did not change since the last completed pass, and reads the
+   * library only once (books + series) when a pass is needed.
+   */
+  async runThumbnailJob(): Promise<void> {
+    if (BooksService.jobAlreadyRunning) {
+      return;
+    }
+    try {
+      BooksService.jobAlreadyRunning = true;
+
+      const dbDate = (await this._calibreDbService.getDbDate()).getTime();
+      const now = Date.now();
+      if (dbDate === BooksService.lastThumbnailDbDate && now - BooksService.lastThumbnailPassTime < BooksService.THUMBNAIL_FULL_CHECK_INTERVAL_MS) {
+        return;
+      }
+
+      if (!existsSync(CacheService.ERR_COVER_THUMBNAIL)) {
+        await this.resizeImage(CacheService.ERR_COVER, CacheService.ERR_COVER_THUMBNAIL);
+      }
+      const books = await this._calibreDbService.getBooks();
+      const series = await this._calibreDbService.getAllSeries();
+      await this.calculateMissingBookThumbnail(books);
+      await this.calculateMissingSeriesThumbnail(series);
+      await this.calculateSpritesBookThumbnail(books);
+      await this._seriesService.calculateSpritesSeriesThumbnail(series);
+
+      BooksService.lastThumbnailDbDate = dbDate;
+      BooksService.lastThumbnailPassTime = now;
+    } catch (error) {
+      BooksService.logger.error(error);
+    } finally {
+      BooksService.jobAlreadyRunning = false;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -200,9 +228,9 @@ export class BooksService {
     }
   }
 
-  async calculateMissingBookThumbnail(): Promise<void> {
+  async calculateMissingBookThumbnail(books?: Book[]): Promise<void> {
     try {
-      const books = await this._calibreDbService.getBooks();
+      books = books ?? (await this._calibreDbService.getBooks());
       for (const book of books.filter((b) => b.book_has_cover)) {
         const coverPath = this.getCoverPath(book);
         const coverStat = statSync(coverPath, { throwIfNoEntry: false });
@@ -219,7 +247,10 @@ export class BooksService {
 
           mkdirSync(path.dirname(thumbnailPath), { recursive: true });
 
-          await this.resizeImage(coverPath, thumbnailPath);
+          // A broken cover must not abort the whole pass (and be retried forever)
+          await this.resizeImage(coverPath, thumbnailPath).catch(() => {
+            BooksService.logger.warn(`Thumbnail skipped for "${book.book_title}" (${coverPath})`);
+          });
         }
       }
     } catch (error) {
@@ -228,9 +259,9 @@ export class BooksService {
     }
   }
 
-  async calculateMissingSeriesThumbnail(): Promise<void> {
+  async calculateMissingSeriesThumbnail(seriesLst?: Series[]): Promise<void> {
     try {
-      const seriesLst = await this._calibreDbService.getAllSeries();
+      seriesLst = seriesLst ?? (await this._calibreDbService.getAllSeries());
       for (const series of seriesLst) {
         const thumbnailPath = this._seriesService.getThumbnailPath(series.series_id);
         const thumbnailStat = statSync(thumbnailPath, { throwIfNoEntry: false });
@@ -286,12 +317,12 @@ export class BooksService {
     }
   }
 
-  async calculateSpritesBookThumbnail(): Promise<void> {
+  async calculateSpritesBookThumbnail(books?: Book[]): Promise<void> {
     // BooksService.logger.debug('calculateSpritesBookThumbnail()');
 
     try {
       // const spriteList = {};
-      const books = await this._calibreDbService.getBooks();
+      books = books ?? (await this._calibreDbService.getBooks());
       const spriteList: Sprite[] = [
         ...new Set<Sprite>(
           books
@@ -315,7 +346,7 @@ export class BooksService {
       for (const i of spriteList) {
         BooksService.logger.debug(`sprite ${i.id} start`);
 
-        await this.createSpritesBooks(i.id);
+        await this.createSpritesBooks(i.id, books);
 
         BooksService.logger.debug(`sprite ${i.id} done`);
       }
@@ -449,10 +480,10 @@ export class BooksService {
     return stat ? stat.mtimeMs : 0;
   }
 
-  async createSpritesBooks(index: number): Promise<void> {
+  async createSpritesBooks(index: number, books?: Book[]): Promise<void> {
     try {
       mkdirSync(dirname(this.getSpritesPath(index)), { recursive: true });
-      const overlay = await this.getSpritesBooksOverlay(index);
+      const overlay = await this.getSpritesBooksOverlay(index, books);
       // create empty image (and add overlay)
       const buffer = await sharp({
         create: { width: ThumbnailUtils.SPRITES_SIZE * ThumbnailUtils.THUMBNAIL_HEIGHT, height: ThumbnailUtils.THUMBNAIL_HEIGHT, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } },
@@ -469,10 +500,10 @@ export class BooksService {
     }
   }
 
-  async getSpritesBooksOverlay(index: number): Promise<OverlayOptions[]> {
+  async getSpritesBooksOverlay(index: number, books?: Book[]): Promise<OverlayOptions[]> {
     try {
       const err_info = await BooksService.getThumbnailInfo(CacheService.ERR_COVER_THUMBNAIL);
-      const books = await this._calibreDbService.getBooks();
+      books = books ?? (await this._calibreDbService.getBooks());
       const overlay: Promise<OverlayOptions>[] = books
         .filter((b) => ThumbnailUtils.getSpritesIndex(b.book_id) === index)
         .map(async (b) => {
