@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.14.4](https://github.com/bibulle/myCalibreServer/compare/v0.14.3...v0.14.4) (2026-10-10)
+
+
+### Tests
+
+* **api:** fix Jest "worker failed to exit gracefully" warning ([9377167](https://github.com/bibulle/myCalibreServer/commit/93771678697e51ac05d28480dc57ac4de9e57d4f))
+* **api:** fix Jest "worker failed to exit gracefully" warning ([a86c07c](https://github.com/bibulle/myCalibreServer/commit/a86c07c3cb201c4b3ad29ddc2c5c13f0e2dbac9e))
+
 ## [0.14.3](https://github.com/bibulle/myCalibreServer/compare/v0.14.2...v0.14.3) (2026-10-10)
 
 
