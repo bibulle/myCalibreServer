@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ApiReturn, Book, ReaderRatingTotal, User } from '@my-calibre-server/api-interfaces';
+import { ApiReturn, Book, BookFormat, ReaderRatingTotal, User } from '@my-calibre-server/api-interfaces';
 
 @Injectable()
 export class BookService {
@@ -9,8 +9,6 @@ export class BookService {
   private booksUrl = '/api/book';
   private sendKindleUrl = '/send/kindle';
   private updateRatingUrl = '/rating/';
-  private getEpubURL = '/epub/url';
-  private getMobibURL = '/mobi/url';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -191,46 +189,22 @@ export class BookService {
   }
 
   /**
-   * Get URL with temporary token
+   * Get the download URL of one format, carrying a temporary token
    * @param {number} book_id
+   * @param {BookFormat} format
    * @returns {Promise<string>}
    */
-  getEpubUrl(book_id: number): Promise<string> {
+  getDownloadUrl(book_id: number, format: BookFormat): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.httpClient
-        .get<ApiReturn>(this.booksUrl + '/' + book_id + this.getEpubURL) //
+        .get<ApiReturn>(`${this.booksUrl}/${book_id}/${format.extension}/url`) //
         .subscribe({
           next: (data) => {
             if (data && data.id_token) {
-              resolve(this.booksUrl + '/' + book_id + '/epub?token=' + data.id_token);
+              resolve(`${this.booksUrl}/${book_id}/download/${format.extension}?token=${data.id_token}`);
             } else {
               console.error(data);
-              reject('Cannot get epub url');
-            }
-          },
-          error: (err) => {
-            reject(err);
-          },
-        });
-    });
-  }
-
-  /**
-   * Get URL with temporary token
-   * @param {number} book_id
-   * @returns {Promise<string>}
-   */
-  getMobiUrl(book_id: number): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.httpClient
-        .get<ApiReturn>(this.booksUrl + '/' + book_id + this.getMobibURL) //
-        .subscribe({
-          next: (data) => {
-            if (data && data.id_token) {
-              resolve(this.booksUrl + '/' + book_id + '/mobi?token=' + data.id_token);
-            } else {
-              console.error(data);
-              reject('Cannot get mobi url');
+              reject(`Cannot get ${format.extension} url`);
             }
           },
           error: (err) => {

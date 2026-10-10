@@ -79,6 +79,32 @@ npm run start:frontend
 - Use different secrets for development and production environments
 - Store production secrets securely (e.g., using secret management tools)
 
+## 📚 Book formats
+
+Which Calibre formats can be downloaded, and which ones Amazon accepts for
+Send-to-Kindle, is described in a single registry shared by the API and the
+frontend: `libs/api-interfaces/src/lib/book-format.ts`.
+
+| Format | Extension | Content-Type | Priority | Send to Kindle |
+|---|---|---|---|---|
+| EPUB | `.epub` | `application/epub+zip` | 1 | yes |
+| PDF | `.pdf` | `application/pdf` | 2 | yes |
+| MOBI | `.mobi` | `application/x-mobipocket-ebook` | 3 | no (dropped by Amazon in 2023) |
+
+The priority decides which single format is used when the user does not pick
+one: the quick download button of a list card, and the file mailed to a Kindle.
+
+Downloads go through `GET /api/book/:id/download/:format` (`:format` is the
+extension above, case-insensitive), after a temporary token has been obtained
+from `GET /api/book/:id/:format/url`. The older `/api/book/:id/epub` and
+`/api/book/:id/mobi` routes are kept as aliases so URLs already cached by the
+service worker keep working.
+
+**Adding a format** means adding one entry to `BOOK_FORMATS` plus its
+`labelKey` in `apps/frontend/src/assets/i18n/{fr,en}.json`. Nothing else
+enumerates formats: the API route, the book page, the list card and the Kindle
+selection all read the registry.
+
 ## 🧪 Testing
 
 ### Unit Tests

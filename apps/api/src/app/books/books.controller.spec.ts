@@ -373,28 +373,57 @@ describe('BooksController', () => {
     });
   });
 
-  describe('getEpub', () => {
-    it('should download EPUB file', async () => {
+  describe('getBookFile', () => {
+    it.each([
+      ['epub', 'EPUB', 'application/epub+zip'],
+      ['pdf', 'PDF', 'application/pdf'],
+      ['mobi', 'MOBI', 'application/x-mobipocket-ebook'],
+    ])('should download the %s file', async (extension, id, mimeType) => {
       const mockStream = { pipe: jest.fn() };
       const mockStreamableFile = new StreamableFile(mockStream as any);
+      mockBooksService.getBookToDownload.mockResolvedValue(mockStreamableFile);
+
+      const result = await controller.getBookFile(1, extension, 'test-token', mockResponse);
+
+      expect(booksService.getBookToDownload).toHaveBeenCalledWith('test-token', 1, mockResponse, expect.objectContaining({ id, extension, mimeType }));
+      expect(result).toBe(mockStreamableFile);
+    });
+
+    it('should accept an upper case format', async () => {
+      const mockStreamableFile = new StreamableFile({ pipe: jest.fn() } as any);
+      mockBooksService.getBookToDownload.mockResolvedValue(mockStreamableFile);
+
+      await controller.getBookFile(1, 'PDF', 'test-token', mockResponse);
+
+      expect(booksService.getBookToDownload).toHaveBeenCalledWith('test-token', 1, mockResponse, expect.objectContaining({ id: 'PDF' }));
+    });
+
+    it('should throw NotFound for a format the server does not serve', async () => {
+      await expect(controller.getBookFile(1, 'djvu', 'test-token', mockResponse)).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
+      expect(booksService.getBookToDownload).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getEpub / getMobi legacy routes', () => {
+    it('should delegate the epub alias to the generic route', async () => {
+      const mockStreamableFile = new StreamableFile({ pipe: jest.fn() } as any);
       mockBooksService.getBookToDownload.mockResolvedValue(mockStreamableFile);
 
       const result = await controller.getEpub(1, 'test-token', mockResponse);
 
-      expect(booksService.getBookToDownload).toHaveBeenCalledWith('test-token', 1, mockResponse, 'EPUB', 'application/epub+zip');
+      expect(booksService.getBookToDownload).toHaveBeenCalledWith('test-token', 1, mockResponse, expect.objectContaining({ id: 'EPUB' }));
       expect(result).toBe(mockStreamableFile);
     });
-  });
 
-  describe('getMobi', () => {
-    it('should download MOBI file', async () => {
-      const mockStream = { pipe: jest.fn() };
-      const mockStreamableFile = new StreamableFile(mockStream as any);
+    it('should delegate the mobi alias to the generic route', async () => {
+      const mockStreamableFile = new StreamableFile({ pipe: jest.fn() } as any);
       mockBooksService.getBookToDownload.mockResolvedValue(mockStreamableFile);
 
       const result = await controller.getMobi(1, 'test-token', mockResponse);
 
-      expect(booksService.getBookToDownload).toHaveBeenCalledWith('test-token', 1, mockResponse, 'MOBI', 'application/x-mobipocket-ebook');
+      expect(booksService.getBookToDownload).toHaveBeenCalledWith('test-token', 1, mockResponse, expect.objectContaining({ id: 'MOBI' }));
       expect(result).toBe(mockStreamableFile);
     });
   });
@@ -447,19 +476,22 @@ describe('BooksController', () => {
   });
 
   describe('sendKindle', () => {
-    it('should send book to Kindle email', async () => {
-      const mockBookPath = {
-        book_id: 1,
-        book_path: 'Author/Book Title (1)',
-        data: [{ data_name: 'Book Title', data_format: 'EPUB' }],
-      };
+    const bookWithFormats = (...formats: string[]) => ({
+      book_id: 1,
+      book_path: 'Author/Book Title (1)',
+      data: formats.map((data_format) => ({ data_name: 'Book Title', data_format })),
+    });
 
-      mockCalibreDb.getBookPaths.mockResolvedValue(mockBookPath);
+    beforeEach(() => {
       (fs.promises.stat as jest.Mock).mockResolvedValue({ size: 1000 });
       mockUsersService.addDownloadedBook.mockResolvedValue(undefined);
       mockMailService.sendMail.mockResolvedValue(undefined);
+    });
 
-      const result = await controller.sendKindle(1, 'user@kindle.com', mockRequest);
+    it('should send book to Kindle email', async () => {
+      mockCalibreDb.getBookPaths.mockResolvedValue(bookWithFormats('EPUB'));
+
+      const result = await controller.sendKindle(1, 'user@kindle.com', undefined, mockRequest);
 
       expect(calibreDb.getBookPaths).toHaveBeenCalledWith(1);
       expect(usersService.addDownloadedBook).toHaveBeenCalled();
@@ -467,16 +499,57 @@ describe('BooksController', () => {
       expect(result).toEqual({ ok: 'Book sent' });
     });
 
+    it('should send the PDF when it is the only Kindle compatible format', async () => {
+      mockCalibreDb.getBookPaths.mockResolvedValue(bookWithFormats('PDF'));
+
+      const result = await controller.sendKindle(1, 'user@kindle.com', undefined, mockRequest);
+
+      expect(mailService.sendMail).toHaveBeenCalledWith('user@kindle.com', 'My books', 'This book was sent to you by myCalibre.', 'Book Title.pdf', expect.any(String));
+      expect(result).toEqual({ ok: 'Book sent' });
+    });
+
+    it('should prefer EPUB over PDF when the book has both', async () => {
+      mockCalibreDb.getBookPaths.mockResolvedValue(bookWithFormats('PDF', 'EPUB'));
+
+      await controller.sendKindle(1, 'user@kindle.com', undefined, mockRequest);
+
+      expect(mailService.sendMail).toHaveBeenCalledWith('user@kindle.com', 'My books', 'This book was sent to you by myCalibre.', 'Book Title.epub', expect.any(String));
+    });
+
+    it('should honour an explicitly requested format', async () => {
+      mockCalibreDb.getBookPaths.mockResolvedValue(bookWithFormats('EPUB', 'PDF'));
+
+      await controller.sendKindle(1, 'user@kindle.com', 'pdf', mockRequest);
+
+      expect(mailService.sendMail).toHaveBeenCalledWith('user@kindle.com', 'My books', 'This book was sent to you by myCalibre.', 'Book Title.pdf', expect.any(String));
+    });
+
+    it('should throw NotFound when the requested format is unknown', async () => {
+      await expect(controller.sendKindle(1, 'user@kindle.com', 'djvu', mockRequest)).rejects.toMatchObject({
+        status: HttpStatus.NOT_FOUND,
+      });
+      expect(mailService.sendMail).not.toHaveBeenCalled();
+    });
+
+    it('should throw BadRequest when the requested format is not Kindle compatible', async () => {
+      mockCalibreDb.getBookPaths.mockResolvedValue(bookWithFormats('EPUB', 'MOBI'));
+
+      await expect(controller.sendKindle(1, 'user@kindle.com', 'mobi', mockRequest)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
+      expect(mailService.sendMail).not.toHaveBeenCalled();
+    });
+
     it('should throw Unauthorized when user not found', async () => {
       const requestWithoutUser = { user: null };
 
-      await expect(controller.sendKindle(1, 'user@kindle.com', requestWithoutUser)).rejects.toMatchObject({
+      await expect(controller.sendKindle(1, 'user@kindle.com', undefined, requestWithoutUser)).rejects.toMatchObject({
         status: HttpStatus.UNAUTHORIZED,
       });
     });
 
     it('should throw BadRequest when mail is missing', async () => {
-      await expect(controller.sendKindle(1, null, mockRequest)).rejects.toMatchObject({
+      await expect(controller.sendKindle(1, null, undefined, mockRequest)).rejects.toMatchObject({
         status: HttpStatus.BAD_REQUEST,
       });
     });
@@ -484,19 +557,17 @@ describe('BooksController', () => {
     it('should throw error when book not found', async () => {
       mockCalibreDb.getBookPaths.mockResolvedValue(null);
 
-      await expect(controller.sendKindle(1, 'user@kindle.com', mockRequest)).rejects.toThrow(HttpException);
+      await expect(controller.sendKindle(1, 'user@kindle.com', undefined, mockRequest)).rejects.toThrow(HttpException);
     });
 
-    it('should throw error when EPUB format not available', async () => {
-      const mockBookPath = {
-        book_id: 1,
-        book_path: 'Author/Book Title (1)',
-        data: [{ data_name: 'Book Title', data_format: 'MOBI' }],
-      };
+    it('should throw BadRequest when the book has no Kindle compatible format', async () => {
+      // Amazon dropped MOBI in 2023: a MOBI-only book cannot be mailed at all.
+      mockCalibreDb.getBookPaths.mockResolvedValue(bookWithFormats('MOBI'));
 
-      mockCalibreDb.getBookPaths.mockResolvedValue(mockBookPath);
-
-      await expect(controller.sendKindle(1, 'user@kindle.com', mockRequest)).rejects.toThrow(HttpException);
+      await expect(controller.sendKindle(1, 'user@kindle.com', undefined, mockRequest)).rejects.toMatchObject({
+        status: HttpStatus.BAD_REQUEST,
+      });
+      expect(mailService.sendMail).not.toHaveBeenCalled();
     });
   });
 });

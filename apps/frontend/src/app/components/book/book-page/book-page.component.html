@@ -62,15 +62,19 @@
           }
         </div>
 
-        @if (bookHasEpub || bookHasMobi) {
+        @if (availableFormats.length > 0) {
           <div class="downloads">
-            @if (bookHasEpub) {
-              <button type="button" class="download-btn primary" (click)="downloadEpub()">↓ {{ 'label.epub-format' | translate }}</button>
+            @if (availableFormats.length === 1) {
+              <button type="button" class="download-btn primary" (click)="download(availableFormats[0])">↓ {{ availableFormats[0].labelKey | translate }}</button>
+            } @else {
+              <button type="button" class="download-btn primary" [matMenuTriggerFor]="formatMenu">↓ {{ 'label.download' | translate }}</button>
+              <mat-menu #formatMenu="matMenu">
+                @for (format of availableFormats; track format.id) {
+                  <button mat-menu-item type="button" (click)="download(format)">{{ format.labelKey | translate }}</button>
+                }
+              </mat-menu>
             }
-            @if (bookHasMobi) {
-              <button type="button" class="download-btn" (click)="downloadMobi()">↓ {{ 'label.mobi-format' | translate }}</button>
-            }
-            @if (bookHasMobi) {
+            @if (kindleFormat) {
               <button type="button" class="download-btn" (click)="openDialog()">➤ {{ 'label.kindle.send-to' | translate }}</button>
             }
           </div>

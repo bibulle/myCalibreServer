@@ -123,10 +123,10 @@ describe('CalibreDb1Service', () => {
       expect(result[0]).toHaveProperty('book_title');
     });
 
-    it('should return exactly 15 books from test database', async () => {
+    it('should return exactly 16 books from test database', async () => {
       const result = await service.getBooks();
 
-      expect(result.length).toBe(15);
+      expect(result.length).toBe(16);
     });
 
     it('should handle limit parameter', async () => {
@@ -166,7 +166,7 @@ describe('CalibreDb1Service', () => {
 
       expect(result).toBeDefined();
       expect(typeof result).toBe('number');
-      expect(result).toBe(15);
+      expect(result).toBe(16);
     });
 
     it('should return a positive number', async () => {

@@ -4,7 +4,7 @@ import { loginViaUi, testUser } from './helpers';
 /**
  * Browser-driven book detail page (PR4): opening a book, rating it,
  * following series/author/tag links, and the download/kindle affordances
- * (only present when the opened book actually has EPUB/MOBI data).
+ * (driven by the formats the opened book actually carries).
  */
 test.describe('UI - Book detail', () => {
   test('should open a book from the library and show its details', async ({ page }) => {
@@ -51,6 +51,37 @@ test.describe('UI - Book detail', () => {
       await tagPill.click();
       await expect(page).toHaveURL(/\/tags\?/);
     }
+  });
+
+  test('should offer a single PDF download for a PDF-only book (issue #255)', async ({ page }) => {
+    await loginViaUi(page, testUser.username, testUser.password);
+
+    // Fixture book 99001 in test/data/calibre/metadata.db carries a PDF and
+    // nothing else, which is exactly the case issue #255 reported.
+    await page.goto('/book/99001');
+    await expect(page.locator('.rl-info h1')).toContainText('Manuel PDF seulement');
+
+    const buttons = page.locator('.downloads .download-btn');
+    await expect(buttons.filter({ hasText: /PDF/i })).toHaveCount(1);
+    // A single format shows a direct button, not the multi-format menu.
+    await expect(buttons.filter({ hasText: /^↓ Télécharger$|^↓ Download$/ })).toHaveCount(0);
+    // Amazon accepts PDF, so the Kindle affordance has to be offered too.
+    await expect(buttons.filter({ hasText: /kindle/i })).toHaveCount(1);
+  });
+
+  test('should offer a format menu when the book has several formats', async ({ page }) => {
+    await loginViaUi(page, testUser.username, testUser.password);
+
+    // Fixture book 2 carries both EPUB and MOBI.
+    await page.goto('/book/2');
+    await expect(page.locator('.rl-info h1')).toBeVisible();
+
+    const trigger = page.locator('.downloads .download-btn').first();
+    await trigger.click();
+
+    const menu = page.locator('.mat-mdc-menu-panel');
+    await expect(menu).toBeVisible();
+    await expect(menu.locator('button')).toHaveCount(2);
   });
 
   test('should offer EPUB/MOBI downloads and the Kindle dialog when the book has files', async ({ page }) => {

@@ -15,8 +15,7 @@ describe('BookCardComponent', () => {
   beforeEach(() => {
     mockRouter = { navigate: jest.fn() } as unknown as jest.Mocked<Router>;
     mockBookService = {
-      getEpubUrl: jest.fn(() => Promise.resolve('http://example.com/book.epub')),
-      getMobiUrl: jest.fn(() => Promise.resolve('http://example.com/book.mobi')),
+      getDownloadUrl: jest.fn(() => Promise.resolve('http://example.com/book.file')),
     } as any;
     mockUserService = {
       refreshUser: jest.fn(() => Promise.resolve()),
@@ -48,17 +47,25 @@ describe('BookCardComponent', () => {
     });
   });
 
-  describe('hasEpub / hasMobi', () => {
-    it('should be false when the book has no data', () => {
+  describe('downloadFormat', () => {
+    it('should be undefined when the book has no data', () => {
       component.book = { ...new Book(), data: [] };
-      expect(component.hasEpub).toBe(false);
-      expect(component.hasMobi).toBe(false);
+      expect(component.downloadFormat).toBeUndefined();
     });
 
-    it('should reflect the available formats', () => {
-      component.book = { ...new Book(), data: [{ data_format: 'EPUB' } as BookData, { data_format: 'MOBI' } as BookData] };
-      expect(component.hasEpub).toBe(true);
-      expect(component.hasMobi).toBe(true);
+    it('should be undefined when no format is servable', () => {
+      component.book = { ...new Book(), data: [{ data_format: 'DJVU' } as BookData] };
+      expect(component.downloadFormat).toBeUndefined();
+    });
+
+    it('should prefer EPUB when several formats are available', () => {
+      component.book = { ...new Book(), data: [{ data_format: 'MOBI' } as BookData, { data_format: 'PDF' } as BookData, { data_format: 'EPUB' } as BookData] };
+      expect(component.downloadFormat?.id).toBe('EPUB');
+    });
+
+    it('should fall back to the PDF of a PDF-only book', () => {
+      component.book = { ...new Book(), data: [{ data_format: 'PDF' } as BookData] };
+      expect(component.downloadFormat?.id).toBe('PDF');
     });
   });
 
@@ -72,24 +79,33 @@ describe('BookCardComponent', () => {
       await Promise.resolve();
 
       expect(event.stopPropagation).toHaveBeenCalled();
-      expect(mockBookService.getEpubUrl).toHaveBeenCalledWith(7);
-      expect(mockBookService.getMobiUrl).not.toHaveBeenCalled();
+      expect(mockBookService.getDownloadUrl).toHaveBeenCalledWith(7, expect.objectContaining({ id: 'EPUB' }));
     });
 
-    it('should fall back to mobi when epub is not available', async () => {
+    it('should download the PDF of a PDF-only book', async () => {
       const event = { stopPropagation: jest.fn() } as unknown as Event;
-      component.book = { ...new Book(), book_id: 8, data: [{ data_format: 'MOBI' } as BookData] };
+      component.book = { ...new Book(), book_id: 8, data: [{ data_format: 'PDF' } as BookData] };
 
       component.download(event);
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(mockBookService.getMobiUrl).toHaveBeenCalledWith(8);
-      expect(mockBookService.getEpubUrl).not.toHaveBeenCalled();
+      expect(mockBookService.getDownloadUrl).toHaveBeenCalledWith(8, expect.objectContaining({ id: 'PDF' }));
+    });
+
+    it('should do nothing when the book has no servable format', async () => {
+      const event = { stopPropagation: jest.fn() } as unknown as Event;
+      component.book = { ...new Book(), book_id: 10, data: [] };
+
+      component.download(event);
+      await Promise.resolve();
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(mockBookService.getDownloadUrl).not.toHaveBeenCalled();
     });
 
     it('should notify an error when the download URL cannot be fetched', async () => {
-      mockBookService.getEpubUrl.mockReturnValue(Promise.reject('boom'));
+      mockBookService.getDownloadUrl.mockReturnValue(Promise.reject('boom'));
       const event = { stopPropagation: jest.fn() } as unknown as Event;
       component.book = { ...new Book(), book_id: 9, data: [{ data_format: 'EPUB' } as BookData] };
 

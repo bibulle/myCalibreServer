@@ -1,4 +1,4 @@
-import { Book, BookData, BookPath, Sprite, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
+import { Book, BookData, BookFormat, BookPath, Sprite, ThumbnailUtils } from '@my-calibre-server/api-interfaces';
 import { HttpException, Injectable, Logger, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
 import { createReadStream, promises as fsPromises, mkdirSync, statSync, existsSync } from 'fs';
@@ -147,7 +147,7 @@ export class BooksService {
     return path.resolve(`${CacheService.SPRITE_DIR}/sprites_${indexStr}.png`);
   }
 
-  async getBookToDownload(token: string, book_id: number, res: Response, format: 'EPUB' | 'MOBI', contentType: 'application/epub+zip' | 'application/x-mobipocket-ebook') {
+  async getBookToDownload(token: string, book_id: number, res: Response, format: BookFormat) {
     try {
       if (!token) {
         throw new ApiBadRequestException('Token is required');
@@ -164,13 +164,13 @@ export class BooksService {
       }
 
       const data = book.data.filter((bd: BookData) => {
-        return bd.data_format == format;
+        return bd.data_format?.toUpperCase() === format.id;
       });
       if (!data || data.length === 0) {
         throw new BookNotFoundException(book_id);
       }
 
-      const fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.toLowerCase()}`);
+      const fullPath = path.resolve(`${CalibreDb1Service.CALIBRE_DIR}/${book.book_path}/${data[0].data_name}.${format.extension}`);
 
       await fsPromises.stat(fullPath);
       await this._usersService.addDownloadedBook(user, book_id, data[0]);
@@ -182,9 +182,9 @@ export class BooksService {
       filename = filename.replace(/[<>:"/\\|?*]/g, '_');
 
       res.set({
-        'Content-Type': contentType,
+        'Content-Type': format.mimeType,
         'Thumbnail-control': 'public, max-age=31536000',
-        'Content-Disposition': `attachment; filename="${filename}.${format.toLowerCase()}"`,
+        'Content-Disposition': `attachment; filename="${filename}.${format.extension}"`,
       });
 
       return new StreamableFile(createReadStream(fullPath));
