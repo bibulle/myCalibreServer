@@ -31,6 +31,12 @@ export default [
       // ESLint 10 upgrade doesn't force an unrelated mass refactor; migrate
       // via `ng generate @angular/core:inject` as a separate follow-up.
       '@angular-eslint/prefer-inject': 'warn',
+      // TODO(angular-eslint-22.5-upgrade): rule newly added to the recommended
+      // config — 28 pre-existing components explicitly use
+      // `ChangeDetectionStrategy.Default`. Switching them to OnPush changes
+      // runtime behaviour, so it is downgraded to warn and left to a
+      // dedicated follow-up.
+      '@angular-eslint/prefer-on-push-component-change-detection': 'warn',
       '@typescript-eslint/no-empty-function': 'warn',
       'no-useless-assignment': 'warn',
     },

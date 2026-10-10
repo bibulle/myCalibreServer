@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, NgModule, OnChanges, OnInit, type SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';

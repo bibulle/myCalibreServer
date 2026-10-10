@@ -5,8 +5,8 @@
 myCalibreServer est une application web de gestion de bibliothèque numérique (livres au format Calibre).
 
 **Stack technique :**
-- Monorepo : Nx 22
-- Frontend : Angular 21 (Angular Material, PWA, JWT)
+- Monorepo : Nx 23
+- Frontend : Angular 22 (Angular Material, PWA, JWT)
 - Backend : NestJS 11 (Express, Passport, Sequelize, SQLite)
 - Interfaces partagées : `libs/api-interfaces`
 - Déploiement : Docker, GitHub Actions
