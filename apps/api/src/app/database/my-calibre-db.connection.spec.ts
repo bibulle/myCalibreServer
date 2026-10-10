@@ -84,6 +84,30 @@ describe('MyCalibreDbService (connection)', () => {
     expect(mockConnect).toHaveBeenCalledTimes(1);
   });
 
+  describe('onModuleDestroy', () => {
+    it('should close the Mongo connection once', async () => {
+      mockConnect.mockResolvedValue(undefined);
+      const service = new MyCalibreDbService(configService);
+      await flush();
+
+      await service.onModuleDestroy();
+      await service.onModuleDestroy();
+
+      expect(mockClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('should do nothing when never connected', async () => {
+      mockConnect.mockRejectedValue(new Error('connect ECONNREFUSED'));
+      const service = new MyCalibreDbService(configService);
+      await flush();
+      mockClose.mockClear();
+
+      await service.onModuleDestroy();
+
+      expect(mockClose).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getConnectionStatus', () => {
     it('should be OK once connected', async () => {
       mockConnect.mockResolvedValue(undefined);
