@@ -17,6 +17,7 @@ describe('HealthController (e2e)', () => {
     cacheBooks: new Date('2023-07-13T10:00:00.000Z'),
     calibreStatus: 'OK',
     cacheStatus: 'OK',
+    mongoStatus: 'OK',
   };
 
   const mockHealthService = {
@@ -56,6 +57,7 @@ describe('HealthController (e2e)', () => {
         cacheBooks: mockStatus.cacheBooks.toISOString(),
         calibreStatus: mockStatus.calibreStatus,
         cacheStatus: mockStatus.cacheStatus,
+        mongoStatus: mockStatus.mongoStatus,
       });
     });
 

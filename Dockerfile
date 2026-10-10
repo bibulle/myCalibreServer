@@ -10,7 +10,8 @@ COPY nx.json ./
 COPY tsconfig.base.json ./
 COPY libs libs
 
-RUN npm install
+# `npm ci` : versions strictement figées par le lock (comme le CI)
+RUN npm ci
 
 RUN mkdir apps
 COPY apps/frontend apps/frontend
@@ -20,25 +21,37 @@ RUN npx nx run-many --parallel --target=build --configuration=production --proje
 #RUN npm run ng build frontend -- --prod
 #RUN npm run ng build api -- --prod
 
-# -------------
-FROM node:24-trixie
-
-# switch to europe timezone
-RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
-
-WORKDIR /usr/src
-
-COPY --from=BUILD /usr/src/package*.json ./
-COPY --from=BUILD /usr/src/dist dist/ 
-
-RUN npm ci --omit=dev --ignore-scripts
+# Dépendances de production, préparées ici où la chaîne de compilation est
+# disponible : l'image finale (slim) n'a ni python ni g++.
+# On part du package.json/package-lock.json générés par le build de l'API
+# (`generatePackageJson`) : uniquement les modules réellement requis à
+# l'exécution (~90 Mo), au lieu des `dependencies` du package.json racine qui
+# embarquent tout l'outillage Nx/Angular (~730 Mo).
 # `--ignore-scripts` saute le script `install` de sqlite3, qui récupère son
 # binaire natif : on le reconstruit ici, sans quitter les versions figées par
 # le lock (au contraire d'un uninstall/install, qui réinstallait la dernière
 # version satisfaisant le package.json, non testée par le CI).
 # sharp n'a plus besoin de ce traitement : depuis la 0.33 il livre ses
 # binaires en optionalDependencies (@img/sharp-*), qu'aucun script n'installe.
-RUN npm rebuild sqlite3
+WORKDIR /usr/prod
+RUN cp /usr/src/dist/apps/api/package*.json ./ \
+ && npm ci --omit=dev --ignore-scripts \
+ && npm rebuild sqlite3 \
+ && npm cache clean --force
+
+# -------------
+# Image d'exécution : variante slim (~340 Mo au lieu de ~1,8 Go), même Debian
+# (trixie, glibc) que l'étape de build, donc binaires natifs compatibles.
+FROM node:24-trixie-slim
+
+# switch to europe timezone
+RUN ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime
+
+WORKDIR /usr/src
+
+COPY --from=BUILD /usr/prod/package*.json ./
+COPY --from=BUILD /usr/prod/node_modules node_modules/
+COPY --from=BUILD /usr/src/dist dist/
 
 ENV PORT=3000
 #ENV AUTHENT_JWT_SECRET=authent_jwt_secret

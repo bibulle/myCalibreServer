@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HealthService } from './health.service';
 import { CacheService, CacheKey } from '../cache/cache.service';
 import { CalibreDb1Service } from '../database/calibre-db1.service';
+import { MyCalibreDbService } from '../database/my-calibre-db.service';
 
 describe('HealthService', () => {
   let service: HealthService;
@@ -16,6 +17,10 @@ describe('HealthService', () => {
     getDbDate: jest.fn(),
   };
 
+  const mockMyCalibreDbService = {
+    getConnectionStatus: jest.fn().mockReturnValue('OK'),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -27,6 +32,10 @@ describe('HealthService', () => {
         {
           provide: CalibreDb1Service,
           useValue: mockCalibreDbService,
+        },
+        {
+          provide: MyCalibreDbService,
+          useValue: mockMyCalibreDbService,
         },
       ],
     }).compile();
@@ -120,6 +129,18 @@ describe('HealthService', () => {
       expect(result1).toEqual(result2);
       // Should only call services once due to cache
       expect(mockCalibreDbService.getDbDate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should report the Mongo connection status without failing the check', async () => {
+      mockCalibreDbService.getDbDate.mockResolvedValue(new Date());
+      mockCacheService.getCacheDate.mockResolvedValue(new Date());
+      mockMyCalibreDbService.getConnectionStatus.mockReturnValueOnce('KO : connect ECONNREFUSED');
+
+      const result = await service.getHealthSattus();
+
+      expect(result.mongoStatus).toBe('KO : connect ECONNREFUSED');
+      expect(result.calibreStatus).toBe('OK');
+      expect(result.cacheStatus).toBe('OK');
     });
 
     it('should handle database errors', async () => {

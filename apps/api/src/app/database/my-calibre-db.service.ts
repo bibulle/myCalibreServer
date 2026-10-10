@@ -14,29 +14,73 @@ export class MyCalibreDbService {
   private static MONGO_USERS_COL_NAME: string;
 
   private collections: { users?: mongoDB.Collection } = {};
+  // Connection attempt in progress, shared by all callers (only one MongoClient at a time)
+  private _connecting: Promise<mongoDB.Collection> | null = null;
+  private _lastConnectionError: string | null = null;
 
   constructor(private readonly _configService: ConfigService) {
     MyCalibreDbService.MONGO_URL = this._configService.get('MONGO_URL') || 'mongodb://192.168.0.126:30994';
     MyCalibreDbService.MONGO_DB_NAME = this._configService.get('MONGO_DB_NAME') || 'myCalibreDb';
     MyCalibreDbService.MONGO_USERS_COL_NAME = this._configService.get('MONGO_USERS_COL_NAME') || 'users';
 
-    this._connectToDatabase();
+    // Never let a failed (initial) connection become an unhandled rejection: it would kill the
+    // process (and the pod would crash-loop while Mongo is down). The error is logged and the
+    // connection is retried by the next call.
+    this._connectToDatabase().catch(() => undefined);
   }
 
-  private async _connectToDatabase() {
-    if (!this.collections.users) {
+  /**
+   * Get the users collection, connecting first if needed. Once connected, the driver handles
+   * reconnections by itself; a failed connection attempt is retried on the next call.
+   */
+  private _connectToDatabase(): Promise<mongoDB.Collection> {
+    if (this.collections.users) {
+      return Promise.resolve(this.collections.users);
+    }
+    if (!this._connecting) {
       const client: mongoDB.MongoClient = new mongoDB.MongoClient(MyCalibreDbService.MONGO_URL);
 
-      await client.connect();
+      this._connecting = client
+        .connect()
+        .then(() => {
+          const db: mongoDB.Db = client.db(MyCalibreDbService.MONGO_DB_NAME);
+          const usersCollection: mongoDB.Collection = db.collection(MyCalibreDbService.MONGO_USERS_COL_NAME);
 
-      const db: mongoDB.Db = client.db(MyCalibreDbService.MONGO_DB_NAME);
-
-      const gamesCollection: mongoDB.Collection = db.collection(MyCalibreDbService.MONGO_USERS_COL_NAME);
-
-      this.collections.users = gamesCollection;
-
-      this.logger.log(`Successfully connected to database: ${db.databaseName} and collection: ${gamesCollection.collectionName}`);
+          this.collections.users = usersCollection;
+          this._lastConnectionError = null;
+          this.logger.log(`Successfully connected to database: ${db.databaseName} and collection: ${usersCollection.collectionName}`);
+          return usersCollection;
+        })
+        .catch(async (err) => {
+          this._lastConnectionError = err?.message ?? `${err}`;
+          this.logger.error(`Cannot connect to Mongo : ${this._lastConnectionError}`);
+          await client.close().catch(() => undefined);
+          throw err;
+        })
+        .finally(() => {
+          this._connecting = null;
+        });
     }
+    return this._connecting;
+  }
+
+  /**
+   * Users collection, or the historical 'Cannot connect to Mongo !!' rejection
+   */
+  private _getUsers(): Promise<mongoDB.Collection> {
+    return this._connectToDatabase().catch(() => Promise.reject('Cannot connect to Mongo !!'));
+  }
+
+  /**
+   * Connection status for the health check ('OK' or 'KO : <reason>'). When not connected, a new
+   * connection attempt is started (without waiting for it).
+   */
+  getConnectionStatus(): string {
+    if (this.collections.users) {
+      return 'OK';
+    }
+    this._connectToDatabase().catch(() => undefined);
+    return `KO : ${this._lastConnectionError ?? 'not connected yet'}`;
   }
 
   /**
@@ -45,24 +89,7 @@ export class MyCalibreDbService {
    * @private
    */
   public getAllUsers(): Promise<mongoDB.Document[]> {
-    return new Promise<mongoDB.Document[]>((resolve, reject) => {
-      this._connectToDatabase();
-
-      if (!this.collections.users) {
-        reject('Cannot connect to Mongo !!');
-      }
-
-      this.collections.users
-        .find({})
-        .sort({ updated: -1 })
-        .toArray()
-        .then((rows) => {
-          resolve(rows);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+    return this._getUsers().then((users) => users.find({}).sort({ updated: -1 }).toArray());
   }
 
   /**
@@ -94,12 +121,7 @@ export class MyCalibreDbService {
   }
 
   public saveUser(user: User, tryInsert: boolean, changeUpdateDate = true): Promise<mongoDB.Document> {
-    return new Promise((resolve, reject) => {
-      this._connectToDatabase();
-      if (!this.collections.users) {
-        reject('Cannot connect to Mongo !!');
-      }
-
+    return this._getUsers().then((users) => {
       const filter: mongoDB.Filter<mongoDB.Document> = { id: user.id };
 
       if (!user.created) {
@@ -125,36 +147,13 @@ export class MyCalibreDbService {
       }
       delete user['_id'];
 
-      this.collections.users
-        .replaceOne(filter, user, { upsert: tryInsert })
-        .then((doc) => {
-          // this.logger.debug(JSON.stringify(doc, null, 2));
-          resolve(doc);
-        })
-        .catch((reason) => {
-          reject(reason);
-        });
+      return users.replaceOne(filter, user, { upsert: tryInsert });
     });
   }
   public deleteUser(userId: string): Promise<mongoDB.Document> {
-    return new Promise((resolve, reject) => {
-      this._connectToDatabase();
-      if (!this.collections.users) {
-        reject('Cannot connect to Mongo !!');
-      }
+    const filter: mongoDB.Filter<mongoDB.Document> = { id: userId };
 
-      const filter: mongoDB.Filter<mongoDB.Document> = { id: userId };
-
-      this.collections.users
-        .deleteOne(filter)
-        .then((doc) => {
-          // this.logger.debug(JSON.stringify(doc, null, 2));
-          resolve(doc);
-        })
-        .catch((reason) => {
-          reject(reason);
-        });
-    });
+    return this._getUsers().then((users) => users.deleteOne(filter));
   }
 
   /**
@@ -165,25 +164,7 @@ export class MyCalibreDbService {
    */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _findUserBy(query: any): Promise<mongoDB.Document> {
-    return new Promise<mongoDB.Document>((resolve, reject) => {
-      this._connectToDatabase();
-
-      if (!this.collections.users) {
-        reject('Cannot connect to Mongo !!');
-      }
-
-      // this.logger.debug(query);
-      this.collections.users
-        //.findOne({ '$or': [{ 'local.username': 'eric' }, { local_username: 'eric' }] })
-        // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        .findOne(query as {})
-        .then((row) => {
-          // this.logger.debug(JSON.stringify(row, null, 2));
-          resolve(row);
-        })
-        .catch((reason) => {
-          reject(reason);
-        });
-    });
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    return this._getUsers().then((users) => users.findOne(query as {}));
   }
 }
