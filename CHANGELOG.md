@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.14.1](https://github.com/bibulle/myCalibreServer/compare/v0.14.0...v0.14.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **api:** reduce CPU and memory consumption ([7fa5e06](https://github.com/bibulle/myCalibreServer/commit/7fa5e0630f72c9d93701514e24a7f6f4f8fecd45))
+* **api:** reduce CPU and memory consumption ([617b74b](https://github.com/bibulle/myCalibreServer/commit/617b74b06a24a0cbde41ac2b5cd07e5bf2709136))
+
 ## [0.14.0](https://github.com/bibulle/myCalibreServer/compare/v0.13.3...v0.14.0) (2026-10-10)
 
 
