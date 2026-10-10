@@ -450,22 +450,23 @@ export class BooksService {
   }
 
   static maxWidth = 0;
-  static async getThumbnailInfo(path: string): Promise<OutputInfo> {
-    try {
-      const { data, info } = await sharp(path).resize(null, ThumbnailUtils.THUMBNAIL_HEIGHT).toFormat(sharp.format.png).toBuffer({ resolveWithObject: true });
+  /**
+   * Size the image would have once resized to the thumbnail height. Only the image
+   * header is read (no decoding/resizing), since callers just need the width.
+   */
+  static async getThumbnailInfo(path: string): Promise<Pick<OutputInfo, 'width' | 'height'>> {
+    const meta = await sharp(path).metadata();
+    const height = ThumbnailUtils.THUMBNAIL_HEIGHT;
+    const width = Math.max(1, Math.round((meta.width * height) / meta.height));
 
-      if (info.width > this.maxWidth) {
-        this.maxWidth = info.width;
-        // BooksService.logger.debug(`${path} : ${this.maxWidth}`);
-      }
-      if (info.width > ThumbnailUtils.THUMBNAIL_HEIGHT) {
-        BooksService.logger.warn(`TOO BIG ${path} : ${info.width}`);
-      }
-
-      return info;
-    } catch (error) {
-      throw error;
+    if (width > this.maxWidth) {
+      this.maxWidth = width;
     }
+    if (width > ThumbnailUtils.THUMBNAIL_HEIGHT) {
+      BooksService.logger.warn(`TOO BIG ${path} : ${width}`);
+    }
+
+    return { width, height };
   }
 
   getSpriteDate(book: Book): number {

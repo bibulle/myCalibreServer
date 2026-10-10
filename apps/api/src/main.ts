@@ -4,6 +4,7 @@ import * as expressSession from 'express-session';
 import * as passport from 'passport';
 
 import { AppModule } from './app/app.module';
+import { configureSharp } from './app/utils/sharp-config';
 
 async function bootstrap() {
   let logger_levels: LogLevel[] = ['error', 'warn', 'log'];
@@ -23,6 +24,8 @@ async function bootstrap() {
         break;
     }
   }
+
+  configureSharp();
 
   const app = await NestFactory.create(AppModule, {
     logger: logger_levels,

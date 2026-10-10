@@ -804,6 +804,16 @@ describe('BooksService', () => {
         expect(info.height).toBe(160);
       });
 
+      it('should give the same width as an actual resize to the thumbnail height, without resizing', async () => {
+        const { info: resized } = await sharp(srcImagePath).resize(null, 160).toBuffer({ resolveWithObject: true });
+        const resizeSpy = jest.spyOn(sharp.prototype, 'resize');
+
+        const info = await BooksService.getThumbnailInfo(srcImagePath);
+
+        expect(Math.abs(info.width - resized.width)).toBeLessThanOrEqual(1);
+        expect(resizeSpy).not.toHaveBeenCalled();
+      });
+
       it('should reject when the image cannot be read', async () => {
         await expect(BooksService.getThumbnailInfo(join(tmpDir, 'missing.jpg'))).rejects.toBeDefined();
       });
