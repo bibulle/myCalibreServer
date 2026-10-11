@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org/) for commit guidelines, and [release-please](https://github.com/googleapis/release-please) for how releases are generated.
 
+## [0.14.5](https://github.com/bibulle/myCalibreServer/compare/v0.14.4...v0.14.5) (2026-10-11)
+
+
+### Bug Fixes
+
+* **deps:** upgrade frontend and backend libraries ([4ce7eeb](https://github.com/bibulle/myCalibreServer/commit/4ce7eeb2ad8446e86400e6481eddca28ba50ab9c))
+* **deps:** upgrade frontend and backend libraries ([e89f64a](https://github.com/bibulle/myCalibreServer/commit/e89f64adb256a975ab8cb9581a237e8060f594d4))
+
 ## [0.14.4](https://github.com/bibulle/myCalibreServer/compare/v0.14.3...v0.14.4) (2026-10-10)
 
 
