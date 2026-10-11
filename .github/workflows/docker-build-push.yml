@@ -20,6 +20,12 @@ jobs:
   test:
     name: Run unit and e2e tests
     runs-on: ubuntu-latest
+    # Skip release-please's Release PRs: they only bump the version,
+    # CHANGELOG.md and version files, and the merge on master re-runs the
+    # whole pipeline anyway. `build-and-push-docker-image` depends on this
+    # job (`needs: test`), so it is skipped as well. A skipped job still
+    # satisfies a required status check.
+    if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'release-please--') }}
     # The whole job runs in ~4 minutes; without this it would inherit the
     # 6h default and burn a runner before failing.
     timeout-minutes: 30
