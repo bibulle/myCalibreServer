@@ -18,32 +18,29 @@
 | Outil | Version |
 |-------|---------|
 | Node.js | 24 LTS (`.nvmrc`) |
-| Nx | 23.0.1 |
-| Angular | 21.2.17 |
-| Angular Material / CDK | 21.2.14 |
-| NestJS | 11.1.27 |
-| TypeScript | 5.9.3 |
-| Jest | 30.4.2 |
-| Playwright | 1.61.x (e2e — no MongoDB required) |
-| ESLint | 10.6.0 (flat config, `eslint.config.mjs`) |
+| Nx | 23.3.0 |
+| Angular | 22.2.2 |
+| Angular Material / CDK | 22.2.2 |
+| NestJS | 11.2.7 |
+| TypeScript | 6.0.3 |
+| Jest | 30.5.2 |
+| Playwright | 1.64.x (e2e — no MongoDB required) |
+| ESLint | 10.12.0 (flat config, `eslint.config.mjs`) |
 
-> Angular 22 et TypeScript 6 sont disponibles en amont mais volontairement non
-> adoptés ici : ce sont des montées de version majeures qui impliquent
-> potentiellement du code fonctionnel et sont traitées comme des chantiers
-> séparés nécessitant un accord explicite préalable.
+> **Montées de version volontairement non adoptées** (vérifié le 2026-10-10) :
 >
-> **Angular 22 est bloqué en amont** : `@nx/angular@23.0.1` (dernière version **stable**)
-> plafonne son peer dependency `@angular-devkit/build-angular` (et `@angular/build`) à
-> `< 22.0.0`. Le support d'Angular 22 existe déjà côté Nx sous forme de builds **canary**
-> (`@nx/angular@23.1.0-canary.*`, dont le peer range monte à `< 23.0.0`), mais aucune
-> release stable `23.1.0` n'est publiée à ce jour (vérifié le 2026-07-05) — décision prise
-> de ne pas dépendre d'un canary en production. La montée de version ne sera retentée
-> qu'une fois une release stable `@nx/angular` compatible publiée.
->
-> **TypeScript 6 est couplé à Angular 22, pas un chantier séparé** : `@angular-devkit/build-angular@22.x`
-> (dernière version) exige désormais `typescript >=6.0 <6.1` (le peer `< 6.0` de la 21.x est devenu un
-> plancher `>= 6.0` en 22.x) — impossible de monter TypeScript 6 sans monter Angular 22 en même temps,
-> ni l'inverse. Les deux montées sont donc bloquées ensemble par le même verrou `@nx/angular`.
+> - **NestJS 12** : tous les paquets `@nestjs/*` 12.x (`common`, `core`, `config`,
+>   `schedule`, `passport`, `schematics`…) sont désormais **ESM-only** (`"type": "module"`),
+>   et `@nx/nest@23.3.0` plafonne son peer `@nestjs/core`/`@nestjs/common` à `< 12.0.0`.
+>   Passer en 12 implique de migrer l'API (bundle webpack + Jest/ts-jest) vers ESM :
+>   chantier séparé, à reprendre quand `@nx/nest` supportera NestJS 12. On reste sur la
+>   dernière 11.x (`11.2.x`, dist-tag `legacy`).
+> - **TypeScript 7** : `@angular/compiler-cli@22.2` exige `typescript >=6.0 <6.1`
+>   (idem `typescript-eslint`, `ts-jest` `< 7`). On reste en 6.0.x.
+> - **webpack-dev-server 6** : `@nx/webpack@23.3.0` déclare encore un peer `^5.0.0`
+>   (`npm install` refuse la 6). On reste en 5.2.x.
+> - **`@types/node` 25/26** : le runtime est Node 24 (`.nvmrc`, image Docker), les types
+>   restent alignés sur `@types/node@24`.
 
 ## Notes importantes
 
@@ -67,6 +64,11 @@
 - **Image Docker slim** : l'image d'exécution part de `node:24-trixie-slim` (~340 Mo au lieu de ~1,8 Go pour `node:24-trixie`). Elle n'a ni python ni g++ : les dépendances de production (`npm ci --omit=dev --ignore-scripts` + `npm rebuild sqlite3`) sont donc préparées dans l'étape de build (`/usr/prod`), puis copiées. Elles sont installées à partir du `package.json`/`package-lock.json` générés par le build de l'API (`generatePackageJson: true` dans `apps/api/project.json`) : seulement les modules requis à l'exécution par le bundle webpack (~90 Mo au lieu de ~730 Mo avec les `dependencies` racine, qui contiennent l'outillage Nx/Angular). Image finale : ~450 Mo (contre ~2,5 Go). Un module ajouté en `externals` dans `apps/api/webpack.config.js` doit rester une dépendance du `package.json` racine pour apparaître dans le `package.json` généré. Les deux étapes doivent rester sur la **même Debian** (trixie) pour que les binaires natifs (glibc, cf. incident ci-dessous) restent compatibles. L'étape de build utilise `npm ci` (versions figées par le lock, comme le CI).
 - **MongoDB indisponible** : `MyCalibreDbService` ne fait plus planter le process quand MongoDB est injoignable (avant, la promesse de connexion du constructeur était rejetée sans être gérée → arrêt de Node → pod en crash-loop). Une seule tentative de connexion est partagée entre les appelants ; après un échec, le client est fermé et l'appel suivant (ou le health check) relance une tentative. Les requêtes rejettent avec le message historique `'Cannot connect to Mongo !!'`. `/api/health` expose `mongoStatus` (`OK` ou `KO : <raison>`), à titre informatif : une panne MongoDB ne fait pas échouer le health check (pas de redémarrage du pod pour ça).
 - **Teardown des tests API (avertissement Jest « worker process has failed to exit gracefully »)** : tout ce qu'un service démarre lui-même doit être arrêté en fin de test. `BooksService` et `CacheService` démarrent leur `CronJob` dans le constructeur (le `SchedulerRegistry` mocké ne les arrête pas) : leurs specs appellent `job.stop()` sur les jobs passés à `addCronJob`. `MyCalibreDbService` ferme sa connexion Mongo dans `onModuleDestroy` : `my-calibre-db.service.spec.ts` (module recréé à chaque test) appelle `module.close()` dans `afterEach`. `HealthService.withTimeout` annule son timer dès que la vérification répond.
+- **nodemailer v10** : aucun changement de code nécessaire. Seul breaking change : Node.js >= 20 requis (Node 24 ici). La bibliothèque est réécrite en TypeScript et embarque ses propres types (builds ESM + CommonJS) : `@types/nodemailer` a été retiré des devDependencies, `import { SendMailOptions } from 'nodemailer'` et `nodemailer = require('nodemailer')` restent valides.
+- **google-auth-library v11** : aucun changement de code nécessaire (Node.js >= 22 requis, Node 24 ici) ; `OAuth2Client.verifyIdToken()` (`google-id-token.strategy.ts`) est inchangé.
+- **Angular 22.2 (builder webpack `browser` + `isolatedModules`)** : les imports utilisés uniquement comme types ne sont plus systématiquement élidés et font échouer le build (`export 'SimpleChanges' was not found`). Les marquer explicitement `type` (`import { type SimpleChanges } from '@angular/core'`).
+- **angular-eslint 22.5** : la règle `@angular-eslint/prefer-on-push-component-change-detection` est ajoutée à la config recommandée (28 composants utilisent explicitement `ChangeDetectionStrategy.Default`). Repassée en `warn` dans `apps/frontend/eslint.config.mjs` (`TODO(angular-eslint-22.5-upgrade)`) : passer en OnPush change le comportement à l'exécution, chantier séparé.
+- **Lockfile et version de npm** : le `package-lock.json` doit être généré avec **npm 11** (celui fourni par Node 24, utilisé par le CI et le Dockerfile). Avec npm 10 (Node 22), `npm ci` refuse le lock (`Missing: @babel/core@7.x from lock file`) à cause de l'override `ts-jest → @babel/core@8`. En cas de Node 22 local : `npx npm@11 install`.
 - **nodemailer v9** : aucun changement de code nécessaire. Seul breaking change de la v9.0.0 (validation TLS par défaut des certificats lors de la récupération de contenu distant — pièces jointes via URL, endpoints OAuth2, proxy HTTP/HTTPS CONNECT) : sans effet ici, `MailService.sendMail()` (`apps/api/src/app/utils/mail.service.ts`) n'utilise que des pièces jointes en chemin de fichier local (`path`), jamais d'URL distante. L'API callback de `transporter.sendMail()` reste inchangée.
 - **commitlint / `@commitlint/config-conventional` v21** : aucun changement de code nécessaire — `commitlint` n'est actuellement câblé à aucun hook (`husky`) ni job CI dans ce dépôt, c'est un simple devDependency non exécuté automatiquement. Nécessite Node >= 22.12.0 (déjà couvert par le `.nvmrc` en 24).
 - **Nettoyage warnings CI** : `actions/checkout@v4` et `actions/setup-node@v4` (workflow `docker-build-push.yml`) embarquent un runtime Node 20 que GitHub force à tourner sur Node 24, d'où le warning `Node.js 20 is deprecated` — réglé en passant les deux actions en `v5`. Le même warning réapparaissait ensuite pour le job de build Docker via `docker/setup-buildx-action@v3`, `docker/login-action@v3` et `docker/build-push-action@v6` (repéré dans les logs CI) — réglé en passant ces trois actions en `v4`, `v4` et `v7` respectivement (première version majeure de chacune avec "Node 24 as default runtime"). Côté `npm ci`, le warning `npm warn allow-scripts` (paquets avec install scripts non couverts par `allowScripts`) a été supprimé en committant les approbations (`npm approve-scripts --all`, écrit la map `allowScripts` dans `package.json`) pour les 8 paquets natifs concernés (`@parcel/watcher`, `esbuild`, `lmdb`, `msgpackr-extract`, `nx`, `sharp`, `sqlite3`, `unrs-resolver`) — **à re-approuver après toute montée de version de l'un de ces paquets** (l'approbation est pinnée `pkg@version`). `@angular/platform-browser-dynamic` (déprécié, fusionné dans `@angular/platform-browser` depuis qu'Ivy a supprimé la distinction JIT/AOT) a été retiré : `main.ts` utilise désormais `platformBrowser()` (signature identique) et la dépendance associée a été supprimée de `package.json`.

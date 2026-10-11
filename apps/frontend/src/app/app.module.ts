@@ -17,7 +17,7 @@ import localeEn from '@angular/common/locales/en';
 import localeFr from '@angular/common/locales/fr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtModule } from '@auth0/angular-jwt';
-import { MissingTranslationHandler, MissingTranslationHandlerParams, TranslatePipe, provideTranslateService } from '@ngx-translate/core';
+import { MissingTranslationHandler, type MissingTranslationHandlerParams, TranslatePipe, provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { AuthGuard } from './components/authent/auth.guard';
 import { AuthGuardAdmin } from './components/authent/auth.guard.admin';
