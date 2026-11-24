@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "22.2.2",
-    "@angular/cli": "22.2.2",
+    "@angular/cli": "22.3.0",
     "@angular/compiler-cli": "22.2.2",
     "@angular/language-service": "22.2.2",
     "@angular/pwa": "22.2.2",
